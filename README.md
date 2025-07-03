@@ -18,4 +18,4 @@ A comprehensive web-based financial management tool featuring:
 Simply open `index.html` in any modern web browser.
 
 ## Live Demo
-[View Live Dashboard](https://yourusername.github.io/personal-finance-dashboard)
+[View Live Dashboard](https://bgosalci.github.io/personal-finance-dashboard)
