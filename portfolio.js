@@ -90,7 +90,7 @@ export function renderPortfolios() {
                         </table>
                     </div>
                 ` : '<div class="empty-state">No holdings in this portfolio</div>'}
-                <button class="btn btn-primary" onclick="window.addHolding(${portfolio.id})" style="margin-top: 15px;">
+                <button class="btn btn-primary" data-portfolio-id="${portfolio.id}" style="margin-top: 15px;">
                     ➕ Add Holding
                 </button>
             </div>
