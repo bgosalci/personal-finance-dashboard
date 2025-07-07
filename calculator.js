@@ -1,4 +1,5 @@
 let activeCalculator = 'loan';
+let activeFVTab = 'dcf';
 
 function setupInvestmentYears() {
     const select = document.getElementById('invest-years');
@@ -93,6 +94,76 @@ function renderGrowthTable(amount, rate, years) {
     document.getElementById('growth-table-content').innerHTML = html;
 }
 
+function calculateCAGR() {
+    const start = parseFloat(document.getElementById('cagr-start').value) || 0;
+    const end = parseFloat(document.getElementById('cagr-end').value) || 0;
+    const years = parseFloat(document.getElementById('cagr-years').value) || 0;
+
+    if (start > 0 && end > 0 && years > 0) {
+        const cagr = Math.pow(end / start, 1 / years) - 1;
+        document.getElementById('cagr-result').textContent = `${(cagr * 100).toFixed(2)}%`;
+    } else {
+        document.getElementById('cagr-result').textContent = '0%';
+    }
+}
+
+function calculateDCF() {
+    const cashFlow = parseFloat(document.getElementById('dcf-cashflow').value) || 0;
+    const growth = parseFloat(document.getElementById('dcf-growth').value) || 0;
+    const discount = parseFloat(document.getElementById('dcf-discount').value) || 0;
+    const years = parseInt(document.getElementById('dcf-years').value) || 0;
+
+    if (cashFlow > 0 && discount > 0 && years > 0) {
+        let value = 0;
+        for (let i = 1; i <= years; i++) {
+            const cf = cashFlow * Math.pow(1 + growth / 100, i);
+            value += cf / Math.pow(1 + discount / 100, i);
+        }
+        document.getElementById('dcf-result').textContent =
+            `£${value.toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    } else {
+        document.getElementById('dcf-result').textContent = '£0.00';
+    }
+}
+
+function calculatePE() {
+    const eps = parseFloat(document.getElementById('pe-eps').value) || 0;
+    const growth = parseFloat(document.getElementById('pe-growth').value) || 0;
+    const years = parseInt(document.getElementById('pe-years').value) || 0;
+    const pe = parseFloat(document.getElementById('pe-ratio').value) || 0;
+
+    if (eps > 0 && pe > 0) {
+        const futureEPS = eps * Math.pow(1 + growth / 100, years);
+        const value = futureEPS * pe;
+        document.getElementById('pe-result').textContent =
+            `£${value.toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    } else {
+        document.getElementById('pe-result').textContent = '£0.00';
+    }
+}
+
+function calculateIntrinsic() {
+    const book = parseFloat(document.getElementById('intrinsic-book').value) || 0;
+    const growth = parseFloat(document.getElementById('intrinsic-growth').value) || 0;
+    const years = parseInt(document.getElementById('intrinsic-years').value) || 0;
+
+    if (book > 0) {
+        const value = book * Math.pow(1 + growth / 100, years);
+        document.getElementById('intrinsic-result').textContent =
+            `£${value.toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    } else {
+        document.getElementById('intrinsic-result').textContent = '£0.00';
+    }
+}
+
+function switchFVTab(tab) {
+    activeFVTab = tab;
+    document.querySelectorAll('.fv-tab').forEach(t => t.classList.remove('active'));
+    document.querySelector(`[data-fv="${tab}"]`).classList.add('active');
+    document.querySelectorAll('.fv-calculator').forEach(c => c.classList.remove('active'));
+    document.getElementById(`${tab}-calc`).classList.add('active');
+}
+
 function setupListeners() {
     // Loan calculator listeners
     ['loan-amount', 'loan-rate', 'loan-term'].forEach(id => {
@@ -102,6 +173,31 @@ function setupListeners() {
     // Investment calculator listeners
     ['invest-amount', 'invest-rate', 'invest-years'].forEach(id => {
         document.getElementById(id).addEventListener('input', calculateInvestment);
+    });
+
+    // CAGR calculator listeners
+    ['cagr-start', 'cagr-end', 'cagr-years'].forEach(id => {
+        document.getElementById(id).addEventListener('input', calculateCAGR);
+    });
+
+    // DCF calculator listeners
+    ['dcf-cashflow', 'dcf-growth', 'dcf-discount', 'dcf-years'].forEach(id => {
+        document.getElementById(id).addEventListener('input', calculateDCF);
+    });
+
+    // PE calculator listeners
+    ['pe-eps', 'pe-growth', 'pe-years', 'pe-ratio'].forEach(id => {
+        document.getElementById(id).addEventListener('input', calculatePE);
+    });
+
+    // Intrinsic value calculator listeners
+    ['intrinsic-book', 'intrinsic-growth', 'intrinsic-years'].forEach(id => {
+        document.getElementById(id).addEventListener('input', calculateIntrinsic);
+    });
+
+    // Fair value tab navigation
+    document.querySelectorAll('.fv-tab').forEach(btn => {
+        btn.addEventListener('click', () => switchFVTab(btn.dataset.fv));
     });
 }
 

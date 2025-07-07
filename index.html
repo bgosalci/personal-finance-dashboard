@@ -53,6 +53,8 @@
             <div class="calc-nav">
                 <button class="calc-tab active" data-calc="loan">💳 Loan Calculator</button>
                 <button class="calc-tab investment" data-calc="investment">📈 Investment Calculator</button>
+                <button class="calc-tab" data-calc="cagr">📊 CAGR Calculator</button>
+                <button class="calc-tab" data-calc="fairvalue">💰 Fair Value Calculator</button>
             </div>
 
             <!-- Loan Calculator -->
@@ -121,6 +123,116 @@
                                     Enter investment amount and return rate to see projections
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- CAGR Calculator -->
+            <div id="cagr-calc" class="calculator">
+                <div class="card">
+                    <h3 style="margin-bottom: 25px; font-size: 1.5rem; color: #2c3e50;">CAGR Calculator</h3>
+                    <div class="calc-inputs">
+                        <div class="input-group">
+                            <label class="input-label">Starting Value (£)</label>
+                            <input type="number" class="input-field" id="cagr-start" placeholder="Enter starting value">
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">Ending Value (£)</label>
+                            <input type="number" class="input-field" id="cagr-end" placeholder="Enter ending value">
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">Period (years)</label>
+                            <input type="number" class="input-field" id="cagr-years" placeholder="Number of years">
+                        </div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-label">CAGR</div>
+                        <div class="result-value" id="cagr-result">0%</div>
+                        <div class="result-sub">Enter values to calculate</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fair Value Calculator -->
+            <div id="fairvalue-calc" class="calculator">
+                <div class="card">
+                    <h3 style="margin-bottom: 25px; font-size: 1.5rem; color: #2c3e50;">Fair Value Calculator</h3>
+                    <div class="fv-nav">
+                        <button class="fv-tab active" data-fv="dcf">DCF</button>
+                        <button class="fv-tab" data-fv="pe">PE</button>
+                        <button class="fv-tab" data-fv="intrinsic">Intrinsic Value</button>
+                    </div>
+                    <div id="dcf-calc" class="fv-calculator active">
+                        <div class="calc-inputs">
+                            <div class="input-group">
+                                <label class="input-label">Current Cash Flow (£)</label>
+                                <input type="number" class="input-field" id="dcf-cashflow" placeholder="Cash flow">
+                            </div>
+                            <div class="input-group">
+                                <label class="input-label">Growth Rate (%)</label>
+                                <input type="number" step="0.1" class="input-field" id="dcf-growth" placeholder="Growth rate">
+                            </div>
+                            <div class="input-group">
+                                <label class="input-label">Discount Rate (%)</label>
+                                <input type="number" step="0.1" class="input-field" id="dcf-discount" placeholder="Discount rate">
+                            </div>
+                            <div class="input-group">
+                                <label class="input-label">Years</label>
+                                <input type="number" class="input-field" id="dcf-years" placeholder="Projection years">
+                            </div>
+                        </div>
+                        <div class="result-card">
+                            <div class="result-label">DCF Value</div>
+                            <div class="result-value" id="dcf-result">£0.00</div>
+                            <div class="result-sub">Enter values to calculate</div>
+                        </div>
+                    </div>
+
+                    <div id="pe-calc" class="fv-calculator">
+                        <div class="calc-inputs">
+                            <div class="input-group">
+                                <label class="input-label">Earnings Per Share (£)</label>
+                                <input type="number" class="input-field" id="pe-eps" placeholder="EPS">
+                            </div>
+                            <div class="input-group">
+                                <label class="input-label">Growth Rate (%)</label>
+                                <input type="number" step="0.1" class="input-field" id="pe-growth" placeholder="Growth rate">
+                            </div>
+                            <div class="input-group">
+                                <label class="input-label">Years</label>
+                                <input type="number" class="input-field" id="pe-years" placeholder="Years">
+                            </div>
+                            <div class="input-group">
+                                <label class="input-label">Target P/E</label>
+                                <input type="number" class="input-field" id="pe-ratio" placeholder="P/E ratio">
+                            </div>
+                        </div>
+                        <div class="result-card">
+                            <div class="result-label">PE Value</div>
+                            <div class="result-value" id="pe-result">£0.00</div>
+                            <div class="result-sub">Enter values to calculate</div>
+                        </div>
+                    </div>
+
+                    <div id="intrinsic-calc" class="fv-calculator">
+                        <div class="calc-inputs">
+                            <div class="input-group">
+                                <label class="input-label">Book Value Per Share (£)</label>
+                                <input type="number" class="input-field" id="intrinsic-book" placeholder="Book value">
+                            </div>
+                            <div class="input-group">
+                                <label class="input-label">Growth Rate (%)</label>
+                                <input type="number" step="0.1" class="input-field" id="intrinsic-growth" placeholder="Growth rate">
+                            </div>
+                            <div class="input-group">
+                                <label class="input-label">Years</label>
+                                <input type="number" class="input-field" id="intrinsic-years" placeholder="Years">
+                            </div>
+                        </div>
+                        <div class="result-card">
+                            <div class="result-label">Intrinsic Value</div>
+                            <div class="result-value" id="intrinsic-result">£0.00</div>
+                            <div class="result-sub">Enter values to calculate</div>
                         </div>
                     </div>
                 </div>

@@ -4,7 +4,7 @@ A comprehensive web-based financial management tool featuring:
 
 - 📊 Investment Portfolio Management
 - 🏦 Pension Tracking & Projections  
-- 🧮 Loan & Investment Calculators
+- 🧮 Calculators (Loan, Investment, CAGR and Fair Value)
 - 📈 Stock Performance Tracker
 
 ## Features
