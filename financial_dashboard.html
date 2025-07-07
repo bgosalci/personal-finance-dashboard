@@ -1,0 +1,1516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Dashboard</title>
+    <style>
+        :root {
+            /* Professional Financial Theme Colors */
+            --primary-blue: #1e40af;
+            --primary-blue-light: #3b82f6;
+            --primary-blue-dark: #1e3a8a;
+            --secondary-gray: #64748b;
+            --secondary-gray-light: #94a3b8;
+            --secondary-gray-dark: #475569;
+            --background-primary: #ffffff;
+            --background-secondary: #f8fafc;
+            --background-tertiary: #e2e8f0;
+            --text-primary: #0f172a;
+            --text-secondary: #64748b;
+            --border-color: #e2e8f0;
+            --success-green: #059669;
+            --success-green-light: #10b981;
+            --danger-red: #dc2626;
+            --danger-red-light: #ef4444;
+            --warning-orange: #d97706;
+            --warning-orange-light: #f59e0b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: var(--background-secondary);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-light));
+            color: white;
+            padding: 1.5rem 2rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .header p {
+            margin-top: 0.5rem;
+            opacity: 0.9;
+            font-size: 1rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        .nav-tabs {
+            background: var(--background-primary);
+            border-bottom: 2px solid var(--border-color);
+            padding: 0 2rem;
+            display: flex;
+            gap: 0;
+            overflow-x: auto;
+        }
+
+        .nav-tab {
+            padding: 1rem 2rem;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .nav-tab:hover {
+            color: var(--primary-blue);
+            background-color: var(--background-secondary);
+        }
+
+        .nav-tab.active {
+            color: var(--primary-blue);
+            border-bottom-color: var(--primary-blue);
+            background-color: var(--background-secondary);
+        }
+
+        .content {
+            padding: 2rem;
+            min-height: calc(100vh - 200px);
+        }
+
+        .tab-content {
+            display: none;
+            background: var(--background-primary);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid var(--border-color);
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+            border-bottom: 2px solid var(--primary-blue);
+            padding-bottom: 0.5rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .form-group input, .form-group select {
+            padding: 0.75rem;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--primary-blue);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-blue-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(30, 64, 175, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--secondary-gray);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: var(--secondary-gray-dark);
+        }
+
+        .btn-danger {
+            background: var(--danger-red);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #b91c1c;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin-top: 2rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--background-primary);
+        }
+
+        .data-table th, .data-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .data-table th {
+            background: var(--background-tertiary);
+            font-weight: 600;
+            color: var(--text-primary);
+            position: sticky;
+            top: 0;
+        }
+
+        .data-table tbody tr:hover {
+            background: var(--background-secondary);
+        }
+
+        .price-input {
+            width: 120px;
+            padding: 0.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            text-align: right;
+        }
+
+        .growth-positive {
+            color: var(--success-green);
+            font-weight: 600;
+        }
+
+        .growth-negative {
+            color: var(--danger-red);
+            font-weight: 600;
+        }
+
+        .growth-neutral {
+            color: var(--text-secondary);
+        }
+
+        .summary-row {
+            background: var(--background-secondary);
+            font-weight: 600;
+        }
+
+        .calculator-section {
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: var(--background-secondary);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .calculator-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--primary-blue);
+        }
+
+        .result-display {
+            background: var(--background-primary);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 2px solid var(--border-color);
+            margin-top: 1rem;
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--primary-blue);
+        }
+
+        .ticker-management {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            align-items: end;
+        }
+
+        .ticker-tags {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+
+        .ticker-tag {
+            background: var(--primary-blue);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .ticker-tag .remove-btn {
+            background: rgba(255, 255, 255, 0.3);
+            border: none;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        .ticker-tag .remove-btn:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .placeholder-content {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-secondary);
+        }
+
+        .placeholder-content h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .placeholder-content p {
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Sub-Tab Navigation Styles */
+        .sub-nav-tabs {
+            display: flex;
+            gap: 0;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid var(--border-color);
+            background: var(--background-secondary);
+            border-radius: 8px 8px 0 0;
+            overflow-x: auto;
+        }
+
+        .sub-nav-tab {
+            padding: 1rem 1.5rem;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            min-width: fit-content;
+        }
+
+        .sub-nav-tab:hover {
+            color: var(--primary-blue);
+            background-color: var(--background-primary);
+        }
+
+        .sub-nav-tab.active {
+            color: var(--primary-blue);
+            border-bottom-color: var(--primary-blue);
+            background-color: var(--background-primary);
+            font-weight: 600;
+        }
+
+        .sub-tab-content {
+            display: none;
+        }
+
+        .sub-tab-content.active {
+            display: block;
+        }
+
+        /* Fair Value Calculator Styles */
+        .fair-value-sections {
+            margin-top: 1rem;
+        }
+
+        .fair-value-nav {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .fair-value-btn {
+            padding: 0.75rem 1.25rem;
+            background: var(--background-tertiary);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            transition: all 0.3s ease;
+        }
+
+        .fair-value-btn:hover {
+            color: var(--primary-blue);
+            border-color: var(--primary-blue);
+        }
+
+        .fair-value-btn.active {
+            background: var(--primary-blue);
+            color: white;
+            border-color: var(--primary-blue);
+        }
+
+        .fair-value-section {
+            display: none;
+        }
+
+        .fair-value-section.active {
+            display: block;
+        }
+
+        .section-subtitle {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        /* Enhanced Calculator Section */
+        .calculator-section {
+            margin-bottom: 0;
+            padding: 2rem;
+            background: var(--background-primary);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        /* Result Display Enhancements */
+        .result-display .result-item:last-child {
+            background: var(--background-secondary);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 1rem;
+            }
+            
+            .nav-tabs {
+                padding: 0 1rem;
+            }
+            
+            .content {
+                padding: 1rem;
+            }
+            
+            .tab-content {
+                padding: 1rem;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .ticker-management {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .sub-nav-tabs {
+                flex-direction: column;
+            }
+
+            .sub-nav-tab {
+                text-align: left;
+                border-bottom: 1px solid var(--border-color);
+                border-radius: 0;
+            }
+
+            .fair-value-nav {
+                flex-direction: column;
+            }
+
+            .calculator-section {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <h1>Financial Dashboard</h1>
+            <p>Personal Investment Tracking & Financial Planning Tool</p>
+        </div>
+    </header>
+
+    <nav class="nav-tabs">
+        <button class="nav-tab active" data-tab="portfolio">Portfolio</button>
+        <button class="nav-tab" data-tab="pension">Pension</button>
+        <button class="nav-tab" data-tab="calculators">Calculators</button>
+        <button class="nav-tab" data-tab="stock-tracker">Stock Performance Tracker</button>
+        <button class="nav-tab" data-tab="stock-finance">Stock Finance Performance</button>
+    </nav>
+
+    <div class="container">
+        <div class="content">
+            <!-- Portfolio Tab -->
+            <div id="portfolio" class="tab-content active">
+                <div class="placeholder-content">
+                    <h3>Portfolio Management</h3>
+                    <p>Track your investment holdings, asset allocation, and portfolio performance. This section will be developed to include holdings overview, asset allocation charts, and performance summaries.</p>
+                </div>
+            </div>
+
+            <!-- Pension Tab -->
+            <div id="pension" class="tab-content">
+                <div class="placeholder-content">
+                    <h3>Pension Planning</h3>
+                    <p>Monitor your retirement savings and pension contributions. This section will include current pension value tracking, contribution monitoring, and retirement projection calculations.</p>
+                </div>
+            </div>
+
+            <!-- Calculators Tab -->
+            <div id="calculators" class="tab-content">
+                <h2 class="section-title">Financial Calculators</h2>
+                
+                <!-- Calculator Sub-Tabs -->
+                <div class="sub-nav-tabs">
+                    <button class="sub-nav-tab active" data-subtab="loan">Loan Calculator</button>
+                    <button class="sub-nav-tab" data-subtab="investment">Investment Calculator</button>
+                    <button class="sub-nav-tab" data-subtab="cagr">CAGR Calculator</button>
+                    <button class="sub-nav-tab" data-subtab="fair-value">Fair Value Calculator</button>
+                </div>
+
+                <!-- Loan Calculator Sub-Tab -->
+                <div id="loan" class="sub-tab-content active">
+                    <div class="calculator-section">
+                        <h3 class="calculator-title">Loan Calculator</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="loan-principal">Principal Amount ($)</label>
+                                <input type="number" id="loan-principal" min="0" step="1000">
+                            </div>
+                            <div class="form-group">
+                                <label for="loan-rate">Annual Interest Rate (%)</label>
+                                <input type="number" id="loan-rate" min="0" max="50" step="0.1">
+                            </div>
+                            <div class="form-group">
+                                <label for="loan-term">Loan Term (Years)</label>
+                                <input type="number" id="loan-term" min="1" max="50">
+                            </div>
+                        </div>
+                        <div id="loan-results" class="result-display" style="display: none;">
+                            <div class="result-item">
+                                <span>Monthly Payment:</span>
+                                <span id="loan-monthly-payment">$0.00</span>
+                            </div>
+                            <div class="result-item">
+                                <span>Total Interest:</span>
+                                <span id="loan-total-interest">$0.00</span>
+                            </div>
+                            <div class="result-item">
+                                <span>Total Amount:</span>
+                                <span id="loan-total-amount">$0.00</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Investment Calculator Sub-Tab -->
+                <div id="investment" class="sub-tab-content">
+                    <div class="calculator-section">
+                        <h3 class="calculator-title">Investment Calculator</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="invest-initial">Initial Investment ($)</label>
+                                <input type="number" id="invest-initial" min="0" step="1000">
+                            </div>
+                            <div class="form-group">
+                                <label for="invest-rate">Annual Return Rate (%)</label>
+                                <input type="number" id="invest-rate" min="0" max="50" step="0.1">
+                            </div>
+                            <div class="form-group">
+                                <label for="invest-years">Investment Period (Years)</label>
+                                <input type="number" id="invest-years" min="1" max="100">
+                            </div>
+                        </div>
+                        <div id="investment-results" class="result-display" style="display: none;">
+                            <div class="result-item">
+                                <span>Total Return (Interest):</span>
+                                <span id="invest-total-return">$0.00</span>
+                            </div>
+                            <div class="result-item">
+                                <span>Final Value:</span>
+                                <span id="invest-final-value">$0.00</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CAGR Calculator Sub-Tab -->
+                <div id="cagr" class="sub-tab-content">
+                    <div class="calculator-section">
+                        <h3 class="calculator-title">CAGR Calculator</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="cagr-beginning">Beginning Value ($)</label>
+                                <input type="number" id="cagr-beginning" min="0" step="1000">
+                            </div>
+                            <div class="form-group">
+                                <label for="cagr-ending">Ending Value ($)</label>
+                                <input type="number" id="cagr-ending" min="0" step="1000">
+                            </div>
+                            <div class="form-group">
+                                <label for="cagr-years">Number of Years</label>
+                                <input type="number" id="cagr-years" min="1" max="100" step="0.1">
+                            </div>
+                        </div>
+                        <div id="cagr-results" class="result-display" style="display: none;">
+                            <div class="result-item">
+                                <span>Total Return:</span>
+                                <span id="cagr-total-return">0.00%</span>
+                            </div>
+                            <div class="result-item">
+                                <span>Compound Annual Growth Rate (CAGR):</span>
+                                <span id="cagr-rate">0.00%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fair Value Calculator Sub-Tab -->
+                <div id="fair-value" class="sub-tab-content">
+                    <div class="calculator-section">
+                        <h3 class="calculator-title">Fair Value Calculator</h3>
+                        
+                        <!-- Fair Value Sub-Sections -->
+                        <div class="fair-value-sections">
+                            <div class="fair-value-nav">
+                                <button class="fair-value-btn active" data-section="dcf">DCF Analysis</button>
+                                <button class="fair-value-btn" data-section="pe">P/E Ratio Analysis</button>
+                                <button class="fair-value-btn" data-section="intrinsic">Intrinsic Value</button>
+                            </div>
+
+                            <!-- DCF Calculator -->
+                            <div id="dcf" class="fair-value-section active">
+                                <h4 class="section-subtitle">Discounted Cash Flow (DCF) Analysis</h4>
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label for="dcf-current-fcf">Current Annual Free Cash Flow ($M)</label>
+                                        <input type="number" id="dcf-current-fcf" min="0" step="10">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="dcf-growth-rate">Growth Rate (%)</label>
+                                        <input type="number" id="dcf-growth-rate" min="0" max="50" step="0.1">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="dcf-terminal-rate">Terminal Growth Rate (%)</label>
+                                        <input type="number" id="dcf-terminal-rate" min="0" max="10" step="0.1">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="dcf-discount-rate">Discount Rate (WACC) (%)</label>
+                                        <input type="number" id="dcf-discount-rate" min="0" max="30" step="0.1">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="dcf-years">Projection Years</label>
+                                        <input type="number" id="dcf-years" min="5" max="20" step="1">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="dcf-shares">Shares Outstanding (M)</label>
+                                        <input type="number" id="dcf-shares" min="1" step="0.1">
+                                    </div>
+                                </div>
+                                <div id="dcf-results" class="result-display" style="display: none;">
+                                    <div class="result-item">
+                                        <span>Enterprise Value:</span>
+                                        <span id="dcf-enterprise-value">$0.00</span>
+                                    </div>
+                                    <div class="result-item">
+                                        <span>Present Value of Cash Flows:</span>
+                                        <span id="dcf-pv-cashflows">$0.00</span>
+                                    </div>
+                                    <div class="result-item">
+                                        <span>Terminal Value:</span>
+                                        <span id="dcf-terminal-value">$0.00</span>
+                                    </div>
+                                    <div class="result-item">
+                                        <span>Intrinsic Value Per Share:</span>
+                                        <span id="dcf-per-share">$0.00</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- P/E Ratio Analysis -->
+                            <div id="pe" class="fair-value-section">
+                                <h4 class="section-subtitle">P/E Ratio Analysis</h4>
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label for="pe-current-price">Current Stock Price ($)</label>
+                                        <input type="number" id="pe-current-price" min="0" step="0.01">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="pe-eps">Earnings Per Share (EPS) ($)</label>
+                                        <input type="number" id="pe-eps" min="0" step="0.01">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="pe-industry-avg">Industry Average P/E</label>
+                                        <input type="number" id="pe-industry-avg" min="0" step="0.1">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="pe-growth-rate">Expected EPS Growth Rate (%)</label>
+                                        <input type="number" id="pe-growth-rate" min="0" max="100" step="0.1">
+                                    </div>
+                                </div>
+                                <div id="pe-results" class="result-display" style="display: none;">
+                                    <div class="result-item">
+                                        <span>Current P/E Ratio:</span>
+                                        <span id="pe-current-ratio">0.00</span>
+                                    </div>
+                                    <div class="result-item">
+                                        <span>Fair Value (Industry P/E):</span>
+                                        <span id="pe-fair-value">$0.00</span>
+                                    </div>
+                                    <div class="result-item">
+                                        <span>PEG Ratio:</span>
+                                        <span id="pe-peg-ratio">0.00</span>
+                                    </div>
+                                    <div class="result-item">
+                                        <span>Valuation Status:</span>
+                                        <span id="pe-valuation-status">--</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Intrinsic Value Calculator -->
+                            <div id="intrinsic" class="fair-value-section">
+                                <h4 class="section-subtitle">Intrinsic Value Analysis</h4>
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label for="intrinsic-book-value">Book Value Per Share ($)</label>
+                                        <input type="number" id="intrinsic-book-value" min="0" step="0.01">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="intrinsic-roe">Return on Equity (ROE) (%)</label>
+                                        <input type="number" id="intrinsic-roe" min="0" max="100" step="0.1">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="intrinsic-dividend-yield">Dividend Yield (%)</label>
+                                        <input type="number" id="intrinsic-dividend-yield" min="0" max="20" step="0.1">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="intrinsic-required-return">Required Rate of Return (%)</label>
+                                        <input type="number" id="intrinsic-required-return" min="0" max="30" step="0.1">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="intrinsic-growth-rate">Sustainable Growth Rate (%)</label>
+                                        <input type="number" id="intrinsic-growth-rate" min="0" max="50" step="0.1">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="intrinsic-eps">Current EPS ($)</label>
+                                        <input type="number" id="intrinsic-eps" min="0" step="0.01">
+                                    </div>
+                                </div>
+                                <div id="intrinsic-results" class="result-display" style="display: none;">
+                                    <div class="result-item">
+                                        <span>Graham Number:</span>
+                                        <span id="intrinsic-graham">$0.00</span>
+                                    </div>
+                                    <div class="result-item">
+                                        <span>Dividend Discount Model:</span>
+                                        <span id="intrinsic-ddm">$0.00</span>
+                                    </div>
+                                    <div class="result-item">
+                                        <span>Book Value Multiple:</span>
+                                        <span id="intrinsic-book-multiple">$0.00</span>
+                                    </div>
+                                    <div class="result-item">
+                                        <span>Average Intrinsic Value:</span>
+                                        <span id="intrinsic-average">$0.00</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stock Performance Tracker Tab -->
+            <div id="stock-tracker" class="tab-content">
+                <h2 class="section-title">Stock Performance Tracker</h2>
+                
+                <div class="ticker-management">
+                    <div class="form-group">
+                        <label for="ticker-input">Add Stock Ticker</label>
+                        <input type="text" id="ticker-input" style="text-transform: uppercase;">
+                    </div>
+                    <div class="form-group">
+                        <label for="start-year">Starting Year</label>
+                        <select id="start-year"></select>
+                    </div>
+                    <button class="btn btn-primary" id="add-ticker-btn">Add Ticker</button>
+                    <button class="btn btn-secondary" id="generate-table-btn" style="display: none;">Generate Table</button>
+                </div>
+
+                <div class="ticker-tags" id="ticker-tags"></div>
+
+                <div class="table-container" id="performance-table-container" style="display: none;">
+                    <table class="data-table" id="performance-table">
+                        <thead id="table-header"></thead>
+                        <tbody id="table-body"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Stock Finance Performance Tab -->
+            <div id="stock-finance" class="tab-content">
+                <div class="placeholder-content">
+                    <h3>Stock Finance Performance</h3>
+                    <p>Detailed financial analysis including financial ratios, comparative analysis, and comprehensive stock metrics. This advanced section will provide in-depth financial performance analysis tools.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Main Application using JavaScript Closures
+        const FinancialDashboard = (function() {
+            'use strict';
+
+            // Private variables and state
+            let currentTab = 'portfolio';
+            let stockData = {
+                tickers: [],
+                startYear: new Date().getFullYear() - 5,
+                prices: {}
+            };
+
+            // Tab Management Module
+            const TabManager = (function() {
+                const tabs = document.querySelectorAll('.nav-tab');
+                const contents = document.querySelectorAll('.tab-content');
+
+                function switchTab(tabName) {
+                    // Update tab buttons
+                    tabs.forEach(tab => {
+                        tab.classList.remove('active');
+                        if (tab.dataset.tab === tabName) {
+                            tab.classList.add('active');
+                        }
+                    });
+
+                    // Update content
+                    contents.forEach(content => {
+                        content.classList.remove('active');
+                        if (content.id === tabName) {
+                            content.classList.add('active');
+                        }
+                    });
+
+                    currentTab = tabName;
+                }
+
+                function init() {
+                    tabs.forEach(tab => {
+                        tab.addEventListener('click', () => {
+                            switchTab(tab.dataset.tab);
+                        });
+                    });
+                }
+
+                return {
+                    init,
+                    switchTab
+                };
+            })();
+
+            // Calculator Module
+            const Calculator = (function() {
+                let currentSubTab = 'loan';
+                let currentFairValueSection = 'dcf';
+                
+                function formatCurrency(amount) {
+                    return new Intl.NumberFormat('en-US', {
+                        style: 'currency',
+                        currency: 'USD',
+                        minimumFractionDigits: 2
+                    }).format(amount);
+                }
+
+                function formatPercentage(rate) {
+                    return (rate).toFixed(2) + '%';
+                }
+
+                function formatNumber(num) {
+                    return num.toFixed(2);
+                }
+
+                // Sub-Tab Management
+                function switchSubTab(subTabName) {
+                    const subTabs = document.querySelectorAll('.sub-nav-tab');
+                    const subContents = document.querySelectorAll('.sub-tab-content');
+
+                    subTabs.forEach(tab => {
+                        tab.classList.remove('active');
+                        if (tab.dataset.subtab === subTabName) {
+                            tab.classList.add('active');
+                        }
+                    });
+
+                    subContents.forEach(content => {
+                        content.classList.remove('active');
+                        if (content.id === subTabName) {
+                            content.classList.add('active');
+                        }
+                    });
+
+                    currentSubTab = subTabName;
+                }
+
+                // Fair Value Section Management
+                function switchFairValueSection(sectionName) {
+                    const sectionBtns = document.querySelectorAll('.fair-value-btn');
+                    const sections = document.querySelectorAll('.fair-value-section');
+
+                    sectionBtns.forEach(btn => {
+                        btn.classList.remove('active');
+                        if (btn.dataset.section === sectionName) {
+                            btn.classList.add('active');
+                        }
+                    });
+
+                    sections.forEach(section => {
+                        section.classList.remove('active');
+                        if (section.id === sectionName) {
+                            section.classList.add('active');
+                        }
+                    });
+
+                    currentFairValueSection = sectionName;
+                }
+
+                // Loan Calculator
+                const LoanCalculator = (function() {
+                    function calculate() {
+                        const principal = parseFloat(document.getElementById('loan-principal').value) || 0;
+                        const annualRate = parseFloat(document.getElementById('loan-rate').value) || 0;
+                        const years = parseFloat(document.getElementById('loan-term').value) || 0;
+
+                        if (principal <= 0 || annualRate <= 0 || years <= 0) {
+                            document.getElementById('loan-results').style.display = 'none';
+                            return;
+                        }
+
+                        const monthlyRate = annualRate / 100 / 12;
+                        const totalPayments = years * 12;
+                        
+                        const monthlyPayment = principal * (monthlyRate * Math.pow(1 + monthlyRate, totalPayments)) / 
+                                             (Math.pow(1 + monthlyRate, totalPayments) - 1);
+                        
+                        const totalAmount = monthlyPayment * totalPayments;
+                        const totalInterest = totalAmount - principal;
+
+                        document.getElementById('loan-monthly-payment').textContent = formatCurrency(monthlyPayment);
+                        document.getElementById('loan-total-interest').textContent = formatCurrency(totalInterest);
+                        document.getElementById('loan-total-amount').textContent = formatCurrency(totalAmount);
+                        document.getElementById('loan-results').style.display = 'block';
+                    }
+
+                    function init() {
+                        const inputs = ['loan-principal', 'loan-rate', 'loan-term'];
+                        inputs.forEach(id => {
+                            document.getElementById(id).addEventListener('input', calculate);
+                        });
+                    }
+
+                    return { init };
+                })();
+
+                // Investment Calculator
+                const InvestmentCalculator = (function() {
+                    function calculate() {
+                        const initial = parseFloat(document.getElementById('invest-initial').value) || 0;
+                        const annualRate = parseFloat(document.getElementById('invest-rate').value) || 0;
+                        const years = parseFloat(document.getElementById('invest-years').value) || 0;
+
+                        if (initial <= 0 || annualRate < 0 || years <= 0) {
+                            document.getElementById('investment-results').style.display = 'none';
+                            return;
+                        }
+
+                        // Simple annual compounding: Final Value = Principal × (1 + rate)^years
+                        const annualRateDecimal = annualRate / 100;
+                        const finalValue = initial * Math.pow(1 + annualRateDecimal, years);
+                        const totalReturn = finalValue - initial;
+
+                        document.getElementById('invest-total-return').textContent = formatCurrency(totalReturn);
+                        document.getElementById('invest-final-value').textContent = formatCurrency(finalValue);
+                        document.getElementById('investment-results').style.display = 'block';
+                    }
+
+                    function init() {
+                        const inputs = ['invest-initial', 'invest-rate', 'invest-years'];
+                        inputs.forEach(id => {
+                            document.getElementById(id).addEventListener('input', calculate);
+                        });
+                    }
+
+                    return { init };
+                })();
+
+                // CAGR Calculator
+                const CAGRCalculator = (function() {
+                    function calculate() {
+                        const beginning = parseFloat(document.getElementById('cagr-beginning').value) || 0;
+                        const ending = parseFloat(document.getElementById('cagr-ending').value) || 0;
+                        const years = parseFloat(document.getElementById('cagr-years').value) || 0;
+
+                        if (beginning <= 0 || ending <= 0 || years <= 0) {
+                            document.getElementById('cagr-results').style.display = 'none';
+                            return;
+                        }
+
+                        const totalReturn = ((ending - beginning) / beginning) * 100;
+                        const cagr = (Math.pow(ending / beginning, 1 / years) - 1) * 100;
+
+                        document.getElementById('cagr-total-return').textContent = formatPercentage(totalReturn);
+                        document.getElementById('cagr-rate').textContent = formatPercentage(cagr);
+                        document.getElementById('cagr-results').style.display = 'block';
+                    }
+
+                    function init() {
+                        const inputs = ['cagr-beginning', 'cagr-ending', 'cagr-years'];
+                        inputs.forEach(id => {
+                            document.getElementById(id).addEventListener('input', calculate);
+                        });
+                    }
+
+                    return { init };
+                })();
+
+                // Fair Value Calculator
+                const FairValueCalculator = (function() {
+                    
+                    // DCF Calculator
+                    const DCFCalculator = (function() {
+                        function calculate() {
+                            const currentFCF = parseFloat(document.getElementById('dcf-current-fcf').value) || 0;
+                            const growthRate = parseFloat(document.getElementById('dcf-growth-rate').value) || 0;
+                            const terminalRate = parseFloat(document.getElementById('dcf-terminal-rate').value) || 0;
+                            const discountRate = parseFloat(document.getElementById('dcf-discount-rate').value) || 0;
+                            const projectionYears = parseInt(document.getElementById('dcf-years').value) || 0;
+                            const sharesOutstanding = parseFloat(document.getElementById('dcf-shares').value) || 0;
+
+                            if (currentFCF <= 0 || discountRate <= 0 || projectionYears <= 0 || sharesOutstanding <= 0) {
+                                document.getElementById('dcf-results').style.display = 'none';
+                                return;
+                            }
+
+                            const discountRateDecimal = discountRate / 100;
+                            const growthRateDecimal = growthRate / 100;
+                            const terminalRateDecimal = terminalRate / 100;
+
+                            // Calculate projected cash flows and their present values
+                            let pvCashFlows = 0;
+                            for (let year = 1; year <= projectionYears; year++) {
+                                const fcf = currentFCF * Math.pow(1 + growthRateDecimal, year);
+                                const pv = fcf / Math.pow(1 + discountRateDecimal, year);
+                                pvCashFlows += pv;
+                            }
+
+                            // Calculate terminal value
+                            const terminalFCF = currentFCF * Math.pow(1 + growthRateDecimal, projectionYears) * (1 + terminalRateDecimal);
+                            const terminalValue = terminalFCF / (discountRateDecimal - terminalRateDecimal);
+                            const pvTerminalValue = terminalValue / Math.pow(1 + discountRateDecimal, projectionYears);
+
+                            // Calculate enterprise value and per share value
+                            const enterpriseValue = pvCashFlows + pvTerminalValue;
+                            const valuePerShare = enterpriseValue / sharesOutstanding;
+
+                            document.getElementById('dcf-enterprise-value').textContent = formatCurrency(enterpriseValue * 1000000);
+                            document.getElementById('dcf-pv-cashflows').textContent = formatCurrency(pvCashFlows * 1000000);
+                            document.getElementById('dcf-terminal-value').textContent = formatCurrency(pvTerminalValue * 1000000);
+                            document.getElementById('dcf-per-share').textContent = formatCurrency(valuePerShare * 1000000 / sharesOutstanding);
+                            document.getElementById('dcf-results').style.display = 'block';
+                        }
+
+                        function init() {
+                            const inputs = ['dcf-current-fcf', 'dcf-growth-rate', 'dcf-terminal-rate', 'dcf-discount-rate', 'dcf-years', 'dcf-shares'];
+                            inputs.forEach(id => {
+                                document.getElementById(id).addEventListener('input', calculate);
+                            });
+                        }
+
+                        return { init };
+                    })();
+
+                    // P/E Ratio Calculator
+                    const PECalculator = (function() {
+                        function calculate() {
+                            const currentPrice = parseFloat(document.getElementById('pe-current-price').value) || 0;
+                            const eps = parseFloat(document.getElementById('pe-eps').value) || 0;
+                            const industryPE = parseFloat(document.getElementById('pe-industry-avg').value) || 0;
+                            const growthRate = parseFloat(document.getElementById('pe-growth-rate').value) || 0;
+
+                            if (currentPrice <= 0 || eps <= 0 || industryPE <= 0) {
+                                document.getElementById('pe-results').style.display = 'none';
+                                return;
+                            }
+
+                            const currentPE = currentPrice / eps;
+                            const fairValue = eps * industryPE;
+                            const pegRatio = growthRate > 0 ? currentPE / growthRate : 0;
+                            
+                            let valuationStatus = '';
+                            const valuationDiff = ((currentPrice - fairValue) / fairValue) * 100;
+                            
+                            if (valuationDiff > 10) {
+                                valuationStatus = `Overvalued by ${formatPercentage(Math.abs(valuationDiff))}`;
+                            } else if (valuationDiff < -10) {
+                                valuationStatus = `Undervalued by ${formatPercentage(Math.abs(valuationDiff))}`;
+                            } else {
+                                valuationStatus = 'Fairly Valued';
+                            }
+
+                            document.getElementById('pe-current-ratio').textContent = formatNumber(currentPE);
+                            document.getElementById('pe-fair-value').textContent = formatCurrency(fairValue);
+                            document.getElementById('pe-peg-ratio').textContent = formatNumber(pegRatio);
+                            document.getElementById('pe-valuation-status').textContent = valuationStatus;
+                            document.getElementById('pe-results').style.display = 'block';
+                        }
+
+                        function init() {
+                            const inputs = ['pe-current-price', 'pe-eps', 'pe-industry-avg', 'pe-growth-rate'];
+                            inputs.forEach(id => {
+                                document.getElementById(id).addEventListener('input', calculate);
+                            });
+                        }
+
+                        return { init };
+                    })();
+
+                    // Intrinsic Value Calculator
+                    const IntrinsicValueCalculator = (function() {
+                        function calculate() {
+                            const bookValue = parseFloat(document.getElementById('intrinsic-book-value').value) || 0;
+                            const roe = parseFloat(document.getElementById('intrinsic-roe').value) || 0;
+                            const dividendYield = parseFloat(document.getElementById('intrinsic-dividend-yield').value) || 0;
+                            const requiredReturn = parseFloat(document.getElementById('intrinsic-required-return').value) || 0;
+                            const growthRate = parseFloat(document.getElementById('intrinsic-growth-rate').value) || 0;
+                            const eps = parseFloat(document.getElementById('intrinsic-eps').value) || 0;
+
+                            if (bookValue <= 0 || eps <= 0) {
+                                document.getElementById('intrinsic-results').style.display = 'none';
+                                return;
+                            }
+
+                            // Graham Number = √(22.5 × EPS × Book Value)
+                            const grahamNumber = Math.sqrt(22.5 * eps * bookValue);
+
+                            // Dividend Discount Model (simplified)
+                            const dividendPerShare = (eps * dividendYield) / 100;
+                            const ddmValue = requiredReturn > growthRate && requiredReturn > 0 && growthRate >= 0 ? 
+                                            dividendPerShare / ((requiredReturn / 100) - (growthRate / 100)) : 0;
+
+                            // Book Value Multiple (using ROE)
+                            const bookMultiple = bookValue * (1 + (roe / 100));
+
+                            // Average intrinsic value
+                            const values = [grahamNumber, ddmValue, bookMultiple].filter(v => v > 0);
+                            const avgIntrinsicValue = values.length > 0 ? values.reduce((a, b) => a + b) / values.length : 0;
+
+                            document.getElementById('intrinsic-graham').textContent = formatCurrency(grahamNumber);
+                            document.getElementById('intrinsic-ddm').textContent = ddmValue > 0 ? formatCurrency(ddmValue) : 'N/A';
+                            document.getElementById('intrinsic-book-multiple').textContent = formatCurrency(bookMultiple);
+                            document.getElementById('intrinsic-average').textContent = formatCurrency(avgIntrinsicValue);
+                            document.getElementById('intrinsic-results').style.display = 'block';
+                        }
+
+                        function init() {
+                            const inputs = ['intrinsic-book-value', 'intrinsic-roe', 'intrinsic-dividend-yield', 
+                                          'intrinsic-required-return', 'intrinsic-growth-rate', 'intrinsic-eps'];
+                            inputs.forEach(id => {
+                                document.getElementById(id).addEventListener('input', calculate);
+                            });
+                        }
+
+                        return { init };
+                    })();
+
+                    function init() {
+                        DCFCalculator.init();
+                        PECalculator.init();
+                        IntrinsicValueCalculator.init();
+
+                        // Initialize fair value section navigation
+                        const fairValueBtns = document.querySelectorAll('.fair-value-btn');
+                        fairValueBtns.forEach(btn => {
+                            btn.addEventListener('click', () => {
+                                switchFairValueSection(btn.dataset.section);
+                            });
+                        });
+                    }
+
+                    return { init };
+                })();
+
+                function init() {
+                    // Initialize sub-tab navigation
+                    const subTabs = document.querySelectorAll('.sub-nav-tab');
+                    subTabs.forEach(tab => {
+                        tab.addEventListener('click', () => {
+                            switchSubTab(tab.dataset.subtab);
+                        });
+                    });
+
+                    // Initialize all calculators
+                    LoanCalculator.init();
+                    InvestmentCalculator.init();
+                    CAGRCalculator.init();
+                    FairValueCalculator.init();
+                }
+
+                return {
+                    init,
+                    formatCurrency,
+                    formatPercentage
+                };
+            })();
+
+            // Stock Performance Tracker Module
+            const StockTracker = (function() {
+                
+                function initializeYearSelect() {
+                    const yearSelect = document.getElementById('start-year');
+                    const currentYear = new Date().getFullYear();
+                    
+                    yearSelect.innerHTML = '';
+                    for (let year = currentYear - 20; year <= currentYear; year++) {
+                        const option = document.createElement('option');
+                        option.value = year;
+                        option.textContent = year;
+                        if (year === currentYear - 5) {
+                            option.selected = true;
+                        }
+                        yearSelect.appendChild(option);
+                    }
+                }
+
+                function addTicker() {
+                    const tickerInput = document.getElementById('ticker-input');
+                    const ticker = tickerInput.value.trim().toUpperCase();
+                    
+                    if (!ticker || stockData.tickers.includes(ticker)) {
+                        return;
+                    }
+
+                    stockData.tickers.push(ticker);
+                    stockData.prices[ticker] = {};
+                    tickerInput.value = '';
+                    
+                    updateTickerTags();
+                    updateGenerateButton();
+                }
+
+                function removeTicker(ticker) {
+                    const index = stockData.tickers.indexOf(ticker);
+                    if (index > -1) {
+                        stockData.tickers.splice(index, 1);
+                        delete stockData.prices[ticker];
+                        updateTickerTags();
+                        updateGenerateButton();
+                        
+                        if (stockData.tickers.length === 0) {
+                            document.getElementById('performance-table-container').style.display = 'none';
+                        } else {
+                            generatePerformanceTable();
+                        }
+                    }
+                }
+
+                function updateTickerTags() {
+                    const container = document.getElementById('ticker-tags');
+                    container.innerHTML = '';
+                    
+                    stockData.tickers.forEach(ticker => {
+                        const tag = document.createElement('div');
+                        tag.className = 'ticker-tag';
+                        tag.innerHTML = `
+                            ${ticker}
+                            <button class="remove-btn" onclick="FinancialDashboard.removeTicker('${ticker}')">×</button>
+                        `;
+                        container.appendChild(tag);
+                    });
+                }
+
+                function updateGenerateButton() {
+                    const btn = document.getElementById('generate-table-btn');
+                    btn.style.display = stockData.tickers.length > 0 ? 'inline-flex' : 'none';
+                }
+
+                function generatePerformanceTable() {
+                    if (stockData.tickers.length === 0) return;
+
+                    stockData.startYear = parseInt(document.getElementById('start-year').value);
+                    const currentYear = new Date().getFullYear();
+                    const years = [];
+                    
+                    for (let year = stockData.startYear; year <= currentYear; year++) {
+                        years.push(year);
+                    }
+
+                    // Generate table header
+                    const headerRow = document.getElementById('table-header');
+                    headerRow.innerHTML = '<tr><th>Year</th>' + 
+                        stockData.tickers.map(ticker => `<th>${ticker}</th>`).join('') + '</tr>';
+
+                    // Generate table body
+                    const tbody = document.getElementById('table-body');
+                    tbody.innerHTML = '';
+
+                    years.forEach((year, yearIndex) => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `<td><strong>${year}</strong></td>`;
+                        
+                        stockData.tickers.forEach(ticker => {
+                            const cell = document.createElement('td');
+                            const priceInput = document.createElement('input');
+                            priceInput.type = 'number';
+                            priceInput.className = 'price-input';
+                            priceInput.step = '0.01';
+                            priceInput.min = '0';
+                            priceInput.value = stockData.prices[ticker][year] || '';
+                            
+                            priceInput.addEventListener('input', () => {
+                                const price = parseFloat(priceInput.value);
+                                if (!isNaN(price) && price > 0) {
+                                    stockData.prices[ticker][year] = price;
+                                } else {
+                                    delete stockData.prices[ticker][year];
+                                }
+                                updateGrowthCalculations(ticker);
+                            });
+                            
+                            cell.appendChild(priceInput);
+                            
+                            // Add growth display
+                            if (yearIndex > 0) {
+                                const growthDiv = document.createElement('div');
+                                growthDiv.id = `growth-${ticker}-${year}`;
+                                growthDiv.className = 'growth-neutral';
+                                growthDiv.style.fontSize = '0.85rem';
+                                growthDiv.style.marginTop = '4px';
+                                cell.appendChild(growthDiv);
+                            }
+                            
+                            row.appendChild(cell);
+                        });
+                        
+                        tbody.appendChild(row);
+                    });
+
+                    // Add summary rows
+                    const totalGrowthRow = document.createElement('tr');
+                    totalGrowthRow.className = 'summary-row';
+                    totalGrowthRow.innerHTML = '<td><strong>Total Growth</strong></td>';
+                    
+                    const cagrRow = document.createElement('tr');
+                    cagrRow.className = 'summary-row';
+                    cagrRow.innerHTML = '<td><strong>CAGR</strong></td>';
+
+                    stockData.tickers.forEach(ticker => {
+                        const totalCell = document.createElement('td');
+                        totalCell.id = `total-growth-${ticker}`;
+                        totalCell.className = 'growth-neutral';
+                        totalGrowthRow.appendChild(totalCell);
+
+                        const cagrCell = document.createElement('td');
+                        cagrCell.id = `cagr-${ticker}`;
+                        cagrCell.className = 'growth-neutral';
+                        cagrRow.appendChild(cagrCell);
+                    });
+
+                    tbody.appendChild(totalGrowthRow);
+                    tbody.appendChild(cagrRow);
+
+                    document.getElementById('performance-table-container').style.display = 'block';
+                    
+                    // Calculate initial growth values
+                    stockData.tickers.forEach(ticker => updateGrowthCalculations(ticker));
+                }
+
+                function updateGrowthCalculations(ticker) {
+                    const currentYear = new Date().getFullYear();
+                    const prices = stockData.prices[ticker];
+                    
+                    // Calculate year-over-year growth
+                    for (let year = stockData.startYear + 1; year <= currentYear; year++) {
+                        const currentPrice = prices[year];
+                        const previousPrice = prices[year - 1];
+                        const growthElement = document.getElementById(`growth-${ticker}-${year}`);
+                        
+                        if (currentPrice && previousPrice && growthElement) {
+                            const growth = ((currentPrice - previousPrice) / previousPrice) * 100;
+                            growthElement.textContent = (growth >= 0 ? '+' : '') + growth.toFixed(1) + '%';
+                            growthElement.className = growth >= 0 ? 'growth-positive' : 'growth-negative';
+                        } else if (growthElement) {
+                            growthElement.textContent = '---%';
+                            growthElement.className = 'growth-neutral';
+                        }
+                    }
+
+                    // Calculate total growth and CAGR
+                    const startPrice = prices[stockData.startYear];
+                    const latestYear = Math.max(...Object.keys(prices).map(y => parseInt(y)));
+                    const endPrice = prices[latestYear];
+                    
+                    const totalGrowthElement = document.getElementById(`total-growth-${ticker}`);
+                    const cagrElement = document.getElementById(`cagr-${ticker}`);
+                    
+                    if (startPrice && endPrice && totalGrowthElement && cagrElement) {
+                        const totalGrowth = ((endPrice - startPrice) / startPrice) * 100;
+                        const years = latestYear - stockData.startYear;
+                        const cagr = years > 0 ? (Math.pow(endPrice / startPrice, 1 / years) - 1) * 100 : 0;
+                        
+                        totalGrowthElement.textContent = (totalGrowth >= 0 ? '+' : '') + totalGrowth.toFixed(1) + '%';
+                        totalGrowthElement.className = totalGrowth >= 0 ? 'growth-positive' : 'growth-negative';
+                        
+                        cagrElement.textContent = (cagr >= 0 ? '+' : '') + cagr.toFixed(1) + '%';
+                        cagrElement.className = cagr >= 0 ? 'growth-positive' : 'growth-negative';
+                    } else {
+                        if (totalGrowthElement) {
+                            totalGrowthElement.textContent = '---%';
+                            totalGrowthElement.className = 'growth-neutral';
+                        }
+                        if (cagrElement) {
+                            cagrElement.textContent = '---%';
+                            cagrElement.className = 'growth-neutral';
+                        }
+                    }
+                }
+
+                function init() {
+                    initializeYearSelect();
+                    
+                    document.getElementById('add-ticker-btn').addEventListener('click', addTicker);
+                    document.getElementById('generate-table-btn').addEventListener('click', generatePerformanceTable);
+                    
+                    document.getElementById('ticker-input').addEventListener('keypress', (e) => {
+                        if (e.key === 'Enter') {
+                            addTicker();
+                        }
+                    });
+                }
+
+                return {
+                    init,
+                    removeTicker
+                };
+            })();
+
+            // Public API
+            function init() {
+                TabManager.init();
+                Calculator.init();
+                StockTracker.init();
+            }
+
+            function removeTicker(ticker) {
+                StockTracker.removeTicker(ticker);
+            }
+
+            return {
+                init,
+                removeTicker
+            };
+        })();
+
+        // Initialize the application when DOM is ready
+        document.addEventListener('DOMContentLoaded', function() {
+            FinancialDashboard.init();
+        });
+    </script>
+</body>
+</html>
