@@ -238,6 +238,23 @@
             color: var(--text-primary);
             position: sticky;
             top: 0;
+            z-index: 2;
+        }
+
+        .data-table th:first-child,
+        .data-table td:first-child {
+            position: sticky;
+            left: 0;
+            z-index: 1;
+            background: var(--background-primary);
+        }
+
+        .data-table .summary-row td:first-child {
+            background: var(--background-secondary);
+        }
+
+        .data-table tbody tr:hover td:first-child {
+            background: var(--background-secondary);
         }
 
         .data-table tbody tr:hover {
