@@ -694,6 +694,51 @@
             font-weight: 600;
             color: var(--primary-blue);
         }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .number-cell {
+            text-align: right;
+            white-space: nowrap;
+        }
+
+        .actions-cell {
+            white-space: nowrap;
+        }
+
+        .icon-btn {
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            padding: 0;
+            line-height: 1;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            color: white;
+        }
+
+        .icon-btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .edit-btn,
+        .delete-btn {
+            background: var(--primary-blue);
+        }
+
+        .edit-btn:hover,
+        .delete-btn:hover {
+            background: var(--primary-blue-dark);
+        }
     </style>
 </head>
 <body>
@@ -719,9 +764,105 @@
         <div class="content">
             <!-- Portfolio Tab -->
             <div id="portfolio" class="tab-content active">
-                <div class="placeholder-content">
-                    <h3>Portfolio Management</h3>
-                    <p>Track your investment holdings, asset allocation, and portfolio performance. This section will be developed to include holdings overview, asset allocation charts, and performance summaries.</p>
+                <div class="section-header">
+                    <h2 class="section-title">Portfolio</h2>
+                    <button class="btn btn-primary" id="add-investment-btn">Add Investment</button>
+                </div>
+                <div class="table-container" id="portfolio-table-container">
+                    <table class="data-table" id="portfolio-table">
+                        <thead>
+                            <tr>
+                                <th>Ticker</th>
+                                <th>Name</th>
+                                <th>Average Price</th>
+                                <th>Quantity</th>
+                                <th>Last Price</th>
+                                <th>Value</th>
+                                <th>P&amp;L</th>
+                                <th>P&amp;L %</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="portfolio-body"></tbody>
+                        <tfoot>
+                            <tr class="summary-row">
+                                <td colspan="5">Total</td>
+                                <td id="portfolio-total-value" class="number-cell">$0.00</td>
+                                <td id="portfolio-total-pl" class="number-cell">$0.00</td>
+                                <td id="portfolio-total-plpct" class="number-cell">0.00%</td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+                <!-- Add Investment Modal -->
+                <div id="investment-modal" class="modal">
+                    <div class="modal-content">
+                        <span class="modal-close" id="investment-close">&times;</span>
+                        <h3>Add Investment</h3>
+                        <form id="investment-form">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="investment-ticker">Ticker</label>
+                                    <input type="text" id="investment-ticker" style="text-transform: uppercase;" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="investment-name">Name</label>
+                                    <input type="text" id="investment-name">
+                                </div>
+                                <div class="form-group">
+                                    <label for="investment-quantity">Quantity</label>
+                                    <input type="number" step="0.0001" id="investment-quantity" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="investment-avg-price">Average Price</label>
+                                    <input type="number" step="0.01" id="investment-avg-price" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Total Value</label>
+                                    <span id="investment-total-value">$0.00</span>
+                                </div>
+                            </div>
+                            <div class="modal-actions">
+                                <button type="button" class="btn btn-secondary" id="save-add-another-btn">Save &amp; Add Another</button>
+                                <button type="button" class="btn btn-secondary" id="cancel-investment-btn">Cancel</button>
+                                <button type="submit" class="btn btn-primary">Add</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Edit Investment Modal -->
+                <div id="edit-investment-modal" class="modal">
+                    <div class="modal-content">
+                        <span class="modal-close" id="edit-investment-close">&times;</span>
+                        <h3>Edit Investment</h3>
+                        <form id="edit-investment-form">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="edit-quantity">Quantity</label>
+                                    <input type="number" step="0.0001" id="edit-quantity" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="edit-avg-price">Average Price</label>
+                                    <input type="number" step="0.01" id="edit-avg-price" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="edit-last-price">Last Price</label>
+                                    <input type="number" step="0.01" id="edit-last-price" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Total Value</label>
+                                    <span id="edit-total-value">$0.00</span>
+                                </div>
+                            </div>
+                            <div class="modal-actions">
+                                <button type="button" class="btn btn-secondary" id="edit-cancel-btn">Cancel</button>
+                                <button type="submit" class="btn btn-primary">Save</button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
 
@@ -1128,6 +1269,222 @@
                     init,
                     switchTab
                 };
+            })();
+
+            // Portfolio Management Module
+            const PortfolioManager = (function() {
+                const STORAGE_KEY = 'portfolioData';
+                let investments = [];
+
+                const addBtn = document.getElementById('add-investment-btn');
+                const modal = document.getElementById('investment-modal');
+                const form = document.getElementById('investment-form');
+                const closeBtn = document.getElementById('investment-close');
+                const cancelBtn = document.getElementById('cancel-investment-btn');
+                const saveAddBtn = document.getElementById('save-add-another-btn');
+                const totalDisplay = document.getElementById('investment-total-value');
+
+                const editModal = document.getElementById('edit-investment-modal');
+                const editForm = document.getElementById('edit-investment-form');
+                const editClose = document.getElementById('edit-investment-close');
+                const editCancel = document.getElementById('edit-cancel-btn');
+                const editTotal = document.getElementById('edit-total-value');
+                let editIndex = null;
+
+                function loadData() {
+                    const data = localStorage.getItem(STORAGE_KEY);
+                    if (data) {
+                        try {
+                            investments = JSON.parse(data) || [];
+                        } catch (e) {
+                            investments = [];
+                        }
+                    }
+                }
+
+                function saveData() {
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(investments));
+                }
+
+                function formatCurrency(value) {
+                    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value);
+                }
+
+                function updateTotals() {
+                    let totalValue = 0;
+                    let totalCost = 0;
+                    investments.forEach(inv => {
+                        const value = inv.quantity * inv.lastPrice;
+                        totalValue += value;
+                        totalCost += inv.quantity * inv.avgPrice;
+                    });
+                    const totalPL = totalValue - totalCost;
+                    const totalPLPct = totalCost ? (totalPL / totalCost) * 100 : 0;
+
+                    document.getElementById('portfolio-total-value').textContent = formatCurrency(totalValue);
+                    document.getElementById('portfolio-total-pl').textContent = formatCurrency(totalPL);
+                    document.getElementById('portfolio-total-plpct').textContent = totalPLPct.toFixed(2) + '%';
+                }
+
+                function renderTable() {
+                    const tbody = document.getElementById('portfolio-body');
+                    tbody.innerHTML = '';
+                    investments.forEach((inv, idx) => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${inv.ticker}</td>
+                            <td>${inv.name}</td>
+                            <td class="number-cell">${formatCurrency(inv.avgPrice)}</td>
+                            <td class="number-cell">${inv.quantity}</td>
+                            <td class="number-cell">${formatCurrency(inv.lastPrice)}</td>
+                            <td class="value-cell"></td>
+                            <td class="pl-cell"></td>
+                            <td class="plpct-cell"></td>
+                            <td class="actions-cell">
+                                <button class="icon-btn edit-btn" data-index="${idx}" title="Edit">
+                                    <svg width="16" height="16" viewBox="0 0 512 512"><polygon points="364.13 125.25 87 403 64 448 108.99 425 386.75 147.87 364.13 125.25" style="fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"/><path d="M420.69,68.69,398.07,91.31l22.62,22.63,22.62-22.63a16,16,0,0,0,0-22.62h0A16,16,0,0,0,420.69,68.69Z" style="fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"/></svg>
+                                </button>
+                                <button class="icon-btn delete-btn" data-index="${idx}" title="Delete">
+                                    <svg width="16" height="16" viewBox="0 0 512 512"><path d="M112,112l20,320c.95,18.49,14.4,32,32,32H348c17.67,0,30.87-13.51,32-32l20-320" style="fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"/><line x1="80" y1="112" x2="432" y2="112" style="stroke:currentColor;stroke-linecap:round;stroke-miterlimit:10;stroke-width:32px"/><path d="M192,112V72h0a23.93,23.93,0,0,1,24-24h80a23.93,23.93,0,0,1,24,24h0v40" style="fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"/><line x1="256" y1="176" x2="256" y2="400" style="fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"/><line x1="184" y1="176" x2="192" y2="400" style="fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"/><line x1="328" y1="176" x2="320" y2="400" style="fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"/></svg>
+                                </button>
+                            </td>`;
+                        tbody.appendChild(row);
+                    });
+
+                    updateRows();
+                    updateTotals();
+                }
+
+                function updateRows() {
+                    const rows = document.querySelectorAll('#portfolio-body tr');
+                    rows.forEach((row, idx) => {
+                        const inv = investments[idx];
+                        const value = inv.quantity * inv.lastPrice;
+                        const cost = inv.quantity * inv.avgPrice;
+                        const pl = value - cost;
+                        const plPct = cost ? (pl / cost) * 100 : 0;
+
+                        row.querySelector('.value-cell').textContent = formatCurrency(value);
+                        row.querySelector('.pl-cell').textContent = formatCurrency(pl);
+                        row.querySelector('.pl-cell').className = 'pl-cell ' + (pl >= 0 ? 'growth-positive' : 'growth-negative');
+                        row.querySelector('.plpct-cell').textContent = plPct.toFixed(2) + '%';
+                        row.querySelector('.plpct-cell').className = 'plpct-cell ' + (plPct >= 0 ? 'growth-positive' : 'growth-negative');
+                    });
+                }
+
+                function openModal() {
+                    form.reset();
+                    totalDisplay.textContent = formatCurrency(0);
+                    modal.style.display = 'flex';
+                    document.getElementById('investment-ticker').focus();
+                }
+
+                function closeModal() {
+                    modal.style.display = 'none';
+                }
+
+                function handleFormInput() {
+                    const qty = parseFloat(document.getElementById('investment-quantity').value) || 0;
+                    const price = parseFloat(document.getElementById('investment-avg-price').value) || 0;
+                    totalDisplay.textContent = formatCurrency(qty * price);
+                }
+
+                function addFromForm(resetAfter) {
+                    const ticker = document.getElementById('investment-ticker').value.trim().toUpperCase();
+                    const name = document.getElementById('investment-name').value.trim();
+                    const quantity = parseFloat(document.getElementById('investment-quantity').value) || 0;
+                    const avgPrice = parseFloat(document.getElementById('investment-avg-price').value) || 0;
+                    if (!ticker || quantity <= 0 || avgPrice <= 0) return;
+
+                    investments.push({ ticker, name, quantity, avgPrice, lastPrice: avgPrice });
+                    saveData();
+                    renderTable();
+
+                    if (resetAfter) {
+                        form.reset();
+                        totalDisplay.textContent = formatCurrency(0);
+                        document.getElementById('investment-ticker').focus();
+                    } else {
+                        closeModal();
+                    }
+                }
+
+                function openEditModal(index) {
+                    editIndex = index;
+                    const inv = investments[index];
+                    document.getElementById('edit-quantity').value = inv.quantity;
+                    document.getElementById('edit-avg-price').value = inv.avgPrice;
+                    document.getElementById('edit-last-price').value = inv.lastPrice;
+                    editTotal.textContent = formatCurrency(inv.quantity * inv.lastPrice);
+                    editModal.style.display = 'flex';
+                }
+
+                function closeEditModal() {
+                    editModal.style.display = 'none';
+                    editIndex = null;
+                }
+
+                function handleEditInput() {
+                    const qty = parseFloat(document.getElementById('edit-quantity').value) || 0;
+                    const price = parseFloat(document.getElementById('edit-last-price').value) || 0;
+                    editTotal.textContent = formatCurrency(qty * price);
+                }
+
+                function saveEdit(e) {
+                    e.preventDefault();
+                    if (editIndex === null) return;
+                    const qty = parseFloat(document.getElementById('edit-quantity').value) || 0;
+                    const avg = parseFloat(document.getElementById('edit-avg-price').value) || 0;
+                    const last = parseFloat(document.getElementById('edit-last-price').value) || 0;
+                    if (qty <= 0 || avg <= 0 || last <= 0) return;
+
+                    const inv = investments[editIndex];
+                    inv.quantity = qty;
+                    inv.avgPrice = avg;
+                    inv.lastPrice = last;
+
+                    saveData();
+                    renderTable();
+                    closeEditModal();
+                }
+
+                function handleRowAction(e) {
+                    const btn = e.target.closest('button');
+                    if (!btn) return;
+                    if (btn.classList.contains('edit-btn')) {
+                        const idx = parseInt(btn.dataset.index, 10);
+                        openEditModal(idx);
+                    } else if (btn.classList.contains('delete-btn')) {
+                        const idx = parseInt(btn.dataset.index, 10);
+                        if (confirm('Delete this investment?')) {
+                            investments.splice(idx, 1);
+                            saveData();
+                            renderTable();
+                        }
+                    }
+                }
+
+                function init() {
+                    loadData();
+                    addBtn.addEventListener('click', openModal);
+                    closeBtn.addEventListener('click', closeModal);
+                    cancelBtn.addEventListener('click', closeModal);
+                    form.addEventListener('input', handleFormInput);
+                    form.addEventListener('submit', (e) => { e.preventDefault(); addFromForm(false); });
+                    saveAddBtn.addEventListener('click', () => addFromForm(true));
+                    modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+
+                    document.getElementById('portfolio-body').addEventListener('click', handleRowAction);
+                    editClose.addEventListener('click', closeEditModal);
+                    editCancel.addEventListener('click', closeEditModal);
+                    editForm.addEventListener('input', handleEditInput);
+                    editForm.addEventListener('submit', saveEdit);
+                    editModal.addEventListener('click', (e) => { if (e.target === editModal) closeEditModal(); });
+
+                    renderTable();
+                }
+
+                return { init };
             })();
 
             // Calculator Module
@@ -1990,6 +2347,7 @@
             // Public API
             function init() {
                 TabManager.init();
+                PortfolioManager.init();
                 Calculator.init();
                 StockTracker.init();
             }
