@@ -1558,8 +1558,10 @@
                     }
 
                     // Calculate total growth and CAGR
-                    const startPrice = prices[stockData.startYear];
-                    const latestYear = Math.max(...Object.keys(prices).map(y => parseInt(y)));
+                    const yearsWithData = Object.keys(prices).map(y => parseInt(y)).filter(y => !isNaN(y)).sort((a,b) => a-b);
+                    const firstYear = yearsWithData[0];
+                    const latestYear = yearsWithData[yearsWithData.length - 1];
+                    const startPrice = prices[firstYear];
                     const endPrice = prices[latestYear];
                     
                     const totalGrowthElement = document.getElementById(`total-growth-${ticker}`);
@@ -1567,7 +1569,7 @@
                     
                     if (startPrice && endPrice && totalGrowthElement && cagrElement) {
                         const totalGrowth = ((endPrice - startPrice) / startPrice) * 100;
-                        const years = latestYear - stockData.startYear;
+                        const years = yearsWithData.length - 1;
                         const cagr = years > 0 ? (Math.pow(endPrice / startPrice, 1 / years) - 1) * 100 : 0;
                         
                         totalGrowthElement.textContent = (totalGrowth >= 0 ? '+' : '') + totalGrowth.toFixed(1) + '%';
@@ -1620,12 +1622,13 @@
 
                     stockData.tickers.forEach(ticker => {
                         const prices = stockData.prices[ticker];
-                        const years = Object.keys(prices).map(y => parseInt(y));
-                        if (years.length === 0) return;
-                        const tickerLatest = Math.max(...years);
-                        const startPrice = prices[stockData.startYear];
+                        const yearsWithData = Object.keys(prices).map(y => parseInt(y)).filter(y => !isNaN(y)).sort((a,b) => a-b);
+                        if (yearsWithData.length === 0) return;
+                        const tickerLatest = yearsWithData[yearsWithData.length - 1];
+                        const startYear = yearsWithData[0];
+                        const startPrice = prices[startYear];
                         const endPrice = prices[tickerLatest];
-                        const spanYears = tickerLatest - stockData.startYear;
+                        const spanYears = yearsWithData.length - 1;
                         if (!startPrice || !endPrice || spanYears <= 0) return;
 
                         const totalGrowth = ((endPrice - startPrice) / startPrice) * 100;
@@ -1644,7 +1647,7 @@
                         }
 
                         const growths = [];
-                        for (let y = stockData.startYear + 1; y <= tickerLatest; y++) {
+                        for (let y = startYear + 1; y <= tickerLatest; y++) {
                             const cp = prices[y];
                             const pp = prices[y - 1];
                             if (cp && pp) {
