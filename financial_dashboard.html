@@ -296,11 +296,13 @@
             background: var(--background-secondary);
         }
 
-        .price-cell {
-            width: 120px;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
+        .price-input {
+            width: 100%;
+            display: block;
+            padding: 0.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            text-align: right;
         }
 
         .price-input {
@@ -1643,7 +1645,6 @@
                         
                         stockData.tickers.forEach(ticker => {
                             const cell = document.createElement('td');
-                            cell.className = 'price-cell';
                             const priceInput = document.createElement('input');
                             priceInput.type = 'number';
                             priceInput.className = 'price-input';
