@@ -255,6 +255,23 @@
             position: relative; /* ensures sticky headers work inside */
         }
 
+        .portfolio-charts {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 1.5rem;
+        }
+
+        .portfolio-charts canvas {
+            flex: 1 1 300px;
+            max-width: 450px;
+            height: 300px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--background-primary);
+        }
+
         .data-table {
             width: 100%;
             border-collapse: collapse;
@@ -796,6 +813,11 @@
                     </table>
                 </div>
 
+                <div class="portfolio-charts">
+                    <canvas id="portfolio-pie-chart"></canvas>
+                    <canvas id="portfolio-bar-chart"></canvas>
+                </div>
+
                 <!-- Add Investment Modal -->
                 <div id="investment-modal" class="modal">
                     <div class="modal-content">
@@ -1289,6 +1311,8 @@
                 const editClose = document.getElementById('edit-investment-close');
                 const editCancel = document.getElementById('edit-cancel-btn');
                 const editTotal = document.getElementById('edit-total-value');
+                const pieCanvas = document.getElementById('portfolio-pie-chart');
+                const barCanvas = document.getElementById('portfolio-bar-chart');
                 let editIndex = null;
 
                 function loadData() {
@@ -1351,8 +1375,9 @@
                         tbody.appendChild(row);
                     });
 
-                    updateRows();
+                   updateRows();
                     updateTotals();
+                    drawCharts();
                 }
 
                 function updateRows() {
@@ -1369,6 +1394,98 @@
                         row.querySelector('.pl-cell').className = 'pl-cell ' + (pl >= 0 ? 'growth-positive' : 'growth-negative');
                         row.querySelector('.plpct-cell').textContent = plPct.toFixed(2) + '%';
                         row.querySelector('.plpct-cell').className = 'plpct-cell ' + (plPct >= 0 ? 'growth-positive' : 'growth-negative');
+                    });
+                }
+
+                function drawCharts() {
+                    drawPieChart();
+                    drawBarChart();
+                }
+
+                function drawPieChart() {
+                    if (!pieCanvas) return;
+                    const ctx = pieCanvas.getContext('2d');
+                    const width = pieCanvas.clientWidth;
+                    const height = pieCanvas.clientHeight;
+                    pieCanvas.width = width;
+                    pieCanvas.height = height;
+                    ctx.clearRect(0, 0, width, height);
+
+                    const total = investments.reduce((sum, inv) => sum + inv.quantity * inv.lastPrice, 0);
+                    if (total <= 0) {
+                        ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--text-secondary');
+                        ctx.fillText('No data', 10, 20);
+                        return;
+                    }
+
+                    const centerX = width / 2;
+                    const centerY = height / 2;
+                    const radius = Math.min(width, height) / 2 - 10;
+                    let start = 0;
+                    const colorVars = ['--primary-blue', '--success-green', '--warning-orange', '--danger-red', '--secondary-gray', '--primary-blue-light', '--success-green-light', '--warning-orange-light'];
+                    investments.forEach((inv, idx) => {
+                        const value = inv.quantity * inv.lastPrice;
+                        const slice = value / total;
+                        const end = start + slice * 2 * Math.PI;
+                        ctx.beginPath();
+                        ctx.moveTo(centerX, centerY);
+                        ctx.arc(centerX, centerY, radius, start, end);
+                        ctx.closePath();
+                        const color = getComputedStyle(document.documentElement).getPropertyValue(colorVars[idx % colorVars.length]).trim();
+                        ctx.fillStyle = color || '#ccc';
+                        ctx.fill();
+                        start = end;
+                    });
+                }
+
+                function drawBarChart() {
+                    if (!barCanvas) return;
+                    const ctx = barCanvas.getContext('2d');
+                    const width = barCanvas.clientWidth;
+                    const height = barCanvas.clientHeight;
+                    barCanvas.width = width;
+                    barCanvas.height = height;
+                    ctx.clearRect(0, 0, width, height);
+
+                    const plPcts = investments.map(inv => {
+                        const cost = inv.quantity * inv.avgPrice;
+                        const value = inv.quantity * inv.lastPrice;
+                        const pl = value - cost;
+                        return cost ? (pl / cost) * 100 : 0;
+                    });
+                    if (plPcts.length === 0) {
+                        ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--text-secondary');
+                        ctx.fillText('No data', 10, 20);
+                        return;
+                    }
+
+                    const maxAbs = Math.max(...plPcts.map(v => Math.abs(v)), 1);
+                    const margin = 20;
+                    const zeroY = height / 2;
+                    const scale = (height / 2 - margin) / maxAbs;
+                    const step = width / plPcts.length;
+                    const barWidth = step * 0.6;
+
+                    ctx.strokeStyle = '#ccc';
+                    ctx.beginPath();
+                    ctx.moveTo(0, zeroY);
+                    ctx.lineTo(width, zeroY);
+                    ctx.stroke();
+                    ctx.textAlign = 'center';
+                    ctx.font = '12px sans-serif';
+
+                    plPcts.forEach((pct, idx) => {
+                        const x = step * idx + step / 2;
+                        const barHeight = Math.abs(pct) * scale;
+                        const colorVar = pct >= 0 ? '--success-green' : '--danger-red';
+                        ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue(colorVar).trim();
+                        if (pct >= 0) {
+                            ctx.fillRect(x - barWidth / 2, zeroY - barHeight, barWidth, barHeight);
+                        } else {
+                            ctx.fillRect(x - barWidth / 2, zeroY, barWidth, barHeight);
+                        }
+                        ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--text-primary');
+                        ctx.fillText(investments[idx].ticker, x, height - 5);
                     });
                 }
 
