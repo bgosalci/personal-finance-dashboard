@@ -638,6 +638,14 @@
             font-size: 1.25rem;
             line-height: 1;
         }
+
+        #chart-title {
+            text-align: center;
+            margin: 0.5rem 0;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary-blue);
+        }
     </style>
 </head>
 <body>
@@ -999,6 +1007,7 @@
                 <div id="chart-modal" class="modal">
                     <div class="modal-content">
                         <span class="modal-close">&times;</span>
+                        <h3 id="chart-title"></h3>
                         <canvas id="popup-chart" width="600" height="400"></canvas>
                     </div>
                 </div>
@@ -1783,6 +1792,8 @@
                 function showChart(ticker) {
                     const modal = document.getElementById('chart-modal');
                     const canvas = document.getElementById('popup-chart');
+                    const titleEl = document.getElementById('chart-title');
+                    if (titleEl) titleEl.textContent = ticker;
                     drawChart(ticker, canvas);
                     modal.style.display = 'flex';
                 }
