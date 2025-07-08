@@ -257,19 +257,32 @@
 
         .portfolio-charts {
             display: flex;
+            flex-direction: column;
+            align-items: center;
             gap: 2rem;
-            flex-wrap: wrap;
-            justify-content: center;
             margin-top: 1.5rem;
         }
 
         .portfolio-charts canvas {
-            flex: 1 1 300px;
+            width: 100%;
             max-width: 450px;
             height: 300px;
             border: 1px solid var(--border-color);
             border-radius: 8px;
             background: var(--background-primary);
+        }
+
+        #chart-tooltip {
+            position: absolute;
+            pointer-events: none;
+            background: var(--background-tertiary);
+            color: var(--text-primary);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            border: 1px solid var(--border-color);
+            display: none;
+            z-index: 10;
         }
 
         .data-table {
@@ -817,6 +830,7 @@
                     <canvas id="portfolio-pie-chart"></canvas>
                     <canvas id="portfolio-bar-chart"></canvas>
                 </div>
+                <div id="chart-tooltip"></div>
 
                 <!-- Add Investment Modal -->
                 <div id="investment-modal" class="modal">
@@ -1313,6 +1327,12 @@
                 const editTotal = document.getElementById('edit-total-value');
                 const pieCanvas = document.getElementById('portfolio-pie-chart');
                 const barCanvas = document.getElementById('portfolio-bar-chart');
+                const tooltip = document.getElementById('chart-tooltip');
+                let pieSlices = [];
+                let barRects = [];
+                let pieCenterX = 0;
+                let pieCenterY = 0;
+                let pieRadius = 0;
                 let editIndex = null;
 
                 function loadData() {
@@ -1410,6 +1430,7 @@
                     pieCanvas.width = width;
                     pieCanvas.height = height;
                     ctx.clearRect(0, 0, width, height);
+                    pieSlices = [];
 
                     const total = investments.reduce((sum, inv) => sum + inv.quantity * inv.lastPrice, 0);
                     if (total <= 0) {
@@ -1421,6 +1442,9 @@
                     const centerX = width / 2;
                     const centerY = height / 2;
                     const radius = Math.min(width, height) / 2 - 10;
+                    pieCenterX = centerX;
+                    pieCenterY = centerY;
+                    pieRadius = radius;
                     let start = 0;
                     const colorVars = ['--primary-blue', '--success-green', '--warning-orange', '--danger-red', '--secondary-gray', '--primary-blue-light', '--success-green-light', '--warning-orange-light'];
                     investments.forEach((inv, idx) => {
@@ -1434,6 +1458,16 @@
                         const color = getComputedStyle(document.documentElement).getPropertyValue(colorVars[idx % colorVars.length]).trim();
                         ctx.fillStyle = color || '#ccc';
                         ctx.fill();
+                        // label position
+                        const mid = (start + end) / 2;
+                        const tx = centerX + Math.cos(mid) * radius * 0.6;
+                        const ty = centerY + Math.sin(mid) * radius * 0.6;
+                        ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--text-primary');
+                        ctx.font = '12px sans-serif';
+                        const pct = (slice * 100).toFixed(1) + '%';
+                        ctx.textAlign = 'center';
+                        ctx.fillText(inv.ticker + ' ' + pct, tx, ty);
+                        pieSlices.push({ticker: inv.ticker, start, end, pct, value});
                         start = end;
                     });
                 }
@@ -1446,6 +1480,7 @@
                     barCanvas.width = width;
                     barCanvas.height = height;
                     ctx.clearRect(0, 0, width, height);
+                    barRects = [];
 
                     const plPcts = investments.map(inv => {
                         const cost = inv.quantity * inv.avgPrice;
@@ -1479,14 +1514,62 @@
                         const barHeight = Math.abs(pct) * scale;
                         const colorVar = pct >= 0 ? '--success-green' : '--danger-red';
                         ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue(colorVar).trim();
+                        let rect;
                         if (pct >= 0) {
                             ctx.fillRect(x - barWidth / 2, zeroY - barHeight, barWidth, barHeight);
+                            rect = {x: x - barWidth / 2, y: zeroY - barHeight, w: barWidth, h: barHeight};
                         } else {
                             ctx.fillRect(x - barWidth / 2, zeroY, barWidth, barHeight);
+                            rect = {x: x - barWidth / 2, y: zeroY, w: barWidth, h: barHeight};
                         }
                         ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--text-primary');
                         ctx.fillText(investments[idx].ticker, x, height - 5);
+                        ctx.fillText(pct.toFixed(1) + '%', x, pct >= 0 ? zeroY - barHeight - 5 : zeroY + barHeight + 15);
+                        barRects.push({...rect, ticker: investments[idx].ticker, pct});
                     });
+                }
+
+                function showTooltip(text, x, y) {
+                    tooltip.textContent = text;
+                    tooltip.style.display = 'block';
+                    tooltip.style.left = x + 'px';
+                    tooltip.style.top = y + 'px';
+                }
+
+                function hideTooltip() {
+                    tooltip.style.display = 'none';
+                }
+
+                function handlePieHover(e) {
+                    const rect = pieCanvas.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    const dx = x - pieCenterX;
+                    const dy = y - pieCenterY;
+                    const dist = Math.sqrt(dx*dx + dy*dy);
+                    if (dist > pieRadius) { hideTooltip(); return; }
+                    const angle = Math.atan2(dy, dx);
+                    const normAngle = angle >= 0 ? angle : angle + 2*Math.PI;
+                    for (const slice of pieSlices) {
+                        if (normAngle >= slice.start && normAngle < slice.end) {
+                            showTooltip(`${slice.ticker}: ${slice.pct}`, e.clientX + 10, e.clientY + 10);
+                            return;
+                        }
+                    }
+                    hideTooltip();
+                }
+
+                function handleBarHover(e) {
+                    const rect = barCanvas.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    for (const bar of barRects) {
+                        if (x >= bar.x && x <= bar.x + bar.w && y >= bar.y && y <= bar.y + bar.h) {
+                            showTooltip(`${bar.ticker}: ${bar.pct.toFixed(1)}%`, e.clientX + 10, e.clientY + 10);
+                            return;
+                        }
+                    }
+                    hideTooltip();
                 }
 
                 function openModal() {
@@ -1597,6 +1680,11 @@
                     editForm.addEventListener('input', handleEditInput);
                     editForm.addEventListener('submit', saveEdit);
                     editModal.addEventListener('click', (e) => { if (e.target === editModal) closeEditModal(); });
+
+                    pieCanvas.addEventListener('mousemove', handlePieHover);
+                    pieCanvas.addEventListener('mouseleave', hideTooltip);
+                    barCanvas.addEventListener('mousemove', handleBarHover);
+                    barCanvas.addEventListener('mouseleave', hideTooltip);
 
                     renderTable();
                 }
