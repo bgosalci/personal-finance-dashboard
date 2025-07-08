@@ -1607,7 +1607,10 @@
                     if (tags) tags.style.display = editMode ? 'flex' : 'none';
 
                    const inputs = document.querySelectorAll('#performance-table input.price-input');
-                   inputs.forEach(inp => inp.readOnly = !editMode);
+                   inputs.forEach(inp => {
+                       inp.readOnly = !editMode;
+                       inp.style.display = editMode ? 'block' : 'none';
+                   });
 
                    updateGenerateButton();
                }
