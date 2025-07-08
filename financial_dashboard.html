@@ -264,6 +264,31 @@
             font-weight: 600;
         }
 
+        .summary-cards {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .summary-card {
+            flex: 1 1 200px;
+            background: var(--background-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+        }
+
+        .summary-card h4 {
+            margin-bottom: 0.5rem;
+            color: var(--primary-blue);
+            font-size: 1rem;
+        }
+
+        .summary-card p {
+            font-weight: 600;
+        }
+
         .calculator-section {
             margin-bottom: 3rem;
             padding: 2rem;
@@ -861,6 +886,24 @@
                         <tbody id="table-body"></tbody>
                     </table>
                 </div>
+                <div class="summary-cards" id="stock-summary-cards" style="display: none;">
+                    <div class="summary-card">
+                        <h4>Investment Analysis</h4>
+                        <p id="summary-investment-range"></p>
+                    </div>
+                    <div class="summary-card">
+                        <h4>Best Performer</h4>
+                        <p id="summary-best"></p>
+                    </div>
+                    <div class="summary-card">
+                        <h4>Worst Performer</h4>
+                        <p id="summary-worst"></p>
+                    </div>
+                    <div class="summary-card">
+                        <h4>Most Consistent</h4>
+                        <p id="summary-consistent"></p>
+                    </div>
+                </div>
             </div>
 
             <!-- Stock Finance Performance Tab -->
@@ -1351,6 +1394,7 @@
                     updateTickerTags();
                     updateGenerateButton();
                     saveData();
+                    updateSummaryCards();
                 }
 
                 function removeTicker(ticker) {
@@ -1363,10 +1407,12 @@
                         
                         if (stockData.tickers.length === 0) {
                             document.getElementById('performance-table-container').style.display = 'none';
+                            updateSummaryCards();
                         } else {
                             generatePerformanceTable();
                         }
                         saveData();
+                        updateSummaryCards();
                     }
                 }
 
@@ -1481,6 +1527,7 @@
                     // Calculate initial growth values
                     stockData.tickers.forEach(ticker => updateGrowthCalculations(ticker));
                     saveData();
+                    updateSummaryCards();
                 }
 
                 function updateGrowthCalculations(ticker) {
@@ -1531,6 +1578,92 @@
                             cagrElement.className = 'growth-neutral';
                         }
                     }
+
+                    updateSummaryCards();
+                }
+
+                function updateSummaryCards() {
+                    const container = document.getElementById('stock-summary-cards');
+                    if (!container) return;
+
+                    if (stockData.tickers.length === 0) {
+                        container.style.display = 'none';
+                        return;
+                    }
+
+                    let latestYear = stockData.startYear;
+                    stockData.tickers.forEach(ticker => {
+                        const years = Object.keys(stockData.prices[ticker]).map(y => parseInt(y));
+                        if (years.length) {
+                            const localLatest = Math.max(...years);
+                            if (localLatest > latestYear) latestYear = localLatest;
+                        }
+                    });
+
+                    document.getElementById('summary-investment-range').textContent = `${stockData.startYear} to ${latestYear} (${latestYear - stockData.startYear} years)`;
+
+                    let bestTicker = null,
+                        worstTicker = null,
+                        consistentTicker = null;
+                    let bestCagr = -Infinity,
+                        worstCagr = Infinity,
+                        bestGrowth = 0,
+                        worstGrowth = 0,
+                        lowestVol = Infinity;
+
+                    stockData.tickers.forEach(ticker => {
+                        const prices = stockData.prices[ticker];
+                        const years = Object.keys(prices).map(y => parseInt(y));
+                        if (years.length === 0) return;
+                        const tickerLatest = Math.max(...years);
+                        const startPrice = prices[stockData.startYear];
+                        const endPrice = prices[tickerLatest];
+                        const spanYears = tickerLatest - stockData.startYear;
+                        if (!startPrice || !endPrice || spanYears <= 0) return;
+
+                        const totalGrowth = ((endPrice - startPrice) / startPrice) * 100;
+                        const cagr = (Math.pow(endPrice / startPrice, 1 / spanYears) - 1) * 100;
+
+                        if (cagr > bestCagr) {
+                            bestCagr = cagr;
+                            bestTicker = ticker;
+                            bestGrowth = totalGrowth;
+                        }
+
+                        if (cagr < worstCagr) {
+                            worstCagr = cagr;
+                            worstTicker = ticker;
+                            worstGrowth = totalGrowth;
+                        }
+
+                        const growths = [];
+                        for (let y = stockData.startYear + 1; y <= tickerLatest; y++) {
+                            const cp = prices[y];
+                            const pp = prices[y - 1];
+                            if (cp && pp) {
+                                growths.push(((cp - pp) / pp) * 100);
+                            }
+                        }
+                        if (growths.length > 0) {
+                            const mean = growths.reduce((a,b) => a + b, 0) / growths.length;
+                            const variance = growths.reduce((sum, g) => sum + Math.pow(g - mean, 2), 0) / growths.length;
+                            const stdev = Math.sqrt(variance);
+                            if (stdev < lowestVol) {
+                                lowestVol = stdev;
+                                consistentTicker = ticker;
+                            }
+                        }
+                    });
+
+                    const bestEl = document.getElementById('summary-best');
+                    const worstEl = document.getElementById('summary-worst');
+                    const consEl = document.getElementById('summary-consistent');
+
+                    bestEl.textContent = bestTicker ? `${bestTicker}: CAGR ${bestCagr.toFixed(1)}%, Total ${bestGrowth.toFixed(1)}%` : '---';
+                    worstEl.textContent = worstTicker ? `${worstTicker}: CAGR ${worstCagr.toFixed(1)}%, Total ${worstGrowth.toFixed(1)}%` : '---';
+                    consEl.textContent = consistentTicker ? `${consistentTicker} • Lowest volatility` : '---';
+
+                    container.style.display = 'flex';
                 }
 
                 function init() {
@@ -1543,6 +1676,7 @@
 
                     if (stockData.tickers.length > 0) {
                         generatePerformanceTable();
+                        updateSummaryCards();
                     }
 
                     document.getElementById('add-ticker-btn').addEventListener('click', addTicker);
