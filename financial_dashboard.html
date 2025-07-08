@@ -206,6 +206,13 @@
             border: 1px solid var(--border-color);
         }
 
+        /* Dedicated scroll container for the Stock Performance table */
+        #performance-table-container {
+            max-height: 60vh;
+            overflow-y: auto;
+            position: relative; /* ensures sticky headers work inside */
+        }
+
         .data-table {
             width: 100%;
             border-collapse: collapse;
