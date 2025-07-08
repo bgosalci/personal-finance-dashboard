@@ -694,7 +694,24 @@
             font-weight: 600;
             color: var(--primary-blue);
         }
-    </style>
+
+        .portfolio-charts {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            margin-top: 2rem;
+            justify-content: center;
+        }
+
+        .portfolio-charts canvas {
+            background: var(--background-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            max-width: 450px;
+        }
+</style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <header class="header">
@@ -719,9 +736,25 @@
         <div class="content">
             <!-- Portfolio Tab -->
             <div id="portfolio" class="tab-content active">
-                <div class="placeholder-content">
-                    <h3>Portfolio Management</h3>
-                    <p>Track your investment holdings, asset allocation, and portfolio performance. This section will be developed to include holdings overview, asset allocation charts, and performance summaries.</p>
+                <h2 class="section-title">Portfolio</h2>
+                <div class="table-container">
+                    <table class="data-table" id="portfolio-table">
+                        <thead>
+                            <tr>
+                                <th>Asset</th>
+                                <th>Qty</th>
+                                <th>Avg Price</th>
+                                <th>Current Price</th>
+                                <th>P&amp;L</th>
+                                <th>P&amp;L %</th>
+                            </tr>
+                        </thead>
+                        <tbody id="portfolio-body"></tbody>
+                    </table>
+                </div>
+                <div class="portfolio-charts">
+                    <canvas id="portfolio-split-chart" width="400" height="300"></canvas>
+                    <canvas id="portfolio-pl-chart" width="400" height="300"></canvas>
                 </div>
             </div>
 
@@ -1494,11 +1527,84 @@
                     FairValueCalculator.init();
                 }
 
-                return {
-                    init,
-                    formatCurrency,
-                    formatPercentage
-                };
+            return {
+                init,
+                formatCurrency,
+                formatPercentage
+            };
+            })();
+
+            // Portfolio Module
+            const Portfolio = (function() {
+                const data = [
+                    { asset: 'AAPL', qty: 50, avg: 150, current: 170 },
+                    { asset: 'MSFT', qty: 30, avg: 250, current: 310 },
+                    { asset: 'GOOG', qty: 20, avg: 100, current: 95 },
+                    { asset: 'TSLA', qty: 10, avg: 200, current: 220 }
+                ];
+                let splitChart;
+                let plChart;
+
+                function renderTable() {
+                    const tbody = document.getElementById('portfolio-body');
+                    if (!tbody) return;
+                    tbody.innerHTML = '';
+                    data.forEach(item => {
+                        const currentValue = item.qty * item.current;
+                        const costValue = item.qty * item.avg;
+                        const pl = currentValue - costValue;
+                        const plPct = (pl / costValue) * 100;
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td>${item.asset}</td>
+                            <td>${item.qty}</td>
+                            <td>${Calculator.formatCurrency(item.avg)}</td>
+                            <td>${Calculator.formatCurrency(item.current)}</td>
+                            <td>${Calculator.formatCurrency(pl)}</td>
+                            <td>${plPct.toFixed(1)}%</td>`;
+                        tbody.appendChild(tr);
+                    });
+                }
+
+                function renderCharts() {
+                    const ctxSplit = document.getElementById('portfolio-split-chart').getContext('2d');
+                    const ctxPL = document.getElementById('portfolio-pl-chart').getContext('2d');
+                    if (splitChart) splitChart.destroy();
+                    if (plChart) plChart.destroy();
+
+                    const labels = data.map(d => d.asset);
+                    const values = data.map(d => d.qty * d.current);
+                    const plPct = data.map(d => ((d.current - d.avg) / d.avg) * 100);
+
+                    splitChart = new Chart(ctxSplit, {
+                        type: 'pie',
+                        data: {
+                            labels,
+                            datasets: [{ data: values, backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444'] }]
+                        },
+                        options: {
+                            plugins: { legend: { position: 'bottom' } }
+                        }
+                    });
+
+                    plChart = new Chart(ctxPL, {
+                        type: 'bar',
+                        data: {
+                            labels,
+                            datasets: [{ label: 'P&L %', data: plPct, backgroundColor: '#1e40af' }]
+                        },
+                        options: {
+                            scales: { y: { ticks: { callback: v => v + '%' } } }
+                        }
+                    });
+                }
+
+                function init() {
+                    renderTable();
+                    renderCharts();
+                }
+
+                return { init };
             })();
 
             // Stock Performance Tracker Module
@@ -1991,6 +2097,7 @@
             function init() {
                 TabManager.init();
                 Calculator.init();
+                Portfolio.init();
                 StockTracker.init();
             }
 
