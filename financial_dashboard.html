@@ -627,6 +627,18 @@
                                 <span id="invest-final-value">$0.00</span>
                             </div>
                         </div>
+                        <div id="investment-growth-container" class="table-container" style="display: none; margin-top: 1rem;">
+                            <table class="data-table" id="investment-growth-table">
+                                <thead>
+                                    <tr>
+                                        <th>Year</th>
+                                        <th>Growth</th>
+                                        <th>Value</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="investment-growth-body"></tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
 
@@ -1017,6 +1029,7 @@
 
                         if (initial <= 0 || annualRate < 0 || years <= 0) {
                             document.getElementById('investment-results').style.display = 'none';
+                            document.getElementById('investment-growth-container').style.display = 'none';
                             return;
                         }
 
@@ -1028,6 +1041,23 @@
                         document.getElementById('invest-total-return').textContent = formatCurrency(totalReturn);
                         document.getElementById('invest-final-value').textContent = formatCurrency(finalValue);
                         document.getElementById('investment-results').style.display = 'block';
+
+                        // Build yearly growth table
+                        const tbody = document.getElementById('investment-growth-body');
+                        tbody.innerHTML = '';
+                        let value = initial;
+                        const row0 = document.createElement('tr');
+                        row0.innerHTML = `<td>Start</td><td>-</td><td>${formatCurrency(value)}</td>`;
+                        tbody.appendChild(row0);
+                        for (let i = 1; i <= years; i++) {
+                            const newValue = value * (1 + annualRateDecimal);
+                            const growth = newValue - value;
+                            const tr = document.createElement('tr');
+                            tr.innerHTML = `<td>Year ${i}</td><td>${formatCurrency(growth)}</td><td>${formatCurrency(newValue)}</td>`;
+                            tbody.appendChild(tr);
+                            value = newValue;
+                        }
+                        document.getElementById('investment-growth-container').style.display = 'block';
                     }
 
                     function init() {
