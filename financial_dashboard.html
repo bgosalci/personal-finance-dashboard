@@ -241,6 +241,17 @@
             border: 1px solid var(--border-color);
         }
 
+        .portfolio-charts {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .portfolio-charts canvas {
+            flex: 1;
+            height: 8rem;
+        }
+
         /* Dedicated scroll container for the Stock Performance table */
         #performance-table-container {
             max-height: 60vh;
@@ -767,6 +778,11 @@
                 <div class="section-header">
                     <h2 class="section-title">Portfolio</h2>
                     <button class="btn btn-primary" id="add-investment-btn">Add Investment</button>
+                </div>
+
+                <div class="portfolio-charts">
+                    <canvas id="portfolio-split-chart" width="300" height="160"></canvas>
+                    <canvas id="portfolio-pl-chart" width="300" height="160"></canvas>
                 </div>
                 <div class="table-container" id="portfolio-table-container">
                     <table class="data-table" id="portfolio-table">
@@ -1326,6 +1342,80 @@
                     document.getElementById('portfolio-total-plpct').textContent = totalPLPct.toFixed(2) + '%';
                 }
 
+                function renderCharts() {
+                    drawPortfolioSplitChart();
+                    drawPLBarChart();
+                }
+
+                function drawPortfolioSplitChart() {
+                    const canvas = document.getElementById('portfolio-split-chart');
+                    if (!canvas) return;
+                    const ctx = canvas.getContext('2d');
+                    const width = canvas.width;
+                    const height = canvas.height;
+                    ctx.clearRect(0, 0, width, height);
+
+                    const values = investments.map(inv => inv.quantity * inv.lastPrice);
+                    const total = values.reduce((a, b) => a + b, 0);
+                    if (!total) return;
+
+                    const colors = ['#1e40af', '#3b82f6', '#10b981', '#dc2626', '#d97706', '#475569', '#94a3b8'];
+                    let start = 0;
+                    const centerX = width / 2;
+                    const centerY = height / 2;
+                    const radius = Math.min(width, height) / 2 - 4;
+
+                    values.forEach((val, idx) => {
+                        const angle = (val / total) * Math.PI * 2;
+                        ctx.beginPath();
+                        ctx.moveTo(centerX, centerY);
+                        ctx.arc(centerX, centerY, radius, start, start + angle);
+                        ctx.closePath();
+                        ctx.fillStyle = colors[idx % colors.length];
+                        ctx.fill();
+                        start += angle;
+                    });
+                }
+
+                function drawPLBarChart() {
+                    const canvas = document.getElementById('portfolio-pl-chart');
+                    if (!canvas) return;
+                    const ctx = canvas.getContext('2d');
+                    const width = canvas.width;
+                    const height = canvas.height;
+                    ctx.clearRect(0, 0, width, height);
+
+                    const root = getComputedStyle(document.documentElement);
+                    const posColor = root.getPropertyValue('--success-green').trim();
+                    const negColor = root.getPropertyValue('--danger-red').trim();
+
+                    const data = investments.map(inv => {
+                        const cost = inv.quantity * inv.avgPrice;
+                        const value = inv.quantity * inv.lastPrice;
+                        return cost ? ((value - cost) / cost) * 100 : 0;
+                    });
+                    if (!data.length) return;
+
+                    const maxAbs = Math.max(10, ...data.map(v => Math.abs(v)));
+                    const barWidth = width / data.length;
+                    const zeroY = height / 2;
+
+                    ctx.beginPath();
+                    ctx.strokeStyle = '#cccccc';
+                    ctx.moveTo(0, zeroY);
+                    ctx.lineTo(width, zeroY);
+                    ctx.stroke();
+
+                    data.forEach((v, idx) => {
+                        const color = v >= 0 ? posColor : negColor;
+                        const barHeight = (v / maxAbs) * (height / 2 * 0.9);
+                        const x = idx * barWidth + barWidth * 0.1;
+                        const y = v >= 0 ? zeroY - barHeight : zeroY;
+                        ctx.fillStyle = color;
+                        ctx.fillRect(x, y, barWidth * 0.8, Math.abs(barHeight));
+                    });
+                }
+
                 function renderTable() {
                     const tbody = document.getElementById('portfolio-body');
                     tbody.innerHTML = '';
@@ -1353,6 +1443,7 @@
 
                     updateRows();
                     updateTotals();
+                    renderCharts();
                 }
 
                 function updateRows() {
@@ -1482,6 +1573,7 @@
                     editModal.addEventListener('click', (e) => { if (e.target === editModal) closeEditModal(); });
 
                     renderTable();
+                    renderCharts();
                 }
 
                 return { init };
