@@ -125,6 +125,19 @@
             padding-bottom: 0.5rem;
         }
 
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .price-input[readonly] {
+            border: none;
+            background: transparent;
+            color: var(--text-primary);
+        }
+
         .form-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -961,9 +974,12 @@
 
             <!-- Stock Performance Tracker Tab -->
             <div id="stock-tracker" class="tab-content">
-                <h2 class="section-title">Stock Performance Tracker</h2>
+                <div class="section-header">
+                    <h2 class="section-title">Stock Performance Tracker</h2>
+                    <button class="btn btn-secondary" id="edit-stock-btn">Edit</button>
+                </div>
                 
-                <div class="ticker-management">
+                <div class="ticker-management" style="display: none;">
                     <div class="form-group">
                         <label for="ticker-input">Add Stock Ticker</label>
                         <input type="text" id="ticker-input" style="text-transform: uppercase;">
@@ -1449,6 +1465,7 @@
             // Stock Performance Tracker Module
             const StockTracker = (function() {
                 const STORAGE_KEY = 'stockTrackerData';
+                let editMode = false;
 
                 function saveData() {
                     localStorage.setItem(STORAGE_KEY, JSON.stringify(stockData));
@@ -1540,7 +1557,24 @@
 
                 function updateGenerateButton() {
                     const btn = document.getElementById('generate-table-btn');
-                    btn.style.display = stockData.tickers.length > 0 ? 'inline-flex' : 'none';
+                    btn.style.display = editMode && stockData.tickers.length > 0 ? 'inline-flex' : 'none';
+                }
+
+                function applyEditMode() {
+                    const management = document.querySelector('#stock-tracker .ticker-management');
+                    if (management) management.style.display = editMode ? 'flex' : 'none';
+
+                    const inputs = document.querySelectorAll('#performance-table input.price-input');
+                    inputs.forEach(inp => inp.readOnly = !editMode);
+
+                    updateGenerateButton();
+                }
+
+                function toggleEditMode() {
+                    editMode = !editMode;
+                    const btn = document.getElementById('edit-stock-btn');
+                    if (btn) btn.textContent = editMode ? 'Done' : 'Edit';
+                    applyEditMode();
                 }
 
                 function generatePerformanceTable() {
@@ -1575,6 +1609,7 @@
                             priceInput.step = '0.01';
                             priceInput.min = '0';
                             priceInput.value = stockData.prices[ticker][year] || '';
+                            priceInput.readOnly = !editMode;
                             
                             priceInput.addEventListener('input', () => {
                                 const price = parseFloat(priceInput.value);
@@ -1648,6 +1683,7 @@
                     stockData.tickers.forEach(ticker => updateGrowthCalculations(ticker));
                     saveData();
                     updateSummaryCards();
+                    applyEditMode();
                 }
 
                 function updateGrowthCalculations(ticker) {
@@ -1879,6 +1915,7 @@
                         updateSummaryCards();
                     }
 
+                    document.getElementById('edit-stock-btn').addEventListener('click', toggleEditMode);
                     document.getElementById('add-ticker-btn').addEventListener('click', addTicker);
                     document.getElementById('generate-table-btn').addEventListener('click', generatePerformanceTable);
 
@@ -1893,6 +1930,7 @@
                         if (e.target === e.currentTarget) closeChart();
                     });
 
+                    applyEditMode();
                 }
 
                 return {
