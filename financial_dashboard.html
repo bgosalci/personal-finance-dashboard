@@ -706,6 +706,22 @@
             text-align: right;
             white-space: nowrap;
         }
+
+        .actions-cell {
+            white-space: nowrap;
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            color: var(--primary-blue);
+            cursor: pointer;
+            padding: 0 0.25rem;
+        }
+
+        .action-btn:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
@@ -747,12 +763,13 @@
                                 <th>Value</th>
                                 <th>P&amp;L</th>
                                 <th>P&amp;L %</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody id="portfolio-body"></tbody>
                         <tfoot>
                             <tr class="summary-row">
-                                <td colspan="5">Total</td>
+                                <td colspan="6">Total</td>
                                 <td id="portfolio-total-value">$0.00</td>
                                 <td id="portfolio-total-pl">$0.00</td>
                                 <td id="portfolio-total-plpct">0.00%</td>
@@ -793,6 +810,38 @@
                                 <button type="button" class="btn btn-secondary" id="save-add-another-btn">Save &amp; Add Another</button>
                                 <button type="button" class="btn btn-secondary" id="cancel-investment-btn">Cancel</button>
                                 <button type="submit" class="btn btn-primary">Add</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Edit Investment Modal -->
+                <div id="edit-investment-modal" class="modal">
+                    <div class="modal-content">
+                        <span class="modal-close" id="edit-investment-close">&times;</span>
+                        <h3>Edit Investment</h3>
+                        <form id="edit-investment-form">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="edit-quantity">Quantity</label>
+                                    <input type="number" step="0.0001" id="edit-quantity" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="edit-avg-price">Average Price</label>
+                                    <input type="number" step="0.01" id="edit-avg-price" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="edit-last-price">Last Price</label>
+                                    <input type="number" step="0.01" id="edit-last-price" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Total Value</label>
+                                    <span id="edit-total-value">$0.00</span>
+                                </div>
+                            </div>
+                            <div class="modal-actions">
+                                <button type="button" class="btn btn-secondary" id="edit-cancel-btn">Cancel</button>
+                                <button type="submit" class="btn btn-primary">Save</button>
                             </div>
                         </form>
                     </div>
@@ -1217,6 +1266,13 @@
                 const saveAddBtn = document.getElementById('save-add-another-btn');
                 const totalDisplay = document.getElementById('investment-total-value');
 
+                const editModal = document.getElementById('edit-investment-modal');
+                const editForm = document.getElementById('edit-investment-form');
+                const editClose = document.getElementById('edit-investment-close');
+                const editCancel = document.getElementById('edit-cancel-btn');
+                const editTotal = document.getElementById('edit-total-value');
+                let editIndex = null;
+
                 function loadData() {
                     const data = localStorage.getItem(STORAGE_KEY);
                     if (data) {
@@ -1255,7 +1311,7 @@
                 function renderTable() {
                     const tbody = document.getElementById('portfolio-body');
                     tbody.innerHTML = '';
-                    investments.forEach(inv => {
+                    investments.forEach((inv, idx) => {
                         const row = document.createElement('tr');
                         row.innerHTML = `
                             <td>${inv.ticker}</td>
@@ -1265,7 +1321,11 @@
                             <td class="number-cell">${formatCurrency(inv.lastPrice)}</td>
                             <td class="value-cell"></td>
                             <td class="pl-cell"></td>
-                            <td class="plpct-cell"></td>`;
+                            <td class="plpct-cell"></td>
+                            <td class="actions-cell">
+                                <button class="action-btn edit-btn" data-index="${idx}">Edit</button>
+                                <button class="action-btn delete-btn" data-index="${idx}">Delete</button>
+                            </td>`;
                         tbody.appendChild(row);
                     });
 
@@ -1327,6 +1387,59 @@
                     }
                 }
 
+                function openEditModal(index) {
+                    editIndex = index;
+                    const inv = investments[index];
+                    document.getElementById('edit-quantity').value = inv.quantity;
+                    document.getElementById('edit-avg-price').value = inv.avgPrice;
+                    document.getElementById('edit-last-price').value = inv.lastPrice;
+                    editTotal.textContent = formatCurrency(inv.quantity * inv.lastPrice);
+                    editModal.style.display = 'flex';
+                }
+
+                function closeEditModal() {
+                    editModal.style.display = 'none';
+                    editIndex = null;
+                }
+
+                function handleEditInput() {
+                    const qty = parseFloat(document.getElementById('edit-quantity').value) || 0;
+                    const price = parseFloat(document.getElementById('edit-last-price').value) || 0;
+                    editTotal.textContent = formatCurrency(qty * price);
+                }
+
+                function saveEdit(e) {
+                    e.preventDefault();
+                    if (editIndex === null) return;
+                    const qty = parseFloat(document.getElementById('edit-quantity').value) || 0;
+                    const avg = parseFloat(document.getElementById('edit-avg-price').value) || 0;
+                    const last = parseFloat(document.getElementById('edit-last-price').value) || 0;
+                    if (qty <= 0 || avg <= 0 || last <= 0) return;
+
+                    const inv = investments[editIndex];
+                    inv.quantity = qty;
+                    inv.avgPrice = avg;
+                    inv.lastPrice = last;
+
+                    saveData();
+                    renderTable();
+                    closeEditModal();
+                }
+
+                function handleRowAction(e) {
+                    if (e.target.classList.contains('edit-btn')) {
+                        const idx = parseInt(e.target.dataset.index, 10);
+                        openEditModal(idx);
+                    } else if (e.target.classList.contains('delete-btn')) {
+                        const idx = parseInt(e.target.dataset.index, 10);
+                        if (confirm('Delete this investment?')) {
+                            investments.splice(idx, 1);
+                            saveData();
+                            renderTable();
+                        }
+                    }
+                }
+
                 function init() {
                     loadData();
                     addBtn.addEventListener('click', openModal);
@@ -1336,6 +1449,13 @@
                     form.addEventListener('submit', (e) => { e.preventDefault(); addFromForm(false); });
                     saveAddBtn.addEventListener('click', () => addFromForm(true));
                     modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+
+                    document.getElementById('portfolio-body').addEventListener('click', handleRowAction);
+                    editClose.addEventListener('click', closeEditModal);
+                    editCancel.addEventListener('click', closeEditModal);
+                    editForm.addEventListener('input', handleEditInput);
+                    editForm.addEventListener('submit', saveEdit);
+                    editModal.addEventListener('click', (e) => { if (e.target === editModal) closeEditModal(); });
 
                     renderTable();
                 }
