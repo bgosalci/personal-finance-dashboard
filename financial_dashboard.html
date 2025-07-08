@@ -1601,8 +1601,8 @@
 
                         const chartCell = document.createElement('td');
                         const chartBtn = document.createElement('button');
-                        chartBtn.className = 'btn-link';
-                        chartBtn.textContent = 'View';
+                        chartBtn.className = 'btn btn-primary';
+                        chartBtn.textContent = 'View Chart';
                         chartBtn.addEventListener('click', () => showChart(ticker));
                         chartCell.appendChild(chartBtn);
                         chartRow.appendChild(chartCell);
@@ -1777,11 +1777,6 @@
                     }
 
                     const prices = years.map(y => pricesObj[y]);
-                    const growth = [0];
-                    for (let i = 1; i < prices.length; i++) {
-                        const g = prices[i-1] ? ((prices[i] - prices[i-1]) / prices[i-1]) * 100 : 0;
-                        growth.push(g);
-                    }
 
                     const padding = 40;
                     const width = canvas.width - padding * 2;
@@ -1789,8 +1784,6 @@
 
                     const maxPrice = Math.max(...prices);
                     const minPrice = Math.min(...prices);
-                    const maxGrowth = Math.max(...growth);
-                    const minGrowth = Math.min(...growth);
 
                     ctx.strokeStyle = '#ccc';
                     ctx.beginPath();
@@ -1804,15 +1797,6 @@
                     years.forEach((year, idx) => {
                         const x = padding + (idx / (years.length - 1)) * width;
                         const y = padding + (1 - (prices[idx] - minPrice) / (maxPrice - minPrice || 1)) * height;
-                        if (idx === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-                    });
-                    ctx.stroke();
-
-                    ctx.strokeStyle = '#059669';
-                    ctx.beginPath();
-                    years.forEach((year, idx) => {
-                        const x = padding + (idx / (years.length - 1)) * width;
-                        const y = padding + (1 - (growth[idx] - minGrowth) / (maxGrowth - minGrowth || 1)) * height;
                         if (idx === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
                     });
                     ctx.stroke();
