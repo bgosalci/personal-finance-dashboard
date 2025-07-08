@@ -716,6 +716,8 @@
             border-radius: 50%;
             width: 24px;
             height: 24px;
+            padding: 0;
+            line-height: 1;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
@@ -1447,11 +1449,13 @@
                 }
 
                 function handleRowAction(e) {
-                    if (e.target.classList.contains('edit-btn')) {
-                        const idx = parseInt(e.target.dataset.index, 10);
+                    const btn = e.target.closest('button');
+                    if (!btn) return;
+                    if (btn.classList.contains('edit-btn')) {
+                        const idx = parseInt(btn.dataset.index, 10);
                         openEditModal(idx);
-                    } else if (e.target.classList.contains('delete-btn')) {
-                        const idx = parseInt(e.target.dataset.index, 10);
+                    } else if (btn.classList.contains('delete-btn')) {
+                        const idx = parseInt(btn.dataset.index, 10);
                         if (confirm('Delete this investment?')) {
                             investments.splice(idx, 1);
                             saveData();
