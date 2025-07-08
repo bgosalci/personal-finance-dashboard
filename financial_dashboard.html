@@ -600,6 +600,9 @@
             font-size: 1rem;
         }
 
+        }
+
+        /* Modal for charts */
         .modal {
             position: fixed;
             top: 0;
@@ -634,7 +637,6 @@
             cursor: pointer;
             font-size: 1.25rem;
             line-height: 1;
-        }
         }
     </style>
 </head>
@@ -993,7 +995,13 @@
                     </div>
                 </div>
 
-                <!-- Chart popup is generated dynamically when required -->
+                <!-- Chart Modal -->
+                <div id="chart-modal" class="modal">
+                    <div class="modal-content">
+                        <span class="modal-close">&times;</span>
+                        <canvas id="popup-chart" width="600" height="400"></canvas>
+                    </div>
+                </div>
             </div>
 
             <!-- Stock Finance Performance Tab -->
@@ -1773,15 +1781,14 @@
                 }
 
                 function showChart(ticker) {
-                    const popup = window.open('', `${ticker}-chart`, 'width=700,height=500');
-                    if (!popup) {
-                        alert('Please allow pop-up windows to view the chart.');
-                        return;
-                    }
-                    popup.document.write(`<!DOCTYPE html><html><head><title>${ticker} Chart</title></head><body style="margin:0;display:flex;justify-content:center;align-items:center;"><canvas id="popup-chart" width="600" height="400"></canvas></body></html>`);
-                    popup.document.close();
-                    const canvas = popup.document.getElementById('popup-chart');
+                    const modal = document.getElementById('chart-modal');
+                    const canvas = document.getElementById('popup-chart');
                     drawChart(ticker, canvas);
+                    modal.style.display = 'flex';
+                }
+
+                function closeChart() {
+                    document.getElementById('chart-modal').style.display = 'none';
                 }
 
                 function drawChart(ticker, canvas = document.createElement('canvas')) {
@@ -1868,6 +1875,11 @@
                         if (e.key === 'Enter') {
                             addTicker();
                         }
+                    });
+
+                    document.querySelector('.modal-close').addEventListener('click', closeChart);
+                    document.getElementById('chart-modal').addEventListener('click', (e) => {
+                        if (e.target === e.currentTarget) closeChart();
                     });
 
                 }
