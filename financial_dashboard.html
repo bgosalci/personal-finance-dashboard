@@ -396,6 +396,24 @@
             background: rgba(255, 255, 255, 0.5);
         }
 
+        .chart-btn {
+            background: var(--primary-blue);
+            border: none;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        .chart-btn:hover {
+            background: var(--primary-blue-dark);
+        }
+
         .placeholder-content {
             text-align: center;
             padding: 4rem 2rem;
@@ -1596,8 +1614,8 @@
 
                         const chartCell = document.createElement('td');
                         const chartBtn = document.createElement('button');
-                        chartBtn.className = 'btn btn-primary';
-                        chartBtn.textContent = 'View Chart';
+                        chartBtn.className = 'chart-btn';
+                        chartBtn.textContent = '📈';
                         chartBtn.addEventListener('click', () => showChart(ticker));
                         chartCell.appendChild(chartBtn);
                         chartRow.appendChild(chartCell);
