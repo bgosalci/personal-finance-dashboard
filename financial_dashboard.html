@@ -307,15 +307,18 @@
         .growth-positive {
             color: var(--success-green);
             font-weight: 600;
+            text-align: right;
         }
 
         .growth-negative {
             color: var(--danger-red);
             font-weight: 600;
+            text-align: right;
         }
 
         .growth-neutral {
             color: var(--text-secondary);
+            text-align: right;
         }
 
         .summary-row {
@@ -1660,6 +1663,7 @@
                                 growthDiv.className = 'growth-neutral';
                                 growthDiv.style.fontSize = '0.85rem';
                                 growthDiv.style.marginTop = '4px';
+                                growthDiv.style.textAlign = 'right';
                                 cell.appendChild(growthDiv);
                             }
                             
