@@ -1786,6 +1786,9 @@
                     const maxPrice = Math.max(...prices);
                     const minPrice = Math.min(...prices);
 
+                    const logMin = Math.log10(minPrice);
+                    const logMax = Math.log10(maxPrice);
+
                     ctx.strokeStyle = '#ccc';
                     ctx.beginPath();
                     ctx.moveTo(padding, padding);
@@ -1798,8 +1801,9 @@
                     ctx.fillStyle = '#000';
                     ctx.font = '12px sans-serif';
                     for (let i = 0; i <= levels; i++) {
-                        const value = minPrice + (i * (maxPrice - minPrice) / levels);
-                        const y = padding + (1 - (value - minPrice) / (maxPrice - minPrice || 1)) * height;
+                        const logValue = logMin + (i * (logMax - logMin) / levels);
+                        const value = Math.pow(10, logValue);
+                        const y = padding + (1 - (logValue - logMin) / (logMax - logMin || 1)) * height;
                         ctx.strokeStyle = '#eee';
                         ctx.beginPath();
                         ctx.moveTo(padding, y);
@@ -1812,7 +1816,8 @@
                     ctx.beginPath();
                     years.forEach((year, idx) => {
                         const x = padding + (idx / (years.length - 1)) * width;
-                        const y = padding + (1 - (prices[idx] - minPrice) / (maxPrice - minPrice || 1)) * height;
+                        const logPrice = Math.log10(prices[idx]);
+                        const y = padding + (1 - (logPrice - logMin) / (logMax - logMin || 1)) * height;
                         if (idx === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
                     });
                     ctx.stroke();
