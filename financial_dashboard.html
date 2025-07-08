@@ -1291,6 +1291,27 @@
 
             // Stock Performance Tracker Module
             const StockTracker = (function() {
+                const STORAGE_KEY = 'stockTrackerData';
+
+                function saveData() {
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(stockData));
+                }
+
+                function loadData() {
+                    const data = localStorage.getItem(STORAGE_KEY);
+                    if (data) {
+                        try {
+                            const parsed = JSON.parse(data);
+                            if (parsed && typeof parsed === 'object') {
+                                stockData.tickers = Array.isArray(parsed.tickers) ? parsed.tickers : [];
+                                stockData.startYear = parsed.startYear || stockData.startYear;
+                                stockData.prices = parsed.prices || {};
+                            }
+                        } catch (e) {
+                            console.error('Failed to parse stored stock data', e);
+                        }
+                    }
+                }
                 
                 function initializeYearSelect() {
                     const yearSelect = document.getElementById('start-year');
@@ -1319,9 +1340,10 @@
                     stockData.tickers.push(ticker);
                     stockData.prices[ticker] = {};
                     tickerInput.value = '';
-                    
+
                     updateTickerTags();
                     updateGenerateButton();
+                    saveData();
                 }
 
                 function removeTicker(ticker) {
@@ -1337,6 +1359,7 @@
                         } else {
                             generatePerformanceTable();
                         }
+                        saveData();
                     }
                 }
 
@@ -1401,6 +1424,7 @@
                                     delete stockData.prices[ticker][year];
                                 }
                                 updateGrowthCalculations(ticker);
+                                saveData();
                             });
                             
                             cell.appendChild(priceInput);
@@ -1446,9 +1470,10 @@
                     tbody.appendChild(cagrRow);
 
                     document.getElementById('performance-table-container').style.display = 'block';
-                    
+
                     // Calculate initial growth values
                     stockData.tickers.forEach(ticker => updateGrowthCalculations(ticker));
+                    saveData();
                 }
 
                 function updateGrowthCalculations(ticker) {
@@ -1503,10 +1528,19 @@
 
                 function init() {
                     initializeYearSelect();
-                    
+                    loadData();
+
+                    document.getElementById('start-year').value = stockData.startYear;
+                    updateTickerTags();
+                    updateGenerateButton();
+
+                    if (stockData.tickers.length > 0) {
+                        generatePerformanceTable();
+                    }
+
                     document.getElementById('add-ticker-btn').addEventListener('click', addTicker);
                     document.getElementById('generate-table-btn').addEventListener('click', generatePerformanceTable);
-                    
+
                     document.getElementById('ticker-input').addEventListener('keypress', (e) => {
                         if (e.key === 'Enter') {
                             addTicker();
