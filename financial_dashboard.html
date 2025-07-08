@@ -566,11 +566,57 @@
 
             .fair-value-nav {
                 flex-direction: column;
-            }
+        }
+        
+        .calculator-section {
+            padding: 1rem;
+        }
+        
+        .btn-link {
+            background: none;
+            border: none;
+            color: var(--primary-blue);
+            cursor: pointer;
+            text-decoration: underline;
+            padding: 0.25rem 0.5rem;
+            font-size: 1rem;
+        }
 
-            .calculator-section {
-                padding: 1rem;
-            }
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: var(--background-primary);
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            position: relative;
+        }
+
+        .modal-content canvas {
+            display: block;
+            max-width: 100%;
+            height: auto;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 8px;
+            right: 12px;
+            cursor: pointer;
+            font-size: 1.25rem;
+            line-height: 1;
+        }
         }
     </style>
 </head>
@@ -926,6 +972,13 @@
                     <div class="summary-card">
                         <h4>Most Consistent</h4>
                         <p id="summary-consistent"></p>
+                    </div>
+                </div>
+
+                <div id="chart-modal" class="modal">
+                    <div class="modal-content">
+                        <span id="chart-close" class="modal-close">&times;</span>
+                        <canvas id="chart-canvas" width="600" height="400"></canvas>
                     </div>
                 </div>
             </div>
@@ -1527,11 +1580,15 @@
                     totalGrowthRow.className = 'summary-row';
                     totalGrowthRow.innerHTML = '<td><strong>Total Growth</strong></td>';
                     
-                    const cagrRow = document.createElement('tr');
-                    cagrRow.className = 'summary-row';
-                    cagrRow.innerHTML = '<td><strong>CAGR</strong></td>';
+                   const cagrRow = document.createElement('tr');
+                   cagrRow.className = 'summary-row';
+                   cagrRow.innerHTML = '<td><strong>CAGR</strong></td>';
 
-                    stockData.tickers.forEach(ticker => {
+                    const chartRow = document.createElement('tr');
+                    chartRow.className = 'summary-row';
+                    chartRow.innerHTML = '<td><strong>Chart</strong></td>';
+
+                   stockData.tickers.forEach(ticker => {
                         const totalCell = document.createElement('td');
                         totalCell.id = `total-growth-${ticker}`;
                         totalCell.className = 'growth-neutral';
@@ -1541,10 +1598,19 @@
                         cagrCell.id = `cagr-${ticker}`;
                         cagrCell.className = 'growth-neutral';
                         cagrRow.appendChild(cagrCell);
-                    });
 
-                    tbody.appendChild(totalGrowthRow);
-                    tbody.appendChild(cagrRow);
+                        const chartCell = document.createElement('td');
+                        const chartBtn = document.createElement('button');
+                        chartBtn.className = 'btn-link';
+                        chartBtn.textContent = 'View';
+                        chartBtn.addEventListener('click', () => showChart(ticker));
+                        chartCell.appendChild(chartBtn);
+                        chartRow.appendChild(chartCell);
+                   });
+
+                   tbody.appendChild(totalGrowthRow);
+                   tbody.appendChild(cagrRow);
+                    tbody.appendChild(chartRow);
 
                     document.getElementById('performance-table-container').style.display = 'block';
 
@@ -1693,6 +1759,72 @@
                     container.style.display = 'flex';
                 }
 
+                function showChart(ticker) {
+                    drawChart(ticker);
+                    document.getElementById('chart-modal').style.display = 'flex';
+                }
+
+                function drawChart(ticker) {
+                    const canvas = document.getElementById('chart-canvas');
+                    const ctx = canvas.getContext('2d');
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                    const pricesObj = stockData.prices[ticker] || {};
+                    const years = Object.keys(pricesObj).map(y => parseInt(y)).sort((a,b)=>a-b);
+                    if (years.length === 0) {
+                        ctx.fillText('No data available', 50, 50);
+                        return;
+                    }
+
+                    const prices = years.map(y => pricesObj[y]);
+                    const growth = [0];
+                    for (let i = 1; i < prices.length; i++) {
+                        const g = prices[i-1] ? ((prices[i] - prices[i-1]) / prices[i-1]) * 100 : 0;
+                        growth.push(g);
+                    }
+
+                    const padding = 40;
+                    const width = canvas.width - padding * 2;
+                    const height = canvas.height - padding * 2;
+
+                    const maxPrice = Math.max(...prices);
+                    const minPrice = Math.min(...prices);
+                    const maxGrowth = Math.max(...growth);
+                    const minGrowth = Math.min(...growth);
+
+                    ctx.strokeStyle = '#ccc';
+                    ctx.beginPath();
+                    ctx.moveTo(padding, padding);
+                    ctx.lineTo(padding, canvas.height - padding);
+                    ctx.lineTo(canvas.width - padding, canvas.height - padding);
+                    ctx.stroke();
+
+                    ctx.strokeStyle = '#1e40af';
+                    ctx.beginPath();
+                    years.forEach((year, idx) => {
+                        const x = padding + (idx / (years.length - 1)) * width;
+                        const y = padding + (1 - (prices[idx] - minPrice) / (maxPrice - minPrice || 1)) * height;
+                        if (idx === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+                    });
+                    ctx.stroke();
+
+                    ctx.strokeStyle = '#059669';
+                    ctx.beginPath();
+                    years.forEach((year, idx) => {
+                        const x = padding + (idx / (years.length - 1)) * width;
+                        const y = padding + (1 - (growth[idx] - minGrowth) / (maxGrowth - minGrowth || 1)) * height;
+                        if (idx === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+                    });
+                    ctx.stroke();
+
+                    ctx.fillStyle = '#000';
+                    ctx.font = '12px sans-serif';
+                    years.forEach((year, idx) => {
+                        const x = padding + (idx / (years.length - 1)) * width;
+                        ctx.fillText(year, x - 10, canvas.height - padding + 15);
+                    });
+                }
+
                 function init() {
                     initializeYearSelect();
                     loadData();
@@ -1712,6 +1844,15 @@
                     document.getElementById('ticker-input').addEventListener('keypress', (e) => {
                         if (e.key === 'Enter') {
                             addTicker();
+                        }
+                    });
+
+                    document.getElementById('chart-close').addEventListener('click', () => {
+                        document.getElementById('chart-modal').style.display = 'none';
+                    });
+                    document.getElementById('chart-modal').addEventListener('click', (e) => {
+                        if (e.target === e.currentTarget) {
+                            e.currentTarget.style.display = 'none';
                         }
                     });
                 }
