@@ -975,12 +975,7 @@
                     </div>
                 </div>
 
-                <div id="chart-modal" class="modal">
-                    <div class="modal-content">
-                        <span id="chart-close" class="modal-close">&times;</span>
-                        <canvas id="chart-canvas" width="600" height="400"></canvas>
-                    </div>
-                </div>
+                <!-- Chart popup is generated dynamically when required -->
             </div>
 
             <!-- Stock Finance Performance Tab -->
@@ -1760,12 +1755,18 @@
                 }
 
                 function showChart(ticker) {
-                    drawChart(ticker);
-                    document.getElementById('chart-modal').style.display = 'flex';
+                    const popup = window.open('', `${ticker}-chart`, 'width=700,height=500');
+                    if (!popup) {
+                        alert('Please allow pop-up windows to view the chart.');
+                        return;
+                    }
+                    popup.document.write(`<!DOCTYPE html><html><head><title>${ticker} Chart</title></head><body style="margin:0;display:flex;justify-content:center;align-items:center;"><canvas id="popup-chart" width="600" height="400"></canvas></body></html>`);
+                    popup.document.close();
+                    const canvas = popup.document.getElementById('popup-chart');
+                    drawChart(ticker, canvas);
                 }
 
-                function drawChart(ticker) {
-                    const canvas = document.getElementById('chart-canvas');
+                function drawChart(ticker, canvas = document.createElement('canvas')) {
                     const ctx = canvas.getContext('2d');
                     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -1791,6 +1792,21 @@
                     ctx.lineTo(padding, canvas.height - padding);
                     ctx.lineTo(canvas.width - padding, canvas.height - padding);
                     ctx.stroke();
+
+                    // Price level gridlines and labels
+                    const levels = 5;
+                    ctx.fillStyle = '#000';
+                    ctx.font = '12px sans-serif';
+                    for (let i = 0; i <= levels; i++) {
+                        const value = minPrice + (i * (maxPrice - minPrice) / levels);
+                        const y = padding + (1 - (value - minPrice) / (maxPrice - minPrice || 1)) * height;
+                        ctx.strokeStyle = '#eee';
+                        ctx.beginPath();
+                        ctx.moveTo(padding, y);
+                        ctx.lineTo(canvas.width - padding, y);
+                        ctx.stroke();
+                        ctx.fillText(value.toFixed(2), 5, y + 3);
+                    }
 
                     ctx.strokeStyle = '#1e40af';
                     ctx.beginPath();
@@ -1831,14 +1847,6 @@
                         }
                     });
 
-                    document.getElementById('chart-close').addEventListener('click', () => {
-                        document.getElementById('chart-modal').style.display = 'none';
-                    });
-                    document.getElementById('chart-modal').addEventListener('click', (e) => {
-                        if (e.target === e.currentTarget) {
-                            e.currentTarget.style.display = 'none';
-                        }
-                    });
                 }
 
                 return {
