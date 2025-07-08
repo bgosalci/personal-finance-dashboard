@@ -1852,6 +1852,7 @@
                     const prices = years.map(y => pricesObj[y]);
 
                     const padding = 40;
+                    const labelPadding = 10;
                     const width = canvas.width - padding * 2;
                     const height = canvas.height - padding * 2;
 
@@ -1881,7 +1882,7 @@
                         ctx.moveTo(padding, y);
                         ctx.lineTo(canvas.width - padding, y);
                         ctx.stroke();
-                        ctx.fillText(value.toFixed(2), 5, y + 3);
+                        ctx.fillText(value.toFixed(2), padding - labelPadding - ctx.measureText(value.toFixed(2)).width, y + 3);
                     }
 
                     ctx.strokeStyle = '#1e40af';
@@ -1898,7 +1899,8 @@
                     ctx.font = '12px sans-serif';
                     years.forEach((year, idx) => {
                         const x = padding + (idx / (years.length - 1)) * width;
-                        ctx.fillText(year, x - 10, canvas.height - padding + 15);
+                        const textWidth = ctx.measureText(year).width;
+                        ctx.fillText(year, x - textWidth / 2, canvas.height - padding + labelPadding + 5);
                     });
                 }
 
