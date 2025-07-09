@@ -56,6 +56,12 @@
                 let pieChart = null;
                 let barChart = null;
                 const COLOR_KEY = 'portfolioColors';
+                const COLOR_PALETTE = [
+                    '#e6194b','#3cb44b','#ffe119','#4363d8','#f58231',
+                    '#911eb4','#46f0f0','#f032e6','#bcf60c','#fabebe',
+                    '#008080','#e6beff','#9a6324','#fffac8','#800000',
+                    '#aaffc3','#808000','#ffd8b1','#000075','#808080'
+                ];
                 let tickerColors = {};
                 let colorIndex = 0;
 
@@ -127,10 +133,17 @@
                     document.getElementById('portfolio-total-plpct').textContent = totalPLPct.toFixed(2) + '%';
                 }
 
+                function generateColor(idx) {
+                    if (idx < COLOR_PALETTE.length) {
+                        return COLOR_PALETTE[idx];
+                    }
+                    const hue = (idx * 137.508) % 360;
+                    return `hsl(${hue},70%,60%)`;
+                }
+
                 function assignColor(ticker) {
                     if (!tickerColors[ticker]) {
-                        const hue = (colorIndex * 137.508) % 360;
-                        tickerColors[ticker] = `hsl(${hue},70%,60%)`;
+                        tickerColors[ticker] = generateColor(colorIndex);
                         colorIndex++;
                     }
                 }
@@ -376,6 +389,7 @@
                             const removed = investments.splice(idx, 1)[0];
                             if (removed && !investments.some(inv => inv.ticker === removed.ticker)) {
                                 delete tickerColors[removed.ticker];
+                                colorIndex = Object.keys(tickerColors).length;
                             }
                             saveData();
                             renderTable();
