@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Dashboard - Personal Investment Tracking & Financial Planning Tool</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <img src="gosalci_logo.png" alt="Logo" class="logo">
+            <div class="header-text">
+                <h1>Financial Dashboard</h1>
+                <p>Personal Investment Tracking & Financial Planning Tool</p>
+            </div>
+        </div>
+    </header>
+
+    <nav class="nav-tabs">
+        <button class="nav-tab active" data-tab="portfolio">Portfolio</button>
+        <button class="nav-tab" data-tab="pension">Pension</button>
+        <button class="nav-tab" data-tab="calculators">Calculators</button>
+        <button class="nav-tab" data-tab="stock-tracker">Stock Performance Tracker</button>
+        <button class="nav-tab" data-tab="stock-finance">Stock Finance Performance</button>
+    </nav>
+
+    <div class="main-content">
+        <div class="tab-container">
+            <!-- Portfolio Tab -->
+            <div id="portfolio" class="tab-content active">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Investment Portfolio</h2>
+                        <button id="add-investment-btn" class="btn btn-primary">
+                            <ion-icon name="add"></ion-icon>
+                            Add Investment
+                        </button>
+                    </div>
+                    
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Ticker</th>
+                                    <th>Name</th>
+                                    <th>Avg Price</th>
+                                    <th>Quantity</th>
+                                    <th>Last Price</th>
+                                    <th>Value</th>
+                                    <th>P&L</th>
+                                    <th>P&L%</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="portfolio-body">
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="5"><strong>Total Portfolio</strong></td>
+                                    <td class="value-cell" id="portfolio-total-value">$0.00</td>
+                                    <td class="pl-cell" id="portfolio-total-pl">$0.00</td>
+                                    <td class="plpct-cell" id="portfolio-total-plpct">0.00%</td>
+                                    <td></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+
+                    <div class="charts-container">
+                        <div class="chart-card">
+                            <h3 class="chart-title">Investment Spread</h3>
+                            <canvas id="investment-spread-chart" width="400" height="300"></canvas>
+                        </div>
+                        <div class="chart-card">
+                            <h3 class="chart-title">P&L Percentage</h3>
+                            <canvas id="plpct-chart" width="400" height="300"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Add Investment Modal -->
+                <div id="investment-modal" class="modal">
+                    <div class="modal-content">
+                        <span class="modal-close" id="investment-close">&times;</span>
+                        <h3>Add New Investment</h3>
+                        <form id="investment-form">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="investment-ticker">Ticker Symbol</label>
+                                    <input type="text" id="investment-ticker" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="investment-name">Company Name</label>
+                                    <input type="text" id="investment-name">
+                                </div>
+                                <div class="form-group">
+                                    <label for="investment-quantity">Quantity</label>
+                                    <input type="number" id="investment-quantity" min="0" step="0.01" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="investment-avg-price">Average Price ($)</label>
+                                    <input type="number" id="investment-avg-price" min="0" step="0.01" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="investment-last-price">Last Price ($)</label>
+                                    <input type="number" id="investment-last-price" min="0" step="0.01" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Total Value</label>
+                                    <div id="investment-total-value">$0.00</div>
+                                </div>
+                            </div>
+                            <div class="modal-actions">
+                                <button type="button" id="cancel-investment-btn" class="btn btn-secondary">Cancel</button>
+                                <button type="button" id="save-add-another-btn" class="btn btn-success">Save & Add Another</button>
+                                <button type="submit" class="btn btn-primary">Save</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Edit Investment Modal -->
+                <div id="edit-investment-modal" class="modal">
+                    <div class="modal-content">
+                        <span class="modal-close" id="edit-investment-close">&times;</span>
+                        <h3>Edit Investment</h3>
+                        <form id="edit-investment-form">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="edit-name">Company Name</label>
+                                    <input type="text" id="edit-name">
+                                </div>
+                                <div class="form-group">
+                                    <label for="edit-quantity">Quantity</label>
+                                    <input type="number" id="edit-quantity" min="0" step="0.01" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="edit-avg-price">Average Price ($)</label>
+                                    <input type="number" id="edit-avg-price" min="0" step="0.01" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="edit-last-price">Last Price ($)</label>
+                                    <input type="number" id="edit-last-price" min="0" step="0.01" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Total Value</label>
+                                    <div id="edit-total-value">$0.00</div>
+                                </div>
+                            </div>
+                            <div class="modal-actions">
+                                <button type="button" id="edit-cancel-btn" class="btn btn-secondary">Cancel</button>
+                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pension Tab -->
+            <div id="pension" class="tab-content">
+                <div class="placeholder-content">
+                    <h3>Pension Planning</h3>
+                    <p>Comprehensive pension and retirement planning tools. This section will include pension calculators, retirement income projections, contribution optimization strategies, and long-term financial planning to help you secure your financial future.</p>
+                </div>
+            </div>
+
+            <!-- Calculators Tab -->
+            <div id="calculators" class="tab-content">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Financial Calculators</h2>
+                    </div>
+
+                    <div class="sub-nav-tabs">
+                        <button class="sub-nav-tab active" data-subtab="loan">Loan Calculator</button>
+                        <button class="sub-nav-tab" data-subtab="investment">Investment Calculator</button>
+                        <button class="sub-nav-tab" data-subtab="cagr">CAGR Calculator</button>
+                        <button class="sub-nav-tab" data-subtab="fair-value">Fair Value Calculator</button>
+                    </div>
+
+                    <!-- Loan Calculator -->
+                    <div id="loan" class="sub-tab-content active">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="loan-principal">Loan Amount ($)</label>
+                                <input type="number" id="loan-principal" min="0" step="1000">
+                            </div>
+                            <div class="form-group">
+                                <label for="loan-rate">Annual Interest Rate (%)</label>
+                                <input type="number" id="loan-rate" min="0" max="50" step="0.1">
+                            </div>
+                            <div class="form-group">
+                                <label for="loan-term">Loan Term (Years)</label>
+                                <input type="number" id="loan-term" min="1" max="50" step="1">
+                            </div>
+                        </div>
+                        
+                        <div id="loan-results" class="calculator-results" style="display: none;">
+                            <div class="result-item">
+                                <span class="result-label">Monthly Payment:</span>
+                                <span class="result-value" id="loan-monthly-payment">$0.00</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="result-label">Total Interest:</span>
+                                <span class="result-value" id="loan-total-interest">$0.00</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="result-label">Total Amount:</span>
+                                <span class="result-value" id="loan-total-amount">$0.00</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Investment Calculator -->
+                    <div id="investment" class="sub-tab-content">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="invest-initial">Initial Investment ($)</label>
+                                <input type="number" id="invest-initial" min="0" step="100">
+                            </div>
+                            <div class="form-group">
+                                <label for="invest-rate">Annual Return Rate (%)</label>
+                                <input type="number" id="invest-rate" min="0" max="100" step="0.1">
+                            </div>
+                            <div class="form-group">
+                                <label for="invest-years">Investment Period (Years)</label>
+                                <input type="number" id="invest-years" min="1" max="100" step="1">
+                            </div>
+                        </div>
+                        
+                        <div id="investment-results" class="calculator-results" style="display: none;">
+                            <div class="result-item">
+                                <span class="result-label">Total Return:</span>
+                                <span class="result-value" id="invest-total-return">$0.00</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="result-label">Final Value:</span>
+                                <span class="result-value" id="invest-final-value">$0.00</span>
+                            </div>
+                        </div>
+
+                        <div id="investment-growth-container" class="investment-growth-table" style="display: none;">
+                            <h4>Year-by-Year Growth</h4>
+                            <div class="table-container">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Period</th>
+                                            <th>Growth</th>
+                                            <th>Value</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="investment-growth-body">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CAGR Calculator -->
+                    <div id="cagr" class="sub-tab-content">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="cagr-beginning">Beginning Value ($)</label>
+                                <input type="number" id="cagr-beginning" min="0" step="0.01">
+                            </div>
+                            <div class="form-group">
+                                <label for="cagr-ending">Ending Value ($)</label>
+                                <input type="number" id="cagr-ending" min="0" step="0.01">
+                            </div>
+                            <div class="form-group">
+                                <label for="cagr-years">Number of Years</label>
+                                <input type="number" id="cagr-years" min="1" max="100" step="0.1">
+                            </div>
+                        </div>
+                        
+                        <div id="cagr-results" class="calculator-results" style="display: none;">
+                            <div class="result-item">
+                                <span class="result-label">Total Return:</span>
+                                <span class="result-value" id="cagr-total-return">0.00%</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="result-label">CAGR:</span>
+                                <span class="result-value" id="cagr-rate">0.00%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Fair Value Calculator -->
+                    <div id="fair-value" class="sub-tab-content">
+                        <div class="fair-value-nav">
+                            <button class="fair-value-btn active" data-section="dcf">DCF Analysis</button>
+                            <button class="fair-value-btn" data-section="pe">P/E Analysis</button>
+                            <button class="fair-value-btn" data-section="intrinsic">Intrinsic Value</button>
+                        </div>
+
+                        <!-- DCF Analysis -->
+                        <div id="dcf" class="fair-value-section active">
+                            <h4 class="section-subtitle">Discounted Cash Flow Analysis</h4>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="dcf-current-fcf">Current FCF ($ millions)</label>
+                                    <input type="number" id="dcf-current-fcf" min="0" step="0.1">
+                                </div>
+                                <div class="form-group">
+                                    <label for="dcf-growth-rate">Growth Rate (%)</label>
+                                    <input type="number" id="dcf-growth-rate" min="0" max="100" step="0.1">
+                                </div>
+                                <div class="form-group">
+                                    <label for="dcf-terminal-rate">Terminal Growth Rate (%)</label>
+                                    <input type="number" id="dcf-terminal-rate" min="0" max="10" step="0.1">
+                                </div>
+                                <div class="form-group">
+                                    <label for="dcf-discount-rate">Discount Rate (WACC) (%)</label>
+                                    <input type="number" id="dcf-discount-rate" min="0" max="50" step="0.1">
+                                </div>
+                                <div class="form-group">
+                                    <label for="dcf-years">Projection Years</label>
+                                    <input type="number" id="dcf-years" min="1" max="20" step="1" value="10">
+                                </div>
+                                <div class="form-group">
+                                    <label for="dcf-shares">Shares Outstanding (millions)</label>
+                                    <input type="number" id="dcf-shares" min="0" step="0.1">
+                                </div>
+                            </div>
+                            
+                            <div id="dcf-results" class="calculator-results" style="display: none;">
+                                <div class="result-item">
+                                    <span class="result-label">Enterprise Value:</span>
+                                    <span class="result-value" id="dcf-enterprise-value">$0.00</span>
+                                </div>
+                                <div class="result-item">
+                                    <span class="result-label">PV of Cash Flows:</span>
+                                    <span class="result-value" id="dcf-pv-cashflows">$0.00</span>
+                                </div>
+                                <div class="result-item">
+                                    <span class="result-label">Terminal Value:</span>
+                                    <span class="result-value" id="dcf-terminal-value">$0.00</span>
+                                </div>
+                                <div class="result-item">
+                                    <span class="result-label">Value Per Share:</span>
+                                    <span class="result-value" id="dcf-per-share">$0.00</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- P/E Analysis -->
+                        <div id="pe" class="fair-value-section">
+                            <h4 class="section-subtitle">Price-to-Earnings Analysis</h4>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="pe-current-price">Current Stock Price ($)</label>
+                                    <input type="number" id="pe-current-price" min="0" step="0.01">
+                                </div>
+                                <div class="form-group">
+                                    <label for="pe-eps">Earnings Per Share ($)</label>
+                                    <input type="number" id="pe-eps" min="0" step="0.01">
+                                </div>
+                                <div class="form-group">
+                                    <label for="pe-industry-avg">Industry Average P/E</label>
+                                    <input type="number" id="pe-industry-avg" min="0" step="0.1">
+                                </div>
+                                <div class="form-group">
+                                    <label for="pe-growth-rate">Expected Growth Rate (%)</label>
+                                    <input type="number" id="pe-growth-rate" min="0" max="100" step="0.1">
+                                </div>
+                            </div>
+                            
+                            <div id="pe-results" class="calculator-results" style="display: none;">
+                                <div class="result-item">
+                                    <span class="result-label">Current P/E Ratio:</span>
+                                    <span class="result-value" id="pe-current-ratio">0.00</span>
+                                </div>
+                                <div class="result-item">
+                                    <span class="result-label">Fair Value:</span>
+                                    <span class="result-value" id="pe-fair-value">$0.00</span>
+                                </div>
+                                <div class="result-item">
+                                    <span class="result-label">PEG Ratio:</span>
+                                    <span class="result-value" id="pe-peg-ratio">0.00</span>
+                                </div>
+                                <div class="result-item">
+                                    <span class="result-label">Valuation Status:</span>
+                                    <span class="result-value" id="pe-valuation-status">-</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Intrinsic Value Analysis -->
+                        <div id="intrinsic" class="fair-value-section">
+                            <h4 class="section-subtitle">Intrinsic Value Analysis</h4>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="intrinsic-book-value">Book Value Per Share ($)</label>
+                                    <input type="number" id="intrinsic-book-value" min="0" step="0.01">
+                                </div>
+                                <div class="form-group">
+                                    <label for="intrinsic-roe">Return on Equity (ROE) (%)</label>
+                                    <input type="number" id="intrinsic-roe" min="0" max="100" step="0.1">
+                                </div>
+                                <div class="form-group">
+                                    <label for="intrinsic-dividend-yield">Dividend Yield (%)</label>
+                                    <input type="number" id="intrinsic-dividend-yield" min="0" max="20" step="0.1">
+                                </div>
+                                <div class="form-group">
+                                    <label for="intrinsic-required-return">Required Rate of Return (%)</label>
+                                    <input type="number" id="intrinsic-required-return" min="0" max="50" step="0.1">
+                                </div>
+                                <div class="form-group">
+                                    <label for="intrinsic-growth-rate">Growth Rate (%)</label>
+                                    <input type="number" id="intrinsic-growth-rate" min="0" max="100" step="0.1">
+                                </div>
+                                <div class="form-group">
+                                    <label for="intrinsic-eps">Earnings Per Share ($)</label>
+                                    <input type="number" id="intrinsic-eps" min="0" step="0.01">
+                                </div>
+                            </div>
+                            
+                            <div id="intrinsic-results" class="calculator-results" style="display: none;">
+                                <div class="result-item">
+                                    <span class="result-label">Graham Number:</span>
+                                    <span class="result-value" id="intrinsic-graham">$0.00</span>
+                                </div>
+                                <div class="result-item">
+                                    <span class="result-label">Dividend Discount Model:</span>
+                                    <span class="result-value" id="intrinsic-ddm">$0.00</span>
+                                </div>
+                                <div class="result-item">
+                                    <span class="result-label">Book Value Multiple:</span>
+                                    <span class="result-value" id="intrinsic-book-multiple">$0.00</span>
+                                </div>
+                                <div class="result-item">
+                                    <span class="result-label">Average Intrinsic Value:</span>
+                                    <span class="result-value" id="intrinsic-average">$0.00</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stock Performance Tracker Tab -->
+            <div id="stock-tracker" class="tab-content">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Stock Performance Tracker</h2>
+                        <button id="edit-stock-btn" class="btn btn-secondary">Edit</button>
+                    </div>
+
+                    <div class="ticker-management" style="display: none;">
+                        <input type="text" id="ticker-input" placeholder="Enter ticker symbol (e.g., AAPL)" maxlength="10">
+                        <button id="add-ticker-btn" class="btn btn-primary">Add Ticker</button>
+                    </div>
+
+                    <div id="ticker-tags" class="ticker-tags" style="display: none;">
+                    </div>
+
+                    <div class="performance-controls">
+                        <label for="start-year">Start Year:</label>
+                        <select id="start-year"></select>
+                        <button id="generate-table-btn" class="btn btn-success" style="display: none;">Generate Performance Table</button>
+                    </div>
+
+                    <div id="stock-summary-cards" class="summary-cards" style="display: none;">
+                        <div class="summary-card">
+                            <h4>Investment Range</h4>
+                            <p id="summary-investment-range">-</p>
+                        </div>
+                        <div class="summary-card">
+                            <h4>Best Performer</h4>
+                            <p id="summary-best">-</p>
+                        </div>
+                        <div class="summary-card">
+                            <h4>Worst Performer</h4>
+                            <p id="summary-worst">-</p>
+                        </div>
+                        <div class="summary-card">
+                            <h4>Most Consistent</h4>
+                            <p id="summary-consistent">-</p>
+                        </div>
+                    </div>
+
+                    <div id="performance-table-container" style="display: none;">
+                        <div class="table-container">
+                            <table class="data-table">
+                                <thead id="table-header">
+                                </thead>
+                                <tbody id="table-body">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stock Chart Modal -->
+                <div id="stock-chart-popup" class="modal">
+                    <div class="modal-content">
+                        <span class="modal-close" id="chart-popup-close">&times;</span>
+                        <h3 id="chart-popup-title">Stock Performance Chart</h3>
+                        <canvas id="chartjs-canvas" width="400" height="300"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stock Finance Performance Tab -->
+            <div id="stock-finance" class="tab-content">
+                <div class="placeholder-content">
+                    <h3>Stock Finance Performance</h3>
+                    <p>Advanced financial performance analysis for stocks. This section will include detailed financial metrics, ratio analysis, comparative performance studies, and comprehensive financial health assessments to help you make informed investment decisions.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="libs/chart.umd.js"></script>
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>
