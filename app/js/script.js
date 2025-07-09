@@ -60,6 +60,7 @@
                 const getPriceBtn = document.getElementById('get-last-price-btn');
                 const modal = document.getElementById('investment-modal');
                 const form = document.getElementById('investment-form');
+                const tickerInput = document.getElementById('investment-ticker');
                 const closeBtn = document.getElementById('investment-close');
                 const cancelBtn = document.getElementById('cancel-investment-btn');
                 const saveAddBtn = document.getElementById('save-add-another-btn');
@@ -72,6 +73,20 @@
                 const editTotal = document.getElementById('edit-total-value');
                 let editIndex = null;
                 const API_KEY = 'd1nf8h1r01qovv8iu2dgd1nf8h1r01qovv8iu2e0';
+
+                async function fetchQuote(ticker) {
+                    const url = `https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(ticker)}&token=${API_KEY}`;
+                    try {
+                        const res = await fetch(url);
+                        const data = await res.json();
+                        if (data && typeof data.c === 'number') {
+                            return parseFloat(data.c);
+                        }
+                    } catch (e) {
+                        // ignore errors and return null
+                    }
+                    return null;
+                }
 
                 function loadData() {
                     const data = localStorage.getItem(STORAGE_KEY);
@@ -237,7 +252,7 @@
                     form.reset();
                     totalDisplay.textContent = formatCurrency(0);
                     modal.style.display = 'flex';
-                    document.getElementById('investment-ticker').focus();
+                    tickerInput.focus();
                 }
 
                 function closeModal() {
@@ -248,6 +263,17 @@
                     const qty = parseFloat(document.getElementById('investment-quantity').value) || 0;
                     const lastPrice = parseFloat(document.getElementById('investment-last-price').value) || 0;
                     totalDisplay.textContent = formatCurrency(qty * lastPrice);
+                }
+
+                async function handleTickerLookup() {
+                    const ticker = tickerInput.value.trim().toUpperCase();
+                    if (!ticker) return;
+                    const price = await fetchQuote(ticker);
+                    if (price !== null) {
+                        const lastPriceEl = document.getElementById('investment-last-price');
+                        lastPriceEl.value = price;
+                        handleFormInput();
+                    }
                 }
 
                 function addFromForm(resetAfter) {
@@ -280,6 +306,12 @@
                     document.getElementById('edit-last-price').value = inv.lastPrice;
                     editTotal.textContent = formatCurrency(inv.quantity * inv.lastPrice);
                     editModal.style.display = 'flex';
+                    fetchQuote(inv.ticker).then(price => {
+                        if (price !== null) {
+                            document.getElementById('edit-last-price').value = price;
+                            handleEditInput();
+                        }
+                    });
                 }
 
                 function closeEditModal() {
@@ -357,6 +389,8 @@
                     form.addEventListener('submit', (e) => { e.preventDefault(); addFromForm(false); });
                     saveAddBtn.addEventListener('click', () => addFromForm(true));
                     modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+                    tickerInput.addEventListener('change', handleTickerLookup);
+                    tickerInput.addEventListener('blur', handleTickerLookup);
 
                     document.getElementById('portfolio-body').addEventListener('click', handleRowAction);
                     editClose.addEventListener('click', closeEditModal);
