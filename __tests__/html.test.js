@@ -10,3 +10,12 @@ test('index.html references CSS and JS', () => {
   expect(doc.querySelector('link[href="css/style.css"]')).not.toBeNull();
   expect(doc.querySelector('script[src="js/script.js"]')).not.toBeNull();
 });
+
+test('stock chart popup includes chart controls', () => {
+  const htmlPath = path.resolve(__dirname, '../app/index.html');
+  const html = fs.readFileSync(htmlPath, 'utf8');
+  const dom = new JSDOM(html);
+  const doc = dom.window.document;
+  expect(doc.getElementById('chart-type-price')).not.toBeNull();
+  expect(doc.getElementById('chart-ticker-select')).not.toBeNull();
+});
