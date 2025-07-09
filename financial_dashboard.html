@@ -51,6 +51,9 @@
             color: white;
             padding: 1.5rem 1rem;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
         }
 
         .header-container {
@@ -94,6 +97,9 @@
             display: flex;
             gap: 0;
             overflow-x: auto;
+            position: sticky;
+            top: 0;
+            z-index: 999;
         }
 
         .nav-tab {
@@ -2449,6 +2455,18 @@
         // Initialize the application when DOM is ready
         document.addEventListener('DOMContentLoaded', function() {
             FinancialDashboard.init();
+
+            const header = document.querySelector('.header');
+            const nav = document.querySelector('.nav-tabs');
+
+            function updateNavOffset() {
+                if (header && nav) {
+                    nav.style.top = header.offsetHeight + 'px';
+                }
+            }
+
+            updateNavOffset();
+            window.addEventListener('resize', updateNavOffset);
         });
     </script>
 </body>
