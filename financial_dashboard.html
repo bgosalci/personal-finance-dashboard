@@ -670,12 +670,16 @@
             border-radius: 8px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.2);
             position: relative;
+            width: 900px;
+            height: 600px;
         }
 
         .modal-content canvas {
             display: block;
             max-width: 100%;
             height: auto;
+            width: 800px;
+            height: 500px;
         }
 
         .modal-close {
@@ -2350,9 +2354,35 @@
                     const years = Object.keys(pricesObj).map(y => parseInt(y)).sort((a,b)=>a-b);
                     const prices = years.map(y => pricesObj[y]);
                     if (window.stockChart) { window.stockChart.destroy(); }
-                    window.stockChart = new Chart(canvas.getContext("2d"), { type: "line", data: { labels: years, datasets: [{ label: ticker, data: prices, borderColor: "#1e40af", backgroundColor: "rgba(30,64,175,0.1)", fill: false, tension: 0.2 }] }, options: { responsive: true, scales: { y: { type: "logarithmic" } } } });
+                    window.stockChart = new Chart(canvas.getContext("2d"), 
+                    {   
+                        type: "line", 
+                        data: { 
+                            labels: years, 
+                            datasets: [
+                                { 
+                                    label: ticker, 
+                                    data: prices, 
+                                    borderColor: "#1e40af", 
+                                    backgroundColor: "rgba(30,64,175,0.1)", 
+                                    fill: false, 
+                                    tension: 0.2 
+                                }
+                            ]
+                        }, 
+                        options: { 
+                            responsive: true, 
+                            scales: { 
+                                y: { 
+                                    type: "logarithmic" 
+                                } 
+                            } 
+                        } 
+                    });
                     modal.style.display = "flex";
+                    let myChart = document.getElementById('chartjs-canvas');
                 }
+
 
                 function closeChart() {
                     document.getElementById("stock-chart-popup").style.display = "none";
