@@ -1,0 +1,769 @@
+        :root {
+            /* Professional Financial Theme Colors */
+            --primary-blue: #1e40af;
+            --primary-blue-light: #3b82f6;
+            --primary-blue-dark: #1e3a8a;
+            --secondary-gray: #64748b;
+            --secondary-gray-light: #94a3b8;
+            --secondary-gray-dark: #475569;
+            --background-primary: #ffffff;
+            --background-secondary: #f8fafc;
+            --background-tertiary: #e2e8f0;
+            --text-primary: #0f172a;
+            --text-secondary: #64748b;
+            --border-color: #e2e8f0;
+            --success-green: #059669;
+            --success-green-light: #10b981;
+            --danger-red: #dc2626;
+            --danger-red-light: #ef4444;
+            --warning-orange: #d97706;
+            --warning-orange-light: #f59e0b;
+            --gosalci-bg: #131014;               /* Very dark grey background */
+            --gosalci-text: #f6ebd9;             /* Soft cream text */
+            --gosalci-candle-green: #00ff7f;     /* Bright green (candlestick fill) */
+            --gosalci-candle-mid: #00d08a;       /* Gradient midpoint (soft teal) */
+            --gosalci-candle-bottom: #00b48a;    /* Gradient base green */
+            --gosalci-shadow: #1f1f1f;           /* UI accent (hover/shadow) */
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: var(--background-secondary);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--gosalci-bg), var(--secondary-gray-dark));
+            color: white;
+            padding: 1.5rem 1rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-container {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .header-logo {
+            height: 100px;
+            margin-right: 0.5rem;
+        }
+
+        .header .container {
+            padding-left: 0;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .header p {
+            margin-top: 0.5rem;
+            opacity: 0.9;
+            font-size: 1rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        .nav-tabs {
+            background: var(--background-primary);
+            border-bottom: 2px solid var(--border-color);
+            padding: 0 2rem;
+            display: flex;
+            gap: 0;
+            overflow-x: auto;
+            position: sticky;
+            top: 0;
+            z-index: 999;
+        }
+
+        .nav-tab {
+            padding: 1rem 2rem;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .nav-tab:hover {
+            color: var(--primary-blue);
+            background-color: var(--background-secondary);
+        }
+
+        .nav-tab.active {
+            color: var(--primary-blue);
+            border-bottom-color: var(--primary-blue);
+            background-color: var(--background-secondary);
+        }
+
+        .content {
+            padding: 2rem;
+            min-height: calc(100vh - 200px);
+        }
+
+        .tab-content {
+            display: none;
+            background: var(--background-primary);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid var(--border-color);
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+            border-bottom: 2px solid var(--primary-blue);
+            padding-bottom: 0.5rem;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .price-input[readonly] {
+            border: none;
+            background: transparent;
+            color: var(--text-primary);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .form-group input, .form-group select {
+            padding: 0.75rem;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--primary-blue);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-blue-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(30, 64, 175, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--secondary-gray);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: var(--secondary-gray-dark);
+        }
+
+        .btn-danger {
+            background: var(--danger-red);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #b91c1c;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin-top: 2rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        /* Dedicated scroll container for the Stock Performance table */
+        #performance-table-container {
+            max-height: 60vh;
+            overflow-y: auto;
+            position: relative; /* ensures sticky headers work inside */
+        }
+
+        /* Dedicated scroll container for the Investment Calculator table */
+        #investment-growth-container {
+            max-height: 40vh;
+            overflow-y: auto;
+            position: relative; /* ensures sticky headers work inside */
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--background-primary);
+        }
+
+        .data-table th, .data-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .data-table th {
+            background: var(--background-tertiary);
+            font-weight: 600;
+            color: var(--text-primary);
+            position: sticky;
+            top: 0;
+            z-index: 2;
+        }
+
+        .data-table th:first-child,
+        .data-table td:first-child {
+            position: sticky;
+            left: 0;
+            z-index: 1;
+            background: var(--background-primary);
+        }
+
+        .data-table .summary-row td:first-child {
+            background: var(--background-secondary);
+        }
+
+        .data-table tbody tr:hover td:first-child {
+            background: var(--background-secondary);
+        }
+
+        .data-table tbody tr:hover {
+            background: var(--background-secondary);
+        }
+
+        .price-input {
+            width: 100%;
+            display: block;
+            padding: 0.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            text-align: right;
+        }
+
+        .price-input {
+            width: 100%;
+            display: block;
+            padding: 0.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            text-align: right;
+        }
+
+        .growth-positive {
+            color: var(--success-green);
+            font-weight: 600;
+            text-align: right;
+        }
+
+        .growth-negative {
+            color: var(--danger-red);
+            font-weight: 600;
+            text-align: right;
+        }
+
+        .growth-neutral {
+            color: var(--text-secondary);
+            text-align: right;
+        }
+
+        .summary-row {
+            background: var(--background-secondary);
+            font-weight: 600;
+        }
+
+        .summary-cards {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .summary-card {
+            flex: 1 1 200px;
+            background: var(--background-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+        }
+
+        .summary-card h4 {
+            margin-bottom: 0.5rem;
+            color: var(--primary-blue);
+            font-size: 1rem;
+        }
+
+        .summary-card p {
+            font-weight: 600;
+        }
+
+        .calculator-section {
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: var(--background-secondary);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .calculator-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--primary-blue);
+        }
+
+        .result-display {
+            background: var(--background-primary);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 2px solid var(--border-color);
+            margin-top: 1rem;
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--primary-blue);
+        }
+
+        .ticker-management {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            align-items: end;
+        }
+
+        .ticker-tags {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+
+        .ticker-tag {
+            background: var(--primary-blue);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .ticker-tag .remove-btn {
+            background: rgba(255, 255, 255, 0.3);
+            border: none;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        .ticker-tag .remove-btn:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .chart-btn {
+            background: var(--primary-blue);
+            border: none;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        .chart-btn:hover {
+            background: var(--primary-blue-dark);
+        }
+
+        .placeholder-content {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-secondary);
+        }
+
+        .placeholder-content h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .placeholder-content p {
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Sub-Tab Navigation Styles */
+        .sub-nav-tabs {
+            display: flex;
+            gap: 0;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid var(--border-color);
+            background: var(--background-secondary);
+            border-radius: 8px 8px 0 0;
+            overflow-x: auto;
+        }
+
+        .sub-nav-tab {
+            padding: 1rem 1.5rem;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            min-width: fit-content;
+        }
+
+        .sub-nav-tab:hover {
+            color: var(--primary-blue);
+            background-color: var(--background-primary);
+        }
+
+        .sub-nav-tab.active {
+            color: var(--primary-blue);
+            border-bottom-color: var(--primary-blue);
+            background-color: var(--background-primary);
+            font-weight: 600;
+        }
+
+        .sub-tab-content {
+            display: none;
+        }
+
+        .sub-tab-content.active {
+            display: block;
+        }
+
+        /* Fair Value Calculator Styles */
+        .fair-value-sections {
+            margin-top: 1rem;
+        }
+
+        .fair-value-nav {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .fair-value-btn {
+            padding: 0.75rem 1.25rem;
+            background: var(--background-tertiary);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            transition: all 0.3s ease;
+        }
+
+        .fair-value-btn:hover {
+            color: var(--primary-blue);
+            border-color: var(--primary-blue);
+        }
+
+        .fair-value-btn.active {
+            background: var(--primary-blue);
+            color: white;
+            border-color: var(--primary-blue);
+        }
+
+        .fair-value-section {
+            display: none;
+        }
+
+        .fair-value-section.active {
+            display: block;
+        }
+
+        .section-subtitle {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        /* Enhanced Calculator Section */
+        .calculator-section {
+            margin-bottom: 0;
+            padding: 2rem;
+            background: var(--background-primary);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        /* Result Display Enhancements */
+        .result-display .result-item:last-child {
+            background: var(--background-secondary);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 1rem;
+            }
+            
+            .nav-tabs {
+                padding: 0 1rem;
+            }
+            
+            .content {
+                padding: 1rem;
+            }
+            
+            .tab-content {
+                padding: 1rem;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .ticker-management {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .sub-nav-tabs {
+                flex-direction: column;
+            }
+
+            .sub-nav-tab {
+                text-align: left;
+                border-bottom: 1px solid var(--border-color);
+                border-radius: 0;
+            }
+
+            .fair-value-nav {
+                flex-direction: column;
+        }
+        
+        .calculator-section {
+            padding: 1rem;
+        }
+        
+        .btn-link {
+            background: none;
+            border: none;
+            color: var(--primary-blue);
+            cursor: pointer;
+            text-decoration: underline;
+            padding: 0.25rem 0.5rem;
+            font-size: 1rem;
+        }
+
+        }
+
+        /* Modal for charts */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: var(--background-primary);
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            position: relative;
+            width: 900px;
+            height: 600px;
+        }
+
+        .modal-content canvas {
+            display: block;
+            max-width: 100%;
+            height: auto;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 8px;
+            right: 12px;
+            cursor: pointer;
+            font-size: 1.25rem;
+            line-height: 1;
+        }
+
+        #chart-title {
+            text-align: center;
+            margin: 0.5rem 0;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary-blue);
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .number-cell {
+            text-align: right;
+            white-space: nowrap;
+        }
+
+        .actions-cell {
+            white-space: nowrap;
+        }
+
+        .icon-btn {
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            padding: 0;
+            line-height: 1;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            color: white;
+        }
+
+        .icon-btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .edit-btn,
+        .delete-btn {
+            background: var(--primary-blue);
+        }
+
+        .edit-btn:hover,
+        .delete-btn:hover {
+            background: var(--primary-blue-dark);
+        }
+
+        .charts-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .chart-box {
+            flex: 1 1 300px;
+            background: var(--background-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+        }
+
+        .chart-box h3 {
+            text-align: center;
+            margin-bottom: 1rem;
+            color: var(--primary-blue);
+            font-size: 1rem;
+        }
+
+        .chart-box canvas {
+            width: 100%;
+            height: 300px;
+        }
