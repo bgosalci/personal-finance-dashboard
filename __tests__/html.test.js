@@ -1,8 +1,10 @@
 const fs = require('fs');
+const path = require('path');
 const {JSDOM} = require('jsdom');
 
 test('index.html references CSS and JS', () => {
-  const html = fs.readFileSync('app/index.html', 'utf8');
+  const htmlPath = path.resolve(__dirname, '../app/index.html');
+  const html = fs.readFileSync(htmlPath, 'utf8');
   const dom = new JSDOM(html);
   const doc = dom.window.document;
   expect(doc.querySelector('link[href="css/style.css"]')).not.toBeNull();
