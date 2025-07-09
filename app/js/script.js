@@ -55,6 +55,15 @@
                 let investments = [];
                 let pieChart = null;
                 let barChart = null;
+                const COLOR_KEY = 'portfolioColors';
+                const COLOR_PALETTE = [
+                    '#e6194b','#3cb44b','#ffe119','#4363d8','#f58231',
+                    '#911eb4','#46f0f0','#f032e6','#bcf60c','#fabebe',
+                    '#008080','#e6beff','#9a6324','#fffac8','#800000',
+                    '#aaffc3','#808000','#ffd8b1','#000075','#808080'
+                ];
+                let tickerColors = {};
+                let colorIndex = 0;
 
                 const addBtn = document.getElementById('add-investment-btn');
                 const getPriceBtn = document.getElementById('get-last-price-btn');
@@ -97,10 +106,26 @@
                             investments = [];
                         }
                     }
+                    const colorData = localStorage.getItem(COLOR_KEY);
+                    if (colorData) {
+                        try {
+                            tickerColors = JSON.parse(colorData) || {};
+                            colorIndex = Object.keys(tickerColors).length;
+                        } catch (e) {
+                            tickerColors = {};
+                            colorIndex = 0;
+                        }
+                    }
+                    investments.forEach(inv => {
+                        if (!tickerColors[inv.ticker]) {
+                            assignColor(inv.ticker);
+                        }
+                    });
                 }
 
                 function saveData() {
                     localStorage.setItem(STORAGE_KEY, JSON.stringify(investments));
+                    localStorage.setItem(COLOR_KEY, JSON.stringify(tickerColors));
                 }
 
                 function formatCurrency(value) {
@@ -123,6 +148,26 @@
                     document.getElementById('portfolio-total-plpct').textContent = totalPLPct.toFixed(2) + '%';
                 }
 
+                function generateColor(idx) {
+                    if (idx < COLOR_PALETTE.length) {
+                        return COLOR_PALETTE[idx];
+                    }
+                    const hue = (idx * 137.508) % 360;
+                    return `hsl(${hue},70%,60%)`;
+                }
+
+                function assignColor(ticker) {
+                    if (!tickerColors[ticker]) {
+                        tickerColors[ticker] = generateColor(colorIndex);
+                        colorIndex++;
+                    }
+                }
+
+                function getColor(ticker) {
+                    assignColor(ticker);
+                    return tickerColors[ticker];
+                }
+
                 function updateCharts() {
                     const labels = investments.map(inv => inv.ticker);
                     const values = investments.map(inv => inv.quantity * inv.lastPrice);
@@ -132,7 +177,7 @@
                         const value = inv.quantity * inv.lastPrice;
                         return cost ? ((value - cost) / cost) * 100 : 0;
                     });
-                    const colors = labels.map((_, i) => `hsl(${(i * 360 / labels.length) % 360},70%,60%)`);
+                    const colors = labels.map(t => getColor(t));
 
                     if (!pieChart) {
                         const ctx = document.getElementById('investment-spread-chart').getContext('2d');
@@ -284,6 +329,7 @@
                     const lastPrice = parseFloat(document.getElementById('investment-last-price').value) || 0;
                     if (!ticker || quantity <= 0 || avgPrice <= 0 || lastPrice <= 0) return;
 
+                    assignColor(ticker);
                     investments.push({ ticker, name, quantity, avgPrice, lastPrice });
                     saveData();
                     renderTable();
@@ -372,7 +418,11 @@
                     } else if (btn.classList.contains('delete-btn')) {
                         const idx = parseInt(btn.dataset.index, 10);
                         if (confirm('Delete this investment?')) {
-                            investments.splice(idx, 1);
+                            const removed = investments.splice(idx, 1)[0];
+                            if (removed && !investments.some(inv => inv.ticker === removed.ticker)) {
+                                delete tickerColors[removed.ticker];
+                                colorIndex = Object.keys(tickerColors).length;
+                            }
                             saveData();
                             renderTable();
                         }
