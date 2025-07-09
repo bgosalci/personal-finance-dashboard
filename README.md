@@ -96,6 +96,14 @@ personal-finance-dashboard/
 4. Test thoroughly in multiple browsers
 5. Submit a pull request
 
+### Running Tests
+
+The unit tests are located in the `__tests__` folder. Run them with:
+
+```bash
+cd app/js && npm test
+```
+
 ## License
 
 This project is open source and available under the MIT License.
