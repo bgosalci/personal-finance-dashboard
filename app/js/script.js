@@ -156,7 +156,7 @@
                                     legend: { display: false },
                                     tooltip: {
                                         callbacks: {
-                                            label: (ctx) => {
+                                            llabel: (ctx) => {
                                                 const val = typeof ctx.parsed === 'object'
                                                     ? (ctx.parsed.y ?? ctx.parsed.x)
                                                     : ctx.parsed;
