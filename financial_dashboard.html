@@ -869,6 +869,10 @@
                                     <input type="number" step="0.01" id="investment-avg-price" required>
                                 </div>
                                 <div class="form-group">
+                                    <label for="investment-last-price">Last Price</label>
+                                    <input type="number" step="0.01" id="investment-last-price" required>
+                                </div>
+                                <div class="form-group">
                                     <label>Total Value</label>
                                     <span id="investment-total-value">$0.00</span>
                                 </div>
@@ -1508,8 +1512,8 @@
 
                 function handleFormInput() {
                     const qty = parseFloat(document.getElementById('investment-quantity').value) || 0;
-                    const price = parseFloat(document.getElementById('investment-avg-price').value) || 0;
-                    totalDisplay.textContent = formatCurrency(qty * price);
+                    const lastPrice = parseFloat(document.getElementById('investment-last-price').value) || 0;
+                    totalDisplay.textContent = formatCurrency(qty * lastPrice);
                 }
 
                 function addFromForm(resetAfter) {
@@ -1517,9 +1521,10 @@
                     const name = document.getElementById('investment-name').value.trim();
                     const quantity = parseFloat(document.getElementById('investment-quantity').value) || 0;
                     const avgPrice = parseFloat(document.getElementById('investment-avg-price').value) || 0;
-                    if (!ticker || quantity <= 0 || avgPrice <= 0) return;
+                    const lastPrice = parseFloat(document.getElementById('investment-last-price').value) || 0;
+                    if (!ticker || quantity <= 0 || avgPrice <= 0 || lastPrice <= 0) return;
 
-                    investments.push({ ticker, name, quantity, avgPrice, lastPrice: avgPrice });
+                    investments.push({ ticker, name, quantity, avgPrice, lastPrice });
                     saveData();
                     renderTable();
 
