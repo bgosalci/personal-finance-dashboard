@@ -768,6 +768,8 @@
         }
     </style>
     <script src="libs/chart.umd.js"></script>
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
 </head>
 <body>
     <header class="header">
@@ -1237,16 +1239,14 @@
                     </div>
                 </div>
 
-                <!-- Chart Modal -->
-                <div id="chart-modal" class="modal">
+                <!-- Stock Chart Popup -->
+                <div id="stock-chart-popup" class="modal">
                     <div class="modal-content">
-                        <span class="modal-close">&times;</span>
-                        <h3 id="chart-title"></h3>
-                        <!-- Enlarged canvas to accommodate larger price values -->
-                        <canvas id="popup-chart" width="800" height="500"></canvas>
+                        <span class="modal-close" id="chart-popup-close">&times;</span>
+                        <h3 id="chart-popup-title"></h3>
+                        <canvas id="chartjs-canvas" width="800" height="500"></canvas>
                     </div>
                 </div>
-            </div>
 
             <!-- Stock Finance Performance Tab -->
             <div id="stock-finance" class="tab-content">
@@ -2184,7 +2184,7 @@
                         const chartCell = document.createElement('td');
                         const chartBtn = document.createElement('button');
                         chartBtn.className = 'chart-btn';
-                        chartBtn.textContent = '📈';
+                        chartBtn.innerHTML = '<ion-icon name="stats-chart"></ion-icon>';
                         chartBtn.addEventListener('click', () => showChart(ticker));
                         chartCell.appendChild(chartBtn);
                         chartRow.appendChild(chartCell);
@@ -2341,85 +2341,25 @@
 
                     container.style.display = 'flex';
                 }
-
                 function showChart(ticker) {
-                    const modal = document.getElementById('chart-modal');
-                    const canvas = document.getElementById('popup-chart');
-                    const titleEl = document.getElementById('chart-title');
+                    const modal = document.getElementById("stock-chart-popup");
+                    const canvas = document.getElementById("chartjs-canvas");
+                    const titleEl = document.getElementById("chart-popup-title");
                     if (titleEl) titleEl.textContent = ticker;
-                    drawChart(ticker, canvas);
-                    modal.style.display = 'flex';
+                    const pricesObj = stockData.prices[ticker] || {};
+                    const years = Object.keys(pricesObj).map(y => parseInt(y)).sort((a,b)=>a-b);
+                    const prices = years.map(y => pricesObj[y]);
+                    if (window.stockChart) { window.stockChart.destroy(); }
+                    window.stockChart = new Chart(canvas.getContext("2d"), { type: "line", data: { labels: years, datasets: [{ label: ticker, data: prices, borderColor: "#1e40af", backgroundColor: "rgba(30,64,175,0.1)", fill: false, tension: 0.2 }] }, options: { responsive: true, scales: { y: { type: "logarithmic" } } } });
+                    modal.style.display = "flex";
                 }
 
                 function closeChart() {
-                    document.getElementById('chart-modal').style.display = 'none';
+                    document.getElementById("stock-chart-popup").style.display = "none";
                 }
 
-                function drawChart(ticker, canvas = document.createElement('canvas')) {
-                    const ctx = canvas.getContext('2d');
-                    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-                    const pricesObj = stockData.prices[ticker] || {};
-                    const years = Object.keys(pricesObj).map(y => parseInt(y)).sort((a,b)=>a-b);
-                    if (years.length === 0) {
-                        ctx.fillText('No data available', 50, 50);
-                        return;
-                    }
-
-                    const prices = years.map(y => pricesObj[y]);
-
-                    const padding = 70;
-                    const labelPadding = 10;
-                    const width = canvas.width - padding * 2;
-                    const height = canvas.height - padding * 2;
-
-                    const maxPrice = Math.max(...prices);
-                    const minPrice = Math.min(...prices);
-
-                    const logMin = Math.log10(minPrice);
-                    const logMax = Math.log10(maxPrice);
-
-                    ctx.strokeStyle = '#ccc';
-                    ctx.beginPath();
-                    ctx.moveTo(padding, padding);
-                    ctx.lineTo(padding, canvas.height - padding);
-                    ctx.lineTo(canvas.width - padding, canvas.height - padding);
-                    ctx.stroke();
-
-                    // Price level gridlines and labels
-                    const levels = 5;
-                    ctx.fillStyle = '#000';
-                    ctx.font = '12px sans-serif';
-                    for (let i = 0; i <= levels; i++) {
-                        const logValue = logMin + (i * (logMax - logMin) / levels);
-                        const value = Math.pow(10, logValue);
-                        const y = padding + (1 - (logValue - logMin) / (logMax - logMin || 1)) * height;
-                        ctx.strokeStyle = '#eee';
-                        ctx.beginPath();
-                        ctx.moveTo(padding, y);
-                        ctx.lineTo(canvas.width - padding, y);
-                        ctx.stroke();
-                        ctx.fillText(value.toFixed(2), padding - labelPadding - ctx.measureText(value.toFixed(2)).width, y + 3);
-                    }
-
-                    ctx.strokeStyle = '#1e40af';
-                    ctx.beginPath();
-                    years.forEach((year, idx) => {
-                        const x = padding + (idx / (years.length - 1)) * width;
-                        const logPrice = Math.log10(prices[idx]);
-                        const y = padding + (1 - (logPrice - logMin) / (logMax - logMin || 1)) * height;
-                        if (idx === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-                    });
-                    ctx.stroke();
-
-                    ctx.fillStyle = '#000';
-                    ctx.font = '12px sans-serif';
-                    years.forEach((year, idx) => {
-                        const x = padding + (idx / (years.length - 1)) * width;
-                        const textWidth = ctx.measureText(year).width;
-                        ctx.fillText(year, x - textWidth / 2, canvas.height - padding + labelPadding + 5);
-                    });
-                }
+                
 
                 function init() {
                     initializeYearSelect();
@@ -2444,8 +2384,8 @@
                         }
                     });
 
-                    document.querySelector('.modal-close').addEventListener('click', closeChart);
-                    document.getElementById('chart-modal').addEventListener('click', (e) => {
+                    document.getElementById('chart-popup-close').addEventListener('click', closeChart);
+                    document.getElementById('stock-chart-popup').addEventListener('click', (e) => {
                         if (e.target === e.currentTarget) closeChart();
                     });
 
