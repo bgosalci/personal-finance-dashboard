@@ -10,7 +10,7 @@
 
 ### Local Development
 1. Clone the repository
-2. Open `financial_dashboard.html` in your preferred editor
+2. Open `app/financial_dashboard.html` in your preferred editor
 3. Open the file in a web browser for testing
 4. Use browser developer tools for debugging
 
@@ -27,7 +27,9 @@
 ### File Organization
 ```
 personal-finance-dashboard/
-├── financial_dashboard.html    # Main application file
+├── app/
+│   ├── financial_dashboard.html    # Main application file
+│   └── index.html                  # Landing page
 ├── README.md                  # Project overview
 ├── TECHNICAL_DOCUMENTATION.md # Technical details
 ├── API_REFERENCE.md          # API documentation

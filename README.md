@@ -47,7 +47,7 @@ A comprehensive single-page web application for managing personal finances, trac
    git clone https://github.com/bgosalci/personal-finance-dashboard.git
    ```
 
-2. Open `financial_dashboard.html` in your web browser
+2. Open `app/financial_dashboard.html` in your web browser
 
 That's it! The application runs entirely client-side.
 
@@ -75,7 +75,9 @@ That's it! The application runs entirely client-side.
 
 ```
 personal-finance-dashboard/
-├── financial_dashboard.html    # Main application file
+├── app/
+│   ├── financial_dashboard.html    # Main application file
+│   └── index.html                  # Landing page
 └── README.md                  # This documentation
 ```
 

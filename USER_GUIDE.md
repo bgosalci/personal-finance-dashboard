@@ -4,7 +4,7 @@
 
 ### Opening the Application
 1. Download or clone the repository
-2. Open `financial_dashboard.html` in any modern web browser
+2. Open `app/financial_dashboard.html` in any modern web browser
 3. The application will load immediately - no installation required!
 
 ## Navigation
