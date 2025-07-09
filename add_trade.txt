@@ -1,0 +1,49 @@
+Portfolio screen
+- Table showing Investments:
+    - Table fields:
+        - Ticker
+        - Name
+        - Average Price
+        - Quantity
+        - Last Price
+        - Value
+        - P&L
+        - P&L %
+    - Smmary
+        - Value
+        - P&L
+        - P&L %
+- Actions:
+    - Add Investment
+
+Adding Investment:
+- Ticker
+- Name
+- Quantity
+- Average price per share
+- Calculated Total Value
+- Actions:
+    - Save & Add Another
+    - Cancel
+    - Add
+
+Edit Investment:
+- Quantity
+- Average price per share
+- Last Price
+- Calculated Total Value
+- Actions:
+    - Save
+    - Cancel
+
+Pie Chart:
+- Title: Investment Spread
+- Show labels on hover
+    - Ticker
+    - Percentage of investment
+
+Bar Chart:
+- Title: P&L %
+- Show labels
+    - Ticker
+    - Percentage of Growth
