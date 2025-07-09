@@ -128,7 +128,7 @@
                                         callbacks: {
                                             label: (ctx) => {
                                                 const pct = total ? (ctx.parsed * 100 / total) : 0;
-                                                return `${ctx.label}: ${pct.toFixed(1)}%`;
+                                                return `${ctx.label}: ${pct.toFixed(2)}%`;
                                             }
                                         }
                                     },
@@ -141,7 +141,7 @@
                         pieChart.data.datasets[0].data = values;
                         pieChart.options.plugins.tooltip.callbacks.label = (ctx) => {
                             const pct = total ? (ctx.parsed * 100 / total) : 0;
-                            return `${ctx.label}: ${pct.toFixed(1)}%`;
+                            return `${ctx.label}: ${pct.toFixed(2)}%`;
                         };
                         pieChart.update();
                     }
@@ -156,12 +156,12 @@
                                     legend: { display: false },
                                     tooltip: {
                                         callbacks: {
-                                            llabel: (ctx) => {
+                                            label: (ctx) => {
                                                 const val = typeof ctx.parsed === 'object'
                                                     ? (ctx.parsed.y ?? ctx.parsed.x)
                                                     : ctx.parsed;
                                                 const sign = val > 0 ? '+' : '';
-                                                return `${ctx.label}: ${sign}${val.toFixed(1)}%`;
+                                                return `${ctx.label}: ${sign}${val.toFixed(2)}%`;
                                             }
                                         }
                                     },
@@ -964,7 +964,7 @@
                         
                         if (currentPrice && previousPrice && growthElement) {
                             const growth = ((currentPrice - previousPrice) / previousPrice) * 100;
-                            growthElement.textContent = (growth >= 0 ? '+' : '') + growth.toFixed(1) + '%';
+                            growthElement.textContent = (growth >= 0 ? '+' : '') + growth.toFixed(2) + '%';
                             growthElement.className = growth >= 0 ? 'growth-positive' : 'growth-negative';
                         } else if (growthElement) {
                             growthElement.textContent = '---%';
@@ -987,10 +987,10 @@
                         const years = yearsWithData.length - 1;
                         const cagr = years > 0 ? (Math.pow(endPrice / startPrice, 1 / years) - 1) * 100 : 0;
                         
-                        totalGrowthElement.textContent = (totalGrowth >= 0 ? '+' : '') + totalGrowth.toFixed(1) + '%';
+                        totalGrowthElement.textContent = (totalGrowth >= 0 ? '+' : '') + totalGrowth.toFixed(2) + '%';
                         totalGrowthElement.className = totalGrowth >= 0 ? 'growth-positive' : 'growth-negative';
                         
-                        cagrElement.textContent = (cagr >= 0 ? '+' : '') + cagr.toFixed(1) + '%';
+                        cagrElement.textContent = (cagr >= 0 ? '+' : '') + cagr.toFixed(2) + '%';
                         cagrElement.className = cagr >= 0 ? 'growth-positive' : 'growth-negative';
                     } else {
                         if (totalGrowthElement) {
@@ -1084,8 +1084,8 @@
                     const worstEl = document.getElementById('summary-worst');
                     const consEl = document.getElementById('summary-consistent');
 
-                    bestEl.textContent = bestTicker ? `${bestTicker}: CAGR ${bestCagr.toFixed(1)}%, Total ${bestGrowth.toFixed(1)}%` : '---';
-                    worstEl.textContent = worstTicker ? `${worstTicker}: CAGR ${worstCagr.toFixed(1)}%, Total ${worstGrowth.toFixed(1)}%` : '---';
+                    bestEl.textContent = bestTicker ? `${bestTicker}: CAGR ${bestCagr.toFixed(2)}%, Total ${bestGrowth.toFixed(2)}%` : '---';
+                    worstEl.textContent = worstTicker ? `${worstTicker}: CAGR ${worstCagr.toFixed(2)}%, Total ${worstGrowth.toFixed(2)}%` : '---';
                     consEl.textContent = consistentTicker ? `${consistentTicker} • Lowest volatility` : '---';
 
                     container.style.display = 'flex';
