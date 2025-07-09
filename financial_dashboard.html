@@ -2184,7 +2184,13 @@
                         const chartCell = document.createElement('td');
                         const chartBtn = document.createElement('button');
                         chartBtn.className = 'chart-btn';
-                        chartBtn.textContent = '📈';
+                        chartBtn.innerHTML = `
+                            <svg width="16" height="16" viewBox="0 0 512 512">
+                                <rect x="64" y="320" width="48" height="160" rx="8" ry="8" fill="currentColor"/>
+                                <rect x="176" y="32" width="48" height="448" rx="8" ry="8" fill="currentColor"/>
+                                <rect x="288" y="224" width="48" height="256" rx="8" ry="8" fill="currentColor"/>
+                                <rect x="400" y="112" width="48" height="368" rx="8" ry="8" fill="currentColor"/>
+                            </svg>`;
                         chartBtn.addEventListener('click', () => showChart(ticker));
                         chartCell.appendChild(chartBtn);
                         chartRow.appendChild(chartCell);
@@ -2355,69 +2361,40 @@
                     document.getElementById('chart-modal').style.display = 'none';
                 }
 
+                let stockChart;
+
                 function drawChart(ticker, canvas = document.createElement('canvas')) {
                     const ctx = canvas.getContext('2d');
-                    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
                     const pricesObj = stockData.prices[ticker] || {};
                     const years = Object.keys(pricesObj).map(y => parseInt(y)).sort((a,b)=>a-b);
+
                     if (years.length === 0) {
+                        ctx.clearRect(0, 0, canvas.width, canvas.height);
+                        ctx.font = '16px sans-serif';
                         ctx.fillText('No data available', 50, 50);
                         return;
                     }
 
                     const prices = years.map(y => pricesObj[y]);
 
-                    const padding = 70;
-                    const labelPadding = 10;
-                    const width = canvas.width - padding * 2;
-                    const height = canvas.height - padding * 2;
-
-                    const maxPrice = Math.max(...prices);
-                    const minPrice = Math.min(...prices);
-
-                    const logMin = Math.log10(minPrice);
-                    const logMax = Math.log10(maxPrice);
-
-                    ctx.strokeStyle = '#ccc';
-                    ctx.beginPath();
-                    ctx.moveTo(padding, padding);
-                    ctx.lineTo(padding, canvas.height - padding);
-                    ctx.lineTo(canvas.width - padding, canvas.height - padding);
-                    ctx.stroke();
-
-                    // Price level gridlines and labels
-                    const levels = 5;
-                    ctx.fillStyle = '#000';
-                    ctx.font = '12px sans-serif';
-                    for (let i = 0; i <= levels; i++) {
-                        const logValue = logMin + (i * (logMax - logMin) / levels);
-                        const value = Math.pow(10, logValue);
-                        const y = padding + (1 - (logValue - logMin) / (logMax - logMin || 1)) * height;
-                        ctx.strokeStyle = '#eee';
-                        ctx.beginPath();
-                        ctx.moveTo(padding, y);
-                        ctx.lineTo(canvas.width - padding, y);
-                        ctx.stroke();
-                        ctx.fillText(value.toFixed(2), padding - labelPadding - ctx.measureText(value.toFixed(2)).width, y + 3);
-                    }
-
-                    ctx.strokeStyle = '#1e40af';
-                    ctx.beginPath();
-                    years.forEach((year, idx) => {
-                        const x = padding + (idx / (years.length - 1)) * width;
-                        const logPrice = Math.log10(prices[idx]);
-                        const y = padding + (1 - (logPrice - logMin) / (logMax - logMin || 1)) * height;
-                        if (idx === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-                    });
-                    ctx.stroke();
-
-                    ctx.fillStyle = '#000';
-                    ctx.font = '12px sans-serif';
-                    years.forEach((year, idx) => {
-                        const x = padding + (idx / (years.length - 1)) * width;
-                        const textWidth = ctx.measureText(year).width;
-                        ctx.fillText(year, x - textWidth / 2, canvas.height - padding + labelPadding + 5);
+                    if (stockChart) stockChart.destroy();
+                    stockChart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: years,
+                            datasets: [{
+                                data: prices,
+                                borderColor: '#1e40af',
+                                backgroundColor: 'rgba(30,64,175,0.1)',
+                                tension: 0.1
+                            }]
+                        },
+                        options: {
+                            plugins: { legend: { display: false } },
+                            scales: {
+                                y: { type: 'logarithmic', beginAtZero: false }
+                            }
+                        }
                     });
                 }
 
