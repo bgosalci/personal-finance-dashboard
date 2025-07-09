@@ -156,8 +156,10 @@
                                     legend: { display: false },
                                     tooltip: {
                                         callbacks: {
-                                            label: (ctx) => {
-                                                const val = ctx.parsed;
+                                            llabel: (ctx) => {
+                                                const val = typeof ctx.parsed === 'object'
+                                                    ? (ctx.parsed.y ?? ctx.parsed.x)
+                                                    : ctx.parsed;
                                                 const sign = val > 0 ? '+' : '';
                                                 return `${ctx.label}: ${sign}${val.toFixed(1)}%`;
                                             }
