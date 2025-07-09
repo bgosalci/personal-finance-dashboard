@@ -156,7 +156,13 @@
                                     legend: { display: false },
                                     tooltip: {
                                         callbacks: {
-                                            label: (ctx) => `${ctx.label}: ${ctx.parsed.toFixed(1)}%`
+                                            label: (ctx) => {
+                                                const val = typeof ctx.parsed === 'object'
+                                                    ? (ctx.parsed.y ?? ctx.parsed.x)
+                                                    : ctx.parsed;
+                                                const sign = val > 0 ? '+' : '';
+                                                return `${ctx.label}: ${sign}${val.toFixed(1)}%`;
+                                            }
                                         }
                                     },
                                     title: { display: true, text: 'P&L%' }
