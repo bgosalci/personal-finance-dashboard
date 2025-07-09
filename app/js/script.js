@@ -1084,42 +1084,80 @@
 
                     container.style.display = 'flex';
                 }
-                function showChart(ticker) {
+                function showChart(initialTicker) {
                     const modal = document.getElementById("stock-chart-popup");
                     const canvas = document.getElementById("chartjs-canvas");
                     const titleEl = document.getElementById("chart-popup-title");
-                    if (titleEl) titleEl.textContent = ticker;
-                    const pricesObj = stockData.prices[ticker] || {};
-                    const years = Object.keys(pricesObj).map(y => parseInt(y)).sort((a,b)=>a-b);
-                    const prices = years.map(y => pricesObj[y]);
-                    if (window.stockChart) { window.stockChart.destroy(); }
-                    window.stockChart = new Chart(canvas.getContext("2d"), 
-                    {   
-                        type: "line", 
-                        data: { 
-                            labels: years, 
-                            datasets: [
-                                { 
-                                    label: ticker, 
-                                    data: prices, 
-                                    borderColor: "#1e40af", 
-                                    backgroundColor: "rgba(30,64,175,0.1)", 
-                                    fill: false, 
-                                    tension: 0.2 
-                                }
-                            ]
-                        }, 
-                        options: { 
-                            responsive: true, 
-                            scales: { 
-                                y: { 
-                                    type: "logarithmic" 
-                                } 
-                            } 
-                        } 
+                    if (titleEl) titleEl.textContent = "Stock Chart";
+
+                    const tickerContainer = document.getElementById('chart-ticker-select');
+                    tickerContainer.innerHTML = '';
+                    stockData.tickers.forEach(t => {
+                        const label = document.createElement('label');
+                        const cb = document.createElement('input');
+                        cb.type = 'checkbox';
+                        cb.value = t;
+                        cb.checked = t === initialTicker;
+                        label.appendChild(cb);
+                        label.appendChild(document.createTextNode(' ' + t));
+                        tickerContainer.appendChild(label);
+                        cb.addEventListener('change', updateChart);
                     });
-                    modal.style.display = "flex";
-                    let myChart = document.getElementById('chartjs-canvas');
+
+                    const priceRadio = document.getElementById('chart-type-price');
+                    const growthRadio = document.getElementById('chart-type-growth');
+                    priceRadio.checked = true;
+                    growthRadio.checked = false;
+                    priceRadio.addEventListener('change', updateChart);
+                    growthRadio.addEventListener('change', updateChart);
+
+                    function updateChart() {
+                        const selectedTickers = Array.from(tickerContainer.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value);
+                        const chartType = growthRadio.checked ? 'growth' : 'price';
+                        const allYears = new Set();
+                        selectedTickers.forEach(t => {
+                            const obj = stockData.prices[t] || {};
+                            Object.keys(obj).forEach(y => allYears.add(parseInt(y)));
+                        });
+                        let years = Array.from(allYears).sort((a,b)=>a-b);
+                        if (chartType === 'growth') {
+                            years = years.filter((y,i,arr)=>arr.includes(y-1));
+                        }
+                        const colors = selectedTickers.map((_, i) => `hsl(${(i * 360 / selectedTickers.length) % 360},70%,60%)`);
+                        const datasets = selectedTickers.map((t, idx) => {
+                            const pricesObj = stockData.prices[t] || {};
+                            const data = years.map(y => {
+                                if (chartType === 'growth') {
+                                    const prev = pricesObj[y-1];
+                                    const cur = pricesObj[y];
+                                    return (prev && cur) ? ((cur - prev) / prev) * 100 : null;
+                                }
+                                return pricesObj[y] || null;
+                            });
+                            return {
+                                label: t,
+                                data,
+                                borderColor: colors[idx],
+                                backgroundColor: colors[idx],
+                                fill: false,
+                                tension: 0.2
+                            };
+                        });
+                        if (window.stockChart) window.stockChart.destroy();
+                        window.stockChart = new Chart(canvas.getContext('2d'), {
+                            type: 'line',
+                            data: { labels: years, datasets },
+                            options: {
+                                responsive: true,
+                                scales: {
+                                    y: chartType === 'price' ? { type: 'logarithmic' } : { type: 'linear', ticks: { callback: v => v + '%' } }
+                                }
+                            }
+                        });
+                    }
+
+                    updateChart();
+                    modal.style.display = 'flex';
                 }
 
 

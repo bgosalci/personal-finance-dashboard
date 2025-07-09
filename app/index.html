@@ -490,6 +490,13 @@
                     <div class="modal-content">
                         <span class="modal-close" id="chart-popup-close">&times;</span>
                         <h3 id="chart-popup-title"></h3>
+                        <div class="chart-control-panel">
+                            <div class="chart-type">
+                                <label><input type="radio" name="chart-type" id="chart-type-price" value="price" checked> Price</label>
+                                <label><input type="radio" name="chart-type" id="chart-type-growth" value="growth"> Growth</label>
+                            </div>
+                            <div class="ticker-select" id="chart-ticker-select"></div>
+                        </div>
                         <canvas id="chartjs-canvas" width="800" height="500"></canvas>
                     </div>
                 </div>

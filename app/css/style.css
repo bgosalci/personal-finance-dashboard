@@ -696,6 +696,20 @@
             color: var(--primary-blue);
         }
 
+        .chart-control-panel {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .chart-control-panel .chart-type label,
+        .chart-control-panel .ticker-select label {
+            margin-right: 0.75rem;
+        }
+
         .modal-actions {
             display: flex;
             justify-content: flex-end;
