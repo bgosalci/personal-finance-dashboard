@@ -57,6 +57,7 @@
                 let barChart = null;
 
                 const addBtn = document.getElementById('add-investment-btn');
+                const getPriceBtn = document.getElementById('get-last-price-btn');
                 const modal = document.getElementById('investment-modal');
                 const form = document.getElementById('investment-form');
                 const closeBtn = document.getElementById('investment-close');
@@ -70,6 +71,7 @@
                 const editCancel = document.getElementById('edit-cancel-btn');
                 const editTotal = document.getElementById('edit-total-value');
                 let editIndex = null;
+                const API_KEY = 'd1nf8h1r01qovv8iu2dgd1nf8h1r01qovv8iu2e0';
 
                 function loadData() {
                     const data = localStorage.getItem(STORAGE_KEY);
@@ -291,6 +293,24 @@
                     editTotal.textContent = formatCurrency(qty * price);
                 }
 
+                async function fetchLastPrices() {
+                    if (investments.length === 0) return;
+                    const updates = investments.map(inv => {
+                        const url = `https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(inv.ticker)}&token=${API_KEY}`;
+                        return fetch(url)
+                            .then(res => res.json())
+                            .then(data => {
+                                if (data && typeof data.c === 'number') {
+                                    inv.lastPrice = parseFloat(data.c);
+                                }
+                            })
+                            .catch(() => {});
+                    });
+                    await Promise.all(updates);
+                    saveData();
+                    renderTable();
+                }
+
                 function saveEdit(e) {
                     e.preventDefault();
                     if (editIndex === null) return;
@@ -330,6 +350,7 @@
                 function init() {
                     loadData();
                     addBtn.addEventListener('click', openModal);
+                    getPriceBtn.addEventListener('click', fetchLastPrices);
                     closeBtn.addEventListener('click', closeModal);
                     cancelBtn.addEventListener('click', closeModal);
                     form.addEventListener('input', handleFormInput);
