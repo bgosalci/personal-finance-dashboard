@@ -105,18 +105,30 @@ const investment = {
 The application uses browser localStorage for data persistence with the following keys:
 
 ```javascript
-// Portfolio data
-localStorage.setItem('portfolio_investments', JSON.stringify(investments));
+// Portfolio positions
+localStorage.setItem('portfolio_positions', JSON.stringify(portfolioPositions));
 
-// Calculator history
+// Portfolio value snapshots
+localStorage.setItem('portfolio_snapshots', JSON.stringify(portfolioSnapshots));
+```
+
+Legacy portfolio data stored under `portfolioData` is migrated automatically. Additional keys remain:
+
+```javascript
 localStorage.setItem('calculator_history', JSON.stringify(calculations));
-
-// Stock tracking data
 localStorage.setItem('stock_tracker_data', JSON.stringify(stockData));
-
-// User preferences
 localStorage.setItem('user_preferences', JSON.stringify(preferences));
 ```
+
+### Backup and Export
+Use `PortfolioStorage.exportData()` to generate a JSON backup of all portfolio
+positions and snapshots. Save this string to a file periodically to avoid data
+loss.
+
+### Quota Management
+`PortfolioStorage` monitors total localStorage usage. If stored data exceeds
+90% of the browser's ~5MB limit the module automatically removes the oldest
+snapshots before saving new ones.
 
 ### Data Validation
 All user inputs are validated using custom validation functions:
