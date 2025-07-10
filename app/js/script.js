@@ -892,6 +892,8 @@
             const StockTracker = (function() {
                 const STORAGE_KEY = 'stockTrackerData';
                 let editMode = false;
+                const API_KEY = 'd1nf8h1r01qovv8iu2dgd1nf8h1r01qovv8iu2e0';
+                const getPriceBtn = document.getElementById('get-stock-last-price-btn');
 
                 function saveData() {
                     localStorage.setItem(STORAGE_KEY, JSON.stringify(stockData));
@@ -1009,6 +1011,29 @@
                     applyEditMode();
                 }
 
+                async function fetchLatestPrices() {
+                    if (stockData.tickers.length === 0) return;
+                    const currentYear = new Date().getFullYear();
+                    const updates = stockData.tickers.map(ticker => {
+                        const url = `https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(ticker)}&token=${API_KEY}`;
+                        return fetch(url)
+                            .then(res => res.json())
+                            .then(data => {
+                                if (data && typeof data.c === 'number') {
+                                    const price = parseFloat(data.c);
+                                    stockData.prices[ticker][currentYear] = price;
+                                    const input = document.querySelector(`#table-body input.price-input[data-ticker="${ticker}"][data-year="${currentYear}"]`);
+                                    if (input) input.value = price;
+                                    updateGrowthCalculations(ticker);
+                                }
+                            })
+                            .catch(() => {});
+                    });
+                    await Promise.all(updates);
+                    saveData();
+                    updateSummaryCards();
+                }
+
                 function generatePerformanceTable() {
                     if (stockData.tickers.length === 0) return;
 
@@ -1031,6 +1056,7 @@
 
                     years.forEach((year, yearIndex) => {
                         const row = document.createElement('tr');
+                        row.dataset.year = year;
                         row.innerHTML = `<td><strong>${year}</strong></td>`;
                         
                         stockData.tickers.forEach(ticker => {
@@ -1041,6 +1067,8 @@
                             priceInput.step = '0.01';
                             priceInput.min = '0';
                             priceInput.value = stockData.prices[ticker][year] || '';
+                            priceInput.dataset.ticker = ticker;
+                            priceInput.dataset.year = year;
                             priceInput.readOnly = !editMode;
                             
                             priceInput.addEventListener('input', () => {
@@ -1357,6 +1385,7 @@
                     document.getElementById('edit-stock-btn').addEventListener('click', toggleEditMode);
                     document.getElementById('add-ticker-btn').addEventListener('click', addTicker);
                     document.getElementById('generate-table-btn').addEventListener('click', generatePerformanceTable);
+                    if (getPriceBtn) getPriceBtn.addEventListener('click', fetchLatestPrices);
 
                     document.getElementById('ticker-input').addEventListener('keypress', (e) => {
                         if (e.key === 'Enter') {
