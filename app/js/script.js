@@ -308,7 +308,8 @@
                 function updateTotals() {
                     let totalValue = 0;
                     let totalCost = 0;
-                    investments.forEach(inv => {
+                    const data = aggregateInvestments();
+                    data.forEach(inv => {
                         const value = inv.quantity * inv.lastPrice;
                         totalValue += value;
                         totalCost += inv.quantity * inv.purchasePrice;
@@ -342,10 +343,11 @@
                 }
 
                 function updateCharts() {
-                    const labels = investments.map(inv => inv.ticker);
-                    const values = investments.map(inv => inv.quantity * inv.lastPrice);
+                    const data = aggregateInvestments();
+                    const labels = data.map(inv => inv.ticker);
+                    const values = data.map(inv => inv.quantity * inv.lastPrice);
                     const total = values.reduce((a, b) => a + b, 0);
-                    const plPercents = investments.map(inv => {
+                    const plPercents = data.map(inv => {
                         const cost = inv.quantity * inv.purchasePrice;
                         const value = inv.quantity * inv.lastPrice;
                         return cost ? ((value - cost) / cost) * 100 : 0;
@@ -419,12 +421,44 @@
                     }
                 }
 
+                function aggregateInvestments() {
+                    const map = {};
+                    investments.forEach((inv, idx) => {
+                        if (!map[inv.ticker]) {
+                            map[inv.ticker] = {
+                                ticker: inv.ticker,
+                                name: inv.name,
+                                quantity: 0,
+                                cost: 0,
+                                last: 0,
+                                count: 0,
+                                index: idx
+                            };
+                        }
+                        const item = map[inv.ticker];
+                        if (item.index > idx) item.index = idx;
+                        item.quantity += inv.quantity;
+                        item.cost += inv.purchasePrice * inv.quantity;
+                        item.last += inv.lastPrice;
+                        item.count += 1;
+                    });
+                    return Object.values(map).map(it => ({
+                        ticker: it.ticker,
+                        name: it.name,
+                        quantity: it.quantity,
+                        purchasePrice: it.quantity ? it.cost / it.quantity : 0,
+                        lastPrice: it.count ? it.last / it.count : 0,
+                        index: it.index
+                    }));
+                }
+
                 function renderTable() {
                     const tbody = document.getElementById('portfolio-body');
                     tbody.innerHTML = '';
-                    investments.forEach((inv, idx) => {
+                    const displayData = aggregateInvestments();
+                    displayData.forEach((inv) => {
                         const row = document.createElement('tr');
-                        row.dataset.index = idx;
+                        row.dataset.index = inv.index;
                         row.draggable = true;
                         row.innerHTML = `
                             <td class="drag-handle-cell"><ion-icon name="reorder-three-outline"></ion-icon></td>
@@ -437,10 +471,10 @@
                             <td class="pl-cell"></td>
                             <td class="plpct-cell"></td>
                             <td class="actions-cell">
-                                <button class="icon-btn edit-btn" data-index="${idx}" title="Edit">
+                                <button class="icon-btn edit-btn" data-index="${inv.index}" title="Edit">
                                     <svg width="16" height="16" viewBox="0 0 512 512"><polygon points="364.13 125.25 87 403 64 448 108.99 425 386.75 147.87 364.13 125.25" style="fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"/><path d="M420.69,68.69,398.07,91.31l22.62,22.63,22.62-22.63a16,16,0,0,0,0-22.62h0A16,16,0,0,0,420.69,68.69Z" style="fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"/></svg>
                                 </button>
-                                <button class="icon-btn delete-btn" data-index="${idx}" title="Delete">
+                                <button class="icon-btn delete-btn" data-index="${inv.index}" title="Delete">
                                     <svg width="16" height="16" viewBox="0 0 512 512"><path d="M112,112l20,320c.95,18.49,14.4,32,32,32H348c17.67,0,30.87-13.51,32-32l20-320" style="fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"/><line x1="80" y1="112" x2="432" y2="112" style="stroke:currentColor;stroke-linecap:round;stroke-miterlimit:10;stroke-width:32px"/><path d="M192,112V72h0a23.93,23.93,0,0,1,24-24h80a23.93,23.93,0,0,1,24,24h0v40" style="fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"/><line x1="256" y1="176" x2="256" y2="400" style="fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"/><line x1="184" y1="176" x2="192" y2="400" style="fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"/><line x1="328" y1="176" x2="320" y2="400" style="fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"/></svg>
                                 </button>
                             </td>`;
@@ -448,15 +482,15 @@
                         tbody.appendChild(row);
                     });
 
-                    updateRows();
+                    updateRows(displayData);
                     updateTotals();
                     updateCharts();
                 }
 
-                function updateRows() {
+                function updateRows(displayData) {
                     const rows = document.querySelectorAll('#portfolio-body tr');
                     rows.forEach((row, idx) => {
-                        const inv = investments[idx];
+                        const inv = displayData[idx];
                         const value = inv.quantity * inv.lastPrice;
                         const cost = inv.quantity * inv.purchasePrice;
                         const pl = value - cost;
@@ -572,32 +606,6 @@
                         return;
                     }
 
-                    const existing = investments.find(inv => inv.ticker === ticker);
-                    if (existing) {
-                        if (confirm('This ticker already exists in your portfolio. Combine positions?')) {
-                            const totalQty = existing.quantity + quantity;
-                            const totalCost = existing.purchasePrice * existing.quantity + purchasePrice * quantity;
-                            existing.quantity = totalQty;
-                            existing.purchasePrice = totalCost / totalQty;
-                            existing.lastPrice = lastPrice;
-                            if (name) existing.name = name;
-                            saveData();
-                            renderTable();
-                            if (resetAfter) {
-                                form.reset();
-                                const dateField = document.getElementById('investment-purchase-date');
-                                if (dateField) {
-                                    dateField.value = today;
-                                    dateField.max = today;
-                                }
-                                totalDisplay.textContent = formatCurrency(0);
-                                document.getElementById('investment-ticker').focus();
-                            } else {
-                                closeModal();
-                            }
-                        }
-                        return;
-                    }
 
                     assignColor(ticker);
                     investments.push({ ticker, name, quantity, purchasePrice, lastPrice, tradeDate: purchaseDate });
