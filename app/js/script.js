@@ -94,7 +94,7 @@
                         old.forEach(item => {
                             addPosition({
                                 symbol: item.ticker,
-                                purchase_price_per_share: item.avgPrice,
+                                purchase_price_per_share: item.purchasePrice || item.avgPrice,
                                 quantity: item.quantity,
                                 purchase_date: new Date().toISOString().split('T')[0]
                             });
@@ -255,6 +255,17 @@
                     if (data) {
                         try {
                             investments = JSON.parse(data) || [];
+                            let migrated = false;
+                            investments.forEach(inv => {
+                                if (inv.purchasePrice === undefined && inv.avgPrice !== undefined) {
+                                    inv.purchasePrice = inv.avgPrice;
+                                    delete inv.avgPrice;
+                                    migrated = true;
+                                }
+                            });
+                            if (migrated) {
+                                localStorage.setItem(STORAGE_KEY, JSON.stringify(investments));
+                            }
                         } catch (e) {
                             investments = [];
                         }
@@ -291,7 +302,7 @@
                     investments.forEach(inv => {
                         const value = inv.quantity * inv.lastPrice;
                         totalValue += value;
-                        totalCost += inv.quantity * inv.avgPrice;
+                        totalCost += inv.quantity * inv.purchasePrice;
                     });
                     const totalPL = totalValue - totalCost;
                     const totalPLPct = totalCost ? (totalPL / totalCost) * 100 : 0;
@@ -326,7 +337,7 @@
                     const values = investments.map(inv => inv.quantity * inv.lastPrice);
                     const total = values.reduce((a, b) => a + b, 0);
                     const plPercents = investments.map(inv => {
-                        const cost = inv.quantity * inv.avgPrice;
+                        const cost = inv.quantity * inv.purchasePrice;
                         const value = inv.quantity * inv.lastPrice;
                         return cost ? ((value - cost) / cost) * 100 : 0;
                     });
@@ -410,7 +421,7 @@
                             <td class="drag-handle-cell"><ion-icon name="reorder-three-outline"></ion-icon></td>
                             <td>${inv.ticker}</td>
                             <td>${inv.name}</td>
-                            <td class="number-cell">${formatCurrency(inv.avgPrice)}</td>
+                            <td class="number-cell">${formatCurrency(inv.purchasePrice)}</td>
                             <td class="number-cell">${inv.quantity}</td>
                             <td class="number-cell">${formatCurrency(inv.lastPrice)}</td>
                             <td class="value-cell"></td>
@@ -438,7 +449,7 @@
                     rows.forEach((row, idx) => {
                         const inv = investments[idx];
                         const value = inv.quantity * inv.lastPrice;
-                        const cost = inv.quantity * inv.avgPrice;
+                        const cost = inv.quantity * inv.purchasePrice;
                         const pl = value - cost;
                         const plPct = cost ? (pl / cost) * 100 : 0;
 
@@ -532,21 +543,21 @@
                     const ticker = document.getElementById('investment-ticker').value.trim().toUpperCase();
                     const name = document.getElementById('investment-name').value.trim();
                     const quantity = parseFloat(document.getElementById('investment-quantity').value) || 0;
-                    const avgPrice = parseFloat(document.getElementById('investment-avg-price').value) || 0;
+                    const purchasePrice = parseFloat(document.getElementById('investment-purchase-price').value) || 0;
                     const lastPrice = parseFloat(document.getElementById('investment-last-price').value) || 0;
                     if (!tickerValid) {
                         alert('Please enter a valid ticker symbol.');
                         return;
                     }
-                    if (!ticker || quantity <= 0 || avgPrice <= 0 || lastPrice <= 0) return;
+                    if (!ticker || quantity <= 0 || purchasePrice <= 0 || lastPrice <= 0) return;
 
                     const existing = investments.find(inv => inv.ticker === ticker);
                     if (existing) {
                         if (confirm('This ticker already exists in your portfolio. Combine positions?')) {
                             const totalQty = existing.quantity + quantity;
-                            const totalCost = existing.avgPrice * existing.quantity + avgPrice * quantity;
+                            const totalCost = existing.purchasePrice * existing.quantity + purchasePrice * quantity;
                             existing.quantity = totalQty;
-                            existing.avgPrice = totalCost / totalQty;
+                            existing.purchasePrice = totalCost / totalQty;
                             existing.lastPrice = lastPrice;
                             if (name) existing.name = name;
                             saveData();
@@ -563,7 +574,7 @@
                     }
 
                     assignColor(ticker);
-                    investments.push({ ticker, name, quantity, avgPrice, lastPrice });
+                    investments.push({ ticker, name, quantity, purchasePrice, lastPrice });
                     saveData();
                     renderTable();
 
@@ -581,7 +592,7 @@
                     const inv = investments[index];
                     document.getElementById('edit-name').value = inv.name || '';
                     document.getElementById('edit-quantity').value = inv.quantity;
-                    document.getElementById('edit-avg-price').value = inv.avgPrice;
+                    document.getElementById('edit-purchase-price').value = inv.purchasePrice;
                     document.getElementById('edit-last-price').value = inv.lastPrice;
                     editTotal.textContent = formatCurrency(inv.quantity * inv.lastPrice);
                     editModal.style.display = 'flex';
@@ -627,14 +638,14 @@
                     if (editIndex === null) return;
                     const name = document.getElementById('edit-name').value || '';
                     const qty = parseFloat(document.getElementById('edit-quantity').value) || 0;
-                    const avg = parseFloat(document.getElementById('edit-avg-price').value) || 0;
+                    const purchase = parseFloat(document.getElementById('edit-purchase-price').value) || 0;
                     const last = parseFloat(document.getElementById('edit-last-price').value) || 0;
-                    if (qty <= 0 || avg <= 0 || last <= 0) return;
+                    if (qty <= 0 || purchase <= 0 || last <= 0) return;
 
                     const inv = investments[editIndex];
                     inv.name = name;
                     inv.quantity = qty;
-                    inv.avgPrice = avg;
+                    inv.purchasePrice = purchase;
                     inv.lastPrice = last;
 
                     saveData();
