@@ -49,6 +49,62 @@
                 };
             })();
 
+            // Stock Finance Performance Module
+            const StockFinance = (function() {
+                const API_KEY = 'd1nf8h1r01qovv8iu2dgd1nf8h1r01qovv8iu2e0';
+
+                async function fetchFinancials() {
+                    const input = document.getElementById('finance-ticker-input');
+                    const ticker = input.value.trim().toUpperCase();
+                    if (!ticker) return;
+
+                    const container = document.getElementById('financial-results');
+                    container.innerHTML = '';
+
+                    const url = `https://finnhub.io/api/v1/stock/financials-reported?symbol=${encodeURIComponent(ticker)}&token=${API_KEY}`;
+                    try {
+                        const res = await fetch(url);
+                        const data = await res.json();
+                        renderData(data, container);
+                    } catch (e) {
+                        container.innerHTML = '<div class="result-item">Failed to fetch data.</div>';
+                    }
+                    container.style.display = 'block';
+                }
+
+                function renderData(obj, container, indent = 0) {
+                    if (!obj || typeof obj !== 'object') return;
+                    Object.entries(obj).forEach(([key, value]) => {
+                        if (value && typeof value === 'object') {
+                            const header = document.createElement('div');
+                            header.textContent = key;
+                            header.style.fontWeight = '600';
+                            header.style.margin = '0.5rem 0';
+                            header.style.marginLeft = indent + 'rem';
+                            container.appendChild(header);
+                            renderData(value, container, indent + 1);
+                        } else {
+                            const row = document.createElement('div');
+                            row.className = 'result-item';
+                            row.style.marginLeft = indent + 'rem';
+                            row.innerHTML = `<span>${key}</span><span>${value}</span>`;
+                            container.appendChild(row);
+                        }
+                    });
+                }
+
+                function init() {
+                    const btn = document.getElementById('fetch-financial-btn');
+                    if (btn) btn.addEventListener('click', fetchFinancials);
+                    const input = document.getElementById('finance-ticker-input');
+                    if (input) input.addEventListener('keypress', (e) => {
+                        if (e.key === 'Enter') fetchFinancials();
+                    });
+                }
+
+                return { init };
+            })();
+
             // Portfolio Management Module
             const PortfolioManager = (function() {
                 const STORAGE_KEY = 'portfolioData';
@@ -1319,6 +1375,7 @@
             // Public API
             function init() {
                 TabManager.init();
+                StockFinance.init();
                 PortfolioManager.init();
                 Calculator.init();
                 StockTracker.init();
