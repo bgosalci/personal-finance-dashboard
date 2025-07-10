@@ -57,7 +57,8 @@ That's it! The application runs entirely client-side.
 1. Navigate to the "Portfolio" tab
 2. Click "Add Investment" to create new positions
 3. Enter stock symbol, quantity, and purchase price
-4. View real-time calculations and charts
+4. Adding a ticker that already exists prompts you to combine the positions
+5. View real-time calculations and charts
 
 ### Using Calculators
 1. Go to the "Calculators" tab

@@ -368,6 +368,28 @@
                     }
                     if (!ticker || quantity <= 0 || avgPrice <= 0 || lastPrice <= 0) return;
 
+                    const existing = investments.find(inv => inv.ticker === ticker);
+                    if (existing) {
+                        if (confirm('This ticker already exists in your portfolio. Combine positions?')) {
+                            const totalQty = existing.quantity + quantity;
+                            const totalCost = existing.avgPrice * existing.quantity + avgPrice * quantity;
+                            existing.quantity = totalQty;
+                            existing.avgPrice = totalCost / totalQty;
+                            existing.lastPrice = lastPrice;
+                            if (name) existing.name = name;
+                            saveData();
+                            renderTable();
+                            if (resetAfter) {
+                                form.reset();
+                                totalDisplay.textContent = formatCurrency(0);
+                                document.getElementById('investment-ticker').focus();
+                            } else {
+                                closeModal();
+                            }
+                        }
+                        return;
+                    }
+
                     assignColor(ticker);
                     investments.push({ ticker, name, quantity, avgPrice, lastPrice });
                     saveData();
