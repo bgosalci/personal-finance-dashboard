@@ -368,6 +368,11 @@
                     }
                     if (!ticker || quantity <= 0 || avgPrice <= 0 || lastPrice <= 0) return;
 
+                    if (investments.some(inv => inv.ticker === ticker)) {
+                        alert('This ticker already exists in your portfolio.');
+                        return;
+                    }
+
                     assignColor(ticker);
                     investments.push({ ticker, name, quantity, avgPrice, lastPrice });
                     saveData();

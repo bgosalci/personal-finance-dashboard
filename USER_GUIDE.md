@@ -29,6 +29,7 @@ The dashboard has five main sections accessible via tabs at the top:
    - **Purchase Price**: Price per share when you bought it
    - **Purchase Date**: When you bought the investment
    - **Current Price**: Current market price (optional - can be updated later)
+   - *Each ticker can only be added once*
 
 4. Click **"Save Investment"**
 
