@@ -184,6 +184,614 @@
                 return { init, addPosition, createSnapshot, exportData, portfolioPositions, portfolioSnapshots, save };
             })();
 
+            // Comprehensive Storage Management Module
+            const StorageManager = (function() {
+                'use strict';
+
+                const STORAGE_CONFIG = {
+                    VERSION: '1.0.0',
+                    MAX_STORAGE_SIZE: 5 * 1024 * 1024, // 5MB
+                    COMPRESSION_THRESHOLD: 1024, // Compress data larger than 1KB
+                    DEBOUNCE_DELAY: 500, // 500ms debounce for saves
+                    MAX_SNAPSHOTS: 100,
+                    BACKUP_PREFIX: 'backup_',
+                    SCHEMA_VERSION_KEY: 'storage_schema_version'
+                };
+
+                const STORAGE_KEYS = {
+                    POSITIONS: 'portfolio_positions_v2',
+                    SNAPSHOTS: 'portfolio_snapshots_v2',
+                    METADATA: 'storage_metadata',
+                    SETTINGS: 'app_settings',
+                    CACHE: 'data_cache'
+                };
+
+                let portfolioPositions = [];
+                let portfolioSnapshots = [];
+                let storageMetadata = {
+                    version: STORAGE_CONFIG.VERSION,
+                    lastBackup: null,
+                    totalOperations: 0,
+                    corruptionDetected: false
+                };
+                let debounceTimers = new Map();
+                let compressionEnabled = true;
+
+                function generateId() {
+                    return 'pos_' + Date.now() + '_' + Math.random().toString(36).substring(2, 11);
+                }
+
+                function getCurrentTimestamp() {
+                    return new Date().toISOString();
+                }
+
+                function calculateChecksum(data) {
+                    let hash = 0;
+                    const str = JSON.stringify(data);
+                    for (let i = 0; i < str.length; i++) {
+                        const char = str.charCodeAt(i);
+                        hash = ((hash << 5) - hash) + char;
+                        hash = hash & hash; // Convert to 32-bit integer
+                    }
+                    return hash.toString(36);
+                }
+
+                function compressData(data) {
+                    if (!compressionEnabled) return data;
+                    try {
+                        const jsonStr = JSON.stringify(data);
+                        if (jsonStr.length < STORAGE_CONFIG.COMPRESSION_THRESHOLD) return data;
+                        
+                        // Simple LZ-style compression for localStorage
+                        const compressed = jsonStr.replace(/(.{2,}?)\1+/g, (match, pattern) => {
+                            const count = Math.floor(match.length / pattern.length);
+                            return count > 2 ? `${pattern}*${count}` : match;
+                        });
+                        
+                        return {
+                            _compressed: true,
+                            data: compressed,
+                            originalSize: jsonStr.length,
+                            compressedSize: compressed.length
+                        };
+                    } catch (e) {
+                        console.warn('Compression failed, storing uncompressed:', e);
+                        return data;
+                    }
+                }
+
+                function decompressData(data) {
+                    if (!data || typeof data !== 'object' || !data._compressed) return data;
+                    try {
+                        const decompressed = data.data.replace(/(.+?)\*(\d+)/g, (match, pattern, count) => {
+                            return pattern.repeat(parseInt(count));
+                        });
+                        return JSON.parse(decompressed);
+                    } catch (e) {
+                        console.error('Decompression failed:', e);
+                        return null;
+                    }
+                }
+
+                function getStorageUsage() {
+                    let total = 0;
+                    try {
+                        for (let i = 0; i < localStorage.length; i++) {
+                            const key = localStorage.key(i);
+                            const value = localStorage.getItem(key);
+                            if (key && value) {
+                                total += key.length + value.length;
+                            }
+                        }
+                    } catch (e) {
+                        console.error('Error calculating storage usage:', e);
+                    }
+                    return total;
+                }
+
+                function checkStorageQuota() {
+                    const usage = getStorageUsage();
+                    const limit = STORAGE_CONFIG.MAX_STORAGE_SIZE;
+                    
+                    if (usage > limit * 0.9) {
+                        console.warn('Storage quota nearly exceeded:', usage, 'of', limit);
+                        cleanupOldData();
+                        return false;
+                    }
+                    return true;
+                }
+
+                function cleanupOldData() {
+                    if (portfolioSnapshots.length > STORAGE_CONFIG.MAX_SNAPSHOTS) {
+                        const toRemove = portfolioSnapshots.length - STORAGE_CONFIG.MAX_SNAPSHOTS;
+                        portfolioSnapshots.splice(0, toRemove);
+                        console.log(`Removed ${toRemove} old snapshots to free space`);
+                    }
+
+                    try {
+                        const cacheKeys = Object.keys(localStorage).filter(key => key.startsWith('cache_'));
+                        const oneWeekAgo = Date.now() - (7 * 24 * 60 * 60 * 1000);
+                        
+                        cacheKeys.forEach(key => {
+                            try {
+                                const item = JSON.parse(localStorage.getItem(key));
+                                if (item.timestamp && item.timestamp < oneWeekAgo) {
+                                    localStorage.removeItem(key);
+                                }
+                            } catch (e) {
+                                localStorage.removeItem(key); // Remove corrupted cache items
+                            }
+                        });
+                    } catch (e) {
+                        console.error('Error during cache cleanup:', e);
+                    }
+                }
+
+                function validatePosition(position) {
+                    if (!position || typeof position !== 'object') {
+                        return { valid: false, error: 'Position must be an object' };
+                    }
+
+                    const required = ['symbol', 'quantity', 'purchase_price_per_share'];
+                    for (const field of required) {
+                        if (!(field in position)) {
+                            return { valid: false, error: `Missing required field: ${field}` };
+                        }
+                    }
+
+                    const symbol = String(position.symbol || '').trim().toUpperCase();
+                    const quantity = parseFloat(position.quantity);
+                    const price = parseFloat(position.purchase_price_per_share);
+
+                    if (!symbol) {
+                        return { valid: false, error: 'Symbol cannot be empty' };
+                    }
+                    if (isNaN(quantity) || quantity <= 0) {
+                        return { valid: false, error: 'Quantity must be a positive number' };
+                    }
+                    if (isNaN(price) || price <= 0) {
+                        return { valid: false, error: 'Price must be a positive number' };
+                    }
+
+                    return {
+                        valid: true,
+                        data: {
+                            id: position.id || generateId(),
+                            symbol,
+                            quantity,
+                            purchase_price_per_share: price,
+                            purchase_date: position.purchase_date || new Date().toISOString().split('T')[0],
+                            total_investment: parseFloat((price * quantity).toFixed(2)),
+                            created_at: position.created_at || getCurrentTimestamp(),
+                            updated_at: getCurrentTimestamp(),
+                            checksum: calculateChecksum({ symbol, quantity, price })
+                        }
+                    };
+                }
+
+                function validateSnapshot(snapshot) {
+                    if (!snapshot || typeof snapshot !== 'object') {
+                        return { valid: false, error: 'Snapshot must be an object' };
+                    }
+
+                    const required = ['snapshot_date', 'total_portfolio_value', 'positions_snapshot'];
+                    for (const field of required) {
+                        if (!(field in snapshot)) {
+                            return { valid: false, error: `Missing required field: ${field}` };
+                        }
+                    }
+
+                    return { valid: true, data: snapshot };
+                }
+
+                function detectCorruption(data, expectedChecksum) {
+                    if (!expectedChecksum) return false;
+                    const actualChecksum = calculateChecksum(data);
+                    return actualChecksum !== expectedChecksum;
+                }
+
+                function attemptDataRecovery(key) {
+                    console.warn(`Attempting data recovery for ${key}`);
+                    
+                    const backupKey = STORAGE_CONFIG.BACKUP_PREFIX + key;
+                    try {
+                        const backupData = localStorage.getItem(backupKey);
+                        if (backupData) {
+                            const parsed = JSON.parse(backupData);
+                            const decompressed = decompressData(parsed);
+                            console.log(`Recovered data from backup for ${key}`);
+                            return decompressed;
+                        }
+                    } catch (e) {
+                        console.error('Backup recovery failed:', e);
+                    }
+
+                    if (key === STORAGE_KEYS.POSITIONS) {
+                        return migrateLegacyPositions();
+                    }
+
+                    return null;
+                }
+
+                function migrateLegacyPositions() {
+                    const legacyKeys = ['portfolioData', 'portfolio_positions'];
+                    
+                    for (const legacyKey of legacyKeys) {
+                        try {
+                            const legacyData = localStorage.getItem(legacyKey);
+                            if (legacyData) {
+                                const parsed = JSON.parse(legacyData);
+                                if (Array.isArray(parsed)) {
+                                    console.log(`Migrating legacy data from ${legacyKey}`);
+                                    return parsed.map(item => {
+                                        const validation = validatePosition({
+                                            symbol: item.ticker || item.symbol,
+                                            quantity: item.quantity,
+                                            purchase_price_per_share: item.avgPrice || item.purchase_price_per_share,
+                                            purchase_date: item.purchase_date || new Date().toISOString().split('T')[0]
+                                        });
+                                        return validation.valid ? validation.data : null;
+                                    }).filter(Boolean);
+                                }
+                            }
+                        } catch (e) {
+                            console.error(`Failed to migrate from ${legacyKey}:`, e);
+                        }
+                    }
+                    return [];
+                }
+
+                function debouncedSave(key, data, immediate = false) {
+                    if (immediate) {
+                        clearTimeout(debounceTimers.get(key));
+                        debounceTimers.delete(key);
+                        return saveToStorage(key, data);
+                    }
+
+                    if (debounceTimers.has(key)) {
+                        clearTimeout(debounceTimers.get(key));
+                    }
+
+                    const timer = setTimeout(() => {
+                        debounceTimers.delete(key);
+                        saveToStorage(key, data);
+                    }, STORAGE_CONFIG.DEBOUNCE_DELAY);
+
+                    debounceTimers.set(key, timer);
+                }
+
+                function saveToStorage(key, data) {
+                    try {
+                        if (!checkStorageQuota()) {
+                            throw new Error('Storage quota exceeded');
+                        }
+
+                        const backupKey = STORAGE_CONFIG.BACKUP_PREFIX + key;
+                        const existing = localStorage.getItem(key);
+                        if (existing) {
+                            localStorage.setItem(backupKey, existing);
+                        }
+
+                        const compressed = compressData(data);
+                        const dataWithMetadata = {
+                            data: compressed,
+                            timestamp: getCurrentTimestamp(),
+                            checksum: calculateChecksum(data),
+                            version: STORAGE_CONFIG.VERSION
+                        };
+
+                        localStorage.setItem(key, JSON.stringify(dataWithMetadata));
+                        storageMetadata.totalOperations++;
+                        updateMetadata();
+                        
+                        return true;
+                    } catch (e) {
+                        console.error(`Failed to save to ${key}:`, e);
+                        if (e.name === 'QuotaExceededError') {
+                            cleanupOldData();
+                            try {
+                                const compressed = compressData(data);
+                                const dataWithMetadata = {
+                                    data: compressed,
+                                    timestamp: getCurrentTimestamp(),
+                                    checksum: calculateChecksum(data),
+                                    version: STORAGE_CONFIG.VERSION
+                                };
+                                localStorage.setItem(key, JSON.stringify(dataWithMetadata));
+                                return true;
+                            } catch (retryError) {
+                                console.error('Retry save failed:', retryError);
+                                return false;
+                            }
+                        }
+                        return false;
+                    }
+                }
+
+                function loadFromStorage(key) {
+                    try {
+                        const stored = localStorage.getItem(key);
+                        if (!stored) return null;
+
+                        const parsed = JSON.parse(stored);
+                        
+                        if (!parsed.data && !parsed.timestamp) {
+                            return decompressData(parsed);
+                        }
+
+                        const data = decompressData(parsed.data);
+                        
+                        if (parsed.checksum && detectCorruption(data, parsed.checksum)) {
+                            console.error(`Data corruption detected in ${key}`);
+                            storageMetadata.corruptionDetected = true;
+                            const recovered = attemptDataRecovery(key);
+                            if (recovered) {
+                                return recovered;
+                            }
+                            throw new Error('Data corruption detected and recovery failed');
+                        }
+
+                        return data;
+                    } catch (e) {
+                        console.error(`Failed to load from ${key}:`, e);
+                        const recovered = attemptDataRecovery(key);
+                        return recovered || null;
+                    }
+                }
+
+                function updateMetadata() {
+                    storageMetadata.lastBackup = getCurrentTimestamp();
+                    try {
+                        localStorage.setItem(STORAGE_KEYS.METADATA, JSON.stringify(storageMetadata));
+                    } catch (e) {
+                        console.error('Failed to update metadata:', e);
+                    }
+                }
+
+                // Public API - Core storage functions
+                function addPortfolioPosition(position) {
+                    const validation = validatePosition(position);
+                    if (!validation.valid) {
+                        throw new Error(`Invalid position: ${validation.error}`);
+                    }
+
+                    const existingIndex = portfolioPositions.findIndex(p => p.symbol === validation.data.symbol);
+                    if (existingIndex !== -1) {
+                        const existing = portfolioPositions[existingIndex];
+                        const totalQuantity = existing.quantity + validation.data.quantity;
+                        const totalCost = (existing.quantity * existing.purchase_price_per_share) + 
+                                        (validation.data.quantity * validation.data.purchase_price_per_share);
+                        
+                        existing.quantity = totalQuantity;
+                        existing.purchase_price_per_share = totalCost / totalQuantity;
+                        existing.total_investment = parseFloat((existing.purchase_price_per_share * totalQuantity).toFixed(2));
+                        existing.updated_at = getCurrentTimestamp();
+                        existing.checksum = calculateChecksum({
+                            symbol: existing.symbol,
+                            quantity: existing.quantity,
+                            price: existing.purchase_price_per_share
+                        });
+                    } else {
+                        portfolioPositions.push(validation.data);
+                    }
+
+                    debouncedSave(STORAGE_KEYS.POSITIONS, portfolioPositions);
+                    return validation.data;
+                }
+
+                function getPortfolioPositions() {
+                    return [...portfolioPositions]; // Return copy to prevent external mutations
+                }
+
+                function updatePosition(id, updates) {
+                    const index = portfolioPositions.findIndex(p => p.id === id);
+                    if (index === -1) {
+                        throw new Error(`Position with id ${id} not found`);
+                    }
+
+                    const current = portfolioPositions[index];
+                    const updated = { ...current, ...updates, updated_at: getCurrentTimestamp() };
+                    
+                    const validation = validatePosition(updated);
+                    if (!validation.valid) {
+                        throw new Error(`Invalid position update: ${validation.error}`);
+                    }
+
+                    portfolioPositions[index] = validation.data;
+                    debouncedSave(STORAGE_KEYS.POSITIONS, portfolioPositions);
+                    return validation.data;
+                }
+
+                function deletePosition(id) {
+                    const index = portfolioPositions.findIndex(p => p.id === id);
+                    if (index === -1) {
+                        throw new Error(`Position with id ${id} not found`);
+                    }
+
+                    const deleted = portfolioPositions.splice(index, 1)[0];
+                    debouncedSave(STORAGE_KEYS.POSITIONS, portfolioPositions);
+                    return deleted;
+                }
+
+                function createPortfolioSnapshot(customData = {}) {
+                    const snapshot = {
+                        id: generateId(),
+                        snapshot_date: customData.snapshot_date || new Date().toISOString().split('T')[0],
+                        timestamp: getCurrentTimestamp(),
+                        total_portfolio_value: 0,
+                        total_invested: 0,
+                        gain_loss: 0,
+                        gain_loss_percentage: 0,
+                        positions_count: portfolioPositions.length,
+                        positions_snapshot: JSON.parse(JSON.stringify(portfolioPositions)),
+                        ...customData
+                    };
+
+                    // Calculate portfolio metrics
+                    let totalValue = 0;
+                    let totalInvested = 0;
+
+                    portfolioPositions.forEach(position => {
+                        const invested = position.total_investment;
+                        const currentValue = position.quantity * (position.current_price || position.purchase_price_per_share);
+                        
+                        totalInvested += invested;
+                        totalValue += currentValue;
+                    });
+
+                    snapshot.total_portfolio_value = parseFloat(totalValue.toFixed(2));
+                    snapshot.total_invested = parseFloat(totalInvested.toFixed(2));
+                    snapshot.gain_loss = parseFloat((totalValue - totalInvested).toFixed(2));
+                    snapshot.gain_loss_percentage = totalInvested > 0 ? 
+                        parseFloat(((snapshot.gain_loss / totalInvested) * 100).toFixed(2)) : 0;
+
+                    const validation = validateSnapshot(snapshot);
+                    if (!validation.valid) {
+                        throw new Error(`Invalid snapshot: ${validation.error}`);
+                    }
+
+                    portfolioSnapshots.push(snapshot);
+                    
+                    if (portfolioSnapshots.length > STORAGE_CONFIG.MAX_SNAPSHOTS) {
+                        portfolioSnapshots.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+                        portfolioSnapshots = portfolioSnapshots.slice(0, STORAGE_CONFIG.MAX_SNAPSHOTS);
+                    }
+
+                    debouncedSave(STORAGE_KEYS.SNAPSHOTS, portfolioSnapshots);
+                    return snapshot;
+                }
+
+                function getPortfolioSnapshots() {
+                    return [...portfolioSnapshots].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+                }
+
+                function getSnapshotsByDateRange(startDate, endDate) {
+                    const start = new Date(startDate);
+                    const end = new Date(endDate);
+                    
+                    return portfolioSnapshots.filter(snapshot => {
+                        const snapshotDate = new Date(snapshot.snapshot_date);
+                        return snapshotDate >= start && snapshotDate <= end;
+                    }).sort((a, b) => new Date(b.snapshot_date) - new Date(a.snapshot_date));
+                }
+
+                function flushPendingSaves() {
+                    debounceTimers.forEach((timer, key) => {
+                        clearTimeout(timer);
+                        debounceTimers.delete(key);
+                    });
+                    
+                    saveToStorage(STORAGE_KEYS.POSITIONS, portfolioPositions);
+                    saveToStorage(STORAGE_KEYS.SNAPSHOTS, portfolioSnapshots);
+                }
+
+                function getStorageStats() {
+                    return {
+                        usage: getStorageUsage(),
+                        limit: STORAGE_CONFIG.MAX_STORAGE_SIZE,
+                        usagePercentage: (getStorageUsage() / STORAGE_CONFIG.MAX_STORAGE_SIZE) * 100,
+                        positionsCount: portfolioPositions.length,
+                        snapshotsCount: portfolioSnapshots.length,
+                        metadata: { ...storageMetadata },
+                        compressionEnabled,
+                        pendingSaves: debounceTimers.size
+                    };
+                }
+
+                function exportAllData() {
+                    return {
+                        version: STORAGE_CONFIG.VERSION,
+                        exportDate: getCurrentTimestamp(),
+                        positions: portfolioPositions,
+                        snapshots: portfolioSnapshots,
+                        metadata: storageMetadata
+                    };
+                }
+
+                function importData(data) {
+                    if (!data || typeof data !== 'object') {
+                        throw new Error('Invalid import data');
+                    }
+
+                    if (Array.isArray(data.positions)) {
+                        const validPositions = [];
+                        data.positions.forEach(pos => {
+                            const validation = validatePosition(pos);
+                            if (validation.valid) {
+                                validPositions.push(validation.data);
+                            }
+                        });
+                        portfolioPositions = validPositions;
+                    }
+
+                    if (Array.isArray(data.snapshots)) {
+                        const validSnapshots = [];
+                        data.snapshots.forEach(snap => {
+                            const validation = validateSnapshot(snap);
+                            if (validation.valid) {
+                                validSnapshots.push(validation.data);
+                            }
+                        });
+                        portfolioSnapshots = validSnapshots;
+                    }
+
+                    flushPendingSaves();
+                    return {
+                        positionsImported: portfolioPositions.length,
+                        snapshotsImported: portfolioSnapshots.length
+                    };
+                }
+
+                // Initialization
+                function init() {
+                    try {
+                        const metadata = localStorage.getItem(STORAGE_KEYS.METADATA);
+                        if (metadata) {
+                            storageMetadata = { ...storageMetadata, ...JSON.parse(metadata) };
+                        }
+                    } catch (e) {
+                        console.error('Failed to load metadata:', e);
+                    }
+
+                    const positions = loadFromStorage(STORAGE_KEYS.POSITIONS);
+                    if (positions && Array.isArray(positions)) {
+                        portfolioPositions = positions;
+                    } else {
+                        portfolioPositions = migrateLegacyPositions();
+                    }
+
+                    const snapshots = loadFromStorage(STORAGE_KEYS.SNAPSHOTS);
+                    if (snapshots && Array.isArray(snapshots)) {
+                        portfolioSnapshots = snapshots;
+                    }
+
+                    checkStorageQuota();
+                    
+                    console.log('StorageManager initialized:', getStorageStats());
+                }
+
+                // Public API
+                return {
+                    addPortfolioPosition,
+                    getPortfolioPositions,
+                    updatePosition,
+                    deletePosition,
+                    
+                    createPortfolioSnapshot,
+                    getPortfolioSnapshots,
+                    getSnapshotsByDateRange,
+                    
+                    flushPendingSaves,
+                    getStorageStats,
+                    exportAllData,
+                    importData,
+                    init,
+                    
+                    setCompressionEnabled: (enabled) => { compressionEnabled = enabled; },
+                    getConfig: () => ({ ...STORAGE_CONFIG })
+                };
+            })();
+
             // Portfolio Management Module
             const PortfolioManager = (function() {
                 const STORAGE_KEY = 'portfolioData';
@@ -203,7 +811,11 @@
 
                 const addBtn = document.getElementById('add-investment-btn');
                 const getPriceBtn = document.getElementById('get-last-price-btn');
+                const createSnapshotBtn = document.getElementById('create-snapshot-btn');
+                const storageStatsBtn = document.getElementById('storage-stats-btn');
                 const modal = document.getElementById('investment-modal');
+                const storageStatsModal = document.getElementById('storage-stats-modal');
+                const snapshotsModal = document.getElementById('snapshots-modal');
                 const form = document.getElementById('investment-form');
                 const tickerInput = document.getElementById('investment-ticker');
                 const closeBtn = document.getElementById('investment-close');
@@ -251,14 +863,16 @@
                 }
 
                 function loadData() {
-                    const data = localStorage.getItem(STORAGE_KEY);
-                    if (data) {
-                        try {
-                            investments = JSON.parse(data) || [];
-                        } catch (e) {
-                            investments = [];
-                        }
-                    }
+                    const positions = StorageManager.getPortfolioPositions();
+                    investments = positions.map(pos => ({
+                        id: pos.id,
+                        ticker: pos.symbol,
+                        name: pos.name || '',
+                        quantity: pos.quantity,
+                        avgPrice: pos.purchase_price_per_share,
+                        lastPrice: pos.current_price || pos.purchase_price_per_share
+                    }));
+
                     const colorData = localStorage.getItem(COLOR_KEY);
                     if (colorData) {
                         try {
@@ -277,8 +891,33 @@
                 }
 
                 function saveData() {
-                    localStorage.setItem(STORAGE_KEY, JSON.stringify(investments));
                     localStorage.setItem(COLOR_KEY, JSON.stringify(tickerColors));
+                    
+                    investments.forEach(inv => {
+                        try {
+                            if (inv.id) {
+                                // Update existing position
+                                StorageManager.updatePosition(inv.id, {
+                                    symbol: inv.ticker,
+                                    name: inv.name,
+                                    quantity: inv.quantity,
+                                    purchase_price_per_share: inv.avgPrice,
+                                    current_price: inv.lastPrice
+                                });
+                            } else {
+                                const newPos = StorageManager.addPortfolioPosition({
+                                    symbol: inv.ticker,
+                                    name: inv.name,
+                                    quantity: inv.quantity,
+                                    purchase_price_per_share: inv.avgPrice,
+                                    current_price: inv.lastPrice
+                                });
+                                inv.id = newPos.id; // Update investment with new ID
+                            }
+                        } catch (e) {
+                            console.error('Failed to save investment:', inv, e);
+                        }
+                    });
                 }
 
                 function formatCurrency(value) {
@@ -563,9 +1202,29 @@
                     }
 
                     assignColor(ticker);
-                    investments.push({ ticker, name, quantity, avgPrice, lastPrice });
-                    saveData();
-                    renderTable();
+                    try {
+                        const newPosition = StorageManager.addPortfolioPosition({
+                            symbol: ticker,
+                            name: name,
+                            quantity: quantity,
+                            purchase_price_per_share: avgPrice,
+                            current_price: lastPrice
+                        });
+                        investments.push({ 
+                            id: newPosition.id,
+                            ticker, 
+                            name, 
+                            quantity, 
+                            avgPrice, 
+                            lastPrice 
+                        });
+                        saveData();
+                        renderTable();
+                    } catch (e) {
+                        console.error('Failed to add investment:', e);
+                        alert('Failed to add investment: ' + e.message);
+                        return;
+                    }
 
                     if (resetAfter) {
                         form.reset();
@@ -652,13 +1311,86 @@
                         const idx = parseInt(btn.dataset.index, 10);
                         if (confirm('Delete this investment?')) {
                             const removed = investments.splice(idx, 1)[0];
-                            if (removed && !investments.some(inv => inv.ticker === removed.ticker)) {
-                                delete tickerColors[removed.ticker];
-                                colorIndex = Object.keys(tickerColors).length;
+                            if (removed) {
+                                try {
+                                    if (removed.id) {
+                                        StorageManager.deletePosition(removed.id);
+                                    }
+                                    if (!investments.some(inv => inv.ticker === removed.ticker)) {
+                                        delete tickerColors[removed.ticker];
+                                        colorIndex = Object.keys(tickerColors).length;
+                                    }
+                                    saveData();
+                                    renderTable();
+                                } catch (e) {
+                                    console.error('Failed to delete investment:', e);
+                                    alert('Failed to delete investment: ' + e.message);
+                                    investments.splice(idx, 0, removed);
+                                }
                             }
-                            saveData();
-                            renderTable();
                         }
+                    }
+                }
+
+                function createSnapshot() {
+                    try {
+                        const snapshot = StorageManager.createPortfolioSnapshot();
+                        alert(`Portfolio snapshot created successfully!\nDate: ${snapshot.snapshot_date}\nTotal Value: ${formatCurrency(snapshot.total_portfolio_value)}\nGain/Loss: ${formatCurrency(snapshot.gain_loss)} (${snapshot.gain_loss_percentage}%)`);
+                    } catch (e) {
+                        console.error('Failed to create snapshot:', e);
+                        alert('Failed to create snapshot: ' + e.message);
+                    }
+                }
+
+                function showStorageStats() {
+                    try {
+                        const stats = StorageManager.getStorageStats();
+                        
+                        document.getElementById('storage-usage').textContent = (stats.usage / 1024).toFixed(2) + ' KB';
+                        document.getElementById('storage-percentage').textContent = stats.usagePercentage.toFixed(1) + '%';
+                        document.getElementById('positions-count').textContent = stats.positionsCount;
+                        document.getElementById('snapshots-count').textContent = stats.snapshotsCount;
+                        document.getElementById('compression-status').textContent = stats.compressionEnabled ? 'Yes' : 'No';
+                        document.getElementById('pending-saves').textContent = stats.pendingSaves;
+                        
+                        storageStatsModal.style.display = 'flex';
+                    } catch (e) {
+                        console.error('Failed to get storage stats:', e);
+                        alert('Failed to get storage stats: ' + e.message);
+                    }
+                }
+
+                function closeStorageStats() {
+                    storageStatsModal.style.display = 'none';
+                }
+
+                function exportData() {
+                    try {
+                        const data = StorageManager.exportAllData();
+                        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `portfolio-export-${new Date().toISOString().split('T')[0]}.json`;
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        URL.revokeObjectURL(url);
+                        alert('Portfolio data exported successfully!');
+                    } catch (e) {
+                        console.error('Failed to export data:', e);
+                        alert('Failed to export data: ' + e.message);
+                    }
+                }
+
+                function flushPendingSaves() {
+                    try {
+                        StorageManager.flushPendingSaves();
+                        alert('All pending saves have been flushed to storage.');
+                        showStorageStats(); // Refresh the stats
+                    } catch (e) {
+                        console.error('Failed to flush saves:', e);
+                        alert('Failed to flush saves: ' + e.message);
                     }
                 }
 
@@ -666,6 +1398,8 @@
                     loadData();
                     addBtn.addEventListener('click', openModal);
                     getPriceBtn.addEventListener('click', fetchLastPrices);
+                    createSnapshotBtn.addEventListener('click', createSnapshot);
+                    storageStatsBtn.addEventListener('click', showStorageStats);
                     closeBtn.addEventListener('click', closeModal);
                     cancelBtn.addEventListener('click', closeModal);
                     form.addEventListener('input', handleFormInput);
@@ -682,6 +1416,12 @@
                     editForm.addEventListener('input', handleEditInput);
                     editForm.addEventListener('submit', saveEdit);
                     editModal.addEventListener('click', (e) => { if (e.target === editModal) closeEditModal(); });
+
+                    document.getElementById('storage-stats-close').addEventListener('click', closeStorageStats);
+                    document.getElementById('close-storage-stats-btn').addEventListener('click', closeStorageStats);
+                    document.getElementById('export-data-btn').addEventListener('click', exportData);
+                    document.getElementById('flush-saves-btn').addEventListener('click', flushPendingSaves);
+                    storageStatsModal.addEventListener('click', (e) => { if (e.target === storageStatsModal) closeStorageStats(); });
 
                     renderTable();
                 }
@@ -1581,7 +2321,9 @@
 
             // Public API
             function init() {
+                StorageManager.init();
                 TabManager.init();
+                PortfolioStorage.init();
                 PortfolioManager.init();
                 Calculator.init();
                 StockTracker.init();

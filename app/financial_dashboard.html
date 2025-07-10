@@ -37,6 +37,8 @@
                     <div>
                         <button class="btn btn-primary" id="add-investment-btn">Add Investment</button>
                         <button class="btn btn-secondary" id="get-last-price-btn">Get The Last Price</button>
+                        <button class="btn btn-secondary" id="create-snapshot-btn">Create Snapshot</button>
+                        <button class="btn btn-secondary" id="storage-stats-btn">Storage Stats</button>
                     </div>
                 </div>
                 <div class="table-container" id="portfolio-table-container">
@@ -154,6 +156,59 @@
                                 <button type="submit" class="btn btn-primary">Save</button>
                             </div>
                         </form>
+                    </div>
+                </div>
+
+                <!-- Storage Stats Modal -->
+                <div id="storage-stats-modal" class="modal">
+                    <div class="modal-content">
+                        <span class="modal-close" id="storage-stats-close">&times;</span>
+                        <h3>Storage Management</h3>
+                        <div class="storage-stats">
+                            <div class="stat-item">
+                                <label>Storage Usage:</label>
+                                <span id="storage-usage">0 KB</span>
+                            </div>
+                            <div class="stat-item">
+                                <label>Usage Percentage:</label>
+                                <span id="storage-percentage">0%</span>
+                            </div>
+                            <div class="stat-item">
+                                <label>Portfolio Positions:</label>
+                                <span id="positions-count">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <label>Portfolio Snapshots:</label>
+                                <span id="snapshots-count">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <label>Compression Enabled:</label>
+                                <span id="compression-status">Yes</span>
+                            </div>
+                            <div class="stat-item">
+                                <label>Pending Saves:</label>
+                                <span id="pending-saves">0</span>
+                            </div>
+                        </div>
+                        <div class="modal-actions">
+                            <button type="button" class="btn btn-secondary" id="export-data-btn">Export Data</button>
+                            <button type="button" class="btn btn-secondary" id="flush-saves-btn">Flush Pending Saves</button>
+                            <button type="button" class="btn btn-secondary" id="close-storage-stats-btn">Close</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Snapshots Modal -->
+                <div id="snapshots-modal" class="modal">
+                    <div class="modal-content">
+                        <span class="modal-close" id="snapshots-close">&times;</span>
+                        <h3>Portfolio Snapshots</h3>
+                        <div class="snapshots-list" id="snapshots-list">
+                            <!-- Snapshots will be populated here -->
+                        </div>
+                        <div class="modal-actions">
+                            <button type="button" class="btn btn-secondary" id="close-snapshots-btn">Close</button>
+                        </div>
                     </div>
                 </div>
             </div>
