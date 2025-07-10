@@ -663,6 +663,33 @@
             z-index: 1000;
         }
 
+        /* Onboarding overlay */
+        .onboarding-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1100;
+        }
+
+        .onboarding-content {
+            background: var(--background-primary);
+            padding: 2rem;
+            border-radius: 8px;
+            max-width: 600px;
+            text-align: left;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .onboarding-close {
+            margin-top: 1rem;
+        }
+
         .modal-content {
             background: var(--background-primary);
             padding: 1rem;

@@ -49,6 +49,36 @@
                 };
             })();
 
+            // Onboarding Module
+            const Onboarding = (function() {
+                const STORAGE_KEY = 'seenOnboarding';
+                const overlay = document.getElementById('onboarding-overlay');
+                const closeBtn = document.getElementById('onboarding-close');
+
+                function show() {
+                    if (overlay) {
+                        overlay.style.display = 'flex';
+                    }
+                }
+
+                function hide() {
+                    if (overlay) {
+                        overlay.style.display = 'none';
+                    }
+                    localStorage.setItem(STORAGE_KEY, 'true');
+                }
+
+                function init() {
+                    if (!overlay || !closeBtn) return;
+                    closeBtn.addEventListener('click', hide);
+                    if (!localStorage.getItem(STORAGE_KEY)) {
+                        show();
+                    }
+                }
+
+                return { init };
+            })();
+
             // Portfolio Management Module
             const PortfolioManager = (function() {
                 const STORAGE_KEY = 'portfolioData';
@@ -1384,6 +1414,7 @@
                 PortfolioManager.init();
                 Calculator.init();
                 StockTracker.init();
+                Onboarding.init();
             }
 
             function removeTicker(ticker) {
