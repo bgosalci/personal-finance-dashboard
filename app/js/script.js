@@ -184,6 +184,130 @@
                 return { init, addPosition, createSnapshot, exportData, portfolioPositions, portfolioSnapshots, save };
             })();
 
+            const PortfolioEntryForm = (function() {
+                const form = document.getElementById('position-form');
+                if (!form) return { init: () => {} };
+                const symbolInput = document.getElementById('entry-symbol');
+                const dateInput = document.getElementById('entry-date');
+                const priceInput = document.getElementById('entry-price');
+                const qtyInput = document.getElementById('entry-quantity');
+                const totalDisplay = document.getElementById('entry-total');
+                const fetchBtn = document.getElementById('entry-fetch');
+                const successMsg = document.getElementById('entry-success');
+                const tableBody = document.getElementById('positions-body');
+                const totalInvested = document.getElementById('positions-total-invested');
+                const DRAFT_KEY = 'position_form_draft';
+                const API_KEY = 'd1nf8h1r01qovv8iu2dgd1nf8h1r01qovv8iu2e0';
+
+                function formatCurrency(v) {
+                    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(v);
+                }
+
+                function updateTotal() {
+                    const qty = parseFloat(qtyInput.value) || 0;
+                    const price = parseFloat(priceInput.value) || 0;
+                    totalDisplay.textContent = formatCurrency(qty * price);
+                }
+
+                function saveDraft() {
+                    const draft = {
+                        symbol: symbolInput.value,
+                        date: dateInput.value,
+                        price: priceInput.value,
+                        quantity: qtyInput.value
+                    };
+                    localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+                }
+
+                function loadDraft() {
+                    const str = localStorage.getItem(DRAFT_KEY);
+                    if (!str) return;
+                    try {
+                        const d = JSON.parse(str);
+                        if (d.symbol) symbolInput.value = d.symbol;
+                        if (d.date) dateInput.value = d.date;
+                        if (d.price) priceInput.value = d.price;
+                        if (d.quantity) qtyInput.value = d.quantity;
+                    } catch (e) {}
+                }
+
+                async function fetchPrice() {
+                    const ticker = symbolInput.value.trim();
+                    if (!ticker) return;
+                    const url = `https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(ticker)}&token=${API_KEY}`;
+                    try {
+                        const res = await fetch(url);
+                        const data = await res.json();
+                        if (data && typeof data.c === 'number') {
+                            priceInput.value = data.c;
+                            updateTotal();
+                        }
+                    } catch (e) {
+                        // ignore network errors
+                    }
+                }
+
+                function duplicateExists(sym, date) {
+                    return PortfolioStorage.portfolioPositions.some(p => p.symbol === sym && p.purchase_date === date);
+                }
+
+                function refreshTable() {
+                    tableBody.innerHTML = '';
+                    PortfolioStorage.portfolioPositions.forEach(p => {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td>${p.purchase_date}</td>
+                            <td>${p.symbol}</td>
+                            <td class="number-cell">${formatCurrency(p.purchase_price_per_share)}</td>
+                            <td class="number-cell">${p.quantity}</td>
+                            <td class="number-cell">${formatCurrency(p.total_investment)}</td>`;
+                        tableBody.appendChild(tr);
+                    });
+                    const sum = PortfolioStorage.portfolioPositions.reduce((s, p) => s + p.total_investment, 0);
+                    totalInvested.textContent = formatCurrency(sum);
+                }
+
+                function handleSubmit(e) {
+                    e.preventDefault();
+                    const symbol = symbolInput.value.trim().toUpperCase();
+                    const price = parseFloat(priceInput.value);
+                    const qty = parseFloat(qtyInput.value);
+                    const date = dateInput.value;
+                    if (!symbol || isNaN(price) || price <= 0 || isNaN(qty) || qty <= 0 || !date) {
+                        alert('Please enter valid purchase details.');
+                        return;
+                    }
+                    if (new Date(date) > new Date()) {
+                        alert('Purchase date cannot be in the future.');
+                        return;
+                    }
+                    if (duplicateExists(symbol, date)) {
+                        alert('A position for this symbol and date already exists.');
+                        return;
+                    }
+                    PortfolioStorage.addPosition({ symbol, purchase_price_per_share: price, quantity: qty, purchase_date: date });
+                    refreshTable();
+                    successMsg.style.display = 'block';
+                    setTimeout(() => { successMsg.style.display = 'none'; }, 1500);
+                    form.reset();
+                    dateInput.value = new Date().toISOString().split('T')[0];
+                    localStorage.removeItem(DRAFT_KEY);
+                    updateTotal();
+                }
+
+                function init() {
+                    loadDraft();
+                    if (!dateInput.value) dateInput.value = new Date().toISOString().split('T')[0];
+                    updateTotal();
+                    form.addEventListener('input', () => { updateTotal(); saveDraft(); });
+                    form.addEventListener('submit', handleSubmit);
+                    fetchBtn.addEventListener('click', fetchPrice);
+                    refreshTable();
+                }
+
+                return { init, refreshTable };
+            })();
+
             // Portfolio Management Module
             const PortfolioManager = (function() {
                 const STORAGE_KEY = 'portfolioData';
@@ -1582,6 +1706,8 @@
             // Public API
             function init() {
                 TabManager.init();
+                PortfolioStorage.init();
+                PortfolioEntryForm.init();
                 PortfolioManager.init();
                 Calculator.init();
                 StockTracker.init();
