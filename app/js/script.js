@@ -64,6 +64,7 @@
                 ];
                 let tickerColors = {};
                 let colorIndex = 0;
+                let tickerValid = false;
 
                 const addBtn = document.getElementById('add-investment-btn');
                 const getPriceBtn = document.getElementById('get-last-price-btn');
@@ -90,6 +91,23 @@
                         const data = await res.json();
                         if (data && typeof data.c === 'number') {
                             return parseFloat(data.c);
+                        }
+                    } catch (e) {
+                        // ignore errors and return null
+                    }
+                    return null;
+                }
+
+                async function lookupSymbol(ticker) {
+                    const url = `https://finnhub.io/api/v1/search?q=${encodeURIComponent(ticker)}&token=${API_KEY}`;
+                    try {
+                        const res = await fetch(url);
+                        const data = await res.json();
+                        if (data && Array.isArray(data.result)) {
+                            const match = data.result.find(item => item.symbol && item.symbol.toUpperCase() === ticker.toUpperCase());
+                            if (match) {
+                                return match.description || '';
+                            }
                         }
                     } catch (e) {
                         // ignore errors and return null
@@ -295,6 +313,7 @@
 
                 function openModal() {
                     form.reset();
+                    tickerValid = false;
                     totalDisplay.textContent = formatCurrency(0);
                     modal.style.display = 'flex';
                     tickerInput.focus();
@@ -312,8 +331,24 @@
 
                 async function handleTickerLookup() {
                     const ticker = tickerInput.value.trim().toUpperCase();
-                    if (!ticker) return;
-                    const price = await fetchQuote(ticker);
+                    if (!ticker) {
+                        tickerValid = false;
+                        return;
+                    }
+                    const [price, description] = await Promise.all([
+                        fetchQuote(ticker),
+                        lookupSymbol(ticker)
+                    ]);
+
+                    if (description) {
+                        document.getElementById('investment-name').value = description;
+                        tickerValid = true;
+                    } else {
+                        tickerValid = false;
+                        document.getElementById('investment-name').value = '';
+                        alert('Ticker symbol does not exist');
+                    }
+
                     if (price !== null) {
                         const lastPriceEl = document.getElementById('investment-last-price');
                         lastPriceEl.value = price;
@@ -327,6 +362,10 @@
                     const quantity = parseFloat(document.getElementById('investment-quantity').value) || 0;
                     const avgPrice = parseFloat(document.getElementById('investment-avg-price').value) || 0;
                     const lastPrice = parseFloat(document.getElementById('investment-last-price').value) || 0;
+                    if (!tickerValid) {
+                        alert('Please enter a valid ticker symbol.');
+                        return;
+                    }
                     if (!ticker || quantity <= 0 || avgPrice <= 0 || lastPrice <= 0) return;
 
                     assignColor(ticker);
@@ -441,6 +480,7 @@
                     modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
                     tickerInput.addEventListener('change', handleTickerLookup);
                     tickerInput.addEventListener('blur', handleTickerLookup);
+                    tickerInput.addEventListener('input', () => { tickerValid = false; });
 
                     document.getElementById('portfolio-body').addEventListener('click', handleRowAction);
                     editClose.addEventListener('click', closeEditModal);
