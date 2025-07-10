@@ -308,7 +308,8 @@
                 function updateTotals() {
                     let totalValue = 0;
                     let totalCost = 0;
-                    investments.forEach(inv => {
+                    const data = aggregateInvestments();
+                    data.forEach(inv => {
                         const value = inv.quantity * inv.lastPrice;
                         totalValue += value;
                         totalCost += inv.quantity * inv.purchasePrice;
@@ -342,10 +343,11 @@
                 }
 
                 function updateCharts() {
-                    const labels = investments.map(inv => inv.ticker);
-                    const values = investments.map(inv => inv.quantity * inv.lastPrice);
+                    const data = aggregateInvestments();
+                    const labels = data.map(inv => inv.ticker);
+                    const values = data.map(inv => inv.quantity * inv.lastPrice);
                     const total = values.reduce((a, b) => a + b, 0);
-                    const plPercents = investments.map(inv => {
+                    const plPercents = data.map(inv => {
                         const cost = inv.quantity * inv.purchasePrice;
                         const value = inv.quantity * inv.lastPrice;
                         return cost ? ((value - cost) / cost) * 100 : 0;
