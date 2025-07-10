@@ -507,10 +507,19 @@
             
             <!-- Stock Finance Performance Tab -->
             <div id="stock-finance" class="tab-content">
-                <div class="placeholder-content">
-                    <h3>Stock Finance Performance</h3>
-                    <p>Comprehensive financial analysis and performance metrics for your stock investments. This section will include detailed financial ratios, comparative analysis, sector performance benchmarking, and advanced stock valuation metrics to help you make informed investment decisions.</p>
+                <div class="section-header">
+                    <h2 class="section-title">Stock Finance Performance</h2>
                 </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="finance-ticker-input">Stock Ticker</label>
+                        <input type="text" id="finance-ticker-input" style="text-transform: uppercase;">
+                    </div>
+                    <div class="form-group" style="align-items:flex-end;">
+                        <button class="btn btn-primary" id="fetch-financial-btn">Get Financial Details</button>
+                    </div>
+                </div>
+                <div id="financial-results" class="result-display" style="display:none;"></div>
             </div>
         </div>
     </div>

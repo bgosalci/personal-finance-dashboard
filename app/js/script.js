@@ -65,31 +65,51 @@
                     try {
                         const res = await fetch(url);
                         const data = await res.json();
-                        renderData(data, container);
+                        displayFinancials(data, container);
                     } catch (e) {
                         container.innerHTML = '<div class="result-item">Failed to fetch data.</div>';
                     }
                     container.style.display = 'block';
                 }
 
-                function renderData(obj, container, indent = 0) {
-                    if (!obj || typeof obj !== 'object') return;
-                    Object.entries(obj).forEach(([key, value]) => {
-                        if (value && typeof value === 'object') {
-                            const header = document.createElement('div');
-                            header.textContent = key;
-                            header.style.fontWeight = '600';
-                            header.style.margin = '0.5rem 0';
-                            header.style.marginLeft = indent + 'rem';
-                            container.appendChild(header);
-                            renderData(value, container, indent + 1);
-                        } else {
-                            const row = document.createElement('div');
-                            row.className = 'result-item';
-                            row.style.marginLeft = indent + 'rem';
-                            row.innerHTML = `<span>${key}</span><span>${value}</span>`;
-                            container.appendChild(row);
-                        }
+                function createRow(key, value) {
+                    const row = document.createElement('div');
+                    row.className = 'statement-row';
+                    row.innerHTML = `<span>${key}</span><span>${value}</span>`;
+                    return row;
+                }
+
+                function renderStatement(title, dataObj, parent) {
+                    const group = document.createElement('div');
+                    group.className = 'statement-group';
+                    const header = document.createElement('h5');
+                    header.textContent = title;
+                    group.appendChild(header);
+                    Object.entries(dataObj || {}).forEach(([k, v]) => {
+                        group.appendChild(createRow(k, v));
+                    });
+                    parent.appendChild(group);
+                }
+
+                function displayFinancials(data, container) {
+                    if (!data || !Array.isArray(data.data)) {
+                        container.innerHTML = '<div class="result-item">No data available.</div>';
+                        return;
+                    }
+                    data.data.forEach(entry => {
+                        const item = document.createElement('div');
+                        item.className = 'financial-item';
+                        const heading = document.createElement('h4');
+                        const yr = entry.year || '';
+                        const qt = entry.quarter ? `Q${entry.quarter}` : '';
+                        heading.textContent = `${yr} ${qt} ${entry.form || ''}`.trim();
+                        item.appendChild(heading);
+                        const report = entry.report || {};
+                        Object.entries(report).forEach(([statement, details]) => {
+                            const title = statement.replace(/_/g, ' ').toUpperCase();
+                            renderStatement(title, details, item);
+                        });
+                        container.appendChild(item);
                     });
                 }
 

@@ -398,6 +398,40 @@
             color: var(--primary-blue);
         }
 
+        /* Financials Section */
+        .financial-item {
+            margin-bottom: 2rem;
+            padding: 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--background-secondary);
+        }
+
+        .financial-item h4 {
+            margin-bottom: 1rem;
+            color: var(--primary-blue);
+        }
+
+        .statement-group {
+            margin-bottom: 1rem;
+        }
+
+        .statement-group h5 {
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .statement-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.25rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .statement-row:last-child {
+            border-bottom: none;
+        }
+
         .ticker-management {
             display: flex;
             gap: 1rem;
