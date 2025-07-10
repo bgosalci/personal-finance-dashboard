@@ -52,9 +52,12 @@
             // Portfolio Management Module
             const PortfolioManager = (function() {
                 const STORAGE_KEY = 'portfolioData';
+                const HISTORY_KEY = 'portfolioTrades';
                 let investments = [];
+                let trades = [];
                 let pieChart = null;
                 let barChart = null;
+                let growthChart = null;
                 const COLOR_KEY = 'portfolioColors';
                 const COLOR_PALETTE = [
                     '#e6194b','#3cb44b','#ffe119','#4363d8','#f58231',
@@ -75,6 +78,7 @@
                 const cancelBtn = document.getElementById('cancel-investment-btn');
                 const saveAddBtn = document.getElementById('save-add-another-btn');
                 const totalDisplay = document.getElementById('investment-total-value');
+                const tradeDateInput = document.getElementById('investment-trade-date');
 
                 const editModal = document.getElementById('edit-investment-modal');
                 const editForm = document.getElementById('edit-investment-form');
@@ -124,6 +128,14 @@
                             investments = [];
                         }
                     }
+                    const hist = localStorage.getItem(HISTORY_KEY);
+                    if (hist) {
+                        try {
+                            trades = JSON.parse(hist) || [];
+                        } catch (e) {
+                            trades = [];
+                        }
+                    }
                     const colorData = localStorage.getItem(COLOR_KEY);
                     if (colorData) {
                         try {
@@ -143,6 +155,7 @@
 
                 function saveData() {
                     localStorage.setItem(STORAGE_KEY, JSON.stringify(investments));
+                    localStorage.setItem(HISTORY_KEY, JSON.stringify(trades));
                     localStorage.setItem(COLOR_KEY, JSON.stringify(tickerColors));
                 }
 
@@ -184,6 +197,71 @@
                 function getColor(ticker) {
                     assignColor(ticker);
                     return tickerColors[ticker];
+                }
+
+                async function fetchHistoricalPrices(ticker, startDate) {
+                    const from = Math.floor(startDate.getTime() / 1000);
+                    const to = Math.floor(Date.now() / 1000);
+                    const url = `https://finnhub.io/api/v1/stock/candle?symbol=${encodeURIComponent(ticker)}&resolution=M&from=${from}&to=${to}&token=${API_KEY}`;
+                    try {
+                        const res = await fetch(url);
+                        const data = await res.json();
+                        if (data && Array.isArray(data.c) && Array.isArray(data.t)) {
+                            return data.t.map((t, idx) => ({ date: new Date(t * 1000), close: data.c[idx] }));
+                        }
+                    } catch (e) {}
+                    return [];
+                }
+
+                async function updateGrowthChart() {
+                    if (trades.length === 0) return;
+                    const earliest = trades.reduce((min, t) => {
+                        const d = new Date(t.tradeDate);
+                        return d < min ? d : min;
+                    }, new Date());
+                    const start = new Date(earliest.getFullYear(), earliest.getMonth(), 1);
+                    const months = [];
+                    const now = new Date();
+                    let cur = new Date(start);
+                    while (cur <= now) {
+                        months.push(new Date(cur));
+                        cur.setMonth(cur.getMonth() + 1);
+                    }
+                    const labels = months.map(m => m.toISOString().slice(0,7));
+                    const tickers = [...new Set(trades.map(t => t.ticker))];
+                    const priceData = {};
+                    await Promise.all(tickers.map(async t => { priceData[t] = await fetchHistoricalPrices(t, start); }));
+                    const holdings = {};
+                    tickers.forEach(t => {
+                        holdings[t] = Array(months.length).fill(0);
+                        const ts = trades.filter(tr => tr.ticker===t).sort((a,b)=>new Date(a.tradeDate)-new Date(b.tradeDate));
+                        let q=0, k=0;
+                        for (let i=0;i<months.length;i++) {
+                            const next = new Date(months[i]);
+                            next.setMonth(next.getMonth()+1);
+                            while (k<ts.length && new Date(ts[k].tradeDate) < next) {
+                                q += ts[k].quantity;
+                                k++;
+                            }
+                            holdings[t][i]=q;
+                        }
+                    });
+                    const values = months.map((_,i)=>{
+                        let total=0;
+                        tickers.forEach(t=>{
+                            const price = priceData[t][i] ? priceData[t][i].close : null;
+                            if (price!==null) total += price * holdings[t][i];
+                        });
+                        return total;
+                    });
+                    if (!growthChart) {
+                        const ctx = document.getElementById('portfolio-growth-chart').getContext('2d');
+                        growthChart = new Chart(ctx, { type:'line', data:{ labels, datasets:[{ data: values, borderColor:'#1e40af', fill:false }] }, options:{ plugins:{ legend:{display:false} } } });
+                    } else {
+                        growthChart.data.labels = labels;
+                        growthChart.data.datasets[0].data = values;
+                        growthChart.update();
+                    }
                 }
 
                 function updateCharts() {
@@ -262,6 +340,8 @@
                         barChart.data.datasets[0].data = plPercents;
                         barChart.update();
                     }
+
+                    updateGrowthChart();
                 }
 
                 function renderTable() {
@@ -352,6 +432,7 @@
                     form.reset();
                     tickerValid = false;
                     totalDisplay.textContent = formatCurrency(0);
+                    tradeDateInput.value = new Date().toISOString().split('T')[0];
                     modal.style.display = 'flex';
                     tickerInput.focus();
                 }
@@ -405,30 +486,21 @@
                     }
                     if (!ticker || quantity <= 0 || avgPrice <= 0 || lastPrice <= 0) return;
 
-                    const existing = investments.find(inv => inv.ticker === ticker);
-                    if (existing) {
-                        if (confirm('This ticker already exists in your portfolio. Combine positions?')) {
-                            const totalQty = existing.quantity + quantity;
-                            const totalCost = existing.avgPrice * existing.quantity + avgPrice * quantity;
-                            existing.quantity = totalQty;
-                            existing.avgPrice = totalCost / totalQty;
-                            existing.lastPrice = lastPrice;
-                            if (name) existing.name = name;
-                            saveData();
-                            renderTable();
-                            if (resetAfter) {
-                                form.reset();
-                                totalDisplay.textContent = formatCurrency(0);
-                                document.getElementById('investment-ticker').focus();
-                            } else {
-                                closeModal();
-                            }
-                        }
-                        return;
-                    }
+                    const tradeDate = tradeDateInput.value || new Date().toISOString().split('T')[0];
+                    trades.push({ ticker, name, quantity, avgPrice, lastPrice, tradeDate });
 
-                    assignColor(ticker);
-                    investments.push({ ticker, name, quantity, avgPrice, lastPrice });
+                    let existing = investments.find(inv => inv.ticker === ticker);
+                    if (existing) {
+                        const totalQty = existing.quantity + quantity;
+                        const totalCost = existing.avgPrice * existing.quantity + avgPrice * quantity;
+                        existing.quantity = totalQty;
+                        existing.avgPrice = totalCost / totalQty;
+                        existing.lastPrice = lastPrice;
+                        if (name) existing.name = name;
+                    } else {
+                        assignColor(ticker);
+                        investments.push({ ticker, name, quantity, avgPrice, lastPrice });
+                    }
                     saveData();
                     renderTable();
 
