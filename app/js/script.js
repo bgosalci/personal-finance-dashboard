@@ -215,6 +215,8 @@
                 const editForm = document.getElementById('edit-investment-form');
                 const editClose = document.getElementById('edit-investment-close');
                 const editCancel = document.getElementById('edit-cancel-btn');
+                const editRecordGroup = document.getElementById("edit-record-group");
+                const editRecordSelect = document.getElementById("edit-record-select");
                 const editTotal = document.getElementById('edit-total-value');
                 let editIndex = null;
                 const API_KEY = 'd1nf8h1r01qovv8iu2dgd1nf8h1r01qovv8iu2e0';
@@ -626,9 +628,9 @@
                     }
                 }
 
-                function openEditModal(index) {
-                    editIndex = index;
-                    const inv = investments[index];
+                function populateEditFields(idx) {
+                    editIndex = idx;
+                    const inv = investments[idx];
                     document.getElementById('edit-name').value = inv.name || '';
                     document.getElementById('edit-quantity').value = inv.quantity;
                     document.getElementById('edit-purchase-price').value = inv.purchasePrice;
@@ -640,8 +642,38 @@
                     }
                     document.getElementById('edit-last-price').value = inv.lastPrice;
                     editTotal.textContent = formatCurrency(inv.quantity * inv.lastPrice);
+                }
+
+                function openEditModal(index) {
+                    const ticker = investments[index].ticker;
+                    const matches = [];
+                    investments.forEach((inv, idx) => {
+                        if (inv.ticker === ticker) matches.push(idx);
+                    });
+
+                    editRecordSelect.innerHTML = '';
+                    if (matches.length > 1) {
+                        matches.forEach(i => {
+                            const inv = investments[i];
+                            const opt = document.createElement('option');
+                            opt.value = i;
+                            opt.textContent = `${inv.quantity} @ ${formatCurrency(inv.purchasePrice)} on ${inv.tradeDate}`;
+                            editRecordSelect.appendChild(opt);
+                        });
+                        editRecordGroup.style.display = 'block';
+                        editRecordSelect.value = index;
+                        editRecordSelect.onchange = () => {
+                            const idx = parseInt(editRecordSelect.value, 10);
+                            populateEditFields(idx);
+                        };
+                    } else {
+                        editRecordGroup.style.display = 'none';
+                        editRecordSelect.onchange = null;
+                    }
+
+                    populateEditFields(index);
                     editModal.style.display = 'flex';
-                    fetchQuote(inv.ticker).then(price => {
+                    fetchQuote(ticker).then(price => {
                         if (price !== null) {
                             document.getElementById('edit-last-price').value = price;
                             handleEditInput();
