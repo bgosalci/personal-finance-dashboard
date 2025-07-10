@@ -262,6 +262,8 @@
                         barChart.data.datasets[0].data = plPercents;
                         barChart.update();
                     }
+                    
+                    updatePortfolioGrowthChart();
                 }
 
                 function renderTable() {
@@ -399,11 +401,12 @@
                     const quantity = parseFloat(document.getElementById('investment-quantity').value) || 0;
                     const avgPrice = parseFloat(document.getElementById('investment-avg-price').value) || 0;
                     const lastPrice = parseFloat(document.getElementById('investment-last-price').value) || 0;
+                    const tradeDate = document.getElementById('investment-trade-date').value;
                     if (!tickerValid) {
                         alert('Please enter a valid ticker symbol.');
                         return;
                     }
-                    if (!ticker || quantity <= 0 || avgPrice <= 0 || lastPrice <= 0) return;
+                    if (!ticker || quantity <= 0 || avgPrice <= 0 || lastPrice <= 0 || !tradeDate) return;
 
                     const existing = investments.find(inv => inv.ticker === ticker);
                     if (existing) {
@@ -428,7 +431,7 @@
                     }
 
                     assignColor(ticker);
-                    investments.push({ ticker, name, quantity, avgPrice, lastPrice });
+                    investments.push({ ticker, name, quantity, avgPrice, lastPrice, tradeDate });
                     saveData();
                     renderTable();
 
@@ -448,6 +451,7 @@
                     document.getElementById('edit-quantity').value = inv.quantity;
                     document.getElementById('edit-avg-price').value = inv.avgPrice;
                     document.getElementById('edit-last-price').value = inv.lastPrice;
+                    document.getElementById('edit-trade-date').value = inv.tradeDate || '';
                     editTotal.textContent = formatCurrency(inv.quantity * inv.lastPrice);
                     editModal.style.display = 'flex';
                     fetchQuote(inv.ticker).then(price => {
@@ -487,6 +491,125 @@
                     renderTable();
                 }
 
+                async function fetchHistoricalPrices(ticker, fromDate, toDate) {
+                    const from = Math.floor(new Date(fromDate).getTime() / 1000);
+                    const to = Math.floor(new Date(toDate).getTime() / 1000);
+                    const url = `https://finnhub.io/api/v1/stock/candle?symbol=${encodeURIComponent(ticker)}&resolution=M&from=${from}&to=${to}&token=${API_KEY}`;
+                    try {
+                        const res = await fetch(url);
+                        const data = await res.json();
+                        if (data && data.s === 'ok' && data.c && data.t) {
+                            return data.c.map((price, index) => ({
+                                timestamp: data.t[index],
+                                price: price
+                            }));
+                        }
+                    } catch (e) {
+                        console.error('Error fetching historical prices:', e);
+                    }
+                    return [];
+                }
+
+                async function calculatePortfolioGrowth() {
+                    if (investments.length === 0) return [];
+                    
+                    const earliestDate = investments.reduce((earliest, inv) => {
+                        if (!inv.tradeDate) return earliest;
+                        const invDate = new Date(inv.tradeDate);
+                        return !earliest || invDate < earliest ? invDate : earliest;
+                    }, null);
+                    
+                    if (!earliestDate) return [];
+                    
+                    const today = new Date();
+                    const monthlyData = [];
+                    
+                    const tickers = [...new Set(investments.map(inv => inv.ticker))];
+                    const historicalPrices = {};
+                    
+                    for (const ticker of tickers) {
+                        historicalPrices[ticker] = await fetchHistoricalPrices(ticker, earliestDate.toISOString().split('T')[0], today.toISOString().split('T')[0]);
+                    }
+                    
+                    const currentDate = new Date(earliestDate);
+                    while (currentDate <= today) {
+                        let portfolioValue = 0;
+                        const monthTimestamp = Math.floor(currentDate.getTime() / 1000);
+                        
+                        investments.forEach(inv => {
+                            if (!inv.tradeDate) return;
+                            const invTradeDate = new Date(inv.tradeDate);
+                            if (invTradeDate <= currentDate) {
+                                const tickerPrices = historicalPrices[inv.ticker] || [];
+                                const closestPrice = tickerPrices.find(p => p.timestamp >= monthTimestamp) || 
+                                                  tickerPrices[tickerPrices.length - 1] || 
+                                                  { price: inv.lastPrice };
+                                portfolioValue += inv.quantity * closestPrice.price;
+                            }
+                        });
+                        
+                        if (portfolioValue > 0) {
+                            monthlyData.push({
+                                date: new Date(currentDate),
+                                value: portfolioValue
+                            });
+                        }
+                        
+                        currentDate.setMonth(currentDate.getMonth() + 1);
+                    }
+                    
+                    return monthlyData;
+                }
+
+                let portfolioGrowthChart = null;
+                
+                async function updatePortfolioGrowthChart() {
+                    const growthData = await calculatePortfolioGrowth();
+                    const labels = growthData.map(d => d.date.toLocaleDateString('en-US', { year: 'numeric', month: 'short' }));
+                    const values = growthData.map(d => d.value);
+                    
+                    if (!portfolioGrowthChart) {
+                        const ctx = document.getElementById('portfolio-growth-chart').getContext('2d');
+                        portfolioGrowthChart = new Chart(ctx, {
+                            type: 'line',
+                            data: {
+                                labels,
+                                datasets: [{
+                                    label: 'Portfolio Value',
+                                    data: values,
+                                    borderColor: '#4363d8',
+                                    backgroundColor: 'rgba(67, 99, 216, 0.1)',
+                                    fill: true,
+                                    tension: 0.1
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                plugins: {
+                                    title: { display: true, text: 'Portfolio Growth Over Time' },
+                                    tooltip: {
+                                        callbacks: {
+                                            label: (ctx) => `Portfolio Value: ${formatCurrency(ctx.parsed.y)}`
+                                        }
+                                    }
+                                },
+                                scales: {
+                                    y: {
+                                        beginAtZero: true,
+                                        ticks: {
+                                            callback: (val) => formatCurrency(val)
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    } else {
+                        portfolioGrowthChart.data.labels = labels;
+                        portfolioGrowthChart.data.datasets[0].data = values;
+                        portfolioGrowthChart.update();
+                    }
+                }
+
                 function saveEdit(e) {
                     e.preventDefault();
                     if (editIndex === null) return;
@@ -494,13 +617,15 @@
                     const qty = parseFloat(document.getElementById('edit-quantity').value) || 0;
                     const avg = parseFloat(document.getElementById('edit-avg-price').value) || 0;
                     const last = parseFloat(document.getElementById('edit-last-price').value) || 0;
-                    if (qty <= 0 || avg <= 0 || last <= 0) return;
+                    const tradeDate = document.getElementById('edit-trade-date').value;
+                    if (qty <= 0 || avg <= 0 || last <= 0 || !tradeDate) return;
 
                     const inv = investments[editIndex];
                     inv.name = name;
                     inv.quantity = qty;
                     inv.avgPrice = avg;
                     inv.lastPrice = last;
+                    inv.tradeDate = tradeDate;
 
                     saveData();
                     renderTable();

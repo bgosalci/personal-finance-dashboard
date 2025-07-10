@@ -39,6 +39,12 @@
                         <button class="btn btn-secondary" id="get-last-price-btn">Get The Last Price</button>
                     </div>
                 </div>
+                <div class="chart-container" id="portfolio-growth-container">
+                    <div class="chart-box">
+                        <h3>Portfolio Growth</h3>
+                        <canvas id="portfolio-growth-chart"></canvas>
+                    </div>
+                </div>
                 <div class="table-container" id="portfolio-table-container">
                     <table class="data-table" id="portfolio-table">
                         <thead>
@@ -108,6 +114,10 @@
                                     <input type="number" step="0.01" id="investment-last-price" required>
                                 </div>
                                 <div class="form-group">
+                                    <label for="investment-trade-date">Trade Date</label>
+                                    <input type="date" id="investment-trade-date" required>
+                                </div>
+                                <div class="form-group">
                                     <label>Total Value</label>
                                     <span id="investment-total-value">$0.00</span>
                                 </div>
@@ -143,6 +153,10 @@
                                 <div class="form-group">
                                     <label for="edit-last-price">Last Price</label>
                                     <input type="number" step="0.01" id="edit-last-price" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="edit-trade-date">Trade Date</label>
+                                    <input type="date" id="edit-trade-date" required>
                                 </div>
                                 <div class="form-group">
                                     <label>Total Value</label>
