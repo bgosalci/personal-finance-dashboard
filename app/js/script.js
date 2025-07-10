@@ -269,7 +269,10 @@
                     tbody.innerHTML = '';
                     investments.forEach((inv, idx) => {
                         const row = document.createElement('tr');
+                        row.dataset.index = idx;
+                        row.draggable = true;
                         row.innerHTML = `
+                            <td class="drag-handle-cell"><ion-icon name="reorder-three-outline"></ion-icon></td>
                             <td>${inv.ticker}</td>
                             <td>${inv.name}</td>
                             <td class="number-cell">${formatCurrency(inv.avgPrice)}</td>
@@ -286,6 +289,7 @@
                                     <svg width="16" height="16" viewBox="0 0 512 512"><path d="M112,112l20,320c.95,18.49,14.4,32,32,32H348c17.67,0,30.87-13.51,32-32l20-320" style="fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"/><line x1="80" y1="112" x2="432" y2="112" style="stroke:currentColor;stroke-linecap:round;stroke-miterlimit:10;stroke-width:32px"/><path d="M192,112V72h0a23.93,23.93,0,0,1,24-24h80a23.93,23.93,0,0,1,24,24h0v40" style="fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"/><line x1="256" y1="176" x2="256" y2="400" style="fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"/><line x1="184" y1="176" x2="192" y2="400" style="fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"/><line x1="328" y1="176" x2="320" y2="400" style="fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"/></svg>
                                 </button>
                             </td>`;
+                        addDragHandlers(row);
                         tbody.appendChild(row);
                     });
 
@@ -309,6 +313,39 @@
                         row.querySelector('.plpct-cell').textContent = plPct.toFixed(2) + '%';
                         row.querySelector('.plpct-cell').className = 'plpct-cell ' + (plPct >= 0 ? 'growth-positive' : 'growth-negative');
                     });
+                }
+
+                let dragStartIndex = null;
+
+                function handleDragStart() {
+                    dragStartIndex = parseInt(this.dataset.index, 10);
+                    this.classList.add('dragging');
+                }
+
+                function handleDragOver(e) {
+                    e.preventDefault();
+                }
+
+                function handleDrop() {
+                    const dropIndex = parseInt(this.dataset.index, 10);
+                    if (dragStartIndex === null || dragStartIndex === dropIndex) return;
+                    const item = investments.splice(dragStartIndex, 1)[0];
+                    const targetIndex = dragStartIndex < dropIndex ? dropIndex - 1 : dropIndex;
+                    investments.splice(targetIndex, 0, item);
+                    dragStartIndex = null;
+                    saveData();
+                    renderTable();
+                }
+
+                function handleDragEnd() {
+                    this.classList.remove('dragging');
+                }
+
+                function addDragHandlers(row) {
+                    row.addEventListener('dragstart', handleDragStart);
+                    row.addEventListener('dragover', handleDragOver);
+                    row.addEventListener('drop', handleDrop);
+                    row.addEventListener('dragend', handleDragEnd);
                 }
 
                 function openModal() {
