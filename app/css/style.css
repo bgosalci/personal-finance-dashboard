@@ -233,6 +233,19 @@
             background: #b91c1c;
         }
 
+        .btn-tertiary {
+            background: var(--background-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-tertiary:hover {
+            background: var(--secondary-gray-light);
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(148, 163, 184, 0.3);
+        }
+
         .table-container {
             overflow-x: auto;
             margin-top: 2rem;

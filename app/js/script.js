@@ -52,7 +52,10 @@
             // Portfolio Management Module
             const PortfolioManager = (function() {
                 const STORAGE_KEY = 'portfolioData';
+                const SNAPSHOTS_KEY = 'portfolioSnapshots';
+                const BACKUP_KEY = 'portfolioBackup';
                 let investments = [];
+                let portfolioSnapshots = [];
                 let pieChart = null;
                 let barChart = null;
                 const COLOR_KEY = 'portfolioColors';
@@ -65,6 +68,9 @@
                 let tickerColors = {};
                 let colorIndex = 0;
                 let tickerValid = false;
+                
+                const MAX_STORAGE_SIZE = 5 * 1024 * 1024; // 5MB limit
+                const CLEANUP_THRESHOLD = 0.8; // Clean up when 80% full
 
                 const addBtn = document.getElementById('add-investment-btn');
                 const getPriceBtn = document.getElementById('get-last-price-btn');
@@ -119,11 +125,22 @@
                     const data = localStorage.getItem(STORAGE_KEY);
                     if (data) {
                         try {
-                            investments = JSON.parse(data) || [];
+                            const rawData = JSON.parse(data) || [];
+                            investments = migratePortfolioData(rawData);
                         } catch (e) {
                             investments = [];
                         }
                     }
+                    
+                    const snapshotsData = localStorage.getItem(SNAPSHOTS_KEY);
+                    if (snapshotsData) {
+                        try {
+                            portfolioSnapshots = JSON.parse(snapshotsData) || [];
+                        } catch (e) {
+                            portfolioSnapshots = [];
+                        }
+                    }
+                    
                     const colorData = localStorage.getItem(COLOR_KEY);
                     if (colorData) {
                         try {
@@ -142,8 +159,20 @@
                 }
 
                 function saveData() {
-                    localStorage.setItem(STORAGE_KEY, JSON.stringify(investments));
-                    localStorage.setItem(COLOR_KEY, JSON.stringify(tickerColors));
+                    try {
+                        checkStorageQuota();
+                        
+                        localStorage.setItem(STORAGE_KEY, JSON.stringify(investments));
+                        localStorage.setItem(COLOR_KEY, JSON.stringify(tickerColors));
+                        localStorage.setItem(SNAPSHOTS_KEY, JSON.stringify(portfolioSnapshots));
+                        
+                        createBackup();
+                    } catch (e) {
+                        console.error('Failed to save data:', e);
+                        if (e.name === 'QuotaExceededError') {
+                            handleStorageQuotaExceeded();
+                        }
+                    }
                 }
 
                 function formatCurrency(value) {
@@ -184,6 +213,246 @@
                 function getColor(ticker) {
                     assignColor(ticker);
                     return tickerColors[ticker];
+                }
+
+                function migratePortfolioData(rawData) {
+                    return rawData.map(inv => {
+                        if (inv.id && inv.purchase_date) {
+                            return validatePosition(inv);
+                        }
+                        
+                        const migratedPosition = {
+                            id: generateUniqueId(),
+                            symbol: inv.ticker || '',
+                            purchase_date: new Date().toISOString().split('T')[0], // Default to today
+                            purchase_price_per_share: inv.avgPrice || 0,
+                            quantity: inv.quantity || 0,
+                            total_investment: (inv.avgPrice || 0) * (inv.quantity || 0),
+                            ticker: inv.ticker || '',
+                            name: inv.name || '',
+                            avgPrice: inv.avgPrice || 0,
+                            lastPrice: inv.lastPrice || 0
+                        };
+                        
+                        return validatePosition(migratedPosition);
+                    });
+                }
+
+                function generateUniqueId() {
+                    return 'pos_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                }
+
+                function validatePosition(position) {
+                    const sanitized = {
+                        id: sanitizeString(position.id || generateUniqueId()),
+                        symbol: sanitizeString(position.symbol || position.ticker || '').toUpperCase(),
+                        purchase_date: validateDate(position.purchase_date) || new Date().toISOString().split('T')[0],
+                        purchase_price_per_share: sanitizeNumber(position.purchase_price_per_share || position.avgPrice || 0),
+                        quantity: sanitizeNumber(position.quantity || 0),
+                        total_investment: 0, // Will be calculated
+                        ticker: sanitizeString(position.symbol || position.ticker || '').toUpperCase(),
+                        name: sanitizeString(position.name || ''),
+                        avgPrice: sanitizeNumber(position.purchase_price_per_share || position.avgPrice || 0),
+                        lastPrice: sanitizeNumber(position.lastPrice || 0)
+                    };
+                    
+                    // Calculate total investment
+                    sanitized.total_investment = sanitized.purchase_price_per_share * sanitized.quantity;
+                    
+                    return sanitized;
+                }
+
+                function sanitizeString(str) {
+                    if (typeof str !== 'string') return '';
+                    return str.trim().replace(/[<>]/g, '');
+                }
+
+                function sanitizeNumber(num) {
+                    const parsed = parseFloat(num);
+                    return isNaN(parsed) ? 0 : Math.max(0, parsed);
+                }
+
+                function validateDate(dateStr) {
+                    if (!dateStr) return null;
+                    const date = new Date(dateStr);
+                    if (isNaN(date.getTime())) return null;
+                    return date.toISOString().split('T')[0];
+                }
+
+                // Portfolio Snapshots Functions
+                function createPortfolioSnapshot() {
+                    if (investments.length === 0) return null;
+                    
+                    const snapshot = {
+                        snapshot_date: new Date().toISOString().split('T')[0],
+                        total_portfolio_value: 0,
+                        total_invested: 0,
+                        gain_loss: 0,
+                        gain_loss_percentage: 0,
+                        positions_snapshot: JSON.parse(JSON.stringify(investments)) // Deep copy
+                    };
+                    
+                    // Calculate totals
+                    investments.forEach(inv => {
+                        const currentValue = inv.quantity * inv.lastPrice;
+                        const investedValue = inv.quantity * inv.avgPrice;
+                        snapshot.total_portfolio_value += currentValue;
+                        snapshot.total_invested += investedValue;
+                    });
+                    
+                    snapshot.gain_loss = snapshot.total_portfolio_value - snapshot.total_invested;
+                    snapshot.gain_loss_percentage = snapshot.total_invested > 0 
+                        ? (snapshot.gain_loss / snapshot.total_invested) * 100 
+                        : 0;
+                    
+                    return snapshot;
+                }
+
+                function addPortfolioSnapshot() {
+                    const snapshot = createPortfolioSnapshot();
+                    if (!snapshot) return false;
+                    
+                    const today = snapshot.snapshot_date;
+                    const existingIndex = portfolioSnapshots.findIndex(s => s.snapshot_date === today);
+                    
+                    if (existingIndex >= 0) {
+                        // Update existing snapshot
+                        portfolioSnapshots[existingIndex] = snapshot;
+                    } else {
+                        portfolioSnapshots.push(snapshot);
+                        portfolioSnapshots.sort((a, b) => new Date(b.snapshot_date) - new Date(a.snapshot_date));
+                    }
+                    
+                    saveData();
+                    return true;
+                }
+
+                // Storage Quota Management
+                function getStorageSize() {
+                    let total = 0;
+                    for (let key in localStorage) {
+                        if (localStorage.hasOwnProperty(key)) {
+                            total += localStorage[key].length + key.length;
+                        }
+                    }
+                    return total;
+                }
+
+                function checkStorageQuota() {
+                    const currentSize = getStorageSize();
+                    if (currentSize > MAX_STORAGE_SIZE * CLEANUP_THRESHOLD) {
+                        cleanupOldSnapshots();
+                    }
+                }
+
+                function cleanupOldSnapshots() {
+                    if (portfolioSnapshots.length > 50) {
+                        portfolioSnapshots = portfolioSnapshots.slice(0, 50);
+                        console.log('Cleaned up old portfolio snapshots to manage storage quota');
+                    }
+                }
+
+                function handleStorageQuotaExceeded() {
+                    alert('Storage quota exceeded. Cleaning up old data...');
+                    cleanupOldSnapshots();
+                    try {
+                        saveData();
+                    } catch (e) {
+                        alert('Unable to save data. Please export your portfolio and clear browser storage.');
+                    }
+                }
+
+                function createBackup() {
+                    const backup = {
+                        timestamp: new Date().toISOString(),
+                        version: '2.0',
+                        portfolioPositions: investments,
+                        portfolioSnapshots: portfolioSnapshots,
+                        tickerColors: tickerColors
+                    };
+                    
+                    localStorage.setItem(BACKUP_KEY, JSON.stringify(backup));
+                }
+
+                function exportPortfolioData() {
+                    const exportData = {
+                        timestamp: new Date().toISOString(),
+                        version: '2.0',
+                        portfolioPositions: investments,
+                        portfolioSnapshots: portfolioSnapshots,
+                        tickerColors: tickerColors
+                    };
+                    
+                    const dataStr = JSON.stringify(exportData, null, 2);
+                    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+                    const url = URL.createObjectURL(dataBlob);
+                    
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = `portfolio-backup-${new Date().toISOString().split('T')[0]}.json`;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(url);
+                    
+                    return true;
+                }
+
+                function importPortfolioData(file) {
+                    return new Promise((resolve, reject) => {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            try {
+                                const importData = JSON.parse(e.target.result);
+                                
+                                if (importData.portfolioPositions) {
+                                    investments = migratePortfolioData(importData.portfolioPositions);
+                                }
+                                
+                                if (importData.portfolioSnapshots) {
+                                    portfolioSnapshots = importData.portfolioSnapshots;
+                                }
+                                
+                                if (importData.tickerColors) {
+                                    tickerColors = importData.tickerColors;
+                                    colorIndex = Object.keys(tickerColors).length;
+                                }
+                                
+                                saveData();
+                                renderTable();
+                                updateTotals();
+                                updateCharts();
+                                
+                                resolve(true);
+                            } catch (error) {
+                                reject(error);
+                            }
+                        };
+                        reader.readAsText(file);
+                    });
+                }
+
+                // Enhanced Position Management
+                function addNewPosition(positionData) {
+                    const position = {
+                        id: generateUniqueId(),
+                        symbol: positionData.symbol || positionData.ticker || '',
+                        purchase_date: positionData.purchase_date || new Date().toISOString().split('T')[0],
+                        purchase_price_per_share: positionData.purchase_price_per_share || positionData.avgPrice || 0,
+                        quantity: positionData.quantity || 0,
+                        total_investment: 0,
+                        ticker: positionData.symbol || positionData.ticker || '',
+                        name: positionData.name || '',
+                        avgPrice: positionData.purchase_price_per_share || positionData.avgPrice || 0,
+                        lastPrice: positionData.lastPrice || 0
+                    };
+                    
+                    const validatedPosition = validatePosition(position);
+                    investments.push(validatedPosition);
+                    assignColor(validatedPosition.symbol);
+                    saveData();
+                    
+                    return validatedPosition;
                 }
 
                 function updateCharts() {
@@ -427,9 +696,14 @@
                         return;
                     }
 
-                    assignColor(ticker);
-                    investments.push({ ticker, name, quantity, avgPrice, lastPrice });
-                    saveData();
+                    addNewPosition({
+                        symbol: ticker,
+                        name: name,
+                        purchase_date: new Date().toISOString().split('T')[0],
+                        purchase_price_per_share: avgPrice,
+                        quantity: quantity,
+                        lastPrice: lastPrice
+                    });
                     renderTable();
 
                     if (resetAfter) {
@@ -541,6 +815,64 @@
                     tickerInput.addEventListener('blur', handleTickerLookup);
                     tickerInput.addEventListener('input', () => { tickerValid = false; });
 
+                    const createSnapshotBtn = document.getElementById('create-snapshot-btn');
+                    const exportPortfolioBtn = document.getElementById('export-portfolio-btn');
+                    const importPortfolioBtn = document.getElementById('import-portfolio-btn');
+                    const importPortfolioInput = document.getElementById('import-portfolio-input');
+
+                    if (createSnapshotBtn) {
+                        createSnapshotBtn.addEventListener('click', () => {
+                            try {
+                                if (addPortfolioSnapshot()) {
+                                    alert('Portfolio snapshot created successfully!');
+                                } else {
+                                    alert('Unable to create snapshot. Please add some investments first.');
+                                }
+                            } catch (error) {
+                                console.error('Error creating snapshot:', error);
+                                alert('Error creating snapshot: ' + error.message);
+                            }
+                        });
+                    }
+
+                    if (exportPortfolioBtn) {
+                        exportPortfolioBtn.addEventListener('click', () => {
+                            try {
+                                if (exportPortfolioData()) {
+                                    alert('Portfolio data exported successfully!');
+                                } else {
+                                    alert('Failed to export portfolio data.');
+                                }
+                            } catch (error) {
+                                console.error('Error exporting data:', error);
+                                alert('Error exporting data: ' + error.message);
+                            }
+                        });
+                    }
+
+                    if (importPortfolioBtn && importPortfolioInput) {
+                        importPortfolioBtn.addEventListener('click', () => {
+                            importPortfolioInput.click();
+                        });
+
+                        importPortfolioInput.addEventListener('change', (e) => {
+                            const file = e.target.files[0];
+                            if (file) {
+                                importPortfolioData(file)
+                                    .then(() => {
+                                        alert('Portfolio data imported successfully!');
+                                        renderTable();
+                                        e.target.value = '';
+                                    })
+                                    .catch((error) => {
+                                        console.error('Error importing data:', error);
+                                        alert('Failed to import portfolio data: ' + error.message);
+                                        e.target.value = '';
+                                    });
+                            }
+                        });
+                    }
+
                     document.getElementById('portfolio-body').addEventListener('click', handleRowAction);
                     editClose.addEventListener('click', closeEditModal);
                     editCancel.addEventListener('click', closeEditModal);
@@ -551,7 +883,12 @@
                     renderTable();
                 }
 
-                return { init };
+                return { 
+                    init,
+                    addPortfolioSnapshot,
+                    exportPortfolioData,
+                    importPortfolioData
+                };
             })();
 
             // Calculator Module
@@ -1458,7 +1795,8 @@
 
             return {
                 init,
-                removeTicker
+                removeTicker,
+                PortfolioManager
             };
         })();
 
