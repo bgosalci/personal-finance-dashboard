@@ -96,20 +96,24 @@
                                     <input type="text" id="investment-name">
                                 </div>
                                 <div class="form-group">
+                                    <label for="investment-date">Purchase Date</label>
+                                    <input type="date" id="investment-date">
+                                </div>
+                                <div class="form-group">
                                     <label for="investment-quantity">Quantity</label>
                                     <input type="number" step="0.0001" id="investment-quantity" required>
                                 </div>
                                 <div class="form-group">
-                                    <label for="investment-avg-price">Average Price</label>
-                                    <input type="number" step="0.01" id="investment-avg-price" required>
+                                    <label for="investment-purchase-price">Purchase Price</label>
+                                    <input type="number" step="0.01" id="investment-purchase-price" required>
                                 </div>
                                 <div class="form-group">
                                     <label for="investment-last-price">Last Price</label>
                                     <input type="number" step="0.01" id="investment-last-price" required>
                                 </div>
                                 <div class="form-group">
-                                    <label>Total Value</label>
-                                    <span id="investment-total-value">$0.00</span>
+                                    <label>Total Investment</label>
+                                    <span id="investment-total-investment">$0.00</span>
                                 </div>
                             </div>
                             <div class="modal-actions">
@@ -117,6 +121,7 @@
                                 <button type="button" class="btn btn-secondary" id="cancel-investment-btn">Cancel</button>
                                 <button type="submit" class="btn btn-primary">Add</button>
                             </div>
+                            <div id="investment-success" class="success-message">Position saved!</div>
                         </form>
                     </div>
                 </div>
@@ -158,56 +163,6 @@
                 </div>
 
                 <!-- Portfolio Entry Form -->
-                <div class="position-entry">
-                    <h3>Add Portfolio Position</h3>
-                    <form id="position-form" class="form-grid">
-                        <div class="form-group">
-                            <label for="entry-symbol">Symbol</label>
-                            <input type="text" id="entry-symbol" style="text-transform: uppercase;" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="entry-date">Purchase Date</label>
-                            <input type="date" id="entry-date" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="entry-price">Purchase Price</label>
-                            <input type="number" step="0.01" id="entry-price" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="entry-quantity">Quantity</label>
-                            <input type="number" step="0.0001" id="entry-quantity" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Total Investment</label>
-                            <span id="entry-total">$0.00</span>
-                        </div>
-                        <div class="form-group">
-                            <button type="button" class="btn btn-secondary" id="entry-fetch">Fetch Current Price</button>
-                        </div>
-                        <div class="form-group">
-                            <button type="submit" class="btn btn-primary">Add Position</button>
-                        </div>
-                    </form>
-                    <div id="entry-success" class="success-message">Position saved!</div>
-                    <table class="data-table" id="positions-table">
-                        <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Symbol</th>
-                                <th>Price</th>
-                                <th>Qty</th>
-                                <th>Total</th>
-                            </tr>
-                        </thead>
-                        <tbody id="positions-body"></tbody>
-                        <tfoot>
-                            <tr class="summary-row">
-                                <td colspan="4">Total Invested</td>
-                                <td id="positions-total-invested" class="number-cell">$0.00</td>
-                            </tr>
-                        </tfoot>
-                    </table>
-                </div>
             </div>
 
             <!-- Pension Tab -->

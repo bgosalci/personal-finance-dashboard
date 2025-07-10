@@ -801,14 +801,6 @@
             height: 300px;
         }
 
-        .position-entry {
-            margin-top: 2rem;
-            background: var(--background-secondary);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 1rem;
-        }
-
         .success-message {
             color: var(--success-green);
             margin-top: 0.5rem;

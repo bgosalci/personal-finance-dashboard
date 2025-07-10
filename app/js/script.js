@@ -184,129 +184,6 @@
                 return { init, addPosition, createSnapshot, exportData, portfolioPositions, portfolioSnapshots, save };
             })();
 
-            const PortfolioEntryForm = (function() {
-                const form = document.getElementById('position-form');
-                if (!form) return { init: () => {} };
-                const symbolInput = document.getElementById('entry-symbol');
-                const dateInput = document.getElementById('entry-date');
-                const priceInput = document.getElementById('entry-price');
-                const qtyInput = document.getElementById('entry-quantity');
-                const totalDisplay = document.getElementById('entry-total');
-                const fetchBtn = document.getElementById('entry-fetch');
-                const successMsg = document.getElementById('entry-success');
-                const tableBody = document.getElementById('positions-body');
-                const totalInvested = document.getElementById('positions-total-invested');
-                const DRAFT_KEY = 'position_form_draft';
-                const API_KEY = 'd1nf8h1r01qovv8iu2dgd1nf8h1r01qovv8iu2e0';
-
-                function formatCurrency(v) {
-                    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(v);
-                }
-
-                function updateTotal() {
-                    const qty = parseFloat(qtyInput.value) || 0;
-                    const price = parseFloat(priceInput.value) || 0;
-                    totalDisplay.textContent = formatCurrency(qty * price);
-                }
-
-                function saveDraft() {
-                    const draft = {
-                        symbol: symbolInput.value,
-                        date: dateInput.value,
-                        price: priceInput.value,
-                        quantity: qtyInput.value
-                    };
-                    localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
-                }
-
-                function loadDraft() {
-                    const str = localStorage.getItem(DRAFT_KEY);
-                    if (!str) return;
-                    try {
-                        const d = JSON.parse(str);
-                        if (d.symbol) symbolInput.value = d.symbol;
-                        if (d.date) dateInput.value = d.date;
-                        if (d.price) priceInput.value = d.price;
-                        if (d.quantity) qtyInput.value = d.quantity;
-                    } catch (e) {}
-                }
-
-                async function fetchPrice() {
-                    const ticker = symbolInput.value.trim();
-                    if (!ticker) return;
-                    const url = `https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(ticker)}&token=${API_KEY}`;
-                    try {
-                        const res = await fetch(url);
-                        const data = await res.json();
-                        if (data && typeof data.c === 'number') {
-                            priceInput.value = data.c;
-                            updateTotal();
-                        }
-                    } catch (e) {
-                        // ignore network errors
-                    }
-                }
-
-                function duplicateExists(sym, date) {
-                    return PortfolioStorage.portfolioPositions.some(p => p.symbol === sym && p.purchase_date === date);
-                }
-
-                function refreshTable() {
-                    tableBody.innerHTML = '';
-                    PortfolioStorage.portfolioPositions.forEach(p => {
-                        const tr = document.createElement('tr');
-                        tr.innerHTML = `
-                            <td>${p.purchase_date}</td>
-                            <td>${p.symbol}</td>
-                            <td class="number-cell">${formatCurrency(p.purchase_price_per_share)}</td>
-                            <td class="number-cell">${p.quantity}</td>
-                            <td class="number-cell">${formatCurrency(p.total_investment)}</td>`;
-                        tableBody.appendChild(tr);
-                    });
-                    const sum = PortfolioStorage.portfolioPositions.reduce((s, p) => s + p.total_investment, 0);
-                    totalInvested.textContent = formatCurrency(sum);
-                }
-
-                function handleSubmit(e) {
-                    e.preventDefault();
-                    const symbol = symbolInput.value.trim().toUpperCase();
-                    const price = parseFloat(priceInput.value);
-                    const qty = parseFloat(qtyInput.value);
-                    const date = dateInput.value;
-                    if (!symbol || isNaN(price) || price <= 0 || isNaN(qty) || qty <= 0 || !date) {
-                        alert('Please enter valid purchase details.');
-                        return;
-                    }
-                    if (new Date(date) > new Date()) {
-                        alert('Purchase date cannot be in the future.');
-                        return;
-                    }
-                    if (duplicateExists(symbol, date)) {
-                        alert('A position for this symbol and date already exists.');
-                        return;
-                    }
-                    PortfolioStorage.addPosition({ symbol, purchase_price_per_share: price, quantity: qty, purchase_date: date });
-                    refreshTable();
-                    successMsg.style.display = 'block';
-                    setTimeout(() => { successMsg.style.display = 'none'; }, 1500);
-                    form.reset();
-                    dateInput.value = new Date().toISOString().split('T')[0];
-                    localStorage.removeItem(DRAFT_KEY);
-                    updateTotal();
-                }
-
-                function init() {
-                    loadDraft();
-                    if (!dateInput.value) dateInput.value = new Date().toISOString().split('T')[0];
-                    updateTotal();
-                    form.addEventListener('input', () => { updateTotal(); saveDraft(); });
-                    form.addEventListener('submit', handleSubmit);
-                    fetchBtn.addEventListener('click', fetchPrice);
-                    refreshTable();
-                }
-
-                return { init, refreshTable };
-            })();
 
             // Portfolio Management Module
             const PortfolioManager = (function() {
@@ -333,7 +210,11 @@
                 const closeBtn = document.getElementById('investment-close');
                 const cancelBtn = document.getElementById('cancel-investment-btn');
                 const saveAddBtn = document.getElementById('save-add-another-btn');
-                const totalDisplay = document.getElementById('investment-total-value');
+                const dateInput = document.getElementById('investment-date');
+                const priceInput = document.getElementById('investment-purchase-price');
+                const totalDisplay = document.getElementById('investment-total-investment');
+                const successMsg = document.getElementById('investment-success');
+                const DRAFT_KEY = 'investment_form_draft';
 
                 const editModal = document.getElementById('edit-investment-modal');
                 const editForm = document.getElementById('edit-investment-form');
@@ -610,7 +491,9 @@
                 function openModal() {
                     form.reset();
                     tickerValid = false;
-                    totalDisplay.textContent = formatCurrency(0);
+                    loadDraft();
+                    if (!dateInput.value) dateInput.value = new Date().toISOString().split('T')[0];
+                    handleFormInput();
                     modal.style.display = 'flex';
                     tickerInput.focus();
                 }
@@ -621,8 +504,35 @@
 
                 function handleFormInput() {
                     const qty = parseFloat(document.getElementById('investment-quantity').value) || 0;
-                    const lastPrice = parseFloat(document.getElementById('investment-last-price').value) || 0;
-                    totalDisplay.textContent = formatCurrency(qty * lastPrice);
+                    const price = parseFloat(priceInput.value) || 0;
+                    totalDisplay.textContent = formatCurrency(qty * price);
+                    saveDraft();
+                }
+
+                function saveDraft() {
+                    const draft = {
+                        ticker: tickerInput.value,
+                        name: document.getElementById('investment-name').value,
+                        quantity: document.getElementById('investment-quantity').value,
+                        price: priceInput.value,
+                        last: document.getElementById('investment-last-price').value,
+                        date: dateInput.value
+                    };
+                    localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+                }
+
+                function loadDraft() {
+                    const str = localStorage.getItem(DRAFT_KEY);
+                    if (!str) return;
+                    try {
+                        const d = JSON.parse(str);
+                        if (d.ticker) tickerInput.value = d.ticker;
+                        if (d.name) document.getElementById('investment-name').value = d.name;
+                        if (d.quantity) document.getElementById('investment-quantity').value = d.quantity;
+                        if (d.price) priceInput.value = d.price;
+                        if (d.last) document.getElementById('investment-last-price').value = d.last;
+                        if (d.date) dateInput.value = d.date;
+                    } catch (e) {}
                 }
 
                 async function handleTickerLookup() {
@@ -648,6 +558,7 @@
                     if (price !== null) {
                         const lastPriceEl = document.getElementById('investment-last-price');
                         lastPriceEl.value = price;
+                        if (!priceInput.value) priceInput.value = price;
                         handleFormInput();
                     }
                 }
@@ -656,19 +567,28 @@
                     const ticker = document.getElementById('investment-ticker').value.trim().toUpperCase();
                     const name = document.getElementById('investment-name').value.trim();
                     const quantity = parseFloat(document.getElementById('investment-quantity').value) || 0;
-                    const avgPrice = parseFloat(document.getElementById('investment-avg-price').value) || 0;
+                    const purchasePrice = parseFloat(priceInput.value) || 0;
                     const lastPrice = parseFloat(document.getElementById('investment-last-price').value) || 0;
+                    const purchaseDate = dateInput.value;
                     if (!tickerValid) {
                         alert('Please enter a valid ticker symbol.');
                         return;
                     }
-                    if (!ticker || quantity <= 0 || avgPrice <= 0 || lastPrice <= 0) return;
+                    if (!ticker || quantity <= 0 || purchasePrice <= 0 || lastPrice <= 0 || !purchaseDate) return;
+                    if (new Date(purchaseDate) > new Date()) {
+                        alert('Purchase date cannot be in the future.');
+                        return;
+                    }
+                    if (PortfolioStorage.portfolioPositions.some(p => p.symbol === ticker && p.purchase_date === purchaseDate)) {
+                        alert('A position for this symbol and date already exists.');
+                        return;
+                    }
 
                     const existing = investments.find(inv => inv.ticker === ticker);
                     if (existing) {
                         if (confirm('This ticker already exists in your portfolio. Combine positions?')) {
                             const totalQty = existing.quantity + quantity;
-                            const totalCost = existing.avgPrice * existing.quantity + avgPrice * quantity;
+                            const totalCost = existing.avgPrice * existing.quantity + purchasePrice * quantity;
                             existing.quantity = totalQty;
                             existing.avgPrice = totalCost / totalQty;
                             existing.lastPrice = lastPrice;
@@ -677,7 +597,8 @@
                             renderTable();
                             if (resetAfter) {
                                 form.reset();
-                                totalDisplay.textContent = formatCurrency(0);
+                                dateInput.value = new Date().toISOString().split('T')[0];
+                                handleFormInput();
                                 document.getElementById('investment-ticker').focus();
                             } else {
                                 closeModal();
@@ -687,13 +608,20 @@
                     }
 
                     assignColor(ticker);
-                    investments.push({ ticker, name, quantity, avgPrice, lastPrice });
+                    investments.push({ ticker, name, quantity, avgPrice: purchasePrice, lastPrice });
+                    PortfolioStorage.addPosition({ symbol: ticker, purchase_price_per_share: purchasePrice, quantity, purchase_date: purchaseDate });
                     saveData();
                     renderTable();
 
+                    successMsg.style.display = 'block';
+                    setTimeout(() => { successMsg.style.display = 'none'; }, 1500);
+
+                    localStorage.removeItem(DRAFT_KEY);
+
                     if (resetAfter) {
                         form.reset();
-                        totalDisplay.textContent = formatCurrency(0);
+                        dateInput.value = new Date().toISOString().split('T')[0];
+                        handleFormInput();
                         document.getElementById('investment-ticker').focus();
                     } else {
                         closeModal();
@@ -1707,7 +1635,6 @@
             function init() {
                 TabManager.init();
                 PortfolioStorage.init();
-                PortfolioEntryForm.init();
                 PortfolioManager.init();
                 Calculator.init();
                 StockTracker.init();
