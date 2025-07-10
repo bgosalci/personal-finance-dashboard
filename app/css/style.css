@@ -275,19 +275,19 @@
             z-index: 2;
         }
 
-        .data-table th:first-child,
-        .data-table td:first-child {
+        .data-table th:nth-child(2),
+        .data-table td:nth-child(2) {
             position: sticky;
             left: 0;
             z-index: 1;
             background: var(--background-primary);
         }
 
-        .data-table .summary-row td:first-child {
+        .data-table .summary-row td:nth-child(2) {
             background: var(--background-secondary);
         }
 
-        .data-table tbody tr:hover td:first-child {
+        .data-table tbody tr:hover td:nth-child(2) {
             background: var(--background-secondary);
         }
 
@@ -724,6 +724,25 @@
 
         .actions-cell {
             white-space: nowrap;
+        }
+
+        .drag-handle-cell {
+            width: 24px;
+            text-align: center;
+            cursor: grab;
+        }
+
+        tr.dragging .drag-handle-cell {
+            cursor: grabbing;
+        }
+
+        tr.dragging {
+            opacity: 0.5;
+        }
+
+        .drag-handle-cell ion-icon {
+            font-size: 20px;
+            color: var(--text-secondary);
         }
 
         .icon-btn {
