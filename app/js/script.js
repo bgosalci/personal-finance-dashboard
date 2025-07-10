@@ -262,6 +262,15 @@
                                     delete inv.avgPrice;
                                     migrated = true;
                                 }
+                                if (!inv.tradeDate && inv.purchaseDate) {
+                                    inv.tradeDate = inv.purchaseDate;
+                                    delete inv.purchaseDate;
+                                    migrated = true;
+                                }
+                                if (!inv.tradeDate) {
+                                    inv.tradeDate = new Date().toISOString().split('T')[0];
+                                    migrated = true;
+                                }
                             });
                             if (migrated) {
                                 localStorage.setItem(STORAGE_KEY, JSON.stringify(investments));
@@ -498,6 +507,12 @@
                     form.reset();
                     tickerValid = false;
                     totalDisplay.textContent = formatCurrency(0);
+                    const dateInput = document.getElementById('investment-purchase-date');
+                    const today = new Date().toISOString().split('T')[0];
+                    if (dateInput) {
+                        dateInput.max = today;
+                        dateInput.value = today;
+                    }
                     modal.style.display = 'flex';
                     tickerInput.focus();
                 }
@@ -544,12 +559,18 @@
                     const name = document.getElementById('investment-name').value.trim();
                     const quantity = parseFloat(document.getElementById('investment-quantity').value) || 0;
                     const purchasePrice = parseFloat(document.getElementById('investment-purchase-price').value) || 0;
+                    const purchaseDate = document.getElementById('investment-purchase-date').value;
                     const lastPrice = parseFloat(document.getElementById('investment-last-price').value) || 0;
                     if (!tickerValid) {
                         alert('Please enter a valid ticker symbol.');
                         return;
                     }
+                    const today = new Date().toISOString().split('T')[0];
                     if (!ticker || quantity <= 0 || purchasePrice <= 0 || lastPrice <= 0) return;
+                    if (!purchaseDate || purchaseDate > today) {
+                        alert('Purchase date cannot be in the future.');
+                        return;
+                    }
 
                     const existing = investments.find(inv => inv.ticker === ticker);
                     if (existing) {
@@ -564,6 +585,11 @@
                             renderTable();
                             if (resetAfter) {
                                 form.reset();
+                                const dateField = document.getElementById('investment-purchase-date');
+                                if (dateField) {
+                                    dateField.value = today;
+                                    dateField.max = today;
+                                }
                                 totalDisplay.textContent = formatCurrency(0);
                                 document.getElementById('investment-ticker').focus();
                             } else {
@@ -574,12 +600,17 @@
                     }
 
                     assignColor(ticker);
-                    investments.push({ ticker, name, quantity, purchasePrice, lastPrice });
+                    investments.push({ ticker, name, quantity, purchasePrice, lastPrice, tradeDate: purchaseDate });
                     saveData();
                     renderTable();
 
                     if (resetAfter) {
                         form.reset();
+                        const dateField = document.getElementById('investment-purchase-date');
+                        if (dateField) {
+                            dateField.value = today;
+                            dateField.max = today;
+                        }
                         totalDisplay.textContent = formatCurrency(0);
                         document.getElementById('investment-ticker').focus();
                     } else {
@@ -593,6 +624,12 @@
                     document.getElementById('edit-name').value = inv.name || '';
                     document.getElementById('edit-quantity').value = inv.quantity;
                     document.getElementById('edit-purchase-price').value = inv.purchasePrice;
+                    const dateField = document.getElementById('edit-purchase-date');
+                    const today = new Date().toISOString().split('T')[0];
+                    if (dateField) {
+                        dateField.max = today;
+                        dateField.value = inv.tradeDate || today;
+                    }
                     document.getElementById('edit-last-price').value = inv.lastPrice;
                     editTotal.textContent = formatCurrency(inv.quantity * inv.lastPrice);
                     editModal.style.display = 'flex';
@@ -639,14 +676,21 @@
                     const name = document.getElementById('edit-name').value || '';
                     const qty = parseFloat(document.getElementById('edit-quantity').value) || 0;
                     const purchase = parseFloat(document.getElementById('edit-purchase-price').value) || 0;
+                    const date = document.getElementById('edit-purchase-date').value;
                     const last = parseFloat(document.getElementById('edit-last-price').value) || 0;
                     if (qty <= 0 || purchase <= 0 || last <= 0) return;
+                    const today = new Date().toISOString().split('T')[0];
+                    if (!date || date > today) {
+                        alert('Purchase date cannot be in the future.');
+                        return;
+                    }
 
                     const inv = investments[editIndex];
                     inv.name = name;
                     inv.quantity = qty;
                     inv.purchasePrice = purchase;
                     inv.lastPrice = last;
+                    inv.tradeDate = date;
 
                     saveData();
                     renderTable();
