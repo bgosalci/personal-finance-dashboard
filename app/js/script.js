@@ -1797,7 +1797,7 @@
             async function update() {
                 if (!ledEl) return;
                 try {
-                    const url = `https://finnhub.io/api/v1/market-status?exchange=US&token=${API_KEY}`;
+                    const url = `https://finnhub.io/api/v1/market/status?exchange=US&token=${API_KEY}`;
                     const res = await fetch(url);
                     const data = await res.json();
                     if (data && typeof data.isOpen === 'boolean') {
