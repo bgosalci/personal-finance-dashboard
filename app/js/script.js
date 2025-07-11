@@ -18,6 +18,7 @@
                 const inputEl = document.getElementById('dialog-input');
                 const okBtn = document.getElementById('dialog-ok');
                 const cancelBtn = document.getElementById('dialog-cancel');
+                const closeBtn = document.getElementById('dialog-close');
 
                 function open(type, message, def, actionLabel) {
                     messageEl.textContent = message || '';
@@ -43,6 +44,7 @@
                             modal.style.display = 'none';
                             okBtn.removeEventListener('click', onOk);
                             cancelBtn.removeEventListener('click', onCancel);
+                            closeBtn.removeEventListener('click', onCancel);
                             modal.removeEventListener('click', onBackdrop);
                             resolve(result);
                         }
@@ -57,6 +59,7 @@
                         }
                         okBtn.addEventListener('click', onOk);
                         cancelBtn.addEventListener('click', onCancel);
+                        closeBtn.addEventListener('click', onCancel);
                         modal.addEventListener('click', onBackdrop);
                     });
                 }
