@@ -1800,7 +1800,6 @@
                     const url = `https://finnhub.io/api/v1/market-status?exchange=US&token=${API_KEY}`;
                     const res = await fetch(url);
                     const data = await res.json();
-                    console.log('Market Status Response:', res);
                     if (data && typeof data.isOpen === 'boolean') {
                         ledEl.classList.toggle('led-green', data.isOpen);
                         ledEl.classList.toggle('led-red', !data.isOpen);
