@@ -193,10 +193,14 @@
                     return true;
                 }
 
-                function createSnapshot(dateStr) {
+                function createSnapshot(dateStr, positions) {
                     const snapshot_date = dateStr || new Date().toISOString().split('T')[0];
-                    const total_portfolio_value = portfolioPositions.reduce((sum, p) => sum + p.quantity * p.purchase_price_per_share, 0);
-                    const total_invested = portfolioPositions.reduce((sum, p) => sum + p.total_investment, 0);
+                    const list = Array.isArray(positions) ? positions : portfolioPositions;
+                    const total_portfolio_value = list.reduce((sum, p) => sum + p.quantity * (p.lastPrice || p.purchase_price_per_share), 0);
+                    const total_invested = list.reduce((sum, p) => {
+                        const cost = (p.purchasePrice !== undefined ? p.purchasePrice : p.purchase_price_per_share) * p.quantity;
+                        return sum + (isNaN(cost) ? 0 : cost);
+                    }, 0);
                     const gain_loss = total_portfolio_value - total_invested;
                     const gain_loss_percentage = total_invested ? (gain_loss / total_invested) * 100 : 0;
                     portfolioSnapshots.push({
@@ -205,7 +209,7 @@
                         total_invested: parseFloat(total_invested.toFixed(2)),
                         gain_loss: parseFloat(gain_loss.toFixed(2)),
                         gain_loss_percentage: parseFloat(gain_loss_percentage.toFixed(2)),
-                        positions_snapshot: JSON.parse(JSON.stringify(portfolioPositions))
+                        positions_snapshot: JSON.parse(JSON.stringify(list))
                     });
                     save();
                     checkQuota();
@@ -520,7 +524,7 @@
                     let lastDate = snaps.length ? new Date(snaps[snaps.length - 1].snapshot_date) : null;
                     const today = new Date();
                     if (!lastDate || (today.getFullYear() * 12 + today.getMonth()) - (lastDate.getFullYear() * 12 + lastDate.getMonth()) >= 1) {
-                        PortfolioStorage.createSnapshot(today.toISOString().split('T')[0]);
+                        PortfolioStorage.createSnapshot(today.toISOString().split('T')[0], investments);
                         updateHistoryChart();
                     }
                 }
@@ -715,7 +719,7 @@
                     investments.push({ ticker, name, quantity, purchasePrice, lastPrice, tradeDate: purchaseDate });
                     saveData();
                     renderTable();
-                    PortfolioStorage.createSnapshot(purchaseDate);
+                    PortfolioStorage.createSnapshot(purchaseDate, investments);
                     updateHistoryChart();
 
                     if (resetAfter) {
