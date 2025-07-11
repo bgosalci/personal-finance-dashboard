@@ -130,6 +130,10 @@ loss.
 90% of the browser's ~5MB limit the module automatically removes the oldest
 snapshots before saving new ones.
 
+Snapshots are automatically created the first time data is loaded and
+whenever over a month has passed since the last entry. This ensures the
+history chart has regular data points without user interaction.
+
 ### Data Validation
 All user inputs are validated using custom validation functions:
 
@@ -178,6 +182,11 @@ function createPortfolioChart(data) {
     });
 }
 ```
+
+#### Portfolio History
+`PortfolioStorage` records a snapshot of total portfolio value at least once per month.
+`PortfolioManager` renders these snapshots on a line chart (`portfolio-history-chart`)
+to visualize historical portfolio growth.
 
 ### Form Handling
 Dynamic form generation and validation:

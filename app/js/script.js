@@ -251,6 +251,7 @@
                 let investments = [];
                 let pieChart = null;
                 let barChart = null;
+                let historyChart = null;
                 const COLOR_KEY = 'portfolioColors';
                 const COLOR_PALETTE = [
                     '#e6194b','#3cb44b','#ffe119','#4363d8','#f58231',
@@ -482,10 +483,45 @@
                                 }
                             }
                         });
+
                     } else {
                         barChart.data.labels = labels;
                         barChart.data.datasets[0].data = plPercents;
                         barChart.update();
+                    }
+                }
+
+                function updateHistoryChart() {
+                    const snaps = PortfolioStorage.portfolioSnapshots;
+                    const labels = snaps.map(s => s.snapshot_date);
+                    const values = snaps.map(s => s.total_portfolio_value);
+                    if (!historyChart) {
+                        const ctx = document.getElementById('portfolio-history-chart').getContext('2d');
+                        historyChart = new Chart(ctx, {
+                            type: 'line',
+                            data: { labels, datasets: [{ data: values, fill: false, borderColor: '#4287f5' }] },
+                            options: {
+                                plugins: {
+                                    legend: { display: false },
+                                    title: { display: true, text: 'Portfolio Value' }
+                                },
+                                scales: { x: { display: true }, y: { beginAtZero: true } }
+                            }
+                        });
+                    } else {
+                        historyChart.data.labels = labels;
+                        historyChart.data.datasets[0].data = values;
+                        historyChart.update();
+                    }
+                }
+
+                function updateMonthlySnapshot() {
+                    const snaps = PortfolioStorage.portfolioSnapshots;
+                    let lastDate = snaps.length ? new Date(snaps[snaps.length - 1].snapshot_date) : null;
+                    const today = new Date();
+                    if (!lastDate || (today.getFullYear() * 12 + today.getMonth()) - (lastDate.getFullYear() * 12 + lastDate.getMonth()) >= 1) {
+                        PortfolioStorage.createSnapshot(today.toISOString().split('T')[0]);
+                        updateHistoryChart();
                     }
                 }
 
@@ -679,6 +715,8 @@
                     investments.push({ ticker, name, quantity, purchasePrice, lastPrice, tradeDate: purchaseDate });
                     saveData();
                     renderTable();
+                    PortfolioStorage.createSnapshot(purchaseDate);
+                    updateHistoryChart();
 
                     if (resetAfter) {
                         form.reset();
@@ -798,6 +836,7 @@
                     await Promise.all(updates);
                     saveData();
                     renderTable();
+                    updateMonthlySnapshot();
                 }
 
                 function saveEdit(e) {
@@ -850,6 +889,9 @@
 
                 function init() {
                     loadData();
+                    PortfolioStorage.init();
+                    updateHistoryChart();
+                    updateMonthlySnapshot();
                     addBtn.addEventListener('click', openModal);
                     getPriceBtn.addEventListener('click', fetchLastPrices);
                     closeBtn.addEventListener('click', closeModal);

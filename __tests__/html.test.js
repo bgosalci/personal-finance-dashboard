@@ -19,3 +19,11 @@ test('stock chart popup includes chart controls', () => {
   expect(doc.getElementById('chart-type-price')).not.toBeNull();
   expect(doc.getElementById('chart-ticker-select')).not.toBeNull();
 });
+
+test('portfolio history chart exists', () => {
+  const htmlPath = path.resolve(__dirname, '../app/index.html');
+  const html = fs.readFileSync(htmlPath, 'utf8');
+  const dom = new JSDOM(html);
+  const doc = dom.window.document;
+  expect(doc.getElementById('portfolio-history-chart')).not.toBeNull();
+});

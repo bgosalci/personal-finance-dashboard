@@ -8,6 +8,8 @@ A comprehensive single-page web application for managing personal finances, trac
 - Add, edit, and delete investment positions
 - Real-time profit/loss calculations
 - Visual charts showing portfolio performance
+- Automatic monthly snapshots of portfolio value
+- Historical value chart for long-term tracking
 - Investment summary with total values and returns
 
 ### 🧮 Financial Calculators
@@ -26,6 +28,7 @@ A comprehensive single-page web application for managing personal finances, trac
 - Client-side storage using localStorage
 - Automatic data backup and restore
 - Export/import functionality
+- Periodic snapshots stored for historical analysis
 
 ## Technology Stack
 
