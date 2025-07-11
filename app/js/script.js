@@ -530,8 +530,19 @@
 
                 function updateMonthlySnapshot() {
                     const snaps = PortfolioStorage.portfolioSnapshots;
-                    let lastDate = snaps.length ? new Date(snaps[snaps.length - 1].snapshot_date) : null;
                     const today = new Date();
+                    if (snaps.length === 0 && investments.length) {
+                        let earliest = investments.reduce((d, p) => {
+                            const dt = new Date(p.tradeDate || p.purchaseDate || today);
+                            return !d || dt < d ? dt : d;
+                        }, null);
+                        const dateStr = earliest ? earliest.toISOString().split('T')[0] : today.toISOString().split('T')[0];
+                        PortfolioStorage.createSnapshot(dateStr, investments);
+                        updateHistoryChart();
+                        return;
+                    }
+
+                    const lastDate = snaps.length ? new Date(snaps[snaps.length - 1].snapshot_date) : null;
                     if (!lastDate || (today.getFullYear() * 12 + today.getMonth()) - (lastDate.getFullYear() * 12 + lastDate.getMonth()) >= 1) {
                         PortfolioStorage.createSnapshot(today.toISOString().split('T')[0], investments);
                         updateHistoryChart();

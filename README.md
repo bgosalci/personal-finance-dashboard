@@ -9,7 +9,7 @@ A comprehensive single-page web application for managing personal finances, trac
 - Real-time profit/loss calculations
 - Visual charts showing portfolio performance
 - Automatic monthly snapshots of portfolio value
-- Historical value chart for long-term tracking
+- Historical value chart for long-term tracking (starting from oldest purchase)
 - Investment summary with total values and returns
 
 ### 🧮 Financial Calculators
