@@ -37,6 +37,7 @@
                     <div>
                         <button class="btn btn-primary" id="add-investment-btn">Add Investment</button>
                         <button class="btn btn-secondary" id="get-last-price-btn">Get The Last Price</button>
+                        <button class="btn btn-secondary" id="transaction-history-btn">Transaction History</button>
                     </div>
                 </div>
                 <div class="table-container" id="portfolio-table-container">
@@ -162,6 +163,29 @@
                                 <button type="submit" class="btn btn-primary">Save</button>
                             </div>
                         </form>
+                    </div>
+                </div>
+
+                <!-- Transaction History Modal -->
+                <div id="transaction-history-modal" class="modal">
+                    <div class="modal-content">
+                        <span class="modal-close" id="transaction-history-close">&times;</span>
+                        <h3>Transaction History</h3>
+                        <div class="table-container" style="max-height: 60vh; overflow-y: auto;">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Ticker</th>
+                                        <th>Name</th>
+                                        <th>Quantity</th>
+                                        <th>Purchase Price</th>
+                                        <th>Last Price</th>
+                                        <th>Purchase Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="transaction-history-body"></tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -217,6 +217,11 @@
                 const editCancel = document.getElementById('edit-cancel-btn');
                 const editTotal = document.getElementById('edit-total-value');
                 let editIndex = null;
+
+                const historyBtn = document.getElementById('transaction-history-btn');
+                const historyModal = document.getElementById('transaction-history-modal');
+                const historyClose = document.getElementById('transaction-history-close');
+                const historyBody = document.getElementById('transaction-history-body');
                 const API_KEY = 'd1nf8h1r01qovv8iu2dgd1nf8h1r01qovv8iu2e0';
 
                 async function fetchQuote(ticker) {
@@ -654,6 +659,30 @@
                     editIndex = null;
                 }
 
+                function renderHistory() {
+                    historyBody.innerHTML = '';
+                    investments.forEach(inv => {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td>${inv.ticker}</td>
+                            <td>${inv.name || ''}</td>
+                            <td class="number-cell">${inv.quantity}</td>
+                            <td class="number-cell">${formatCurrency(inv.purchasePrice)}</td>
+                            <td class="number-cell">${formatCurrency(inv.lastPrice)}</td>
+                            <td>${inv.tradeDate}</td>`;
+                        historyBody.appendChild(tr);
+                    });
+                }
+
+                function openHistoryModal() {
+                    renderHistory();
+                    historyModal.style.display = 'flex';
+                }
+
+                function closeHistoryModal() {
+                    historyModal.style.display = 'none';
+                }
+
                 function handleEditInput() {
                     const qty = parseFloat(document.getElementById('edit-quantity').value) || 0;
                     const price = parseFloat(document.getElementById('edit-last-price').value) || 0;
@@ -745,6 +774,10 @@
                     editForm.addEventListener('input', handleEditInput);
                     editForm.addEventListener('submit', saveEdit);
                     editModal.addEventListener('click', (e) => { if (e.target === editModal) closeEditModal(); });
+
+                    historyBtn.addEventListener('click', openHistoryModal);
+                    historyClose.addEventListener('click', closeHistoryModal);
+                    historyModal.addEventListener('click', (e) => { if (e.target === historyModal) closeHistoryModal(); });
 
                     renderTable();
                 }
