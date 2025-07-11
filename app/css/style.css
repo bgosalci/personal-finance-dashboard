@@ -77,6 +77,29 @@
             font-size: 1rem;
         }
 
+        .market-status {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .led-light {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: var(--danger-red);
+        }
+
+        .led-green {
+            background-color: var(--success-green) !important;
+        }
+
+        .led-red {
+            background-color: var(--danger-red) !important;
+        }
+
         .container {
             max-width: 1400px;
             margin: 0 auto;

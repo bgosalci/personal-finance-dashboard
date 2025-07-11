@@ -1787,9 +1787,47 @@
             };
         })();
 
+        // Market Status Indicator
+        const MarketStatus = (function() {
+            const API_KEY = 'd1nf8h1r01qovv8iu2dgd1nf8h1r01qovv8iu2e0';
+            const ledEl = document.getElementById('market-led');
+            const sessionEl = document.getElementById('market-session');
+
+            async function update() {
+                if (!ledEl) return;
+                try {
+                    const url = `https://finnhub.io/api/v1/market/status?exchange=US&token=${API_KEY}`;
+                    const res = await fetch(url);
+                    const data = await res.json();
+                    if (data && typeof data.isOpen === 'boolean') {
+                        ledEl.classList.toggle('led-green', data.isOpen);
+                        ledEl.classList.toggle('led-red', !data.isOpen);
+                    }
+                    if (sessionEl) {
+                        if (data && data.session) {
+                            sessionEl.textContent = data.session;
+                            sessionEl.style.display = 'inline';
+                        } else {
+                            sessionEl.textContent = '';
+                            sessionEl.style.display = 'none';
+                        }
+                    }
+                } catch (e) {
+                    // ignore errors
+                }
+            }
+
+            function init() {
+                update();
+            }
+
+            return { init };
+        })();
+
         // Initialize the application when DOM is ready
         document.addEventListener('DOMContentLoaded', function() {
             FinancialDashboard.init();
+            MarketStatus.init();
 
             const header = document.querySelector('.header');
             const nav = document.querySelector('.nav-tabs');

@@ -14,4 +14,8 @@ test('FinancialDashboard global object exists with init and removeTicker', () =>
   expect(fd).toBeDefined();
   expect(typeof fd.init).toBe('function');
   expect(typeof fd.removeTicker).toBe('function');
+
+  const ms = vm.runInContext('MarketStatus', context);
+  expect(ms).toBeDefined();
+  expect(typeof ms.init).toBe('function');
 });
