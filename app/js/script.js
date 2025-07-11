@@ -10,6 +10,57 @@
                 prices: {}
             };
 
+            // Dialog Manager for alerts and prompts
+            const DialogManager = (function() {
+                const modal = document.getElementById('dialog-modal');
+                const messageEl = document.getElementById('dialog-message');
+                const inputGroup = document.getElementById('dialog-input-group');
+                const inputEl = document.getElementById('dialog-input');
+                const okBtn = document.getElementById('dialog-ok');
+                const cancelBtn = document.getElementById('dialog-cancel');
+
+                function open(type, message, def) {
+                    messageEl.textContent = message || '';
+                    if (type === 'prompt') {
+                        inputGroup.style.display = 'block';
+                        inputEl.value = def || '';
+                        inputEl.focus();
+                    } else {
+                        inputGroup.style.display = 'none';
+                    }
+                    cancelBtn.style.display = type === 'alert' ? 'none' : 'inline-flex';
+                    modal.style.display = 'flex';
+
+                    return new Promise(resolve => {
+                        function cleanup(result) {
+                            modal.style.display = 'none';
+                            okBtn.removeEventListener('click', onOk);
+                            cancelBtn.removeEventListener('click', onCancel);
+                            modal.removeEventListener('click', onBackdrop);
+                            resolve(result);
+                        }
+                        function onOk() {
+                            cleanup(type === 'prompt' ? inputEl.value : true);
+                        }
+                        function onCancel() {
+                            cleanup(type === 'prompt' ? null : false);
+                        }
+                        function onBackdrop(e) {
+                            if (e.target === modal) onCancel();
+                        }
+                        okBtn.addEventListener('click', onOk);
+                        cancelBtn.addEventListener('click', onCancel);
+                        modal.addEventListener('click', onBackdrop);
+                    });
+                }
+
+                return {
+                    alert: msg => open('alert', msg),
+                    confirm: msg => open('confirm', msg),
+                    prompt: (msg, def) => open('prompt', msg, def)
+                };
+            })();
+
             // Tab Management Module
             const TabManager = (function() {
                 const tabs = document.querySelectorAll('.nav-tab');
@@ -585,7 +636,7 @@
                     } else {
                         tickerValid = false;
                         document.getElementById('investment-name').value = '';
-                        alert('Ticker symbol does not exist');
+                        DialogManager.alert('Ticker symbol does not exist');
                     }
 
                     if (price !== null) {
@@ -603,13 +654,13 @@
                     const purchaseDate = document.getElementById('investment-purchase-date').value;
                     const lastPrice = parseFloat(document.getElementById('investment-last-price').value) || 0;
                     if (!tickerValid) {
-                        alert('Please enter a valid ticker symbol.');
+                        DialogManager.alert('Please enter a valid ticker symbol.');
                         return;
                     }
                     const today = new Date().toISOString().split('T')[0];
                     if (!ticker || quantity <= 0 || purchasePrice <= 0 || lastPrice <= 0) return;
                     if (!purchaseDate || purchaseDate > today) {
-                        alert('Purchase date cannot be in the future.');
+                        DialogManager.alert('Purchase date cannot be in the future.');
                         return;
                     }
 
@@ -750,7 +801,7 @@
                     if (qty <= 0 || purchase <= 0 || last <= 0) return;
                     const today = new Date().toISOString().split('T')[0];
                     if (!date || date > today) {
-                        alert('Purchase date cannot be in the future.');
+                        DialogManager.alert('Purchase date cannot be in the future.');
                         return;
                     }
 
@@ -766,7 +817,7 @@
                     closeEditModal();
                 }
 
-                function handleRowAction(e) {
+                async function handleRowAction(e) {
                     const btn = e.target.closest('button');
                     if (!btn) return;
                     if (btn.classList.contains('edit-btn')) {
@@ -774,7 +825,8 @@
                         openEditModal(idx);
                     } else if (btn.classList.contains('delete-btn')) {
                         const idx = parseInt(btn.dataset.index, 10);
-                        if (confirm('Delete this investment?')) {
+                        const confirmed = await DialogManager.confirm('Delete this investment?');
+                        if (confirmed) {
                             const removed = investments.splice(idx, 1)[0];
                             if (removed && !investments.some(inv => inv.ticker === removed.ticker)) {
                                 delete tickerColors[removed.ticker];

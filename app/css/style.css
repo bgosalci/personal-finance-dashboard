@@ -679,6 +679,11 @@
             height: auto;
         }
 
+        #dialog-modal .modal-content {
+            width: 400px;
+            height: auto;
+        }
+
         .modal-close {
             position: absolute;
             top: 8px;
@@ -715,6 +720,14 @@
             justify-content: flex-end;
             gap: 0.5rem;
             margin-top: 1rem;
+        }
+
+        #dialog-message {
+            margin-bottom: 1rem;
+        }
+
+        #dialog-input {
+            width: 100%;
         }
 
         .number-cell {

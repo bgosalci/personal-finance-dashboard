@@ -517,6 +517,21 @@
         </div>
     </div>
 
+    <!-- Dialog Modal for alerts and prompts -->
+    <div id="dialog-modal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" id="dialog-close">&times;</span>
+            <p id="dialog-message"></p>
+            <div id="dialog-input-group" class="form-group" style="display:none;">
+                <input type="text" id="dialog-input">
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn btn-secondary" id="dialog-cancel">Cancel</button>
+                <button type="button" class="btn btn-primary" id="dialog-ok">OK</button>
+            </div>
+        </div>
+    </div>
+
     <script src="js/script.js"></script>
 </body>
 </html>
