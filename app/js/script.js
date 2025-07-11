@@ -19,7 +19,7 @@
                 const okBtn = document.getElementById('dialog-ok');
                 const cancelBtn = document.getElementById('dialog-cancel');
 
-                function open(type, message, def) {
+                function open(type, message, def, actionLabel) {
                     messageEl.textContent = message || '';
                     if (type === 'prompt') {
                         inputGroup.style.display = 'block';
@@ -29,6 +29,13 @@
                         inputGroup.style.display = 'none';
                     }
                     cancelBtn.style.display = type === 'alert' ? 'none' : 'inline-flex';
+                    cancelBtn.textContent = 'No';
+
+                    if (type === 'alert') {
+                        okBtn.textContent = 'Close';
+                    } else {
+                        okBtn.textContent = actionLabel ? `Yes, ${actionLabel}` : 'Yes';
+                    }
                     modal.style.display = 'flex';
 
                     return new Promise(resolve => {
@@ -56,8 +63,8 @@
 
                 return {
                     alert: msg => open('alert', msg),
-                    confirm: msg => open('confirm', msg),
-                    prompt: (msg, def) => open('prompt', msg, def)
+                    confirm: (msg, action) => open('confirm', msg, null, action),
+                    prompt: (msg, def, action) => open('prompt', msg, def, action)
                 };
             })();
 
@@ -825,7 +832,7 @@
                         openEditModal(idx);
                     } else if (btn.classList.contains('delete-btn')) {
                         const idx = parseInt(btn.dataset.index, 10);
-                        const confirmed = await DialogManager.confirm('Delete this investment?');
+                        const confirmed = await DialogManager.confirm('Delete this investment?', 'Delete');
                         if (confirmed) {
                             const removed = investments.splice(idx, 1)[0];
                             if (removed && !investments.some(inv => inv.ticker === removed.ticker)) {
