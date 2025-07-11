@@ -117,6 +117,7 @@
                 const LEGACY_KEY = 'portfolioData';
                 let portfolioPositions = [];
                 let portfolioSnapshots = [];
+                const api = { portfolioPositions, portfolioSnapshots };
 
                 function generateId() {
                     return 'pos_' + Math.random().toString(36).substring(2, 11);
@@ -244,9 +245,17 @@
 
                 function init() {
                     load();
+                    api.portfolioPositions = portfolioPositions;
+                    api.portfolioSnapshots = portfolioSnapshots;
                 }
 
-                return { init, addPosition, createSnapshot, exportData, portfolioPositions, portfolioSnapshots, save };
+                api.init = init;
+                api.addPosition = addPosition;
+                api.createSnapshot = createSnapshot;
+                api.exportData = exportData;
+                api.save = save;
+
+                return api;
             })();
 
             // Portfolio Management Module
