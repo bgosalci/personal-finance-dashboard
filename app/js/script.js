@@ -1787,9 +1787,66 @@
             };
         })();
 
+        // Market Status Indicator
+        const MarketStatus = (function() {
+            const API_KEY = 'd1nf8h1r01qovv8iu2dgd1nf8h1r01qovv8iu2e0';
+            const ledEl = document.getElementById('market-led');
+            const sessionEl = document.getElementById('market-session');
+            let timer = null;
+
+            async function update() {
+                if (!ledEl) return;
+                try {
+                    const url = `https://finnhub.io/api/v1/market-status?exchange=US&token=${API_KEY}`;
+                    const res = await fetch(url);
+                    const data = await res.json();
+                    if (data && typeof data.isOpen === 'boolean') {
+                        ledEl.classList.toggle('led-green', data.isOpen);
+                        ledEl.classList.toggle('led-red', !data.isOpen);
+                    }
+                    if (sessionEl) {
+                        if (data && data.session) {
+                            sessionEl.textContent = data.session;
+                            sessionEl.style.display = 'inline';
+                        } else {
+                            sessionEl.textContent = '';
+                            sessionEl.style.display = 'none';
+                        }
+                    }
+                } catch (e) {
+                    // ignore errors
+                }
+            }
+
+            function withinMarketWindow(d = new Date()) {
+                const day = d.getUTCDay();
+                if (day === 0 || day === 6) return false; // weekend
+                const mins = d.getUTCHours() * 60 + d.getUTCMinutes();
+                return mins >= 13 * 60 && mins < 22 * 60; // 13:00 - 21:59 UTC
+            }
+
+            function start() {
+                if (withinMarketWindow()) {
+                    update();
+                }
+                timer = setInterval(() => {
+                    if (withinMarketWindow()) {
+                        update();
+                    }
+                }, 300000); // 5 minutes
+            }
+
+            function init() {
+                start();
+            }
+
+            return { init };
+        })();
+
         // Initialize the application when DOM is ready
         document.addEventListener('DOMContentLoaded', function() {
             FinancialDashboard.init();
+            MarketStatus.init();
 
             const header = document.querySelector('.header');
             const nav = document.querySelector('.nav-tabs');
