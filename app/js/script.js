@@ -1815,8 +1815,19 @@
                         'net_cash_flow_investing',
                         'net_cash_flow_financing',
                         'net_cash_flow'
-                    ]
+                    ],
+                    stats: []
                 };
+
+                const STAT_ROWS = [
+                    { key: 'pe', label: 'PE Ratio' },
+                    { key: 'roic', label: 'ROIC' },
+                    { key: 'grossMargin', label: 'Gross Margin' },
+                    { key: 'netMargin', label: 'Net Margin' },
+                    { key: 'revPerShare', label: 'Revenue Per Share' },
+                    { key: 'cashPerShare', label: 'Cash Per Share' },
+                    { key: 'peg', label: 'PEG Ratio' }
+                ];
 
                 let reports = [];
                 let currentSubTab = 'income';
@@ -1852,6 +1863,25 @@
                     const num = Number(val);
                     if (isNaN(num)) return val;
                     return num.toLocaleString('en-US');
+                }
+
+                function getValue(obj, paths) {
+                    for (const p of paths) {
+                        const parts = p.split('.');
+                        let val = obj;
+                        for (const part of parts) {
+                            if (!val || !(part in val)) { val = null; break; }
+                            val = val[part];
+                        }
+                        if (val !== null && val !== undefined) {
+                            if (typeof val === 'object' && val.value !== undefined) {
+                                val = val.value;
+                            }
+                            const num = Number(val);
+                            if (!isNaN(num)) return num;
+                        }
+                    }
+                    return null;
                 }
 
                 function setDateLimits() {
@@ -1934,6 +1964,27 @@
                         return ia - ib;
                     });
 
+                    if (currentSubTab === 'stats') {
+                        const stats = calculateStats();
+                        STAT_ROWS.forEach(row => {
+                            let rowHtml = `<td>${row.label}</td>`;
+                            stats[row.key].forEach(val => {
+                                if (val === null || val === undefined || isNaN(val)) {
+                                    rowHtml += '<td></td>';
+                                } else if (row.key === 'grossMargin' || row.key === 'netMargin' || row.key === 'roic') {
+                                    rowHtml += `<td>${(val * 100).toFixed(2)}%</td>`;
+                                } else {
+                                    rowHtml += `<td>${val.toFixed(2)}</td>`;
+                                }
+                            });
+                            const tr = document.createElement('tr');
+                            tr.innerHTML = rowHtml;
+                            tableBody.appendChild(tr);
+                        });
+                        tableContainer.style.display = 'block';
+                        return;
+                    }
+
                     orderedKeys.forEach(k => {
                         let label = k;
                         for (const r of reports) {
@@ -1970,6 +2021,80 @@
                     });
 
                     tableContainer.style.display = 'block';
+                }
+
+                function calculateStats() {
+                    const epsArr = [];
+                    const results = {
+                        pe: [],
+                        roic: [],
+                        grossMargin: [],
+                        netMargin: [],
+                        revPerShare: [],
+                        cashPerShare: [],
+                        peg: []
+                    };
+                    reports.forEach((r, idx) => {
+                        const inc = r.financials ? r.financials.income_statement || {} : {};
+                        const bal = r.financials ? r.financials.balance_sheet || {} : {};
+                        const revenue = getValue(inc, ['revenues']);
+                        const gross = getValue(inc, ['gross_profit']);
+                        const net = getValue(inc, ['net_income_loss']);
+                        const opInc = getValue(inc, ['operating_income_loss']);
+                        const tax = getValue(inc, ['income_tax_expense_benefit']);
+                        const shares = getValue(inc, [
+                            'weighted_avg_diluted_shares_outstanding',
+                            'weighted_avg_shares_outstanding_diluted',
+                            'weighted_average_shares_outstanding_diluted',
+                            'weighted_average_shares_outstanding_basic'
+                        ]);
+                        const cash = getValue(bal, ['cash_and_cash_equivalents']);
+                        const longDebt = getValue(bal, ['long_term_debt']);
+                        const shortDebt = getValue(bal, ['short_term_debt']);
+                        const equity = getValue(bal, ['total_shareholders_equity']);
+                        const marketCap = getValue(r, ['market_cap']);
+                        const price = (marketCap && shares) ? marketCap / shares : getValue(r, ['share_price', 'market_price']);
+
+                        let eps = getValue(inc, ['basic_eps', 'diluted_eps', 'earnings_per_basic_share', 'earnings_per_diluted_share']);
+                        if (eps === null && net !== null && shares) eps = net / shares;
+                        epsArr[idx] = eps;
+
+                        const pe = (price !== null && eps !== null && eps !== 0) ? price / eps : null;
+                        results.pe.push(pe);
+
+                        const invested = (longDebt || 0) + (shortDebt || 0) + (equity || 0);
+                        let nopat = null;
+                        if (opInc !== null && net !== null && tax !== null && net !== 0) {
+                            const rate = tax / Math.abs(net);
+                            nopat = opInc * (1 - rate);
+                        } else if (net !== null) {
+                            nopat = net;
+                        }
+                        const roic = invested ? nopat / invested : null;
+                        results.roic.push(roic);
+
+                        const gm = (gross !== null && revenue) ? gross / revenue : null;
+                        const nm = (net !== null && revenue) ? net / revenue : null;
+                        const rps = (revenue !== null && shares) ? revenue / shares : null;
+                        const cps = (cash !== null && shares) ? cash / shares : null;
+                        results.grossMargin.push(gm);
+                        results.netMargin.push(nm);
+                        results.revPerShare.push(rps);
+                        results.cashPerShare.push(cps);
+                    });
+
+                    results.pe.forEach((peVal, i) => {
+                        const prev = epsArr[i - 1];
+                        const curr = epsArr[i];
+                        let peg = null;
+                        if (peVal !== null && prev !== undefined && prev !== null && prev !== 0 && curr !== null) {
+                            const growth = (curr - prev) / Math.abs(prev) * 100;
+                            if (growth !== 0) peg = peVal / growth;
+                        }
+                        results.peg.push(peg);
+                    });
+
+                    return results;
                 }
 
                 function init() {
