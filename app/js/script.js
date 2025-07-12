@@ -1784,7 +1784,7 @@
 
                 const ORDER = {
                     income: [
-                        'revenue',
+                        'revenues',
                         'cost_of_revenue',
                         'gross_profit',
                         'operating_expenses',
