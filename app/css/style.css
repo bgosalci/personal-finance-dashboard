@@ -413,6 +413,16 @@
             font-weight: 600;
         }
 
+        /* Percentage difference rows for financials */
+        #financials-table .diff-row {
+            background: var(--background-secondary);
+        }
+        #financials-table .diff-cell {
+            text-align: right;
+            font-style: italic;
+            color: var(--text-secondary);
+        }
+
         .summary-cards {
             display: flex;
             flex-wrap: wrap;

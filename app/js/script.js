@@ -1942,19 +1942,37 @@
                         }
                         const shortLabel = label.length > 20 ? label.slice(0,17) + '...' : label;
                         let rowHtml = `<td class="has-tooltip" data-tooltip="${label}">${shortLabel}</td>`;
-                        reports.forEach(r => {
+                        let diffHtml = '<td></td>';
+                        let prevVal = null;
+                        reports.forEach((r, idx) => {
                             const item = r.financials && r.financials[statementKey] ? r.financials[statementKey][k] : undefined;
                             if (item && item.value !== undefined && item.value !== null) {
-                                const formatted = formatNumber(item.value);
-                                const cls = Number(item.value) < 0 ? 'negative-num' : '';
+                                const value = Number(item.value);
+                                const formatted = formatNumber(value);
+                                const cls = value < 0 ? 'negative-num' : '';
                                 rowHtml += `<td class="${cls}">${formatted}</td>`;
+                                if (idx === 0 || prevVal === null || prevVal === 0) {
+                                    diffHtml += '<td class="diff-cell">---</td>';
+                                } else {
+                                    const diff = ((value - prevVal) / Math.abs(prevVal)) * 100;
+                                    const dcls = diff >= 0 ? 'growth-positive' : 'growth-negative';
+                                    diffHtml += `<td class="diff-cell ${dcls}">${diff >= 0 ? '+' : ''}${diff.toFixed(2)}%</td>`;
+                                }
+                                prevVal = value;
                             } else {
                                 rowHtml += '<td></td>';
+                                diffHtml += '<td class="diff-cell">---</td>';
+                                prevVal = null;
                             }
                         });
                         const tr = document.createElement('tr');
                         tr.innerHTML = rowHtml;
                         tableBody.appendChild(tr);
+
+                        const diffTr = document.createElement('tr');
+                        diffTr.className = 'diff-row';
+                        diffTr.innerHTML = diffHtml;
+                        tableBody.appendChild(diffTr);
                     });
 
                     tableContainer.style.display = 'block';
