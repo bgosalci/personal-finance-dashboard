@@ -1781,6 +1781,7 @@
                 const tableHead = document.getElementById('financials-header');
                 const tableBody = document.getElementById('financials-body');
                 const subTabs = document.querySelectorAll('#finance-subtabs .sub-nav-tab');
+                const tooltip = document.getElementById('tooltip');
 
                 const ORDER = {
                     income: [
@@ -1819,6 +1820,32 @@
 
                 let reports = [];
                 let currentSubTab = 'income';
+
+                function setupTooltip() {
+                    if (!tooltip || !tableBody) return;
+
+                    tableBody.addEventListener('mouseover', (e) => {
+                        const cell = e.target.closest('.has-tooltip');
+                        if (!cell) return;
+                        tooltip.textContent = cell.dataset.tooltip;
+                        tooltip.style.left = (e.pageX + 12) + 'px';
+                        tooltip.style.top = (e.pageY + 12) + 'px';
+                        tooltip.style.display = 'block';
+                    });
+
+                    tableBody.addEventListener('mousemove', (e) => {
+                        if (tooltip.style.display === 'block') {
+                            tooltip.style.left = (e.pageX + 12) + 'px';
+                            tooltip.style.top = (e.pageY + 12) + 'px';
+                        }
+                    });
+
+                    tableBody.addEventListener('mouseout', (e) => {
+                        const cell = e.target.closest('.has-tooltip');
+                        if (!cell) return;
+                        tooltip.style.display = 'none';
+                    });
+                }
 
                 function formatNumber(val) {
                     if (val === undefined || val === null || val === '') return '';
@@ -1914,7 +1941,7 @@
                             if (item && item.label) { label = item.label; break; }
                         }
                         const shortLabel = label.length > 20 ? label.slice(0,17) + '...' : label;
-                        let rowHtml = `<td title="${label}">${shortLabel}</td>`;
+                        let rowHtml = `<td class="has-tooltip" data-tooltip="${label}">${shortLabel}</td>`;
                         reports.forEach(r => {
                             const item = r.financials && r.financials[statementKey] ? r.financials[statementKey][k] : undefined;
                             if (item && item.value !== undefined && item.value !== null) {
@@ -1937,6 +1964,7 @@
                     if (!tickerInput || !fetchBtn) return;
                     setDateLimits();
                     if (timeframeSelect && !timeframeSelect.value) timeframeSelect.value = 'annual';
+                    setupTooltip();
                     fetchBtn.addEventListener('click', fetchReports);
                     subTabs.forEach(tab => {
                         tab.addEventListener('click', () => switchSubTab(tab.dataset.finSubtab));
