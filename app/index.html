@@ -553,13 +553,27 @@
             
             <!-- Stock Finance Performance Tab -->
             <div id="stock-finance" class="tab-content">
-                <div class="placeholder-content">
-                    <h3>Stock Finance Performance</h3>
-                    <p>
-                        Comprehensive financial analysis and performance metrics for your stock investments. 
-                        This section will include detailed financial ratios, comparative analysis, sector performance benchmarking, 
-                        and advanced stock valuation metrics to help you make informed investment decisions.
-                    </p>
+                <div class="section-header">
+                    <h2 class="section-title">Stock Finance Performance</h2>
+                </div>
+
+                <div class="ticker-management">
+                    <div class="form-group">
+                        <label for="finance-ticker">Ticker</label>
+                        <input type="text" id="finance-ticker" style="text-transform: uppercase;">
+                    </div>
+                    <div class="form-group">
+                        <label for="finance-date">Reports starting from</label>
+                        <input type="date" id="finance-date" min="2011-01-01">
+                    </div>
+                    <button class="btn btn-primary" id="fetch-financials-btn">Get Reports</button>
+                </div>
+
+                <div class="table-container" id="financials-table-container" style="display:none;">
+                    <table class="data-table" id="financials-table">
+                        <thead id="financials-header"></thead>
+                        <tbody id="financials-body"></tbody>
+                    </table>
                 </div>
             </div>
         </div>

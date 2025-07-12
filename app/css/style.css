@@ -270,6 +270,19 @@
             position: relative; /* ensures sticky headers work inside */
         }
 
+        /* Dedicated scroll container for the Stock Finance table */
+        #financials-table-container {
+            max-height: 60vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        /* Override sticky column styles for finance table */
+        #financials-table th:nth-child(2),
+        #financials-table td:nth-child(2) {
+            position: static;
+        }
+
         /* Dedicated scroll container for the Investment Calculator table */
         #investment-growth-container {
             max-height: 40vh;

@@ -1763,10 +1763,80 @@
                     applyEditMode();
                 }
 
+
                 return {
                     init,
                     removeTicker
                 };
+            })();
+
+            // Stock Finance Performance Module
+            const StockFinance = (function() {
+                const API_KEY = 'hQmiS4FP5wJQrg8rX3gTMane2digQcLF';
+                const tickerInput = document.getElementById('finance-ticker');
+                const dateInput = document.getElementById('finance-date');
+                const fetchBtn = document.getElementById('fetch-financials-btn');
+                const tableContainer = document.getElementById('financials-table-container');
+                const tableHead = document.getElementById('financials-header');
+                const tableBody = document.getElementById('financials-body');
+
+                function setDateLimits() {
+                    if (!dateInput) return;
+                    const today = new Date().toISOString().split('T')[0];
+                    dateInput.max = today;
+                    if (!dateInput.value) dateInput.value = '2011-01-01';
+                }
+
+                async function fetchReports() {
+                    const ticker = tickerInput.value.trim().toUpperCase();
+                    const date = dateInput.value;
+                    if (!ticker || !date) return;
+                    const url = `https://api.polygon.io/vX/reference/financials?ticker=${encodeURIComponent(ticker)}&filing_date.gte=${date}&apiKey=${API_KEY}`;
+                    try {
+                        const res = await fetch(url);
+                        const data = await res.json();
+                        if (data && Array.isArray(data.results) && data.results.length > 0) {
+                            renderTable(data.results[0].financials);
+                        } else {
+                            tableHead.innerHTML = '';
+                            tableBody.innerHTML = '<tr><td>No data available</td></tr>';
+                            tableContainer.style.display = 'block';
+                        }
+                    } catch (e) {
+                        tableHead.innerHTML = '';
+                        tableBody.innerHTML = '<tr><td>Failed to load data</td></tr>';
+                        tableContainer.style.display = 'block';
+                    }
+                }
+
+                function renderTable(financials) {
+                    if (!financials) return;
+                    tableHead.innerHTML = '<tr><th>Label</th><th>Income Statement</th><th>Balance Sheet</th><th>Cash Flow</th></tr>';
+                    tableBody.innerHTML = '';
+                    const keys = new Set([
+                        ...Object.keys(financials.income_statement || {}),
+                        ...Object.keys(financials.balance_sheet || {}),
+                        ...Object.keys(financials.cash_flow_statement || {})
+                    ]);
+                    keys.forEach(k => {
+                        const inc = financials.income_statement ? financials.income_statement[k] : undefined;
+                        const bal = financials.balance_sheet ? financials.balance_sheet[k] : undefined;
+                        const cash = financials.cash_flow_statement ? financials.cash_flow_statement[k] : undefined;
+                        const label = (inc && inc.label) || (bal && bal.label) || (cash && cash.label) || k;
+                        const row = document.createElement('tr');
+                        row.innerHTML = `<td>${label}</td><td>${inc ? inc.value : ''}</td><td>${bal ? bal.value : ''}</td><td>${cash ? cash.value : ''}</td>`;
+                        tableBody.appendChild(row);
+                    });
+                    tableContainer.style.display = 'block';
+                }
+
+                function init() {
+                    if (!tickerInput || !fetchBtn) return;
+                    setDateLimits();
+                    fetchBtn.addEventListener('click', fetchReports);
+                }
+
+                return { init };
             })();
 
             // Public API
@@ -1775,6 +1845,7 @@
                 PortfolioManager.init();
                 Calculator.init();
                 StockTracker.init();
+                StockFinance.init();
             }
 
             function removeTicker(ticker) {
