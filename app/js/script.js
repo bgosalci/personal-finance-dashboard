@@ -1909,6 +1909,20 @@
                             reports = data.results.sort((a, b) => new Date(a.filing_date) - new Date(b.filing_date));
                             currentTicker = ticker;
                             currentSharePrice = await PortfolioManager.fetchQuote(ticker);
+                            if (currentSharePrice === null && reports.length > 0) {
+                                const r = reports[reports.length - 1];
+                                const marketCap = getValue(r, ['market_cap', 'market_data.market_cap']);
+                                const inc = r.financials ? r.financials.income_statement || {} : {};
+                                const shares = getValue(inc, [
+                                    'weighted_avg_diluted_shares_outstanding',
+                                    'weighted_avg_shares_outstanding_diluted',
+                                    'weighted_average_shares_outstanding_diluted',
+                                    'weighted_average_shares_outstanding_basic'
+                                ]);
+                                if (marketCap !== null && shares) {
+                                    currentSharePrice = marketCap / shares;
+                                }
+                            }
                             renderTable();
                         } else {
                             reports = [];
@@ -2049,7 +2063,7 @@
                             'earnings_per_share_diluted'
                         ]);
                         if (eps === null && net !== null && shares) eps = net / shares;
-                        const pe = (sharePrice !== null && eps !== null && eps !== 0) ? sharePrice / eps : null;
+                        const pe = (sharePrice !== null && eps !== null) ? sharePrice / eps : null;
                         results.pe.push(pe);
 
                         const gm = (gross !== null && revenue) ? gross / revenue : null;
