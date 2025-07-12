@@ -278,7 +278,13 @@
         }
 
         /* Make first two columns sticky for finance table */
-        #financials-table th:first-child,
+        #financials-table th:first-child {
+            position: sticky;
+            left: 0;
+            width: 150px;
+            z-index: 3;
+        }
+
         #financials-table td:first-child {
             position: sticky;
             left: 0;
@@ -287,7 +293,12 @@
             z-index: 2;
         }
 
-        #financials-table th:nth-child(2),
+        #financials-table th:nth-child(2) {
+            position: sticky;
+            left: 150px; /* offset by width of label column */
+            z-index: 2;
+        }
+
         #financials-table td:nth-child(2) {
             position: sticky;
             left: 150px; /* offset by width of label column */
