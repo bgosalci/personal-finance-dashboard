@@ -325,6 +325,20 @@
             color: var(--danger-red);
         }
 
+        /* Difference row styling for finance table */
+        #financials-table .diff-row td:first-child {
+            font-style: italic;
+            color: var(--text-secondary);
+        }
+
+        #financials-table .diff-label {
+            font-weight: 600;
+        }
+
+        #financials-table .diff-row td {
+            font-size: 0.85rem;
+        }
+
         /* Dedicated scroll container for the Investment Calculator table */
         #investment-growth-container {
             max-height: 40vh;

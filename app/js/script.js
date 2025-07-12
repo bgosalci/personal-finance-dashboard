@@ -1942,19 +1942,41 @@
                         }
                         const shortLabel = label.length > 20 ? label.slice(0,17) + '...' : label;
                         let rowHtml = `<td class="has-tooltip" data-tooltip="${label}">${shortLabel}</td>`;
-                        reports.forEach(r => {
+                        let diffHtml = '<td class="diff-label">Δ%</td>';
+                        reports.forEach((r, idx) => {
                             const item = r.financials && r.financials[statementKey] ? r.financials[statementKey][k] : undefined;
-                            if (item && item.value !== undefined && item.value !== null) {
-                                const formatted = formatNumber(item.value);
-                                const cls = Number(item.value) < 0 ? 'negative-num' : '';
+                            const val = item && item.value !== undefined && item.value !== null ? Number(item.value) : null;
+                            if (val !== null) {
+                                const formatted = formatNumber(val);
+                                const cls = val < 0 ? 'negative-num' : '';
                                 rowHtml += `<td class="${cls}">${formatted}</td>`;
                             } else {
                                 rowHtml += '<td></td>';
+                            }
+
+                            if (idx === 0) {
+                                diffHtml += '<td class="growth-neutral">---%</td>';
+                            } else {
+                                const prev = reports[idx-1].financials && reports[idx-1].financials[statementKey] ? reports[idx-1].financials[statementKey][k] : undefined;
+                                const prevVal = prev && prev.value !== undefined && prev.value !== null ? Number(prev.value) : null;
+                                if (val !== null && prevVal !== null && prevVal !== 0) {
+                                    const diff = ((val - prevVal) / prevVal) * 100;
+                                    const clsDiff = diff > 0 ? 'growth-positive' : diff < 0 ? 'growth-negative' : 'growth-neutral';
+                                    const text = (diff >= 0 ? '+' : '') + diff.toFixed(2) + '%';
+                                    diffHtml += `<td class="${clsDiff}">${text}</td>`;
+                                } else {
+                                    diffHtml += '<td class="growth-neutral">---%</td>';
+                                }
                             }
                         });
                         const tr = document.createElement('tr');
                         tr.innerHTML = rowHtml;
                         tableBody.appendChild(tr);
+
+                        const diffTr = document.createElement('tr');
+                        diffTr.className = 'diff-row';
+                        diffTr.innerHTML = diffHtml;
+                        tableBody.appendChild(diffTr);
                     });
 
                     tableContainer.style.display = 'block';
