@@ -277,10 +277,10 @@
             position: relative;
         }
 
-        /* Override sticky column styles for finance table */
+        /* Override sticky column behavior for finance table */
         #financials-table th:nth-child(2),
         #financials-table td:nth-child(2) {
-            position: static;
+            left: auto; /* keep header sticky on top but not column sticky */
         }
 
         /* Make first column sticky for finance table */

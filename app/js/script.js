@@ -1781,6 +1781,41 @@
                 const tableBody = document.getElementById('financials-body');
                 const subTabs = document.querySelectorAll('#finance-subtabs .sub-nav-tab');
 
+                const ORDER = {
+                    income: [
+                        'revenue',
+                        'cost_of_revenue',
+                        'gross_profit',
+                        'operating_expenses',
+                        'operating_income_loss',
+                        'income_loss_before_income_tax',
+                        'income_tax_expense_benefit',
+                        'net_income_loss'
+                    ],
+                    balance: [
+                        'cash_and_cash_equivalents',
+                        'short_term_investments',
+                        'net_receivables',
+                        'inventory',
+                        'total_current_assets',
+                        'property_plant_and_equipment_net',
+                        'total_assets',
+                        'accounts_payable',
+                        'short_term_debt',
+                        'total_current_liabilities',
+                        'long_term_debt',
+                        'total_liabilities',
+                        'total_shareholders_equity',
+                        'total_liabilities_and_shareholders_equity'
+                    ],
+                    cash: [
+                        'net_cash_flow_operating',
+                        'net_cash_flow_investing',
+                        'net_cash_flow_financing',
+                        'net_cash_flow'
+                    ]
+                };
+
                 let reports = [];
                 let currentSubTab = 'income';
 
@@ -1860,14 +1895,24 @@
                         Object.keys(stmt || {}).forEach(k => allKeys.add(k));
                     });
 
-                    allKeys.forEach(k => {
+                    const orderedKeys = Array.from(allKeys).sort((a, b) => {
+                        const order = ORDER[currentSubTab] || [];
+                        const ia = order.indexOf(a);
+                        const ib = order.indexOf(b);
+                        if (ia === -1 && ib === -1) return a.localeCompare(b);
+                        if (ia === -1) return 1;
+                        if (ib === -1) return -1;
+                        return ia - ib;
+                    });
+
+                    orderedKeys.forEach(k => {
                         let label = k;
                         for (const r of reports) {
                             const item = r.financials && r.financials[statementKey] ? r.financials[statementKey][k] : undefined;
                             if (item && item.label) { label = item.label; break; }
                         }
                         const shortLabel = label.length > 20 ? label.slice(0,17) + '...' : label;
-                        let rowHtml = `<td>${shortLabel}</td>`;
+                        let rowHtml = `<td title="${label}">${shortLabel}</td>`;
                         reports.forEach(r => {
                             const item = r.financials && r.financials[statementKey] ? r.financials[statementKey][k] : undefined;
                             if (item && item.value !== undefined && item.value !== null) {
