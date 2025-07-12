@@ -80,9 +80,16 @@
         .market-status {
             margin-left: auto;
             display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.25rem;
+            font-size: 0.9rem;
+        }
+
+        .status-row {
+            display: flex;
             align-items: center;
             gap: 0.5rem;
-            font-size: 0.9rem;
         }
 
         .led-light {
