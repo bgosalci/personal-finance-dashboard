@@ -27,4 +27,6 @@ test('header contains market status indicator', () => {
   const doc = dom.window.document;
   expect(doc.getElementById('market-led')).not.toBeNull();
   expect(doc.getElementById('market-session')).not.toBeNull();
+  expect(doc.getElementById('early-led')).not.toBeNull();
+  expect(doc.getElementById('after-led')).not.toBeNull();
 });
