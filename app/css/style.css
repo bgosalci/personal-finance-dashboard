@@ -413,14 +413,14 @@
             font-weight: 600;
         }
 
-        /* Percentage difference rows for financials */
-        #financials-table .diff-row {
-            background: var(--background-secondary);
-        }
-        #financials-table .diff-cell {
+        /* Growth display inside financials table cells */
+        #financials-table .fin-value {
             text-align: right;
-            font-style: italic;
-            color: var(--text-secondary);
+        }
+        #financials-table .fin-growth {
+            font-size: 0.85rem;
+            margin-top: 4px;
+            text-align: right;
         }
 
         .summary-cards {
