@@ -876,7 +876,7 @@
                     renderTable();
                 }
 
-                return { init };
+                return { init, fetchQuote };
             })();
 
             // Calculator Module
@@ -1826,6 +1826,8 @@
 
                 let reports = [];
                 let currentSubTab = 'income';
+                let currentSharePrice = null;
+                let currentTicker = '';
 
                 function setupTooltip() {
                     if (!tooltip || !tableBody) return;
@@ -1905,6 +1907,8 @@
                         const data = await res.json();
                         if (data && Array.isArray(data.results) && data.results.length > 0) {
                             reports = data.results.sort((a, b) => new Date(a.filing_date) - new Date(b.filing_date));
+                            currentTicker = ticker;
+                            currentSharePrice = await PortfolioManager.fetchQuote(ticker);
                             renderTable();
                         } else {
                             reports = [];
@@ -2035,12 +2039,7 @@
                             'weighted_average_shares_outstanding_diluted',
                             'weighted_average_shares_outstanding_basic'
                         ]);
-                        const marketCap = getValue(r, ['market_cap']);
-                        // Prefer reported share price; fall back to market cap per share
-                        let sharePrice = getValue(r, ['share_price', 'market_price']);
-                        if (sharePrice === null && marketCap !== null && shares) {
-                            sharePrice = marketCap / shares;
-                        }
+                        const sharePrice = currentSharePrice;
 
                         // Use diluted EPS when available
                         let eps = getValue(inc, [
