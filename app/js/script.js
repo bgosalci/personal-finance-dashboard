@@ -876,7 +876,7 @@
                     renderTable();
                 }
 
-                return { init };
+                return { init, fetchQuote };
             })();
 
             // Calculator Module
@@ -1818,8 +1818,16 @@
                     ]
                 };
 
+                const STAT_ROWS = [
+                    { key: 'pe', label: 'PE Ratio' },
+                    { key: 'grossMargin', label: 'Gross Margin' },
+                    { key: 'netMargin', label: 'Net Margin' }
+                ];
+
                 let reports = [];
                 let currentSubTab = 'income';
+                let currentSharePrice = null;
+                let currentTicker = '';
 
                 function setupTooltip() {
                     if (!tooltip || !tableBody) return;
@@ -1854,6 +1862,25 @@
                     return num.toLocaleString('en-US');
                 }
 
+                function getValue(obj, paths) {
+                    for (const p of paths) {
+                        const parts = p.split('.');
+                        let val = obj;
+                        for (const part of parts) {
+                            if (!val || !(part in val)) { val = null; break; }
+                            val = val[part];
+                        }
+                        if (val !== null && val !== undefined) {
+                            if (typeof val === 'object' && val.value !== undefined) {
+                                val = val.value;
+                            }
+                            const num = Number(val);
+                            if (!isNaN(num)) return num;
+                        }
+                    }
+                    return null;
+                }
+
                 function setDateLimits() {
                     if (!dateInput) return;
                     const today = new Date().toISOString().split('T')[0];
@@ -1880,6 +1907,22 @@
                         const data = await res.json();
                         if (data && Array.isArray(data.results) && data.results.length > 0) {
                             reports = data.results.sort((a, b) => new Date(a.filing_date) - new Date(b.filing_date));
+                            currentTicker = ticker;
+                            currentSharePrice = await PortfolioManager.fetchQuote(ticker);
+                            if (currentSharePrice === null && reports.length > 0) {
+                                const r = reports[reports.length - 1];
+                                const marketCap = getValue(r, ['market_cap', 'market_data.market_cap']);
+                                const inc = r.financials ? r.financials.income_statement || {} : {};
+                                const shares = getValue(inc, [
+                                    'weighted_avg_diluted_shares_outstanding',
+                                    'weighted_avg_shares_outstanding_diluted',
+                                    'weighted_average_shares_outstanding_diluted',
+                                    'weighted_average_shares_outstanding_basic'
+                                ]);
+                                if (marketCap !== null && shares) {
+                                    currentSharePrice = marketCap / shares;
+                                }
+                            }
                             renderTable();
                         } else {
                             reports = [];
@@ -1934,6 +1977,27 @@
                         return ia - ib;
                     });
 
+                    if (currentSubTab === 'stats') {
+                        const stats = calculateStats();
+                        STAT_ROWS.forEach(row => {
+                            let rowHtml = `<td>${row.label}</td>`;
+                            stats[row.key].forEach(val => {
+                                if (val === null || val === undefined || isNaN(val)) {
+                                    rowHtml += '<td></td>';
+                                } else if (row.key === 'grossMargin' || row.key === 'netMargin') {
+                                    rowHtml += `<td>${(val * 100).toFixed(2)}%</td>`;
+                                } else {
+                                    rowHtml += `<td>${val.toFixed(2)}</td>`;
+                                }
+                            });
+                            const tr = document.createElement('tr');
+                            tr.innerHTML = rowHtml;
+                            tableBody.appendChild(tr);
+                        });
+                        tableContainer.style.display = 'block';
+                        return;
+                    }
+
                     orderedKeys.forEach(k => {
                         let label = k;
                         for (const r of reports) {
@@ -1970,6 +2034,45 @@
                     });
 
                     tableContainer.style.display = 'block';
+                }
+
+                function calculateStats() {
+                    const results = {
+                        pe: [],
+                        grossMargin: [],
+                        netMargin: []
+                    };
+                    reports.forEach((r, idx) => {
+                        const inc = r.financials ? r.financials.income_statement || {} : {};
+                        const revenue = getValue(inc, ['revenues']);
+                        const gross = getValue(inc, ['gross_profit']);
+                        const net = getValue(inc, ['net_income_loss']);
+                        const shares = getValue(inc, [
+                            'weighted_avg_diluted_shares_outstanding',
+                            'weighted_avg_shares_outstanding_diluted',
+                            'weighted_average_shares_outstanding_diluted',
+                            'weighted_average_shares_outstanding_basic'
+                        ]);
+                        const sharePrice = currentSharePrice;
+
+                        // Use diluted EPS when available
+                        let eps = getValue(inc, [
+                            'diluted_eps',
+                            'earnings_per_diluted_share',
+                            'eps_diluted',
+                            'earnings_per_share_diluted'
+                        ]);
+                        if (eps === null && net !== null && shares) eps = net / shares;
+                        const pe = (sharePrice !== null && eps !== null) ? sharePrice / eps : null;
+                        results.pe.push(pe);
+
+                        const gm = (gross !== null && revenue) ? gross / revenue : null;
+                        const nm = (net !== null && revenue) ? net / revenue : null;
+                        results.grossMargin.push(gm);
+                        results.netMargin.push(nm);
+                    });
+
+                    return results;
                 }
 
                 function init() {
