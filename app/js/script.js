@@ -1763,10 +1763,187 @@
                     applyEditMode();
                 }
 
+
                 return {
                     init,
                     removeTicker
                 };
+            })();
+
+            // Stock Finance Performance Module
+            const StockFinance = (function() {
+                const API_KEY = 'hQmiS4FP5wJQrg8rX3gTMane2digQcLF';
+                const tickerInput = document.getElementById('finance-ticker');
+                const dateInput = document.getElementById('finance-date');
+                const timeframeSelect = document.getElementById('finance-timeframe');
+                const fetchBtn = document.getElementById('fetch-financials-btn');
+                const tableContainer = document.getElementById('financials-table-container');
+                const tableHead = document.getElementById('financials-header');
+                const tableBody = document.getElementById('financials-body');
+                const subTabs = document.querySelectorAll('#finance-subtabs .sub-nav-tab');
+
+                const ORDER = {
+                    income: [
+                        'revenue',
+                        'cost_of_revenue',
+                        'gross_profit',
+                        'operating_expenses',
+                        'operating_income_loss',
+                        'income_loss_before_income_tax',
+                        'income_tax_expense_benefit',
+                        'net_income_loss'
+                    ],
+                    balance: [
+                        'cash_and_cash_equivalents',
+                        'short_term_investments',
+                        'net_receivables',
+                        'inventory',
+                        'total_current_assets',
+                        'property_plant_and_equipment_net',
+                        'total_assets',
+                        'accounts_payable',
+                        'short_term_debt',
+                        'total_current_liabilities',
+                        'long_term_debt',
+                        'total_liabilities',
+                        'total_shareholders_equity',
+                        'total_liabilities_and_shareholders_equity'
+                    ],
+                    cash: [
+                        'net_cash_flow_operating',
+                        'net_cash_flow_investing',
+                        'net_cash_flow_financing',
+                        'net_cash_flow'
+                    ]
+                };
+
+                let reports = [];
+                let currentSubTab = 'income';
+
+                function formatNumber(val) {
+                    if (val === undefined || val === null || val === '') return '';
+                    const num = Number(val);
+                    if (isNaN(num)) return val;
+                    return num.toLocaleString('en-US');
+                }
+
+                function setDateLimits() {
+                    if (!dateInput) return;
+                    const today = new Date().toISOString().split('T')[0];
+                    dateInput.max = today;
+                    if (!dateInput.value) dateInput.value = '2011-01-01';
+                }
+
+                function switchSubTab(name) {
+                    subTabs.forEach(tab => {
+                        tab.classList.toggle('active', tab.dataset.finSubtab === name);
+                    });
+                    currentSubTab = name;
+                    renderTable();
+                }
+
+                async function fetchReports() {
+                    const ticker = tickerInput.value.trim().toUpperCase();
+                    const date = dateInput.value;
+                    const timeframe = timeframeSelect.value || 'annual';
+                    if (!ticker || !date) return;
+                    const url = `https://api.polygon.io/vX/reference/financials?ticker=${encodeURIComponent(ticker)}&filing_date.gte=${date}&timeframe=${timeframe}&limit=4&apiKey=${API_KEY}`;
+                    try {
+                        const res = await fetch(url);
+                        const data = await res.json();
+                        if (data && Array.isArray(data.results) && data.results.length > 0) {
+                            reports = data.results.sort((a, b) => new Date(a.filing_date) - new Date(b.filing_date));
+                            renderTable();
+                        } else {
+                            reports = [];
+                            tableHead.innerHTML = '';
+                            tableBody.innerHTML = '<tr><td>No data available</td></tr>';
+                            tableContainer.style.display = 'block';
+                        }
+                    } catch (e) {
+                        reports = [];
+                        tableHead.innerHTML = '';
+                        tableBody.innerHTML = '<tr><td>Failed to load data</td></tr>';
+                        tableContainer.style.display = 'block';
+                    }
+                }
+
+                function renderTable() {
+                    if (!reports.length) return;
+
+                    const keyMap = {
+                        income: 'income_statement',
+                        balance: 'balance_sheet',
+                        cash: 'cash_flow_statement'
+                    };
+                    const statementKey = keyMap[currentSubTab];
+
+                    tableHead.innerHTML = '';
+                    tableBody.innerHTML = '';
+
+                    const headerRow = document.createElement('tr');
+                    let headerHtml = '<th>Label</th>';
+                    reports.forEach(r => {
+                        const yr = r.fiscal_year || '';
+                        const period = r.fiscal_period || '';
+                        headerHtml += `<th>${yr} ${period}</th>`;
+                    });
+                    headerRow.innerHTML = headerHtml;
+                    tableHead.appendChild(headerRow);
+
+                    const allKeys = new Set();
+                    reports.forEach(r => {
+                        const stmt = r.financials ? r.financials[statementKey] : {};
+                        Object.keys(stmt || {}).forEach(k => allKeys.add(k));
+                    });
+
+                    const orderedKeys = Array.from(allKeys).sort((a, b) => {
+                        const order = ORDER[currentSubTab] || [];
+                        const ia = order.indexOf(a);
+                        const ib = order.indexOf(b);
+                        if (ia === -1 && ib === -1) return a.localeCompare(b);
+                        if (ia === -1) return 1;
+                        if (ib === -1) return -1;
+                        return ia - ib;
+                    });
+
+                    orderedKeys.forEach(k => {
+                        let label = k;
+                        for (const r of reports) {
+                            const item = r.financials && r.financials[statementKey] ? r.financials[statementKey][k] : undefined;
+                            if (item && item.label) { label = item.label; break; }
+                        }
+                        const shortLabel = label.length > 20 ? label.slice(0,17) + '...' : label;
+                        let rowHtml = `<td title="${label}">${shortLabel}</td>`;
+                        reports.forEach(r => {
+                            const item = r.financials && r.financials[statementKey] ? r.financials[statementKey][k] : undefined;
+                            if (item && item.value !== undefined && item.value !== null) {
+                                const formatted = formatNumber(item.value);
+                                const cls = Number(item.value) < 0 ? 'negative-num' : '';
+                                rowHtml += `<td class="${cls}">${formatted}</td>`;
+                            } else {
+                                rowHtml += '<td></td>';
+                            }
+                        });
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = rowHtml;
+                        tableBody.appendChild(tr);
+                    });
+
+                    tableContainer.style.display = 'block';
+                }
+
+                function init() {
+                    if (!tickerInput || !fetchBtn) return;
+                    setDateLimits();
+                    if (timeframeSelect && !timeframeSelect.value) timeframeSelect.value = 'annual';
+                    fetchBtn.addEventListener('click', fetchReports);
+                    subTabs.forEach(tab => {
+                        tab.addEventListener('click', () => switchSubTab(tab.dataset.finSubtab));
+                    });
+                }
+
+                return { init };
             })();
 
             // Public API
@@ -1775,6 +1952,7 @@
                 PortfolioManager.init();
                 Calculator.init();
                 StockTracker.init();
+                StockFinance.init();
             }
 
             function removeTicker(ticker) {

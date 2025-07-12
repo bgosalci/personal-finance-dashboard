@@ -270,6 +270,48 @@
             position: relative; /* ensures sticky headers work inside */
         }
 
+        /* Dedicated scroll container for the Stock Finance table */
+        #financials-table-container {
+            max-height: 60vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        /* Override sticky column behavior for finance table */
+        #financials-table th:nth-child(2),
+        #financials-table td:nth-child(2) {
+            left: auto; /* keep header sticky on top but not column sticky */
+        }
+
+        /* Make first column sticky for finance table */
+        #financials-table th:first-child,
+        #financials-table td:first-child {
+            position: sticky;
+            left: 0;
+            background: var(--background-primary);
+            z-index: 1;
+        }
+
+        /* Shorten label column for finance table */
+        #financials-table td:first-child {
+            max-width: 150px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-weight: 600;
+        }
+
+        /* Header style for finance table only */
+        #financials-table th {
+            background: var(--primary-blue-dark);
+            color: #fff;
+        }
+
+        /* Negative value styling */
+        #financials-table .negative-num {
+            color: var(--danger-red);
+        }
+
         /* Dedicated scroll container for the Investment Calculator table */
         #investment-growth-container {
             max-height: 40vh;
