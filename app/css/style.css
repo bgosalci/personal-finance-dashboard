@@ -413,6 +413,16 @@
             font-weight: 600;
         }
 
+        /* Growth display inside financials table cells */
+        #financials-table .fin-value {
+            text-align: right;
+        }
+        #financials-table .fin-growth {
+            font-size: 0.85rem;
+            margin-top: 4px;
+            text-align: right;
+        }
+
         .summary-cards {
             display: flex;
             flex-wrap: wrap;

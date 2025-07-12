@@ -1942,14 +1942,26 @@
                         }
                         const shortLabel = label.length > 20 ? label.slice(0,17) + '...' : label;
                         let rowHtml = `<td class="has-tooltip" data-tooltip="${label}">${shortLabel}</td>`;
-                        reports.forEach(r => {
+                        let prevVal = null;
+                        reports.forEach((r, idx) => {
                             const item = r.financials && r.financials[statementKey] ? r.financials[statementKey][k] : undefined;
                             if (item && item.value !== undefined && item.value !== null) {
-                                const formatted = formatNumber(item.value);
-                                const cls = Number(item.value) < 0 ? 'negative-num' : '';
-                                rowHtml += `<td class="${cls}">${formatted}</td>`;
+                                const value = Number(item.value);
+                                const formatted = formatNumber(value);
+                                const cls = value < 0 ? 'negative-num' : '';
+                                let cell = `<div class="fin-value ${cls}">${formatted}</div>`;
+                                if (idx === 0 || prevVal === null || prevVal === 0) {
+                                    cell += '<div class="fin-growth growth-neutral">---</div>';
+                                } else {
+                                    const diff = ((value - prevVal) / Math.abs(prevVal)) * 100;
+                                    const dcls = diff >= 0 ? 'growth-positive' : 'growth-negative';
+                                    cell += `<div class="fin-growth ${dcls}">${diff >= 0 ? '+' : ''}${diff.toFixed(2)}%</div>`;
+                                }
+                                rowHtml += `<td>${cell}</td>`;
+                                prevVal = value;
                             } else {
                                 rowHtml += '<td></td>';
+                                prevVal = null;
                             }
                         });
                         const tr = document.createElement('tr');
