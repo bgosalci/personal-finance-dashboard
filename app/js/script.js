@@ -1789,7 +1789,8 @@
 
         // Market Status Indicator
         const MarketStatus = (function() {
-            const API_KEY = 'd1nf8h1r01qovv8iu2dgd1nf8h1r01qovv8iu2e0';
+            // Uses Polygon.io to check current US market status
+            const API_KEY = 'hQmiS4FP5wJQrg8rX3gTMane2digQcLF';
             const ledEl = document.getElementById('market-led');
             const sessionEl = document.getElementById('market-session');
             let timer = null;
@@ -1797,16 +1798,15 @@
             async function update() {
                 if (!ledEl) return;
                 try {
-                    const url = `https://finnhub.io/api/v1/market/status?exchange=US&token=${API_KEY}`;
+                    const url = `https://api.polygon.io/v1/marketstatus/now?apiKey=${API_KEY}`;
                     const res = await fetch(url);
                     const data = await res.json();
-                    if (data && typeof data.isOpen === 'boolean') {
-                        ledEl.classList.toggle('led-green', data.isOpen);
-                        ledEl.classList.toggle('led-red', !data.isOpen);
-                    }
+                    const isOpen = data && data.market === 'open';
+                    ledEl.classList.toggle('led-green', isOpen);
+                    ledEl.classList.toggle('led-red', !isOpen);
                     if (sessionEl) {
-                        if (data && data.session) {
-                            sessionEl.textContent = data.session;
+                        if (data && data.market) {
+                            sessionEl.textContent = data.market;
                             sessionEl.style.display = 'inline';
                         } else {
                             sessionEl.textContent = '';
@@ -1818,22 +1818,9 @@
                 }
             }
 
-            function withinMarketWindow(d = new Date()) {
-                const day = d.getUTCDay();
-                if (day === 0 || day === 6) return false; // weekend
-                const mins = d.getUTCHours() * 60 + d.getUTCMinutes();
-                return mins >= 13 * 60 && mins < 22 * 60; // 13:00 - 21:59 UTC
-            }
-
             function start() {
-                if (withinMarketWindow()) {
-                    update();
-                }
-                timer = setInterval(() => {
-                    if (withinMarketWindow()) {
-                        update();
-                    }
-                }, 300000); // 5 minutes
+                update();
+                timer = setInterval(update, 300000); // 5 minutes
             }
 
             function init() {
