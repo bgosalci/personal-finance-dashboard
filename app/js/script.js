@@ -1784,6 +1784,13 @@
                 let reports = [];
                 let currentSubTab = 'income';
 
+                function formatNumber(val) {
+                    if (val === undefined || val === null || val === '') return '';
+                    const num = Number(val);
+                    if (isNaN(num)) return val;
+                    return num.toLocaleString('en-US');
+                }
+
                 function setDateLimits() {
                     if (!dateInput) return;
                     const today = new Date().toISOString().split('T')[0];
@@ -1808,7 +1815,7 @@
                         const res = await fetch(url);
                         const data = await res.json();
                         if (data && Array.isArray(data.results) && data.results.length > 0) {
-                            reports = data.results;
+                            reports = data.results.sort((a, b) => new Date(a.filing_date) - new Date(b.filing_date));
                             renderTable();
                         } else {
                             reports = [];
@@ -1863,7 +1870,13 @@
                         let rowHtml = `<td>${shortLabel}</td>`;
                         reports.forEach(r => {
                             const item = r.financials && r.financials[statementKey] ? r.financials[statementKey][k] : undefined;
-                            rowHtml += `<td>${item ? item.value : ''}</td>`;
+                            if (item && item.value !== undefined && item.value !== null) {
+                                const formatted = formatNumber(item.value);
+                                const cls = Number(item.value) < 0 ? 'negative-num' : '';
+                                rowHtml += `<td class="${cls}">${formatted}</td>`;
+                            } else {
+                                rowHtml += '<td></td>';
+                            }
                         });
                         const tr = document.createElement('tr');
                         tr.innerHTML = rowHtml;

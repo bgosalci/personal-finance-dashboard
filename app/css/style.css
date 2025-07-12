@@ -283,12 +283,33 @@
             position: static;
         }
 
+        /* Make first column sticky for finance table */
+        #financials-table th:first-child,
+        #financials-table td:first-child {
+            position: sticky;
+            left: 0;
+            background: var(--background-primary);
+            z-index: 1;
+        }
+
         /* Shorten label column for finance table */
         #financials-table td:first-child {
             max-width: 150px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            font-weight: 600;
+        }
+
+        /* Header style for finance table only */
+        #financials-table th {
+            background: var(--primary-blue-dark);
+            color: #fff;
+        }
+
+        /* Negative value styling */
+        #financials-table .negative-num {
+            color: var(--danger-red);
         }
 
         /* Dedicated scroll container for the Investment Calculator table */
