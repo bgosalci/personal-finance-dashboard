@@ -1775,6 +1775,7 @@
                 const API_KEY = 'hQmiS4FP5wJQrg8rX3gTMane2digQcLF';
                 const tickerInput = document.getElementById('finance-ticker');
                 const dateInput = document.getElementById('finance-date');
+                const timeframeSelect = document.getElementById('finance-timeframe');
                 const fetchBtn = document.getElementById('fetch-financials-btn');
                 const tableContainer = document.getElementById('financials-table-container');
                 const tableHead = document.getElementById('financials-header');
@@ -1844,8 +1845,9 @@
                 async function fetchReports() {
                     const ticker = tickerInput.value.trim().toUpperCase();
                     const date = dateInput.value;
+                    const timeframe = timeframeSelect.value || 'annual';
                     if (!ticker || !date) return;
-                    const url = `https://api.polygon.io/vX/reference/financials?ticker=${encodeURIComponent(ticker)}&filing_date.gte=${date}&limit=4&apiKey=${API_KEY}`;
+                    const url = `https://api.polygon.io/vX/reference/financials?ticker=${encodeURIComponent(ticker)}&filing_date.gte=${date}&timeframe=${timeframe}&limit=4&apiKey=${API_KEY}`;
                     try {
                         const res = await fetch(url);
                         const data = await res.json();
@@ -1934,6 +1936,7 @@
                 function init() {
                     if (!tickerInput || !fetchBtn) return;
                     setDateLimits();
+                    if (timeframeSelect && !timeframeSelect.value) timeframeSelect.value = 'annual';
                     fetchBtn.addEventListener('click', fetchReports);
                     subTabs.forEach(tab => {
                         tab.addEventListener('click', () => switchSubTab(tab.dataset.finSubtab));
