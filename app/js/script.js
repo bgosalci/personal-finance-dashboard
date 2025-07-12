@@ -1822,8 +1822,7 @@
                 const STAT_ROWS = [
                     { key: 'pe', label: 'PE Ratio' },
                     { key: 'grossMargin', label: 'Gross Margin' },
-                    { key: 'netMargin', label: 'Net Margin' },
-                    { key: 'peg', label: 'PEG Ratio' }
+                    { key: 'netMargin', label: 'Net Margin' }
                 ];
 
                 let reports = [];
@@ -2025,8 +2024,7 @@
                     const results = {
                         pe: [],
                         grossMargin: [],
-                        netMargin: [],
-                        peg: []
+                        netMargin: []
                     };
                     reports.forEach((r, idx) => {
                         const inc = r.financials ? r.financials.income_statement || {} : {};
@@ -2058,17 +2056,6 @@
                         const nm = (net !== null && revenue) ? net / revenue : null;
                         results.grossMargin.push(gm);
                         results.netMargin.push(nm);
-                    });
-
-                    results.pe.forEach((peVal, i) => {
-                        const prev = epsArr[i - 1];
-                        const curr = epsArr[i];
-                        let peg = null;
-                        if (peVal !== null && prev !== undefined && prev !== null && prev !== 0 && curr !== null) {
-                            const growth = (curr - prev) / Math.abs(prev) * 100;
-                            if (growth !== 0) peg = peVal / growth;
-                        }
-                        results.peg.push(peg);
                     });
 
                     return results;
