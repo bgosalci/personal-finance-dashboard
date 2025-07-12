@@ -1815,8 +1815,7 @@
                         'net_cash_flow_investing',
                         'net_cash_flow_financing',
                         'net_cash_flow'
-                    ],
-                    stats: []
+                    ]
                 };
 
                 const STAT_ROWS = [
@@ -2020,7 +2019,6 @@
                 }
 
                 function calculateStats() {
-                    const epsArr = [];
                     const results = {
                         pe: [],
                         grossMargin: [],
@@ -2038,8 +2036,13 @@
                             'weighted_average_shares_outstanding_basic'
                         ]);
                         const marketCap = getValue(r, ['market_cap']);
-                        const price = (marketCap && shares) ? marketCap / shares : getValue(r, ['share_price', 'market_price']);
+                        // Prefer reported share price; fall back to market cap per share
+                        let sharePrice = getValue(r, ['share_price', 'market_price']);
+                        if (sharePrice === null && marketCap !== null && shares) {
+                            sharePrice = marketCap / shares;
+                        }
 
+                        // Use diluted EPS when available
                         let eps = getValue(inc, [
                             'diluted_eps',
                             'earnings_per_diluted_share',
@@ -2047,9 +2050,7 @@
                             'earnings_per_share_diluted'
                         ]);
                         if (eps === null && net !== null && shares) eps = net / shares;
-                        epsArr[idx] = eps;
-
-                        const pe = (price !== null && eps !== null && eps !== 0) ? price / eps : null;
+                        const pe = (sharePrice !== null && eps !== null && eps !== 0) ? sharePrice / eps : null;
                         results.pe.push(pe);
 
                         const gm = (gross !== null && revenue) ? gross / revenue : null;
