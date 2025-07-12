@@ -283,6 +283,14 @@
             position: static;
         }
 
+        /* Shorten label column for finance table */
+        #financials-table td:first-child {
+            max-width: 150px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
         /* Dedicated scroll container for the Investment Calculator table */
         #investment-growth-container {
             max-height: 40vh;

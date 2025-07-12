@@ -1779,6 +1779,10 @@
                 const tableContainer = document.getElementById('financials-table-container');
                 const tableHead = document.getElementById('financials-header');
                 const tableBody = document.getElementById('financials-body');
+                const subTabs = document.querySelectorAll('#finance-subtabs .sub-nav-tab');
+
+                let reports = [];
+                let currentSubTab = 'income';
 
                 function setDateLimits() {
                     if (!dateInput) return;
@@ -1787,46 +1791,85 @@
                     if (!dateInput.value) dateInput.value = '2011-01-01';
                 }
 
+                function switchSubTab(name) {
+                    subTabs.forEach(tab => {
+                        tab.classList.toggle('active', tab.dataset.finSubtab === name);
+                    });
+                    currentSubTab = name;
+                    renderTable();
+                }
+
                 async function fetchReports() {
                     const ticker = tickerInput.value.trim().toUpperCase();
                     const date = dateInput.value;
                     if (!ticker || !date) return;
-                    const url = `https://api.polygon.io/vX/reference/financials?ticker=${encodeURIComponent(ticker)}&filing_date.gte=${date}&apiKey=${API_KEY}`;
+                    const url = `https://api.polygon.io/vX/reference/financials?ticker=${encodeURIComponent(ticker)}&filing_date.gte=${date}&limit=4&apiKey=${API_KEY}`;
                     try {
                         const res = await fetch(url);
                         const data = await res.json();
                         if (data && Array.isArray(data.results) && data.results.length > 0) {
-                            renderTable(data.results[0].financials);
+                            reports = data.results;
+                            renderTable();
                         } else {
+                            reports = [];
                             tableHead.innerHTML = '';
                             tableBody.innerHTML = '<tr><td>No data available</td></tr>';
                             tableContainer.style.display = 'block';
                         }
                     } catch (e) {
+                        reports = [];
                         tableHead.innerHTML = '';
                         tableBody.innerHTML = '<tr><td>Failed to load data</td></tr>';
                         tableContainer.style.display = 'block';
                     }
                 }
 
-                function renderTable(financials) {
-                    if (!financials) return;
-                    tableHead.innerHTML = '<tr><th>Label</th><th>Income Statement</th><th>Balance Sheet</th><th>Cash Flow</th></tr>';
+                function renderTable() {
+                    if (!reports.length) return;
+
+                    const keyMap = {
+                        income: 'income_statement',
+                        balance: 'balance_sheet',
+                        cash: 'cash_flow_statement'
+                    };
+                    const statementKey = keyMap[currentSubTab];
+
+                    tableHead.innerHTML = '';
                     tableBody.innerHTML = '';
-                    const keys = new Set([
-                        ...Object.keys(financials.income_statement || {}),
-                        ...Object.keys(financials.balance_sheet || {}),
-                        ...Object.keys(financials.cash_flow_statement || {})
-                    ]);
-                    keys.forEach(k => {
-                        const inc = financials.income_statement ? financials.income_statement[k] : undefined;
-                        const bal = financials.balance_sheet ? financials.balance_sheet[k] : undefined;
-                        const cash = financials.cash_flow_statement ? financials.cash_flow_statement[k] : undefined;
-                        const label = (inc && inc.label) || (bal && bal.label) || (cash && cash.label) || k;
-                        const row = document.createElement('tr');
-                        row.innerHTML = `<td>${label}</td><td>${inc ? inc.value : ''}</td><td>${bal ? bal.value : ''}</td><td>${cash ? cash.value : ''}</td>`;
-                        tableBody.appendChild(row);
+
+                    const headerRow = document.createElement('tr');
+                    let headerHtml = '<th>Label</th>';
+                    reports.forEach(r => {
+                        const yr = r.fiscal_year || '';
+                        const period = r.fiscal_period || '';
+                        headerHtml += `<th>${yr} ${period}</th>`;
                     });
+                    headerRow.innerHTML = headerHtml;
+                    tableHead.appendChild(headerRow);
+
+                    const allKeys = new Set();
+                    reports.forEach(r => {
+                        const stmt = r.financials ? r.financials[statementKey] : {};
+                        Object.keys(stmt || {}).forEach(k => allKeys.add(k));
+                    });
+
+                    allKeys.forEach(k => {
+                        let label = k;
+                        for (const r of reports) {
+                            const item = r.financials && r.financials[statementKey] ? r.financials[statementKey][k] : undefined;
+                            if (item && item.label) { label = item.label; break; }
+                        }
+                        const shortLabel = label.length > 20 ? label.slice(0,17) + '...' : label;
+                        let rowHtml = `<td>${shortLabel}</td>`;
+                        reports.forEach(r => {
+                            const item = r.financials && r.financials[statementKey] ? r.financials[statementKey][k] : undefined;
+                            rowHtml += `<td>${item ? item.value : ''}</td>`;
+                        });
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = rowHtml;
+                        tableBody.appendChild(tr);
+                    });
+
                     tableContainer.style.display = 'block';
                 }
 
@@ -1834,6 +1877,9 @@
                     if (!tickerInput || !fetchBtn) return;
                     setDateLimits();
                     fetchBtn.addEventListener('click', fetchReports);
+                    subTabs.forEach(tab => {
+                        tab.addEventListener('click', () => switchSubTab(tab.dataset.finSubtab));
+                    });
                 }
 
                 return { init };
