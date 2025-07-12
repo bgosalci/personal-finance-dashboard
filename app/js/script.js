@@ -1821,11 +1821,8 @@
 
                 const STAT_ROWS = [
                     { key: 'pe', label: 'PE Ratio' },
-                    { key: 'roic', label: 'ROIC' },
                     { key: 'grossMargin', label: 'Gross Margin' },
                     { key: 'netMargin', label: 'Net Margin' },
-                    { key: 'revPerShare', label: 'Revenue Per Share' },
-                    { key: 'cashPerShare', label: 'Cash Per Share' },
                     { key: 'peg', label: 'PEG Ratio' }
                 ];
 
@@ -1971,7 +1968,7 @@
                             stats[row.key].forEach(val => {
                                 if (val === null || val === undefined || isNaN(val)) {
                                     rowHtml += '<td></td>';
-                                } else if (row.key === 'grossMargin' || row.key === 'netMargin' || row.key === 'roic') {
+                                } else if (row.key === 'grossMargin' || row.key === 'netMargin') {
                                     rowHtml += `<td>${(val * 100).toFixed(2)}%</td>`;
                                 } else {
                                     rowHtml += `<td>${val.toFixed(2)}</td>`;
@@ -2027,60 +2024,40 @@
                     const epsArr = [];
                     const results = {
                         pe: [],
-                        roic: [],
                         grossMargin: [],
                         netMargin: [],
-                        revPerShare: [],
-                        cashPerShare: [],
                         peg: []
                     };
                     reports.forEach((r, idx) => {
                         const inc = r.financials ? r.financials.income_statement || {} : {};
-                        const bal = r.financials ? r.financials.balance_sheet || {} : {};
                         const revenue = getValue(inc, ['revenues']);
                         const gross = getValue(inc, ['gross_profit']);
                         const net = getValue(inc, ['net_income_loss']);
-                        const opInc = getValue(inc, ['operating_income_loss']);
-                        const tax = getValue(inc, ['income_tax_expense_benefit']);
                         const shares = getValue(inc, [
                             'weighted_avg_diluted_shares_outstanding',
                             'weighted_avg_shares_outstanding_diluted',
                             'weighted_average_shares_outstanding_diluted',
                             'weighted_average_shares_outstanding_basic'
                         ]);
-                        const cash = getValue(bal, ['cash_and_cash_equivalents']);
-                        const longDebt = getValue(bal, ['long_term_debt']);
-                        const shortDebt = getValue(bal, ['short_term_debt']);
-                        const equity = getValue(bal, ['total_shareholders_equity']);
                         const marketCap = getValue(r, ['market_cap']);
                         const price = (marketCap && shares) ? marketCap / shares : getValue(r, ['share_price', 'market_price']);
 
-                        let eps = getValue(inc, ['basic_eps', 'diluted_eps', 'earnings_per_basic_share', 'earnings_per_diluted_share']);
+                        let eps = getValue(inc, [
+                            'diluted_eps',
+                            'earnings_per_diluted_share',
+                            'eps_diluted',
+                            'earnings_per_share_diluted'
+                        ]);
                         if (eps === null && net !== null && shares) eps = net / shares;
                         epsArr[idx] = eps;
 
                         const pe = (price !== null && eps !== null && eps !== 0) ? price / eps : null;
                         results.pe.push(pe);
 
-                        const invested = (longDebt || 0) + (shortDebt || 0) + (equity || 0);
-                        let nopat = null;
-                        if (opInc !== null && net !== null && tax !== null && net !== 0) {
-                            const rate = tax / Math.abs(net);
-                            nopat = opInc * (1 - rate);
-                        } else if (net !== null) {
-                            nopat = net;
-                        }
-                        const roic = invested ? nopat / invested : null;
-                        results.roic.push(roic);
-
                         const gm = (gross !== null && revenue) ? gross / revenue : null;
                         const nm = (net !== null && revenue) ? net / revenue : null;
-                        const rps = (revenue !== null && shares) ? revenue / shares : null;
-                        const cps = (cash !== null && shares) ? cash / shares : null;
                         results.grossMargin.push(gm);
                         results.netMargin.push(nm);
-                        results.revPerShare.push(rps);
-                        results.cashPerShare.push(cps);
                     });
 
                     results.pe.forEach((peVal, i) => {
