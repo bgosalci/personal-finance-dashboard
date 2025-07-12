@@ -2057,10 +2057,7 @@
 
                         // Use diluted EPS when available
                         let eps = getValue(inc, [
-                            'diluted_eps',
-                            'earnings_per_diluted_share',
-                            'eps_diluted',
-                            'earnings_per_share_diluted'
+                            'diluted_earnings_per_share'
                         ]);
                         if (eps === null && net !== null && shares) eps = net / shares;
                         const pe = (sharePrice !== null && eps !== null) ? sharePrice / eps : null;
