@@ -1776,6 +1776,8 @@
                 const tickerInput = document.getElementById('finance-ticker');
                 const dateInput = document.getElementById('finance-date');
                 const timeframeSelect = document.getElementById('finance-timeframe');
+                const diffSelect = document.getElementById('diff-type');
+                const diffGroup = document.getElementById('diff-type-group');
                 const fetchBtn = document.getElementById('fetch-financials-btn');
                 const tableContainer = document.getElementById('financials-table-container');
                 const tableHead = document.getElementById('financials-header');
@@ -1818,6 +1820,7 @@
                     ]
                 };
 
+                let allReports = [];
                 let reports = [];
                 let currentSubTab = 'income';
 
@@ -1874,12 +1877,19 @@
                     const date = dateInput.value;
                     const timeframe = timeframeSelect.value || 'annual';
                     if (!ticker || !date) return;
-                    const url = `https://api.polygon.io/vX/reference/financials?ticker=${encodeURIComponent(ticker)}&filing_date.gte=${date}&timeframe=${timeframe}&limit=4&apiKey=${API_KEY}`;
+                    const limit = timeframe === 'quarterly' ? 8 : 4;
+                    const url = `https://api.polygon.io/vX/reference/financials?ticker=${encodeURIComponent(ticker)}&filing_date.gte=${date}&timeframe=${timeframe}&limit=${limit}&apiKey=${API_KEY}`;
                     try {
                         const res = await fetch(url);
                         const data = await res.json();
                         if (data && Array.isArray(data.results) && data.results.length > 0) {
-                            reports = data.results.sort((a, b) => new Date(a.filing_date) - new Date(b.filing_date));
+                            allReports = data.results.sort((a, b) => new Date(a.filing_date) - new Date(b.filing_date));
+                            if (timeframe === 'quarterly' && allReports.length > 4) {
+                                reports = allReports.slice(-4);
+                            } else {
+                                reports = allReports;
+                            }
+                            if (diffGroup) diffGroup.style.display = timeframe === 'quarterly' ? 'block' : 'none';
                             renderTable();
                         } else {
                             reports = [];
@@ -1943,6 +1953,8 @@
                         const shortLabel = label.length > 20 ? label.slice(0,17) + '...' : label;
                         let rowHtml = `<td class="has-tooltip" data-tooltip="${label}">${shortLabel}</td>`;
                         let diffHtml = '<td class="diff-label">Δ%</td>';
+                        const diffType = diffSelect ? diffSelect.value : 'sequential';
+                        const timeframe = timeframeSelect ? timeframeSelect.value : 'annual';
                         reports.forEach((r, idx) => {
                             const item = r.financials && r.financials[statementKey] ? r.financials[statementKey][k] : undefined;
                             const val = item && item.value !== undefined && item.value !== null ? Number(item.value) : null;
@@ -1954,19 +1966,27 @@
                                 rowHtml += '<td></td>';
                             }
 
-                            if (idx === 0) {
-                                diffHtml += '<td class="growth-neutral">---%</td>';
-                            } else {
-                                const prev = reports[idx-1].financials && reports[idx-1].financials[statementKey] ? reports[idx-1].financials[statementKey][k] : undefined;
-                                const prevVal = prev && prev.value !== undefined && prev.value !== null ? Number(prev.value) : null;
-                                if (val !== null && prevVal !== null && prevVal !== 0) {
-                                    const diff = ((val - prevVal) / prevVal) * 100;
-                                    const clsDiff = diff > 0 ? 'growth-positive' : diff < 0 ? 'growth-negative' : 'growth-neutral';
-                                    const text = (diff >= 0 ? '+' : '') + diff.toFixed(2) + '%';
-                                    diffHtml += `<td class="${clsDiff}">${text}</td>`;
-                                } else {
-                                    diffHtml += '<td class="growth-neutral">---%</td>';
+                            let prevVal = null;
+                            if (diffType === 'yoy' && timeframe === 'quarterly') {
+                                const targetYear = (r.fiscal_year || 0) - 1;
+                                const targetPeriod = r.fiscal_period;
+                                const prevReport = allReports.find(ar => ar.fiscal_year === targetYear && ar.fiscal_period === targetPeriod);
+                                if (prevReport) {
+                                    const prevItem = prevReport.financials && prevReport.financials[statementKey] ? prevReport.financials[statementKey][k] : undefined;
+                                    prevVal = prevItem && prevItem.value !== undefined && prevItem.value !== null ? Number(prevItem.value) : null;
                                 }
+                            } else if (idx > 0) {
+                                const prev = reports[idx-1].financials && reports[idx-1].financials[statementKey] ? reports[idx-1].financials[statementKey][k] : undefined;
+                                prevVal = prev && prev.value !== undefined && prev.value !== null ? Number(prev.value) : null;
+                            }
+
+                            if (prevVal !== null && val !== null && prevVal !== 0) {
+                                const diff = ((val - prevVal) / prevVal) * 100;
+                                const clsDiff = diff > 0 ? 'growth-positive' : diff < 0 ? 'growth-negative' : 'growth-neutral';
+                                const text = (diff >= 0 ? '+' : '') + diff.toFixed(2) + '%';
+                                diffHtml += `<td class="${clsDiff}">${text}</td>`;
+                            } else {
+                                diffHtml += '<td class="growth-neutral">---%</td>';
                             }
                         });
                         const tr = document.createElement('tr');
@@ -1986,8 +2006,13 @@
                     if (!tickerInput || !fetchBtn) return;
                     setDateLimits();
                     if (timeframeSelect && !timeframeSelect.value) timeframeSelect.value = 'annual';
+                    if (diffGroup) diffGroup.style.display = timeframeSelect.value === 'quarterly' ? 'block' : 'none';
                     setupTooltip();
                     fetchBtn.addEventListener('click', fetchReports);
+                    if (diffSelect) diffSelect.addEventListener('change', renderTable);
+                    if (timeframeSelect) timeframeSelect.addEventListener('change', () => {
+                        if (diffGroup) diffGroup.style.display = timeframeSelect.value === 'quarterly' ? 'block' : 'none';
+                    });
                     subTabs.forEach(tab => {
                         tab.addEventListener('click', () => switchSubTab(tab.dataset.finSubtab));
                     });
