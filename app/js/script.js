@@ -1823,25 +1823,17 @@
 
                 function setupTooltip() {
                     if (!tooltip || !tableBody) return;
-                    let timer = null;
-                    let lastEvent = null;
 
                     tableBody.addEventListener('mouseover', (e) => {
                         const cell = e.target.closest('.has-tooltip');
                         if (!cell) return;
-                        lastEvent = e;
-                        timer = setTimeout(() => {
-                            tooltip.textContent = cell.dataset.tooltip;
-                            tooltip.style.left = (lastEvent.pageX + 12) + 'px';
-                            tooltip.style.top = (lastEvent.pageY + 12) + 'px';
-                            tooltip.style.display = 'block';
-                        }, 2000);
+                        tooltip.textContent = cell.dataset.tooltip;
+                        tooltip.style.left = (e.pageX + 12) + 'px';
+                        tooltip.style.top = (e.pageY + 12) + 'px';
+                        tooltip.style.display = 'block';
                     });
 
                     tableBody.addEventListener('mousemove', (e) => {
-                        const cell = e.target.closest('.has-tooltip');
-                        if (!cell) return;
-                        lastEvent = e;
                         if (tooltip.style.display === 'block') {
                             tooltip.style.left = (e.pageX + 12) + 'px';
                             tooltip.style.top = (e.pageY + 12) + 'px';
@@ -1851,8 +1843,6 @@
                     tableBody.addEventListener('mouseout', (e) => {
                         const cell = e.target.closest('.has-tooltip');
                         if (!cell) return;
-                        clearTimeout(timer);
-                        timer = null;
                         tooltip.style.display = 'none';
                     });
                 }
