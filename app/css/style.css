@@ -282,6 +282,7 @@
         #financials-table td:first-child {
             position: sticky;
             left: 0;
+            width: 150px;
             background: var(--background-primary);
             z-index: 2;
         }
@@ -296,7 +297,6 @@
 
         /* Shorten label column for finance table */
         #financials-table td:first-child {
-            max-width: 150px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
