@@ -284,6 +284,12 @@
             position: relative;
         }
 
+        #finance-zero-info {
+            margin: 0.5rem 0;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
         /* Make first two columns sticky for finance table */
         #financials-table th:first-child {
             position: sticky;

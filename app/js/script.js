@@ -1783,6 +1783,7 @@
                 const tableBody = document.getElementById('financials-body');
                 const subTabs = document.querySelectorAll('#finance-subtabs .sub-nav-tab');
                 const tooltip = document.getElementById('tooltip');
+                const zeroInfoEl = document.getElementById('finance-zero-info');
 
                 const ORDER = {
                     ic: [
@@ -1902,6 +1903,12 @@
                     });
                 }
 
+                function showZeroInfo() {
+                    if (!zeroInfoEl) return;
+                    zeroInfoEl.textContent = 'Values trimmed by removing 6 trailing zeros ("000,000")';
+                    zeroInfoEl.style.display = 'block';
+                }
+
                 function formatNumber(val) {
                     if (val === undefined || val === null || val === '') return '';
                     const num = Number(val);
@@ -2007,18 +2014,21 @@
 
                             currentTicker = ticker;
                             currentSharePrice = await PortfolioManager.fetchQuote(ticker);
+                            showZeroInfo();
                             renderTable();
                         } else {
                             reports = [];
                             tableHead.innerHTML = '';
                             tableBody.innerHTML = '<tr><td>No data available</td></tr>';
                             tableContainer.style.display = 'block';
+                            if (zeroInfoEl) zeroInfoEl.style.display = 'none';
                         }
                     } catch (e) {
                         reports = [];
                         tableHead.innerHTML = '';
                         tableBody.innerHTML = '<tr><td>Failed to load data</td></tr>';
                         tableContainer.style.display = 'block';
+                        if (zeroInfoEl) zeroInfoEl.style.display = 'none';
                     }
                 }
 
