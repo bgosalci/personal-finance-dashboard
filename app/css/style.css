@@ -923,6 +923,12 @@
             white-space: nowrap;
         }
 
+        /* News Modal Container */
+        #news-content {
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
         /* News Modal Articles */
         #news-content article {
             margin-bottom: 1.5rem;
