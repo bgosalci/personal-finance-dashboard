@@ -2076,6 +2076,18 @@
                         return;
                     }
 
+                    const timeframe = timeframeSelect ? timeframeSelect.value : 'annual';
+                    let periodOffset = 1;
+                    if (timeframe === 'quarterly') {
+                        const counts = {};
+                        reports.forEach(r => {
+                            const yr = r.fiscal_year;
+                            if (yr) counts[yr] = (counts[yr] || 0) + 1;
+                        });
+                        const values = Object.values(counts);
+                        periodOffset = values.length ? Math.max(...values) : 4;
+                    }
+
                     orderedKeys.forEach(k => {
                         let label = k;
                         for (const r of reports) {
@@ -2092,9 +2104,7 @@
                                 const cls = value < 0 ? 'negative-num' : '';
                                 let cell = `<div class="fin-value ${cls}">${formatted}</div>`;
 
-                                const timeframe = timeframeSelect ? timeframeSelect.value : 'annual';
-                                const offset = timeframe === 'quarterly' ? 4 : 1;
-                                const prevIdx = idx - offset;
+                                const prevIdx = idx - periodOffset;
                                 let prevValue = null;
                                 if (prevIdx >= 0) {
                                     const prevItem = reports[prevIdx].financials && reports[prevIdx].financials[statementKey] ?
