@@ -2051,7 +2051,8 @@
                     reports.forEach(r => {
                         const yr = r.fiscal_year || '';
                         const period = r.fiscal_period || '';
-                        headerHtml += `<th>${yr} ${period}</th>`;
+                        const shortYr = yr ? yr.toString().slice(-2) : '';
+                        headerHtml += `<th>${shortYr} ${period}</th>`;
                     });
                     headerRow.innerHTML = headerHtml;
                     tableHead.appendChild(headerRow);
