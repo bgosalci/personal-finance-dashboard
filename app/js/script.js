@@ -2084,7 +2084,6 @@
                         }
                         const shortLabel = label.length > 20 ? label.slice(0,17) + '...' : label;
                         let rowHtml = `<td class="has-tooltip" data-tooltip="${label}">${shortLabel}</td>`;
-                        let prevVal = null;
                         reports.forEach((r, idx) => {
                             const item = r.financials && r.financials[statementKey] ? r.financials[statementKey][k] : undefined;
                             if (item && item.value !== undefined && item.value !== null) {
@@ -2092,18 +2091,30 @@
                                 const formatted = formatNumber(value);
                                 const cls = value < 0 ? 'negative-num' : '';
                                 let cell = `<div class="fin-value ${cls}">${formatted}</div>`;
-                                if (idx === 0 || prevVal === null || prevVal === 0) {
+
+                                const timeframe = timeframeSelect ? timeframeSelect.value : 'annual';
+                                const offset = timeframe === 'quarterly' ? 4 : 1;
+                                const prevIdx = idx - offset;
+                                let prevValue = null;
+                                if (prevIdx >= 0) {
+                                    const prevItem = reports[prevIdx].financials && reports[prevIdx].financials[statementKey] ?
+                                        reports[prevIdx].financials[statementKey][k] : undefined;
+                                    if (prevItem && prevItem.value !== undefined && prevItem.value !== null) {
+                                        prevValue = Number(prevItem.value);
+                                    }
+                                }
+
+                                if (prevValue === null || prevValue === 0) {
                                     cell += '<div class="fin-growth growth-neutral">---</div>';
                                 } else {
-                                    const diff = ((value - prevVal) / Math.abs(prevVal)) * 100;
+                                    const diff = ((value - prevValue) / Math.abs(prevValue)) * 100;
                                     const dcls = diff >= 0 ? 'growth-positive' : 'growth-negative';
                                     cell += `<div class="fin-growth ${dcls}">${diff >= 0 ? '+' : ''}${diff.toFixed(2)}%</div>`;
                                 }
+
                                 rowHtml += `<td>${cell}</td>`;
-                                prevVal = value;
                             } else {
                                 rowHtml += '<td></td>';
-                                prevVal = null;
                             }
                         });
                         const tr = document.createElement('tr');
