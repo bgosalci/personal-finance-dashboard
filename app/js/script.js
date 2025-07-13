@@ -1772,7 +1772,8 @@
 
             // Stock Finance Performance Module
             const StockFinance = (function() {
-                const API_KEY = 'hQmiS4FP5wJQrg8rX3gTMane2digQcLF';
+                // Finnhub API key for financial reports
+                const API_KEY = 'd1nf8h1r01qovv8iu2dgd1nf8h1r01qovv8iu2e0';
                 const tickerInput = document.getElementById('finance-ticker');
                 const dateInput = document.getElementById('finance-date');
                 const timeframeSelect = document.getElementById('finance-timeframe');
@@ -1901,28 +1902,56 @@
                     const date = dateInput.value;
                     const timeframe = timeframeSelect.value || 'annual';
                     if (!ticker || !date) return;
-                    const url = `https://api.polygon.io/vX/reference/financials?ticker=${encodeURIComponent(ticker)}&filing_date.gte=${date}&timeframe=${timeframe}&limit=4&apiKey=${API_KEY}`;
+                    const url = `https://finnhub.io/api/v1/stock/financials-reported?symbol=${encodeURIComponent(ticker)}&freq=${timeframe}&token=${API_KEY}`;
                     try {
                         const res = await fetch(url);
                         const data = await res.json();
-                        if (data && Array.isArray(data.results) && data.results.length > 0) {
-                            reports = data.results.sort((a, b) => new Date(a.filing_date) - new Date(b.filing_date));
+                        if (data && Array.isArray(data.data) && data.data.length > 0) {
+                            const startDate = new Date(date);
+                            reports = data.data
+                                .filter(r => {
+                                    const fd = new Date(r.filedDate || r.endDate || r.startDate);
+                                    return !isNaN(fd) && fd >= startDate;
+                                })
+                                .sort((a, b) => new Date(a.filedDate || a.endDate || a.startDate) - new Date(b.filedDate || b.endDate || b.startDate))
+                                .map(r => {
+                                    const fin = {
+                                        income_statement: {},
+                                        balance_sheet: {},
+                                        cash_flow_statement: {}
+                                    };
+                                    if (r.report) {
+                                        (r.report.ic || []).forEach(item => {
+                                            fin.income_statement[item.concept || item.label] = {
+                                                label: item.label,
+                                                value: item.value,
+                                                usd: item.unit
+                                            };
+                                        });
+                                        (r.report.bs || []).forEach(item => {
+                                            fin.balance_sheet[item.concept || item.label] = {
+                                                label: item.label,
+                                                value: item.value,
+                                                usd: item.unit
+                                            };
+                                        });
+                                        (r.report.cf || []).forEach(item => {
+                                            fin.cash_flow_statement[item.concept || item.label] = {
+                                                label: item.label,
+                                                value: item.value,
+                                                usd: item.unit
+                                            };
+                                        });
+                                    }
+                                    return {
+                                        fiscal_year: r.year,
+                                        fiscal_period: timeframe === 'annual' ? 'FY' : 'Q' + r.quarter,
+                                        financials: fin
+                                    };
+                                });
+
                             currentTicker = ticker;
                             currentSharePrice = await PortfolioManager.fetchQuote(ticker);
-                            if (currentSharePrice === null && reports.length > 0) {
-                                const r = reports[reports.length - 1];
-                                const marketCap = getValue(r, ['market_cap', 'market_data.market_cap']);
-                                const inc = r.financials ? r.financials.income_statement || {} : {};
-                                const shares = getValue(inc, [
-                                    'weighted_avg_diluted_shares_outstanding',
-                                    'weighted_avg_shares_outstanding_diluted',
-                                    'weighted_average_shares_outstanding_diluted',
-                                    'weighted_average_shares_outstanding_basic'
-                                ]);
-                                if (marketCap !== null && shares) {
-                                    currentSharePrice = marketCap / shares;
-                                }
-                            }
                             renderTable();
                         } else {
                             reports = [];
