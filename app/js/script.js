@@ -1785,37 +1785,83 @@
                 const tooltip = document.getElementById('tooltip');
 
                 const ORDER = {
-                    income: [
-                        'revenues',
-                        'cost_of_revenue',
-                        'gross_profit',
-                        'operating_expenses',
-                        'operating_income_loss',
-                        'income_loss_before_income_tax',
-                        'income_tax_expense_benefit',
-                        'net_income_loss'
+                    ic: [
+                        'Revenue',
+                        'Cost of revenue',
+                        'Gross profit',
+                        'Research and development',
+                        'Sales, general and administrative',
+                        'Acquisition termination cost',
+                        'Total operating expenses',
+                        'Operating income',
+                        'Interest income',
+                        'Interest income',
+                        'Other, net',
+                        'Other income (expense), net',
+                        'Income before income tax',
+                        'Income tax expense (benefit)',
+                        'Net income',
+                        'Basic (in USD per share)',
+                        'Diluted (in USD per share)',
+                        'Basic (in shares)',
+                        'Diluted (in shares)',
+                        'Net change in unrealized gain (loss)',
+                        'Reclassification adjustments for net realized gain included in net income',
+                        'Net change in unrealized gain (loss)',
+                        'Net change in unrealized gain',
+                        'Reclassification adjustments for net realized loss included in net income',
+                        'Net change in unrealized loss',
+                        'Other comprehensive income (loss), net of tax',
+                        'Total comprehensive income'
                     ],
-                    balance: [
-                        'cash_and_cash_equivalents',
-                        'short_term_investments',
-                        'net_receivables',
-                        'inventory',
-                        'total_current_assets',
-                        'property_plant_and_equipment_net',
-                        'total_assets',
-                        'accounts_payable',
-                        'short_term_debt',
-                        'total_current_liabilities',
-                        'long_term_debt',
-                        'total_liabilities',
-                        'total_shareholders_equity',
-                        'total_liabilities_and_shareholders_equity'
+                    bs: [
+                        'Cash and cash equivalents',
+                        'Marketable securities',
+                        'Accounts receivable, net',
+                        'Inventories',
+                        'Prepaid expenses and other current assets',
+                        'Total current assets',
+                        'Property and equipment, net',
+                        'Operating lease assets',
+                        'Goodwill',
+                        'Intangible assets, net',
+                        'Deferred income tax assets',
+                        'Other assets',
+                        'Total assets',
+                        'Accounts payable',
+                        'Accrued and other current liabilities',
+                        'Short-term debt',
+                        'Total current liabilities',
+                        'Long-term debt',
+                        'Long-term operating lease liabilities',
+                        'Other long-term liabilities',
+                        'Total liabilities',
+                        'Commitments and contingencies - see Note 12',
+                        'Preferred stock, $0.001 par value; 20 shares authorized; none issued'
                     ],
                     cash: [
-                        'net_cash_flow_operating',
-                        'net_cash_flow_investing',
-                        'net_cash_flow_financing',
-                        'net_cash_flow'
+                        'Acquisition termination cost',
+                        'Net income',
+                        'Stock-based compensation expense',
+                        'Depreciation and amortization',
+                        'Deferred income taxes',
+                        '(Gains) losses on non-marketable equity securities and publicly-held equity securities, net',
+                        'Other',
+                        'Accounts receivable',
+                        'Inventories',
+                        'Prepaid expenses and other assets',
+                        'Accounts payable',
+                        'Accrued and other current liabilities',
+                        'Other long-term liabilities',
+                        'Net cash provided by operating activities',
+                        'Proceeds from maturities of marketable securities',
+                        'Proceeds from sales of marketable securities',
+                        'Proceeds from sales of non-marketable equity securities',
+                        'Purchases of marketable securities',
+                        'Purchases related to property and equipment and intangible assets',
+                        'Purchases of non-marketable equity securities',
+                        'Acquisitions, net of cash acquired',
+                        'Other'
                     ]
                 };
 
@@ -1922,21 +1968,21 @@
                                     };
                                     if (r.report) {
                                         (r.report.ic || []).forEach(item => {
-                                            fin.income_statement[item.concept || item.label] = {
+                                            fin.income_statement[item.label] = {
                                                 label: item.label,
                                                 value: item.value,
                                                 usd: item.unit
                                             };
                                         });
                                         (r.report.bs || []).forEach(item => {
-                                            fin.balance_sheet[item.concept || item.label] = {
+                                            fin.balance_sheet[item.label] = {
                                                 label: item.label,
                                                 value: item.value,
                                                 usd: item.unit
                                             };
                                         });
                                         (r.report.cf || []).forEach(item => {
-                                            fin.cash_flow_statement[item.concept || item.label] = {
+                                            fin.cash_flow_statement[item.label] = {
                                                 label: item.label,
                                                 value: item.value,
                                                 usd: item.unit
@@ -1975,6 +2021,7 @@
                         balance: 'balance_sheet',
                         cash: 'cash_flow_statement'
                     };
+                    const orderMap = { income: 'ic', balance: 'bs', cash: 'cash' };
                     const statementKey = keyMap[currentSubTab];
 
                     tableHead.innerHTML = '';
@@ -1997,7 +2044,7 @@
                     });
 
                     const orderedKeys = Array.from(allKeys).sort((a, b) => {
-                        const order = ORDER[currentSubTab] || [];
+                        const order = ORDER[orderMap[currentSubTab]] || [];
                         const ia = order.indexOf(a);
                         const ib = order.indexOf(b);
                         if (ia === -1 && ib === -1) return a.localeCompare(b);
@@ -2073,20 +2120,19 @@
                     };
                     reports.forEach((r, idx) => {
                         const inc = r.financials ? r.financials.income_statement || {} : {};
-                        const revenue = getValue(inc, ['revenues']);
-                        const gross = getValue(inc, ['gross_profit']);
-                        const net = getValue(inc, ['net_income_loss']);
+                        const revenue = getValue(inc, ['Revenue']);
+                        const gross = getValue(inc, ['Gross profit']);
+                        const net = getValue(inc, ['Net income']);
                         const shares = getValue(inc, [
-                            'weighted_avg_diluted_shares_outstanding',
-                            'weighted_avg_shares_outstanding_diluted',
-                            'weighted_average_shares_outstanding_diluted',
-                            'weighted_average_shares_outstanding_basic'
+                            'Diluted (in shares)',
+                            'Basic (in shares)'
                         ]);
                         const sharePrice = currentSharePrice;
 
                         // Use diluted EPS when available
                         let eps = getValue(inc, [
-                            'diluted_earnings_per_share'
+                            'Diluted (in USD per share)',
+                            'Basic (in USD per share)'
                         ]);
                         if (eps === null && net !== null && shares) eps = net / shares;
                         const pe = (sharePrice !== null && eps !== null) ? sharePrice / eps : null;
