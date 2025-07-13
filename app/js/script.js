@@ -1949,7 +1949,7 @@
                     const timeframe = timeframeSelect.value || 'annual';
                     if (!ticker || !date) return;
                     const fromDate = new Date(date).toISOString().split('T')[0];
-                    const url = `https://finnhub.io/api/v1/stock/financials-reported?symbol=${encodeURIComponent(ticker)}&freq=${timeframe}&from=${fromDate}&token=${API_KEY}`;
+                    const url = `https://finnhub.io/api/v1/stock/financials-reported?symbol=${encodeURIComponent(ticker)}&freq=${timeframe}&from=${fromDate}&to=now&token=${API_KEY}`;
                     try {
                         const res = await fetch(url);
                         const data = await res.json();
