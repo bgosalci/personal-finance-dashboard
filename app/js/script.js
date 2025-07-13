@@ -1772,7 +1772,8 @@
 
             // Stock Finance Performance Module
             const StockFinance = (function() {
-                const API_KEY = 'hQmiS4FP5wJQrg8rX3gTMane2digQcLF';
+                // Finnhub API key for financial reports
+                const API_KEY = 'd1nf8h1r01qovv8iu2dgd1nf8h1r01qovv8iu2e0';
                 const tickerInput = document.getElementById('finance-ticker');
                 const dateInput = document.getElementById('finance-date');
                 const timeframeSelect = document.getElementById('finance-timeframe');
