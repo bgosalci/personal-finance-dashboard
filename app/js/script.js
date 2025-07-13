@@ -1906,7 +1906,14 @@
                     if (val === undefined || val === null || val === '') return '';
                     const num = Number(val);
                     if (isNaN(num)) return val;
-                    return num.toLocaleString('en-US');
+                    let formatted = num.toLocaleString('en-US');
+                    if (formatted.endsWith('000,000')) {
+                        formatted = formatted.slice(0, -8);
+                        if (formatted.endsWith(',')) {
+                            formatted = formatted.slice(0, -1);
+                        }
+                    }
+                    return formatted;
                 }
 
                 function getValue(obj, paths) {
