@@ -285,6 +285,10 @@
                 const historyModal = document.getElementById('transaction-history-modal');
                 const historyClose = document.getElementById('transaction-history-close');
                 const historyBody = document.getElementById('transaction-history-body');
+                const newsBtn = document.getElementById('news-btn');
+                const newsModal = document.getElementById('news-modal');
+                const newsClose = document.getElementById('news-close');
+                const newsContent = document.getElementById('news-content');
                 const API_KEY = 'd1nf8h1r01qovv8iu2dgd1nf8h1r01qovv8iu2e0';
 
                 async function fetchQuote(ticker) {
@@ -776,6 +780,51 @@
                     historyModal.style.display = 'none';
                 }
 
+                async function fetchNewsArticle(ticker) {
+                    const today = new Date();
+                    const to = today.toISOString().split('T')[0];
+                    const from = new Date(today.getTime() - 86400000).toISOString().split('T')[0];
+                    const url = `https://finnhub.io/api/v1/company-news?symbol=${encodeURIComponent(ticker)}&from=${from}&to=${to}&token=${API_KEY}`;
+                    try {
+                        const res = await fetch(url);
+                        const data = await res.json();
+                        if (Array.isArray(data) && data.length > 0) {
+                            return data[0];
+                        }
+                    } catch (e) {
+                        // ignore errors
+                    }
+                    return null;
+                }
+
+                async function openNewsModal() {
+                    newsContent.innerHTML = '<p>Loading...</p>';
+                    newsModal.style.display = 'flex';
+                    const tickers = [...new Set(investments.map(inv => inv.ticker))];
+                    const articles = await Promise.all(tickers.map(fetchNewsArticle));
+                    newsContent.innerHTML = '';
+                    articles.filter(a => a).forEach(article => {
+                        const art = document.createElement('article');
+                        const title = document.createElement('h3');
+                        title.textContent = article.headline;
+                        art.appendChild(title);
+                        if (article.image) {
+                            const img = document.createElement('img');
+                            img.src = article.image;
+                            img.alt = '';
+                            art.appendChild(img);
+                        }
+                        const text = document.createElement('p');
+                        text.textContent = article.summary;
+                        art.appendChild(text);
+                        newsContent.appendChild(art);
+                    });
+                }
+
+                function closeNewsModal() {
+                    newsModal.style.display = 'none';
+                }
+
                 function handleEditInput() {
                     const qty = parseFloat(document.getElementById('edit-quantity').value) || 0;
                     const price = parseFloat(document.getElementById('edit-last-price').value) || 0;
@@ -872,6 +921,10 @@
                     historyBtn.addEventListener('click', openHistoryModal);
                     historyClose.addEventListener('click', closeHistoryModal);
                     historyModal.addEventListener('click', (e) => { if (e.target === historyModal) closeHistoryModal(); });
+
+                    newsBtn.addEventListener('click', openNewsModal);
+                    newsClose.addEventListener('click', closeNewsModal);
+                    newsModal.addEventListener('click', (e) => { if (e.target === newsModal) closeNewsModal(); });
 
                     renderTable();
                 }

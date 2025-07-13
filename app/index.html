@@ -33,6 +33,7 @@
                     <span id="after-led" class="led-light led-red"></span>
                     <span id="after-session" class="market-session"></span>
                 </div>
+
             </div>
         </div>
     </header>
@@ -55,6 +56,7 @@
                         <button class="btn btn-primary" id="add-investment-btn">Add Investment</button>
                         <button class="btn btn-secondary" id="get-last-price-btn">Get The Last Price</button>
                         <button class="btn btn-secondary" id="transaction-history-btn">Transaction History</button>
+                        <button class="btn btn-secondary" id="news-btn">News</button>
                     </div>
                 </div>
                 <div class="table-container" id="portfolio-table-container">
@@ -207,6 +209,14 @@
                                 <tbody id="transaction-history-body"></tbody>
                             </table>
                         </div>
+                    </div>
+                </div>
+
+                <!-- News Modal -->
+                <div id="news-modal" class="modal">
+                    <div class="modal-content">
+                        <span class="modal-close" id="news-close">&times;</span>
+                        <div id="news-content" style="max-height: 60vh; overflow-y: auto;"></div>
                     </div>
                 </div>
             </div>

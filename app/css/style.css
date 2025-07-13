@@ -922,3 +922,20 @@
             z-index: 10000;
             white-space: nowrap;
         }
+
+        /* News Modal Articles */
+        #news-content article {
+            margin-bottom: 1.5rem;
+        }
+
+        #news-content h3 {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary-blue);
+        }
+
+        #news-content img {
+            max-width: 100%;
+            height: auto;
+            margin: 0.5rem 0;
+        }
