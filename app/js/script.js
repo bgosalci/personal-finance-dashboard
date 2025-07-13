@@ -780,7 +780,7 @@
                     historyModal.style.display = 'none';
                 }
 
-                async function fetchNewsArticle(ticker) {
+                async function fetchNewsArticles(ticker) {
                     const today = new Date();
                     const to = today.toISOString().split('T')[0];
                     const from = new Date(today.getTime() - 86400000).toISOString().split('T')[0];
@@ -788,22 +788,27 @@
                     try {
                         const res = await fetch(url);
                         const data = await res.json();
-                        if (Array.isArray(data) && data.length > 0) {
-                            return data[0];
+                        if (Array.isArray(data)) {
+                            return data;
                         }
                     } catch (e) {
                         // ignore errors
                     }
-                    return null;
+                    return [];
                 }
 
                 async function openNewsModal() {
                     newsContent.innerHTML = '<p>Loading...</p>';
                     newsModal.style.display = 'flex';
                     const tickers = [...new Set(investments.map(inv => inv.ticker))];
-                    const articles = await Promise.all(tickers.map(fetchNewsArticle));
+                    const results = await Promise.all(tickers.map(fetchNewsArticles));
+                    const articles = results.flat();
                     newsContent.innerHTML = '';
-                    articles.filter(a => a).forEach(article => {
+                    if (articles.length === 0) {
+                        newsContent.textContent = 'No news found.';
+                        return;
+                    }
+                    articles.forEach(article => {
                         const art = document.createElement('article');
                         const title = document.createElement('h3');
                         title.textContent = article.headline;
@@ -811,7 +816,7 @@
                         if (article.image) {
                             const img = document.createElement('img');
                             img.src = article.image;
-                            img.alt = '';
+                            img.alt = article.headline;
                             art.appendChild(img);
                         }
                         const text = document.createElement('p');
