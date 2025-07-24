@@ -51,10 +51,15 @@
             <div id="portfolio" class="tab-content active">
                 <div class="section-header">
                     <h2 class="section-title">Portfolio</h2>
-                    <div>
-                        <button class="btn btn-primary" id="add-investment-btn">Add Investment</button>
-                        <button class="btn btn-secondary" id="get-last-price-btn">Get The Last Price</button>
-                        <button class="btn btn-secondary" id="transaction-history-btn">Transaction History</button>
+                    <div class="portfolio-actions">
+                        <div id="portfolio-actions-menu" class="action-buttons">
+                            <button class="btn btn-primary" id="add-investment-btn">Add Investment</button>
+                            <button class="btn btn-secondary" id="get-last-price-btn">Get The Last Price</button>
+                            <button class="btn btn-secondary" id="transaction-history-btn">Transaction History</button>
+                        </div>
+                        <button class="icon-btn menu-toggle" id="portfolio-menu-toggle" aria-label="More actions">
+                            <ion-icon name="ellipsis-vertical"></ion-icon>
+                        </button>
                     </div>
                 </div>
                 <div class="table-container" id="portfolio-table-container">
