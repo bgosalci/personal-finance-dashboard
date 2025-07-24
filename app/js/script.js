@@ -877,7 +877,15 @@
 
                     menuToggle.addEventListener('click', (e) => {
                         e.stopPropagation();
-                        actionsMenu.classList.toggle('open');
+                        const expanded = actionsMenu.classList.toggle('open');
+                        menuToggle.setAttribute('aria-expanded', expanded);
+                    });
+
+                    actionsMenu.addEventListener('click', (e) => {
+                        if (e.target.closest('button')) {
+                            actionsMenu.classList.remove('open');
+                            menuToggle.setAttribute('aria-expanded', 'false');
+                        }
                     });
 
                     document.addEventListener('click', (e) => {
@@ -885,6 +893,7 @@
                             !actionsMenu.contains(e.target) &&
                             e.target !== menuToggle) {
                             actionsMenu.classList.remove('open');
+                            menuToggle.setAttribute('aria-expanded', 'false');
                         }
                     });
 

@@ -765,6 +765,7 @@
         }
 
         .action-buttons {
+            display: none;
             position: absolute;
             top: 100%;
             right: 0;
