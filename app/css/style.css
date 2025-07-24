@@ -966,4 +966,15 @@
             pointer-events: none;
             z-index: 10000;
             white-space: nowrap;
+}
+
+        /* Hide portfolio menu toggle on large screens */
+        .icon-btn.menu-toggle {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .icon-btn.menu-toggle {
+                display: inline-flex;
+            }
         }
