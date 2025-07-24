@@ -183,6 +183,22 @@
             margin-bottom: 1.5rem;
         }
 
+        .portfolio-actions {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .menu-toggle {
+            display: none;
+        }
+
         .price-input[readonly] {
             border: none;
             background: transparent;
@@ -746,6 +762,29 @@
             text-decoration: underline;
             padding: 0.25rem 0.5rem;
             font-size: 1rem;
+        }
+
+        .action-buttons {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: var(--background-primary);
+            flex-direction: column;
+            padding: 0.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            width: max-content;
+            z-index: 100;
+        }
+
+        .action-buttons.open {
+            display: flex;
+        }
+
+        .menu-toggle {
+            display: inline-flex;
         }
 
         }

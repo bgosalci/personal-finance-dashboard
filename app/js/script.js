@@ -285,6 +285,8 @@
                 const historyModal = document.getElementById('transaction-history-modal');
                 const historyClose = document.getElementById('transaction-history-close');
                 const historyBody = document.getElementById('transaction-history-body');
+                const menuToggle = document.getElementById('portfolio-menu-toggle');
+                const actionsMenu = document.getElementById('portfolio-actions-menu');
                 const API_KEY = 'd1nf8h1r01qovv8iu2dgd1nf8h1r01qovv8iu2e0';
 
                 async function fetchQuote(ticker) {
@@ -872,6 +874,28 @@
                     historyBtn.addEventListener('click', openHistoryModal);
                     historyClose.addEventListener('click', closeHistoryModal);
                     historyModal.addEventListener('click', (e) => { if (e.target === historyModal) closeHistoryModal(); });
+
+                    menuToggle.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const expanded = actionsMenu.classList.toggle('open');
+                        menuToggle.setAttribute('aria-expanded', expanded);
+                    });
+
+                    actionsMenu.addEventListener('click', (e) => {
+                        if (e.target.closest('button')) {
+                            actionsMenu.classList.remove('open');
+                            menuToggle.setAttribute('aria-expanded', 'false');
+                        }
+                    });
+
+                    document.addEventListener('click', (e) => {
+                        if (actionsMenu.classList.contains('open') &&
+                            !actionsMenu.contains(e.target) &&
+                            e.target !== menuToggle) {
+                            actionsMenu.classList.remove('open');
+                            menuToggle.setAttribute('aria-expanded', 'false');
+                        }
+                    });
 
                     renderTable();
                 }
