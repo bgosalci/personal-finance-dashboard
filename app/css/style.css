@@ -971,10 +971,12 @@
         /* Hide portfolio menu toggle on large screens */
         .icon-btn.menu-toggle {
             display: none;
+            color: var(--primary-blue-dark);
         }
 
         @media (max-width: 768px) {
             .icon-btn.menu-toggle {
                 display: inline-flex;
+                color: var(--primary-blue-dark);
             }
         }
