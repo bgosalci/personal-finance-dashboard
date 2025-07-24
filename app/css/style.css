@@ -971,12 +971,14 @@
         /* Hide portfolio menu toggle on large screens */
         .icon-btn.menu-toggle {
             display: none;
-            color: var(--primary-blue-dark);
+            border: 1px solid var(--primary-blue-dark);
+            color: white;
         }
 
         @media (max-width: 768px) {
             .icon-btn.menu-toggle {
                 display: inline-flex;
-                color: var(--primary-blue-dark);
+                border: 1px solid var(--primary-blue-dark);
+                color: white;
             }
         }
