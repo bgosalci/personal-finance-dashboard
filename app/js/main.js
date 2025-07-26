@@ -2,6 +2,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     FinancialDashboard.init();
     MarketStatus.init();
+    PriceUpdater.init();
 
     const header = document.querySelector('.header');
     const nav = document.querySelector('.nav-tabs');

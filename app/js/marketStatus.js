@@ -9,6 +9,7 @@ const MarketStatus = (function() {
     const afterLedEl = document.getElementById('after-led');
     const afterSessionEl = document.getElementById('after-session');
     let timer = null;
+    let marketOpen = false;
 
     async function update() {
         if (!ledEl) return;
@@ -19,6 +20,7 @@ const MarketStatus = (function() {
             const isOpen = data && data.market === 'open';
             const earlyOpen = data && data.earlyHours === true;
             const afterOpen = data && data.afterHours === true;
+            marketOpen = !!isOpen;
             ledEl.classList.toggle('led-green', isOpen);
             ledEl.classList.toggle('led-red', !isOpen);
             if (earlyLedEl) {
@@ -51,12 +53,16 @@ const MarketStatus = (function() {
 
     function start() {
         update();
-        timer = setInterval(update, 300000); // 5 minutes
+        timer = setInterval(update, 60000); // 1 minute
+    }
+
+    function isMarketOpen() {
+        return marketOpen;
     }
 
     function init() {
         start();
     }
 
-    return { init };
+    return { init, isMarketOpen };
 })();
