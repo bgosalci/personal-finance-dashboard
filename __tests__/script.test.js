@@ -8,8 +8,20 @@ test('FinancialDashboard global object exists with init and removeTicker', () =>
   // prevent automatic init on DOMContentLoaded
   dom.window.document.addEventListener = () => {};
   const context = vm.createContext(dom.window);
-  const scriptContent = fs.readFileSync(path.resolve(__dirname, '../app/js/script.js'), 'utf8');
-  vm.runInContext(scriptContent, context);
+  [
+    'dialogManager.js',
+    'tabManager.js',
+    'portfolioStorage.js',
+    'portfolioManager.js',
+    'calculator.js',
+    'stockTracker.js',
+    'stockFinance.js',
+    'financialDashboard.js',
+    'marketStatus.js'
+  ].forEach(file => {
+    const content = fs.readFileSync(path.resolve(__dirname, `../app/js/${file}`), 'utf8');
+    vm.runInContext(content, context);
+  });
   const fd = vm.runInContext('FinancialDashboard', context);
   expect(fd).toBeDefined();
   expect(typeof fd.init).toBe('function');
