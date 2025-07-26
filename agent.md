@@ -59,6 +59,7 @@ const ModuleName = (function() {
 - Encapsulates private functionality
 - Creates clear module boundaries
 - Enables dependency management
+- **Modular Files**: Each IIFE module resides in its own JavaScript file under `app/js/`.
 
 ### Core Modules Structure
 
@@ -250,16 +251,17 @@ describe('PortfolioManager', () => {
         dom = new JSDOM('<!DOCTYPE html><html><body></body></html>');
         window = dom.window;
         
-        // Load and execute script
-        const script = fs.readFileSync(
-            path.resolve(__dirname, '../app/js/script.js'), 
-            'utf8'
-        );
-        
-        // Execute in context
+        // Load and execute all modules
         const context = vm.createContext(window);
-        vm.runInContext(script, context);
-        PortfolioManager = context.FinancialDashboard.PortfolioManager;
+        ['dialogManager.js', 'tabManager.js', 'portfolioStorage.js',
+         'portfolioManager.js', 'calculator.js', 'stockTracker.js',
+         'stockFinance.js', 'financialDashboard.js', 'marketStatus.js']
+          .forEach(file => {
+            const content = fs.readFileSync(
+                path.resolve(__dirname, `../app/js/${file}`), 'utf8');
+            vm.runInContext(content, context);
+          });
+        PortfolioManager = context.PortfolioManager;
     });
     
     test('should calculate total portfolio value correctly', () => {

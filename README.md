@@ -98,7 +98,7 @@ For contributors and developers:
 
 3. **Development workflow**:
    - Edit `app/index.html` for UI changes
-   - Modify `app/js/script.js` for functionality
+   - Modify the modules in `app/js/` for functionality
    - Update `app/css/style.css` for styling
    - Test changes by refreshing the browser
 
@@ -132,7 +132,16 @@ personal-finance-dashboard/
 │   ├── css/
 │   │   └── style.css              # Application styles
 │   └── js/
-│       ├── script.js              # Core application logic
+│       ├── dialogManager.js      # Dialog utilities
+│       ├── tabManager.js         # Tab navigation logic
+│       ├── portfolioStorage.js   # Portfolio data persistence
+│       ├── portfolioManager.js   # Portfolio calculations
+│       ├── calculator.js         # Financial calculators
+│       ├── stockTracker.js       # Stock performance tracker
+│       ├── stockFinance.js       # Financial statements
+│       ├── financialDashboard.js # Main application controller
+│       ├── marketStatus.js       # Market status indicator
+│       ├── main.js               # App initialization
 │       ├── chart.umd.js           # Chart.js library
 │       ├── storageManager.js      # Data persistence utilities
 │       ├── jest.config.js         # Jest testing configuration
