@@ -141,6 +141,12 @@ Creates a Chart.js chart for portfolio visualization.
 
 **Returns:** `Chart` - Chart.js instance
 
+##### `fetchLastPrices()`
+Fetches the latest price for each unique ticker in the portfolio.
+
+**Returns:** `Promise<void>`
+
+
 ---
 
 ### Calculator

@@ -538,18 +538,30 @@ const PortfolioManager = (function() {
 
     async function fetchLastPrices() {
         if (investments.length === 0) return;
-        const updates = investments.map(inv => {
-            const url = `https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(inv.ticker)}&token=${API_KEY}`;
+
+        const priceMap = {};
+        const tickers = Array.from(new Set(investments.map(inv => inv.ticker)));
+
+        const fetches = tickers.map(ticker => {
+            const url = `https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(ticker)}&token=${API_KEY}`;
             return fetch(url)
                 .then(res => res.json())
                 .then(data => {
                     if (data && typeof data.c === 'number') {
-                        inv.lastPrice = parseFloat(data.c);
+                        priceMap[ticker] = parseFloat(data.c);
                     }
                 })
                 .catch(() => {});
         });
-        await Promise.all(updates);
+
+        await Promise.all(fetches);
+
+        investments.forEach(inv => {
+            if (priceMap[inv.ticker] !== undefined) {
+                inv.lastPrice = priceMap[inv.ticker];
+            }
+        });
+
         saveData();
         renderTable();
     }
@@ -652,5 +664,5 @@ const PortfolioManager = (function() {
         renderTable();
     }
 
-    return { init, fetchQuote };
+    return { init, fetchQuote, fetchLastPrices };
 })();
