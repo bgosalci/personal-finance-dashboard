@@ -500,3 +500,8 @@ const CONFIG = {
 ### Customization Options
 
 Users can customize various aspects of the application through the settings interface or by modifying the configuration object.
+
+## Latest Changes
+- Expanded to cover newly modularized functions.
+- Updated `.gitignore` prevents test artifacts from being committed.
+- For more details, see [RULES.md](RULES.md).

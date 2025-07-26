@@ -311,3 +311,8 @@ A: Each browser stores its own data. Different users would need separate browser
 
 **Q: How often should I update my data?**
 A: Update investment prices weekly or monthly for accurate tracking. More frequent updates provide better insights.
+
+## Latest Changes
+- Interface scripts reorganized into modules.
+- `.gitignore` now excludes Node dependencies.
+- Review [RULES.md](RULES.md) before contributing.
