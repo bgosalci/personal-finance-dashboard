@@ -8,6 +8,7 @@ This file outlines basic rules and coding standards for the Personal Finance Das
 - Run `npm install` inside `app/js` before running tests.
 - Keep documentation up to date with code changes.
 - Respect the `.gitignore` settings; do not commit dependencies or local build artifacts.
+- Use the built-in `DialogManager` for all alerts, prompts, and confirmation dialogs.
 
 ## Community Standards
 - Be respectful and collaborative.
