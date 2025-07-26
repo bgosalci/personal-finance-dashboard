@@ -1,5 +1,9 @@
 const PortfolioManager = (function() {
-    const STORAGE_KEY = 'portfolioData';
+    const PORTFOLIO_LIST_KEY = 'portfolioList';
+    const STORAGE_PREFIX = 'portfolioData_';
+    let portfolios = [];
+    let currentPortfolioId = null;
+    let summaryMode = false;
     let investments = [];
     let pieChart = null;
     let barChart = null;
@@ -16,6 +20,9 @@ const PortfolioManager = (function() {
 
     const addBtn = document.getElementById('add-investment-btn');
     const getPriceBtn = document.getElementById('get-last-price-btn');
+    const addPortfolioBtn = document.getElementById('add-portfolio-btn');
+    const removePortfolioBtn = document.getElementById('remove-portfolio-btn');
+    const portfolioTabs = document.getElementById('portfolio-tabs');
     const modal = document.getElementById('investment-modal');
     const form = document.getElementById('investment-form');
     const tickerInput = document.getElementById('investment-ticker');
@@ -72,33 +79,70 @@ const PortfolioManager = (function() {
         return null;
     }
 
+    function getStorageKey(id) {
+        return STORAGE_PREFIX + id;
+    }
+
+    function loadPortfolioList() {
+        const list = localStorage.getItem(PORTFOLIO_LIST_KEY);
+        if (list) {
+            try { portfolios = JSON.parse(list) || []; } catch (e) { portfolios = []; }
+        }
+        if (portfolios.length === 0) {
+            portfolios = [{ id: 'pf1', name: 'Portfolio 1' }];
+            const legacy = localStorage.getItem('portfolioData');
+            if (legacy) {
+                localStorage.setItem(getStorageKey('pf1'), legacy);
+                localStorage.removeItem('portfolioData');
+            }
+            savePortfolioList();
+        }
+        currentPortfolioId = portfolios[0].id;
+    }
+
+    function savePortfolioList() {
+        localStorage.setItem(PORTFOLIO_LIST_KEY, JSON.stringify(portfolios));
+    }
+
     function loadData() {
-        const data = localStorage.getItem(STORAGE_KEY);
-        if (data) {
-            try {
-                investments = JSON.parse(data) || [];
-                let migrated = false;
-                investments.forEach(inv => {
-                    if (inv.purchasePrice === undefined && inv.avgPrice !== undefined) {
-                        inv.purchasePrice = inv.avgPrice;
-                        delete inv.avgPrice;
-                        migrated = true;
-                    }
-                    if (!inv.tradeDate && inv.purchaseDate) {
-                        inv.tradeDate = inv.purchaseDate;
-                        delete inv.purchaseDate;
-                        migrated = true;
-                    }
-                    if (!inv.tradeDate) {
-                        inv.tradeDate = new Date().toISOString().split('T')[0];
-                        migrated = true;
-                    }
-                });
-                if (migrated) {
-                    localStorage.setItem(STORAGE_KEY, JSON.stringify(investments));
+        if (summaryMode) {
+            investments = [];
+            portfolios.forEach(p => {
+                const data = localStorage.getItem(getStorageKey(p.id));
+                if (data) {
+                    try { investments = investments.concat(JSON.parse(data) || []); } catch (e) {}
                 }
-            } catch (e) {
+            });
+        } else {
+            const data = localStorage.getItem(getStorageKey(currentPortfolioId));
+            if (data) {
+                try {
+                    investments = JSON.parse(data) || [];
+                } catch (e) {
+                    investments = [];
+                }
+            } else {
                 investments = [];
+            }
+            let migrated = false;
+            investments.forEach(inv => {
+                if (inv.purchasePrice === undefined && inv.avgPrice !== undefined) {
+                    inv.purchasePrice = inv.avgPrice;
+                    delete inv.avgPrice;
+                    migrated = true;
+                }
+                if (!inv.tradeDate && inv.purchaseDate) {
+                    inv.tradeDate = inv.purchaseDate;
+                    delete inv.purchaseDate;
+                    migrated = true;
+                }
+                if (!inv.tradeDate) {
+                    inv.tradeDate = new Date().toISOString().split('T')[0];
+                    migrated = true;
+                }
+            });
+            if (migrated && !summaryMode) {
+                localStorage.setItem(getStorageKey(currentPortfolioId), JSON.stringify(investments));
             }
         }
         const colorData = localStorage.getItem(COLOR_KEY);
@@ -119,7 +163,8 @@ const PortfolioManager = (function() {
     }
 
     function saveData() {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(investments));
+        if (summaryMode) return;
+        localStorage.setItem(getStorageKey(currentPortfolioId), JSON.stringify(investments));
         localStorage.setItem(COLOR_KEY, JSON.stringify(tickerColors));
     }
 
@@ -162,6 +207,59 @@ const PortfolioManager = (function() {
     function getColor(ticker) {
         assignColor(ticker);
         return tickerColors[ticker];
+    }
+
+    function renderPortfolioTabs() {
+        if (!portfolioTabs) return;
+        portfolioTabs.innerHTML = '';
+        const summaryTab = document.createElement('button');
+        summaryTab.className = 'sub-nav-tab' + (summaryMode ? ' active' : '');
+        summaryTab.textContent = 'Summary';
+        summaryTab.dataset.id = 'summary';
+        portfolioTabs.appendChild(summaryTab);
+        portfolios.forEach(p => {
+            const btn = document.createElement('button');
+            btn.className = 'sub-nav-tab' + (!summaryMode && p.id === currentPortfolioId ? ' active' : '');
+            btn.textContent = p.name;
+            btn.dataset.id = p.id;
+            portfolioTabs.appendChild(btn);
+        });
+    }
+
+    function switchPortfolio(id) {
+        summaryMode = (id === 'summary');
+        if (!summaryMode) currentPortfolioId = id;
+        loadData();
+        renderPortfolioTabs();
+        renderTable();
+        removePortfolioBtn.style.display = summaryMode ? 'none' : 'inline-flex';
+        addBtn.style.display = summaryMode ? 'none' : 'inline-flex';
+        getPriceBtn.style.display = summaryMode ? 'none' : 'inline-flex';
+    }
+
+    function addPortfolio() {
+        const name = prompt('Portfolio name?');
+        if (!name) return;
+        const id = 'pf' + Date.now();
+        portfolios.push({ id, name });
+        savePortfolioList();
+        localStorage.setItem(getStorageKey(id), '[]');
+        switchPortfolio(id);
+    }
+
+    async function removePortfolio() {
+        if (summaryMode) return;
+        if (portfolios.length <= 1) return;
+        const confirmed = await DialogManager.confirm('Delete this portfolio?', 'Delete');
+        if (!confirmed) return;
+        const idx = portfolios.findIndex(p => p.id === currentPortfolioId);
+        if (idx !== -1) {
+            localStorage.removeItem(getStorageKey(currentPortfolioId));
+            portfolios.splice(idx, 1);
+            savePortfolioList();
+            const next = portfolios[idx] || portfolios[idx-1];
+            switchPortfolio(next.id);
+        }
     }
 
     function updateCharts() {
@@ -345,7 +443,7 @@ const PortfolioManager = (function() {
         investments.splice(targetIndex, 0, item);
         dragStartIndex = null;
         saveData();
-        renderTable();
+        switchPortfolio(currentPortfolioId);
     }
 
     function handleDragEnd() {
@@ -360,6 +458,7 @@ const PortfolioManager = (function() {
     }
 
     function openModal() {
+        if (summaryMode) return;
         form.reset();
         tickerValid = false;
         totalDisplay.textContent = formatCurrency(0);
@@ -411,6 +510,7 @@ const PortfolioManager = (function() {
     }
 
     function addFromForm(resetAfter) {
+        if (summaryMode) return;
         const ticker = document.getElementById('investment-ticker').value.trim().toUpperCase();
         const name = document.getElementById('investment-name').value.trim();
         const quantity = parseFloat(document.getElementById('investment-quantity').value) || 0;
@@ -465,6 +565,7 @@ const PortfolioManager = (function() {
     }
 
     function openEditModal(index) {
+        if (summaryMode) return;
         const ticker = investments[index].ticker;
         const matches = [];
         investments.forEach((inv, idx) => {
@@ -568,6 +669,7 @@ const PortfolioManager = (function() {
 
     function saveEdit(e) {
         e.preventDefault();
+        if (summaryMode) return;
         if (editIndex === null) return;
         const name = document.getElementById('edit-name').value || '';
         const qty = parseFloat(document.getElementById('edit-quantity').value) || 0;
@@ -594,6 +696,7 @@ const PortfolioManager = (function() {
     }
 
     async function handleRowAction(e) {
+        if (summaryMode) return;
         const btn = e.target.closest('button');
         if (!btn) return;
         if (btn.classList.contains('edit-btn')) {
@@ -615,7 +718,20 @@ const PortfolioManager = (function() {
     }
 
     function init() {
+        loadPortfolioList();
+        summaryMode = false;
         loadData();
+        renderPortfolioTabs();
+        if (portfolioTabs) {
+            portfolioTabs.addEventListener('click', (e) => {
+                const btn = e.target.closest('button');
+                if (btn && btn.dataset.id) {
+                    switchPortfolio(btn.dataset.id);
+                }
+            });
+        }
+        addPortfolioBtn.addEventListener('click', addPortfolio);
+        removePortfolioBtn.addEventListener('click', removePortfolio);
         addBtn.addEventListener('click', openModal);
         getPriceBtn.addEventListener('click', fetchLastPrices);
         closeBtn.addEventListener('click', closeModal);
@@ -661,7 +777,7 @@ const PortfolioManager = (function() {
             }
         });
 
-        renderTable();
+        switchPortfolio(currentPortfolioId);
     }
 
     return { init, fetchQuote, fetchLastPrices };
