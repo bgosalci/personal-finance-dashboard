@@ -237,8 +237,8 @@ const PortfolioManager = (function() {
         getPriceBtn.style.display = summaryMode ? 'none' : 'inline-flex';
     }
 
-    function addPortfolio() {
-        const name = prompt('Portfolio name?');
+    async function addPortfolio() {
+        const name = await DialogManager.prompt('Enter portfolio name:', '');
         if (!name) return;
         const id = 'pf' + Date.now();
         portfolios.push({ id, name });

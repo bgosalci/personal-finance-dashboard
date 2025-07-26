@@ -16,6 +16,7 @@ The Personal Finance Dashboard is designed as a single HTML file application tha
 ## Features
 
 ### 📊 Portfolio Management
+- Manage multiple portfolios with a combined summary view
 - Add, edit, and delete investment positions with detailed tracking
 - Real-time profit/loss calculations with percentage gains/losses
 - Interactive charts showing portfolio allocation and performance
@@ -106,10 +107,11 @@ For contributors and developers:
 
 ### Portfolio Management
 1. Navigate to the "Portfolio" tab
-2. Click "Add Investment" to create new positions
-3. Enter stock symbol, quantity, and purchase price
-4. Adding a ticker that already exists prompts you to combine the positions
-5. View real-time calculations and charts
+2. Use "Add Portfolio" to create additional portfolios as needed
+3. Click "Add Investment" to create new positions within the selected portfolio
+4. Enter stock symbol, quantity, and purchase price
+5. Adding a ticker that already exists prompts you to combine the positions
+6. View real-time calculations and charts
 
 ### Using Calculators
 1. Go to the "Calculators" tab
