@@ -598,3 +598,8 @@ For offline use:
 - Update documentation
 
 This development guide should help you understand the codebase structure, development patterns, and best practices for maintaining and extending the Personal Finance Dashboard application.
+
+## Latest Changes
+- JavaScript modules refactored across `app/js`.
+- `.gitignore` updated to ignore Node modules and coverage files.
+- Additional rules available in [RULES.md](RULES.md).

@@ -292,3 +292,8 @@ This project is open source and available under the MIT License.
 - **Chart.js** - For beautiful, responsive charts
 - **Ionicons** - For consistent iconography
 - **Jest & JSDOM** - For reliable testing infrastructure
+
+## Latest Changes
+- JavaScript modules refactored for maintainability.
+- Updated `.gitignore` to exclude dependencies and build artifacts.
+- See [RULES.md](RULES.md) for contribution guidelines.
