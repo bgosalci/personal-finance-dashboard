@@ -53,7 +53,7 @@ const MarketStatus = (function() {
 
     function start() {
         update();
-        timer = setInterval(update, 300000); // 5 minutes
+        timer = setInterval(update, 60000); // 1 minute
     }
 
     function isMarketOpen() {
