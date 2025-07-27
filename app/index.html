@@ -239,9 +239,85 @@
 
             <!-- Pension Tab -->
             <div id="pension" class="tab-content">
-                <div class="placeholder-content">
-                    <h3>Pension Planning</h3>
-                    <p>Monitor your retirement savings and pension contributions. This section will include current pension value tracking, contribution monitoring, and retirement projection calculations.</p>
+                <div class="section-header">
+                    <h2 class="section-title">Pension</h2>
+                    <div class="pension-actions">
+                        <button class="btn btn-primary" id="add-pension-entry-btn">Add Entry</button>
+                        <button class="btn btn-secondary" id="add-pension-btn">Add Pension</button>
+                        <button class="btn btn-secondary" id="remove-pension-btn">Remove Pension</button>
+                    </div>
+                </div>
+                <div id="pension-tabs" class="sub-nav-tabs"></div>
+                <div class="table-container">
+                    <table class="data-table" id="pension-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th class="payment-col" style="display:none;">Payment</th>
+                                <th>Current Value</th>
+                                <th>Monthly P&amp;L</th>
+                                <th>Monthly %</th>
+                                <th>YTD P&amp;L</th>
+                                <th>YTD %</th>
+                                <th>Total P&amp;L</th>
+                                <th>Total %</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pension-body"></tbody>
+                    </table>
+                </div>
+
+                <!-- New Pension Modal -->
+                <div id="new-pension-modal" class="modal">
+                    <div class="modal-content">
+                        <h3>New Pension</h3>
+                        <form id="new-pension-form">
+                            <div class="form-group">
+                                <label for="pension-name">Name</label>
+                                <input type="text" id="pension-name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="pension-type">Type</label>
+                                <select id="pension-type">
+                                    <option value="growth">Growth Only</option>
+                                    <option value="payments">Growth with Payments</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="pension-start-value">Starting Value</label>
+                                <input type="number" step="0.01" id="pension-start-value" required>
+                            </div>
+                            <div class="modal-actions">
+                                <button type="button" class="btn btn-secondary" id="cancel-new-pension">Cancel</button>
+                                <button type="submit" class="btn btn-primary">Add</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Pension Entry Modal -->
+                <div id="pension-entry-modal" class="modal">
+                    <div class="modal-content">
+                        <h3>Add Entry</h3>
+                        <form id="pension-entry-form">
+                            <div class="form-group">
+                                <label for="pension-entry-date">Date</label>
+                                <input type="date" id="pension-entry-date" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="pension-entry-value">Current Value</label>
+                                <input type="number" step="0.01" id="pension-entry-value" required>
+                            </div>
+                            <div class="form-group" id="payment-group">
+                                <label for="pension-entry-payment">Payment</label>
+                                <input type="number" step="0.01" id="pension-entry-payment">
+                            </div>
+                            <div class="modal-actions">
+                                <button type="button" class="btn btn-secondary" id="cancel-pension-entry">Cancel</button>
+                                <button type="submit" class="btn btn-primary">Add</button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
 
@@ -666,6 +742,7 @@
     <script src="js/tabManager.js"></script>
     <script src="js/portfolioStorage.js"></script>
     <script src="js/portfolioManager.js"></script>
+    <script src="js/pensionManager.js"></script>
     <script src="js/calculator.js"></script>
     <script src="js/stockTracker.js"></script>
     <script src="js/stockFinance.js"></script>

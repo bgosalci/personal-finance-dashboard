@@ -13,6 +13,7 @@ test('FinancialDashboard global object exists with init and removeTicker', () =>
     'tabManager.js',
     'portfolioStorage.js',
     'portfolioManager.js',
+    'pensionManager.js',
     'calculator.js',
     'stockTracker.js',
     'stockFinance.js',

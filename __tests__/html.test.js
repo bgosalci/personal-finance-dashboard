@@ -78,3 +78,14 @@ test('portfolio table shows totals row', () => {
   expect(row).not.toBeNull();
   expect(value).not.toBeNull();
 });
+
+test('pension tab contains entry table', () => {
+  const htmlPath = path.resolve(__dirname, '../app/index.html');
+  const html = fs.readFileSync(htmlPath, 'utf8');
+  const dom = new JSDOM(html);
+  const doc = dom.window.document;
+  const table = doc.getElementById('pension-table');
+  const nameInput = doc.getElementById('pension-name');
+  expect(table).not.toBeNull();
+  expect(nameInput).not.toBeNull();
+});
