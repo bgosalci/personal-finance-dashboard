@@ -67,3 +67,14 @@ test('settings tab contains base currency select', () => {
   const options = Array.from(select.querySelectorAll('option')).map(o => o.value);
   expect(options).toEqual(['USD', 'GBP', 'EUR']);
 });
+
+test('portfolio table includes base totals row', () => {
+  const htmlPath = path.resolve(__dirname, '../app/index.html');
+  const html = fs.readFileSync(htmlPath, 'utf8');
+  const dom = new JSDOM(html);
+  const doc = dom.window.document;
+  const row = doc.getElementById('portfolio-base-total-row');
+  const value = doc.getElementById('portfolio-base-total-value');
+  expect(row).not.toBeNull();
+  expect(value).not.toBeNull();
+});
