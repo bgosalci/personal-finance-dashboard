@@ -282,14 +282,6 @@ const PensionManager = (function() {
         return new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(val);
     }
 
-    function convertCurrency(value, from, to, rates) {
-        if (!rates || from === to) return value;
-        const fromRate = rates[from];
-        const toRate = rates[to];
-        if (!fromRate || !toRate) return value;
-        const usdValue = value / fromRate;
-        return usdValue * toRate;
-    }
 
     function computeStats() {
         const current = summaryMode ? summaryInfo : pensions.find(p => p.id === currentPensionId);
@@ -333,8 +325,6 @@ const PensionManager = (function() {
         tbody.innerHTML = '';
         const stats = computeStats();
         const baseCurrency = Settings.getBaseCurrency ? Settings.getBaseCurrency() : 'USD';
-        const ratesData = await ForexData.getRates();
-        const rates = ratesData && ratesData.conversion_rates ? ratesData.conversion_rates : null;
         if (baseCurrencyLabel) baseCurrencyLabel.textContent = baseCurrency;
         if (paymentCurrencyLabel) paymentCurrencyLabel.textContent = baseCurrency;
         stats.forEach(st => {
@@ -349,11 +339,11 @@ const PensionManager = (function() {
             const ytdPctClass = st.ytdPLPct > 0 ? 'growth-positive' : st.ytdPLPct < 0 ? 'growth-negative' : '';
             const totalPctClass = st.totalPLPct > 0 ? 'growth-positive' : st.totalPLPct < 0 ? 'growth-negative' : '';
 
-            const paymentVal = convertCurrency(st.payment || 0, 'USD', baseCurrency, rates);
-            const valueVal = convertCurrency(st.value, 'USD', baseCurrency, rates);
-            const monthlyVal = convertCurrency(st.monthlyPL, 'USD', baseCurrency, rates);
-            const ytdVal = convertCurrency(st.ytdPL, 'USD', baseCurrency, rates);
-            const totalVal = convertCurrency(st.totalPL, 'USD', baseCurrency, rates);
+            const paymentVal = st.payment || 0;
+            const valueVal = st.value;
+            const monthlyVal = st.monthlyPL;
+            const ytdVal = st.ytdPL;
+            const totalVal = st.totalPL;
 
             const type = summaryMode ? summaryInfo.type : pensions.find(p=>p.id===currentPensionId).type;
             row.innerHTML = `
