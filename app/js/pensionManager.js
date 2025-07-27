@@ -486,5 +486,19 @@ const PensionManager = (function() {
         }
     }
 
-    return { init, exportData, importData };
+    function deleteAllData() {
+        pensions.forEach(p => {
+            localStorage.removeItem(getStorageKey(p.id));
+        });
+        localStorage.removeItem(LIST_KEY);
+        pensions = [];
+        entries = [];
+        loadPensionList();
+        loadEntries();
+        renderTabs();
+        updatePaymentHeader();
+        renderTable();
+    }
+
+    return { init, exportData, importData, deleteAllData };
 })();
