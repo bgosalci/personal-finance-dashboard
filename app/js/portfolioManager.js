@@ -180,21 +180,55 @@ const PortfolioManager = (function() {
         return new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(value);
     }
 
-    function updateTotals() {
+    function convertCurrency(value, from, to, rates) {
+        if (!rates || from === to) return value;
+        const fromRate = rates[from];
+        const toRate = rates[to];
+        if (!fromRate || !toRate) return value;
+        const usdValue = value / fromRate;
+        return usdValue * toRate;
+    }
+
+    async function updateTotals() {
         let totalValue = 0;
         let totalCost = 0;
+        let totalValueBase = 0;
+        let totalCostBase = 0;
+        const baseCurrency = Settings.getBaseCurrency ? Settings.getBaseCurrency() : 'USD';
         const data = aggregateInvestments();
+        const ratesData = await ForexData.getRates();
+        const rates = ratesData && ratesData.conversion_rates ? ratesData.conversion_rates : null;
+        let hasForeign = false;
         data.forEach(inv => {
             const value = inv.quantity * inv.lastPrice;
+            const cost = inv.quantity * inv.purchasePrice;
             totalValue += value;
-            totalCost += inv.quantity * inv.purchasePrice;
+            totalCost += cost;
+            totalValueBase += convertCurrency(value, inv.currency, baseCurrency, rates);
+            totalCostBase += convertCurrency(cost, inv.currency, baseCurrency, rates);
+            if (inv.currency !== baseCurrency) hasForeign = true;
         });
         const totalPL = totalValue - totalCost;
         const totalPLPct = totalCost ? (totalPL / totalCost) * 100 : 0;
 
-        document.getElementById('portfolio-total-value').textContent = formatCurrency(totalValue);
-        document.getElementById('portfolio-total-pl').textContent = formatCurrency(totalPL);
+        document.getElementById('portfolio-total-value').textContent = formatCurrency(totalValue, baseCurrency);
+        document.getElementById('portfolio-total-pl').textContent = formatCurrency(totalPL, baseCurrency);
         document.getElementById('portfolio-total-plpct').textContent = totalPLPct.toFixed(2) + '%';
+
+        const baseRow = document.getElementById('portfolio-base-total-row');
+        if (baseRow) {
+            if (hasForeign) {
+                const basePL = totalValueBase - totalCostBase;
+                const basePLPct = totalCostBase ? (basePL / totalCostBase) * 100 : 0;
+                document.getElementById('portfolio-base-currency-label').textContent = baseCurrency;
+                document.getElementById('portfolio-base-total-value').textContent = formatCurrency(totalValueBase, baseCurrency);
+                document.getElementById('portfolio-base-total-pl').textContent = formatCurrency(basePL, baseCurrency);
+                document.getElementById('portfolio-base-total-plpct').textContent = basePLPct.toFixed(2) + '%';
+                baseRow.style.display = '';
+            } else {
+                baseRow.style.display = 'none';
+            }
+        }
     }
 
     function generateColor(idx) {
