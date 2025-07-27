@@ -630,7 +630,7 @@ const PortfolioManager = (function() {
                 const inv = investments[i];
                 const opt = document.createElement('option');
                 opt.value = i;
-                opt.textContent = `${inv.quantity} @ ${formatCurrency(inv.purchasePrice, inv.currency)} on ${inv.tradeDate}`;
+                opt.textContent = `${inv.quantity} @ ${formatCurrency(inv.purchasePrice, inv.currency)} on ${DateUtils.formatDate(inv.tradeDate)}`;
                 editRecordSelect.appendChild(opt);
             });
             editRecordGroup.style.display = 'block';
@@ -672,7 +672,7 @@ const PortfolioManager = (function() {
                 <td class="number-cell">${inv.quantity}</td>
                 <td class="number-cell">${formatCurrency(inv.purchasePrice, inv.currency)}</td>
                 <td class="number-cell">${formatCurrency(inv.lastPrice, inv.currency)}</td>
-                <td>${inv.tradeDate}</td>`;
+                <td>${DateUtils.formatDate(inv.tradeDate)}</td>`;
             historyBody.appendChild(tr);
         });
     }

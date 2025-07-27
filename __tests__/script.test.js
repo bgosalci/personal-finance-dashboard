@@ -10,6 +10,7 @@ test('FinancialDashboard global object exists with init and removeTicker', () =>
   const context = vm.createContext(dom.window);
   [
     'dialogManager.js',
+    'dateUtils.js',
     'tabManager.js',
     'portfolioStorage.js',
     'portfolioManager.js',
@@ -59,4 +60,12 @@ test('Settings module saves currency to localStorage', () => {
   vm.runInContext('Settings.init()', context);
   vm.runInContext('document.getElementById("base-currency-select").value = "GBP"; document.getElementById("base-currency-select").dispatchEvent(new window.Event("change"));', context);
   expect(window.localStorage.getItem('pf_base_currency')).toBe('GBP');
+});
+
+test('DateUtils.formatDate formats date correctly', () => {
+  const context = vm.createContext({});
+  const content = fs.readFileSync(path.resolve(__dirname, '../app/js/dateUtils.js'), 'utf8');
+  vm.runInContext(content, context);
+  const result = vm.runInContext('DateUtils.formatDate("2024-05-01")', context);
+  expect(result).toBe('01/05/2024');
 });
