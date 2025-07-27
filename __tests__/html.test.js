@@ -39,3 +39,18 @@ test('portfolio table includes currency column', () => {
   const headers = Array.from(doc.querySelectorAll('#portfolio-table thead th')).map(th => th.textContent.trim());
   expect(headers).toContain('Currency');
 });
+
+test('investment forms allow selecting currency', () => {
+  const htmlPath = path.resolve(__dirname, '../app/index.html');
+  const html = fs.readFileSync(htmlPath, 'utf8');
+  const dom = new JSDOM(html);
+  const doc = dom.window.document;
+  const addSelect = doc.getElementById('investment-currency');
+  const editSelect = doc.getElementById('edit-currency');
+  expect(addSelect.tagName).toBe('SELECT');
+  expect(editSelect.tagName).toBe('SELECT');
+  const addOptions = Array.from(addSelect.querySelectorAll('option')).map(o => o.value);
+  const editOptions = Array.from(editSelect.querySelectorAll('option')).map(o => o.value);
+  expect(addOptions).toEqual(expect.arrayContaining(['USD', 'GBP']));
+  expect(editOptions).toEqual(expect.arrayContaining(['USD', 'GBP']));
+});
