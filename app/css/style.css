@@ -201,6 +201,11 @@
             gap: 0.5rem;
         }
 
+        .button-row {
+            display: flex;
+            gap: 0.5rem;
+        }
+
         .summary-toggle {
             display: flex;
             align-items: center;

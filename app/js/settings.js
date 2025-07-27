@@ -53,7 +53,7 @@ const Settings = (function() {
         const importModal = document.getElementById('import-pensions-modal');
         const importForm = document.getElementById('import-pensions-form');
         const importFormat = document.getElementById('import-pensions-format');
-        const importText = document.getElementById('import-pensions-text');
+        const importFile = document.getElementById('import-pensions-file');
         const importCancel = document.getElementById('cancel-import-pensions');
 
         function openExport() {
@@ -81,9 +81,8 @@ const Settings = (function() {
 
         function openImport() {
             importFormat.value = 'json';
-            importText.value = '';
+            if (importFile) importFile.value = '';
             importModal.style.display = 'flex';
-            importText.focus();
         }
 
         function closeImport() {
@@ -92,8 +91,14 @@ const Settings = (function() {
 
         function handleImport(e) {
             e.preventDefault();
-            PensionManager.importData(importText.value, importFormat.value);
-            closeImport();
+            const file = importFile.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function() {
+                PensionManager.importData(reader.result, importFormat.value);
+                closeImport();
+            };
+            reader.readAsText(file);
         }
 
         if (exportBtn) exportBtn.addEventListener('click', openExport);
