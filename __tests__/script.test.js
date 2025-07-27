@@ -17,6 +17,7 @@ test('FinancialDashboard global object exists with init and removeTicker', () =>
     'stockTracker.js',
     'stockFinance.js',
     'settings.js',
+    'forexData.js',
     'financialDashboard.js',
     'marketStatus.js'
   ].forEach(file => {
