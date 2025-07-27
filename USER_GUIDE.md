@@ -202,6 +202,7 @@ To start fresh:
 1. Open the **Settings** tab
 2. Choose your preferred currency (USD, GBP or EUR) from the **Base Currency** dropdown
 3. The selection is saved automatically and will be used across the application
+4. Exchange rates refresh once a day so your totals stay accurate
 
 ## Tips for Best Results
 
