@@ -199,7 +199,12 @@
             display: flex;
             align-items: center;
             gap: 0.25rem;
-            font-size: 0.9rem;
+            font-size: 1rem;
+        }
+
+        .summary-toggle input[type="checkbox"] {
+            width: 24px;
+            height: 24px;
         }
 
         .menu-toggle {
@@ -989,6 +994,10 @@
                 color: white;
             }
             .summary-toggle {
-                font-size: 0.8rem;
+                font-size: 0.9rem;
+            }
+            .summary-toggle input[type="checkbox"] {
+                width: 20px;
+                height: 20px;
             }
         }
