@@ -54,3 +54,16 @@ test('investment forms allow selecting currency', () => {
   expect(addOptions).toEqual(expect.arrayContaining(['USD', 'GBP']));
   expect(editOptions).toEqual(expect.arrayContaining(['USD', 'GBP']));
 });
+
+test('settings tab contains base currency select', () => {
+  const htmlPath = path.resolve(__dirname, '../app/index.html');
+  const html = fs.readFileSync(htmlPath, 'utf8');
+  const dom = new JSDOM(html);
+  const doc = dom.window.document;
+  const tab = doc.querySelector('button.nav-tab[data-tab="settings"]');
+  const select = doc.getElementById('base-currency-select');
+  expect(tab).not.toBeNull();
+  expect(select).not.toBeNull();
+  const options = Array.from(select.querySelectorAll('option')).map(o => o.value);
+  expect(options).toEqual(['USD', 'GBP', 'EUR']);
+});
