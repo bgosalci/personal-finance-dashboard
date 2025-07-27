@@ -31,3 +31,15 @@ test('FinancialDashboard global object exists with init and removeTicker', () =>
   expect(ms).toBeDefined();
   expect(typeof ms.init).toBe('function');
 });
+
+test('fetchQuote returns price and currency', async () => {
+  const dom = new JSDOM('<!DOCTYPE html><html><body></body></html>', {url: 'http://localhost'});
+  const context = vm.createContext(dom.window);
+  dom.window.fetch = jest.fn().mockResolvedValue({
+    json: () => Promise.resolve({ c: 123.45, currency: 'EUR' })
+  });
+  const content = fs.readFileSync(path.resolve(__dirname, '../app/js/portfolioManager.js'), 'utf8');
+  vm.runInContext(content, context);
+  const result = await vm.runInContext('PortfolioManager.fetchQuote("TEST")', context);
+  expect(result).toEqual({ price: 123.45, currency: 'EUR' });
+});

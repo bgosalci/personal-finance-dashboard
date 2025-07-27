@@ -240,7 +240,8 @@ const StockFinance = (function() {
                     });
 
                 currentTicker = ticker;
-                currentSharePrice = await PortfolioManager.fetchQuote(ticker);
+                const quote = await PortfolioManager.fetchQuote(ticker);
+                currentSharePrice = quote.price;
                 showZeroInfo();
                 renderTable();
             } else {
