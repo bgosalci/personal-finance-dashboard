@@ -68,13 +68,13 @@ test('settings tab contains base currency select', () => {
   expect(options.length).toBe(0);
 });
 
-test('portfolio table includes base totals row', () => {
+test('portfolio table shows totals row', () => {
   const htmlPath = path.resolve(__dirname, '../app/index.html');
   const html = fs.readFileSync(htmlPath, 'utf8');
   const dom = new JSDOM(html);
   const doc = dom.window.document;
-  const row = doc.getElementById('portfolio-base-total-row');
-  const value = doc.getElementById('portfolio-base-total-value');
+  const row = doc.getElementById('portfolio-total-row');
+  const value = doc.getElementById('portfolio-total-value');
   expect(row).not.toBeNull();
   expect(value).not.toBeNull();
 });

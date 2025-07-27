@@ -21,7 +21,7 @@ The Personal Finance Dashboard is designed as a single HTML file application tha
 - Real-time profit/loss calculations with percentage gains/losses
 - Interactive charts showing portfolio allocation and performance
 - Investment summary with total values, returns, and transaction history
-- Optional totals row converts foreign currency holdings to your chosen base currency
+- Portfolio totals automatically convert all holdings to your chosen base currency
 - Drag-and-drop reordering of portfolio positions
 
 ### 🧮 Financial Calculators
