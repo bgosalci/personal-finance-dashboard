@@ -57,7 +57,7 @@ The top section shows:
 - **Total Portfolio Value**: Current worth of all investments
 - **Total Gain/Loss**: How much you've made or lost
 - **Gain/Loss Percentage**: Your overall return percentage
-- When positions use different currencies, a second totals line shows the converted values in your base currency
+- All totals are displayed in your selected base currency
 
 #### Portfolio Chart
 The pie chart shows:
