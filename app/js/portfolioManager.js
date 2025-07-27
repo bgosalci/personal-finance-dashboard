@@ -848,5 +848,96 @@ const PortfolioManager = (function() {
         switchPortfolio(currentPortfolioId);
     }
 
-    return { init, fetchQuote, fetchLastPrices };
+    function exportData(format = 'json') {
+        const data = portfolios.map(p => {
+            let items = [];
+            const d = localStorage.getItem(getStorageKey(p.id));
+            if (d) {
+                try { items = JSON.parse(d) || []; } catch (e) { items = []; }
+            }
+            return { name: p.name, items };
+        });
+        if (format === 'csv') {
+            const lines = ['portfolio,ticker,name,quantity,purchasePrice,lastPrice,tradeDate,currency'];
+            function esc(v) {
+                if (v === undefined || v === null) return '';
+                const s = String(v).replace(/"/g, '""');
+                return /[",\n]/.test(s) ? '"' + s + '"' : s;
+            }
+            data.forEach(p => {
+                if (p.items.length === 0) {
+                    lines.push(`${esc(p.name)},,,,,,`);
+                } else {
+                    p.items.forEach(it => {
+                        lines.push(`${esc(p.name)},${esc(it.ticker)},${esc(it.name)},${it.quantity},${it.purchasePrice},${it.lastPrice},${it.tradeDate},${it.currency}`);
+                    });
+                }
+            });
+            return lines.join('\n');
+        }
+        return JSON.stringify(data, null, 2);
+    }
+
+    function importData(text, format = 'json') {
+        let arr = [];
+        if (format === 'csv') {
+            const lines = text.trim().split(/\r?\n/).filter(l => l.trim());
+            lines.shift();
+            const map = {};
+            lines.forEach(line => {
+                const parts = line.split(',');
+                const [pname, ticker, name, qty, purchase, last, date, curr] = parts;
+                if (!map[pname]) { map[pname] = { name: pname, items: [] }; }
+                if (ticker) {
+                    map[pname].items.push({
+                        ticker,
+                        name,
+                        quantity: parseFloat(qty) || 0,
+                        purchasePrice: parseFloat(purchase) || 0,
+                        lastPrice: parseFloat(last) || 0,
+                        tradeDate: date,
+                        currency: curr || 'USD'
+                    });
+                }
+            });
+            arr = Object.values(map);
+        } else {
+            try { arr = JSON.parse(text) || []; } catch (e) { arr = []; }
+        }
+        arr.forEach(p => {
+            const id = 'pf' + Date.now() + Math.random().toString(36).slice(2,5);
+            portfolios.push({ id, name: p.name, show: true });
+            localStorage.setItem(getStorageKey(id), JSON.stringify((p.items || []).map(it => ({
+                ticker: it.ticker,
+                name: it.name,
+                quantity: parseFloat(it.quantity) || 0,
+                purchasePrice: parseFloat(it.purchasePrice) || 0,
+                lastPrice: parseFloat(it.lastPrice) || 0,
+                tradeDate: it.tradeDate,
+                currency: it.currency || 'USD'
+            }))));
+        });
+        savePortfolioList();
+        if (arr.length > 0) {
+            switchPortfolio(portfolios[portfolios.length - 1].id);
+        }
+    }
+
+    function deleteAllData() {
+        portfolios.forEach(p => {
+            localStorage.removeItem(getStorageKey(p.id));
+        });
+        localStorage.removeItem(PORTFOLIO_LIST_KEY);
+        localStorage.removeItem(COLOR_KEY);
+        portfolios = [];
+        investments = [];
+        tickerColors = {};
+        colorIndex = 0;
+        loadPortfolioList();
+        loadData();
+        renderPortfolioTabs();
+        renderTable();
+    }
+
+    return { init, fetchQuote, fetchLastPrices, exportData, importData, deleteAllData };
 })();

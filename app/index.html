@@ -749,6 +749,16 @@
                     <div class="button-row">
                         <button type="button" class="btn btn-secondary" id="export-pensions-btn">Export Pensions</button>
                         <button type="button" class="btn btn-secondary" id="import-pensions-btn">Import Pensions</button>
+                        <button type="button" class="btn btn-danger" id="delete-pensions-btn">Delete Pensions</button>
+                    </div>
+                </div>
+
+                <h3 class="section-subtitle">Portfolio</h3>
+                <div class="form-group">
+                    <div class="button-row">
+                        <button type="button" class="btn btn-secondary" id="export-portfolio-btn">Export Portfolio</button>
+                        <button type="button" class="btn btn-secondary" id="import-portfolio-btn">Import Portfolio</button>
+                        <button type="button" class="btn btn-danger" id="delete-portfolio-btn">Delete Portfolio</button>
                     </div>
                 </div>
             </div>
@@ -791,6 +801,48 @@
                 </div>
                 <div class="modal-actions">
                     <button type="button" class="btn btn-secondary" id="cancel-import-pensions">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Import</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Export Portfolio Modal -->
+    <div id="export-portfolio-modal" class="modal">
+        <div class="modal-content">
+            <h3>Export Portfolio</h3>
+            <div class="form-group">
+                <label for="export-portfolio-format">Format</label>
+                <select id="export-portfolio-format">
+                    <option value="json">JSON</option>
+                    <option value="csv">CSV</option>
+                </select>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn btn-secondary" id="cancel-export-portfolio">Cancel</button>
+                <button type="button" class="btn btn-primary" id="download-export-portfolio">Export</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Import Portfolio Modal -->
+    <div id="import-portfolio-modal" class="modal">
+        <div class="modal-content">
+            <h3>Import Portfolio</h3>
+            <form id="import-portfolio-form">
+                <div class="form-group">
+                    <label for="import-portfolio-format">Format</label>
+                    <select id="import-portfolio-format">
+                        <option value="json">JSON</option>
+                        <option value="csv">CSV</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="import-portfolio-file">File</label>
+                    <input type="file" id="import-portfolio-file" accept=".json,.csv" required>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" id="cancel-import-portfolio">Cancel</button>
                     <button type="submit" class="btn btn-primary">Import</button>
                 </div>
             </form>
