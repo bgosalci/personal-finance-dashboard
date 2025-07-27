@@ -544,26 +544,37 @@ const PortfolioManager = (function() {
             tickerValid = false;
             return;
         }
-        const [{ price, currency }, description] = await Promise.all([
-            fetchQuote(ticker),
-            lookupSymbol(ticker)
-        ]);
 
-        if (description) {
-            document.getElementById('investment-name').value = description;
+        const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000));
+        try {
+            const [{ price, currency }, description] = await Promise.race([
+                Promise.all([
+                    fetchQuote(ticker),
+                    lookupSymbol(ticker)
+                ]),
+                timeout
+            ]);
+
+            const lastPriceEl = document.getElementById('investment-last-price');
+            const currencyEl = document.getElementById('investment-currency');
+            if (price !== null) {
+                lastPriceEl.value = price;
+            }
+            if (currencyEl) currencyEl.value = currency || 'USD';
+
+            if (description) {
+                document.getElementById('investment-name').value = description;
+                tickerValid = true;
+            } else {
+                tickerValid = false;
+                document.getElementById('investment-name').value = '';
+                DialogManager.alert('Ticker symbol does not exist');
+            }
+        } catch (e) {
+            // If the request fails or times out, allow the ticker without validation
             tickerValid = true;
-        } else {
-            tickerValid = false;
-            document.getElementById('investment-name').value = '';
-            DialogManager.alert('Ticker symbol does not exist');
         }
 
-        const lastPriceEl = document.getElementById('investment-last-price');
-        const currencyEl = document.getElementById('investment-currency');
-        if (price !== null) {
-            lastPriceEl.value = price;
-        }
-        if (currencyEl) currencyEl.value = currency || 'USD';
         handleFormInput();
     }
 
