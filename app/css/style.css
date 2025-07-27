@@ -312,6 +312,13 @@
             position: relative; /* ensures sticky headers work inside */
         }
 
+        /* Dedicated scroll container for the Pension table */
+        #pension-table-container {
+            max-height: 60vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
         /* Dedicated scroll container for the Stock Finance table */
         #financials-table-container {
             max-height: 60vh;
