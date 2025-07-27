@@ -352,6 +352,7 @@ const PortfolioManager = (function() {
                 map[inv.ticker] = {
                     ticker: inv.ticker,
                     name: inv.name,
+                    currency: inv.currency || 'USD',
                     quantity: 0,
                     cost: 0,
                     last: 0,
@@ -365,10 +366,14 @@ const PortfolioManager = (function() {
             item.cost += inv.purchasePrice * inv.quantity;
             item.last += inv.lastPrice;
             item.count += 1;
+            if (!item.currency && inv.currency) {
+                item.currency = inv.currency;
+            }
         });
         return Object.values(map).map(it => ({
             ticker: it.ticker,
             name: it.name,
+            currency: it.currency,
             quantity: it.quantity,
             purchasePrice: it.quantity ? it.cost / it.quantity : 0,
             lastPrice: it.count ? it.last / it.count : 0,
