@@ -48,18 +48,18 @@ const PortfolioManager = (function() {
     const actionsMenu = document.getElementById('portfolio-actions-menu');
     const API_KEY = 'd1nf8h1r01qovv8iu2dgd1nf8h1r01qovv8iu2e0';
 
-    async function fetchQuote(ticker) {
-        const url = `https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(ticker)}&token=${API_KEY}`;
+    async function fetchQuote(ticker, currency = 'USD') {
+        const url = `https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(ticker)}&token=${API_KEY}&currency=${encodeURIComponent(currency)}`;
         try {
             const res = await fetch(url);
             const data = await res.json();
             if (data && typeof data.c === 'number') {
-                return parseFloat(data.c);
+                return { price: parseFloat(data.c), currency: data.currency || currency };
             }
         } catch (e) {
             // ignore errors and return null
         }
-        return null;
+        return { price: null, currency };
     }
 
     async function lookupSymbol(ticker) {
@@ -140,6 +140,10 @@ const PortfolioManager = (function() {
                     inv.tradeDate = new Date().toISOString().split('T')[0];
                     migrated = true;
                 }
+                if (!inv.currency) {
+                    inv.currency = 'USD';
+                    migrated = true;
+                }
             });
             if (migrated && !summaryMode) {
                 localStorage.setItem(getStorageKey(currentPortfolioId), JSON.stringify(investments));
@@ -168,8 +172,8 @@ const PortfolioManager = (function() {
         localStorage.setItem(COLOR_KEY, JSON.stringify(tickerColors));
     }
 
-    function formatCurrency(value) {
-        return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value);
+    function formatCurrency(value, currency = 'USD') {
+        return new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(value);
     }
 
     function updateTotals() {
@@ -348,6 +352,7 @@ const PortfolioManager = (function() {
                 map[inv.ticker] = {
                     ticker: inv.ticker,
                     name: inv.name,
+                    currency: inv.currency || 'USD',
                     quantity: 0,
                     cost: 0,
                     last: 0,
@@ -361,10 +366,14 @@ const PortfolioManager = (function() {
             item.cost += inv.purchasePrice * inv.quantity;
             item.last += inv.lastPrice;
             item.count += 1;
+            if (!item.currency && inv.currency) {
+                item.currency = inv.currency;
+            }
         });
         return Object.values(map).map(it => ({
             ticker: it.ticker,
             name: it.name,
+            currency: it.currency,
             quantity: it.quantity,
             purchasePrice: it.quantity ? it.cost / it.quantity : 0,
             lastPrice: it.count ? it.last / it.count : 0,
@@ -383,10 +392,11 @@ const PortfolioManager = (function() {
             row.innerHTML = `
                 <td class="drag-handle-cell"><ion-icon name="reorder-three-outline"></ion-icon></td>
                 <td>${inv.ticker}</td>
+                <td>${inv.currency || ''}</td>
                 <td>${inv.name}</td>
-                <td class="number-cell">${formatCurrency(inv.purchasePrice)}</td>
+                <td class="number-cell">${formatCurrency(inv.purchasePrice, inv.currency)}</td>
                 <td class="number-cell">${inv.quantity}</td>
-                <td class="number-cell">${formatCurrency(inv.lastPrice)}</td>
+                <td class="number-cell">${formatCurrency(inv.lastPrice, inv.currency)}</td>
                 <td class="value-cell"></td>
                 <td class="pl-cell"></td>
                 <td class="plpct-cell"></td>
@@ -416,8 +426,8 @@ const PortfolioManager = (function() {
             const pl = value - cost;
             const plPct = cost ? (pl / cost) * 100 : 0;
 
-            row.querySelector('.value-cell').textContent = formatCurrency(value);
-            row.querySelector('.pl-cell').textContent = formatCurrency(pl);
+            row.querySelector('.value-cell').textContent = formatCurrency(value, inv.currency);
+            row.querySelector('.pl-cell').textContent = formatCurrency(pl, inv.currency);
             row.querySelector('.pl-cell').className = 'pl-cell ' + (pl >= 0 ? 'growth-positive' : 'growth-negative');
             row.querySelector('.plpct-cell').textContent = plPct.toFixed(2) + '%';
             row.querySelector('.plpct-cell').className = 'plpct-cell ' + (plPct >= 0 ? 'growth-positive' : 'growth-negative');
@@ -479,7 +489,8 @@ const PortfolioManager = (function() {
     function handleFormInput() {
         const qty = parseFloat(document.getElementById('investment-quantity').value) || 0;
         const lastPrice = parseFloat(document.getElementById('investment-last-price').value) || 0;
-        totalDisplay.textContent = formatCurrency(qty * lastPrice);
+        const currency = document.getElementById('investment-currency').value || 'USD';
+        totalDisplay.textContent = formatCurrency(qty * lastPrice, currency);
     }
 
     async function handleTickerLookup() {
@@ -488,7 +499,7 @@ const PortfolioManager = (function() {
             tickerValid = false;
             return;
         }
-        const [price, description] = await Promise.all([
+        const [{ price, currency }, description] = await Promise.all([
             fetchQuote(ticker),
             lookupSymbol(ticker)
         ]);
@@ -502,11 +513,13 @@ const PortfolioManager = (function() {
             DialogManager.alert('Ticker symbol does not exist');
         }
 
+        const lastPriceEl = document.getElementById('investment-last-price');
+        const currencyEl = document.getElementById('investment-currency');
         if (price !== null) {
-            const lastPriceEl = document.getElementById('investment-last-price');
             lastPriceEl.value = price;
-            handleFormInput();
         }
+        if (currencyEl) currencyEl.value = currency || 'USD';
+        handleFormInput();
     }
 
     function addFromForm(resetAfter) {
@@ -517,6 +530,7 @@ const PortfolioManager = (function() {
         const purchasePrice = parseFloat(document.getElementById('investment-purchase-price').value) || 0;
         const purchaseDate = document.getElementById('investment-purchase-date').value;
         const lastPrice = parseFloat(document.getElementById('investment-last-price').value) || 0;
+        const currency = document.getElementById('investment-currency').value || 'USD';
         if (!tickerValid) {
             DialogManager.alert('Please enter a valid ticker symbol.');
             return;
@@ -530,7 +544,7 @@ const PortfolioManager = (function() {
 
 
         assignColor(ticker);
-        investments.push({ ticker, name, quantity, purchasePrice, lastPrice, tradeDate: purchaseDate });
+        investments.push({ ticker, name, quantity, purchasePrice, lastPrice, tradeDate: purchaseDate, currency });
         saveData();
         renderTable();
 
@@ -541,7 +555,7 @@ const PortfolioManager = (function() {
                 dateField.value = today;
                 dateField.max = today;
             }
-            totalDisplay.textContent = formatCurrency(0);
+            totalDisplay.textContent = formatCurrency(0, 'USD');
             document.getElementById('investment-ticker').focus();
         } else {
             closeModal();
@@ -561,7 +575,9 @@ const PortfolioManager = (function() {
             dateField.value = inv.tradeDate || today;
         }
         document.getElementById('edit-last-price').value = inv.lastPrice;
-        editTotal.textContent = formatCurrency(inv.quantity * inv.lastPrice);
+        const currencyField = document.getElementById('edit-currency');
+        if (currencyField) currencyField.value = inv.currency || 'USD';
+        editTotal.textContent = formatCurrency(inv.quantity * inv.lastPrice, inv.currency);
     }
 
     function openEditModal(index) {
@@ -578,7 +594,7 @@ const PortfolioManager = (function() {
                 const inv = investments[i];
                 const opt = document.createElement('option');
                 opt.value = i;
-                opt.textContent = `${inv.quantity} @ ${formatCurrency(inv.purchasePrice)} on ${inv.tradeDate}`;
+                opt.textContent = `${inv.quantity} @ ${formatCurrency(inv.purchasePrice, inv.currency)} on ${inv.tradeDate}`;
                 editRecordSelect.appendChild(opt);
             });
             editRecordGroup.style.display = 'block';
@@ -594,11 +610,13 @@ const PortfolioManager = (function() {
 
         populateEditFields(index);
         editModal.style.display = 'flex';
-        fetchQuote(ticker).then(price => {
-            if (price !== null) {
-                document.getElementById('edit-last-price').value = price;
-                handleEditInput();
+        fetchQuote(ticker, investments[index].currency || 'USD').then(res => {
+            if (res.price !== null) {
+                document.getElementById('edit-last-price').value = res.price;
             }
+            const currencyField = document.getElementById('edit-currency');
+            if (currencyField) currencyField.value = res.currency || 'USD';
+            handleEditInput();
         });
     }
 
@@ -613,10 +631,11 @@ const PortfolioManager = (function() {
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td>${inv.ticker}</td>
+                <td>${inv.currency || ''}</td>
                 <td>${inv.name || ''}</td>
                 <td class="number-cell">${inv.quantity}</td>
-                <td class="number-cell">${formatCurrency(inv.purchasePrice)}</td>
-                <td class="number-cell">${formatCurrency(inv.lastPrice)}</td>
+                <td class="number-cell">${formatCurrency(inv.purchasePrice, inv.currency)}</td>
+                <td class="number-cell">${formatCurrency(inv.lastPrice, inv.currency)}</td>
                 <td>${inv.tradeDate}</td>`;
             historyBody.appendChild(tr);
         });
@@ -634,25 +653,26 @@ const PortfolioManager = (function() {
     function handleEditInput() {
         const qty = parseFloat(document.getElementById('edit-quantity').value) || 0;
         const price = parseFloat(document.getElementById('edit-last-price').value) || 0;
-        editTotal.textContent = formatCurrency(qty * price);
+        const currency = document.getElementById('edit-currency').value || 'USD';
+        editTotal.textContent = formatCurrency(qty * price, currency);
     }
 
     async function fetchLastPrices() {
         if (investments.length === 0) return;
 
         const priceMap = {};
+        const currencyMap = {};
         const tickers = Array.from(new Set(investments.map(inv => inv.ticker)));
 
         const fetches = tickers.map(ticker => {
-            const url = `https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(ticker)}&token=${API_KEY}`;
-            return fetch(url)
-                .then(res => res.json())
-                .then(data => {
-                    if (data && typeof data.c === 'number') {
-                        priceMap[ticker] = parseFloat(data.c);
-                    }
-                })
-                .catch(() => {});
+            const inv = investments.find(i => i.ticker === ticker);
+            const curr = inv ? inv.currency || 'USD' : 'USD';
+            return fetchQuote(ticker, curr).then(res => {
+                if (res.price !== null) {
+                    priceMap[ticker] = res.price;
+                    currencyMap[ticker] = res.currency || curr;
+                }
+            }).catch(() => {});
         });
 
         await Promise.all(fetches);
@@ -660,6 +680,7 @@ const PortfolioManager = (function() {
         investments.forEach(inv => {
             if (priceMap[inv.ticker] !== undefined) {
                 inv.lastPrice = priceMap[inv.ticker];
+                inv.currency = currencyMap[inv.ticker] || inv.currency;
             }
         });
 
@@ -676,6 +697,7 @@ const PortfolioManager = (function() {
         const purchase = parseFloat(document.getElementById('edit-purchase-price').value) || 0;
         const date = document.getElementById('edit-purchase-date').value;
         const last = parseFloat(document.getElementById('edit-last-price').value) || 0;
+        const currency = document.getElementById('edit-currency').value || 'USD';
         if (qty <= 0 || purchase <= 0 || last <= 0) return;
         const today = new Date().toISOString().split('T')[0];
         if (!date || date > today) {
@@ -689,6 +711,7 @@ const PortfolioManager = (function() {
         inv.purchasePrice = purchase;
         inv.lastPrice = last;
         inv.tradeDate = date;
+        inv.currency = currency;
 
         saveData();
         renderTable();
