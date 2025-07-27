@@ -89,3 +89,12 @@ test('pension tab contains entry table', () => {
   expect(table).not.toBeNull();
   expect(nameInput).not.toBeNull();
 });
+
+test('pension header shows base currency label', () => {
+  const htmlPath = path.resolve(__dirname, '../app/index.html');
+  const html = fs.readFileSync(htmlPath, 'utf8');
+  const dom = new JSDOM(html);
+  const doc = dom.window.document;
+  const label = doc.getElementById('pension-base-currency-label');
+  expect(label).not.toBeNull();
+});
