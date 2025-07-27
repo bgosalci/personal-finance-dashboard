@@ -389,7 +389,12 @@
             z-index: 2;
         }
 
-        .data-table th:nth-child(1),
+        .data-table th:nth-child(1) {
+            position: sticky;
+            left: 0;
+            z-index: 3;
+        }
+
         .data-table td:nth-child(1) {
             position: sticky;
             left: 0;
@@ -884,6 +889,10 @@
 
         .actions-cell {
             white-space: nowrap;
+        }
+
+        tr.dragging {
+            opacity: 0.5;
         }
 
 
