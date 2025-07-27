@@ -415,7 +415,6 @@ const PortfolioManager = (function() {
             row.dataset.index = inv.index;
             row.draggable = true;
             row.innerHTML = `
-                <td class="drag-handle-cell"><ion-icon name="reorder-three-outline"></ion-icon></td>
                 <td>${inv.ticker}</td>
                 <td>${inv.currency || ''}</td>
                 <td>${inv.name}</td>
