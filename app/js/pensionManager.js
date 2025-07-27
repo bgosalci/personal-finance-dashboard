@@ -29,6 +29,7 @@ const PensionManager = (function() {
     const entryPaymentInput = document.getElementById('pension-entry-payment');
     const entryCancel = document.getElementById('cancel-pension-entry');
     const baseCurrencyLabel = document.getElementById('pension-base-currency-label');
+    const paymentCurrencyLabel = document.getElementById('pension-payment-currency-label');
 
     const editEntryModal = document.getElementById('pension-edit-modal');
     const editEntryForm = document.getElementById('pension-edit-form');
@@ -335,6 +336,7 @@ const PensionManager = (function() {
         const ratesData = await ForexData.getRates();
         const rates = ratesData && ratesData.conversion_rates ? ratesData.conversion_rates : null;
         if (baseCurrencyLabel) baseCurrencyLabel.textContent = baseCurrency;
+        if (paymentCurrencyLabel) paymentCurrencyLabel.textContent = baseCurrency;
         stats.forEach(st => {
             const row = document.createElement('tr');
             row.dataset.index = st.index;
@@ -356,9 +358,9 @@ const PensionManager = (function() {
             const type = summaryMode ? summaryInfo.type : pensions.find(p=>p.id===currentPensionId).type;
             row.innerHTML = `
                 <td>${DateUtils.formatDate(st.date)}</td>
-                ${pensions.find(p=>p.id===currentPensionId).type==='payments'?`<td class="number-cell">${formatCurrency(st.payment)}</td>`:''}
-                <td class="number-cell">${formatCurrency(st.value)}</td>
-                <td class="number-cell ${monthlyClass}">${formatCurrency(st.monthlyPL)}</td>
+                ${pensions.find(p=>p.id===currentPensionId).type==='payments'?`<td class="number-cell">${formatCurrency(paymentVal, baseCurrency)}</td>`:''}
+                <td class="number-cell">${formatCurrency(valueVal, baseCurrency)}</td>
+                <td class="number-cell ${monthlyClass}">${formatCurrency(monthlyVal, baseCurrency)}</td>
                 <td class="number-cell ${monthlyPctClass}">${st.monthlyPLPct.toFixed(2)}%</td>
                 <td class="number-cell ${ytdClass}">${formatCurrency(ytdVal, baseCurrency)}</td>
                 <td class="number-cell ${ytdPctClass}">${st.ytdPLPct.toFixed(2)}%</td>
