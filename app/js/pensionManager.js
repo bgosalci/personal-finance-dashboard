@@ -136,7 +136,7 @@ const PensionManager = (function() {
         renderTable();
         removePensionBtn.style.display = summaryMode ? 'none' : 'inline-flex';
         addEntryBtn.style.display = summaryMode ? 'none' : 'inline-flex';
-        addPensionBtn.style.display = summaryMode ? 'none' : 'inline-flex';
+        addPensionBtn.style.display = 'inline-flex';
         if (summaryToggle) {
             summaryToggle.style.display = summaryMode ? 'none' : 'inline-flex';
             if (!summaryMode) {
