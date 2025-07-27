@@ -420,5 +420,71 @@ const PensionManager = (function() {
         }
     }
 
-    return { init };
+    function exportData(format = 'json') {
+        const data = pensions.map(p => {
+            let entriesData = localStorage.getItem(getStorageKey(p.id));
+            let arr = [];
+            if (entriesData) {
+                try { arr = JSON.parse(entriesData) || []; } catch (e) { arr = []; }
+            }
+            return { name: p.name, type: p.type, start: parseFloat(p.start) || 0, entries: arr };
+        });
+        if (format === 'csv') {
+            const lines = ['name,type,start,date,value,payment'];
+            function esc(val) {
+                if (val === undefined || val === null) return '';
+                const str = String(val).replace(/"/g, '""');
+                return /[",\n]/.test(str) ? '"' + str + '"' : str;
+            }
+            data.forEach(p => {
+                if (p.entries.length === 0) {
+                    lines.push(`${esc(p.name)},${p.type},${p.start},,,`);
+                } else {
+                    p.entries.forEach(en => {
+                        lines.push(`${esc(p.name)},${p.type},${p.start},${en.date},${en.value},${en.payment ?? ''}`);
+                    });
+                }
+            });
+            return lines.join('\n');
+        }
+        return JSON.stringify(data, null, 2);
+    }
+
+    function importData(text, format = 'json') {
+        let arr = [];
+        if (format === 'csv') {
+            const lines = text.trim().split(/\r?\n/).filter(l => l.trim());
+            lines.shift();
+            const map = {};
+            lines.forEach(line => {
+                const parts = line.split(',');
+                const [name, type, start, date, value, payment] = parts;
+                const key = name + '|' + type + '|' + start;
+                if (!map[key]) {
+                    map[key] = { name, type, start: parseFloat(start) || 0, entries: [] };
+                }
+                if (date) {
+                    map[key].entries.push({ date, value: parseFloat(value), payment: parseFloat(payment) || 0 });
+                }
+            });
+            arr = Object.values(map);
+        } else {
+            try { arr = JSON.parse(text) || []; } catch (e) { arr = []; }
+        }
+        arr.forEach(p => {
+            const id = 'pen' + Date.now() + Math.random().toString(36).slice(2,5);
+            pensions.push({ id, name: p.name, type: p.type, start: parseFloat(p.start) || 0, show: true });
+            localStorage.setItem(getStorageKey(id), JSON.stringify((p.entries || []).map(en => ({
+                date: en.date,
+                value: parseFloat(en.value),
+                payment: parseFloat(en.payment) || 0
+            }))));
+        });
+        savePensionList();
+        if (arr.length > 0) {
+            switchPension(pensions[pensions.length - 1].id);
+        }
+    }
+
+    return { init, exportData, importData };
 })();
