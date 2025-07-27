@@ -195,6 +195,19 @@
             gap: 0.5rem;
         }
 
+        .summary-toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-size: 1rem;
+        }
+
+        .summary-toggle input[type="checkbox"] {
+            width: 24px;
+            height: 24px;
+            accent-color: var(--primary-blue);
+        }
+
         .menu-toggle {
             display: none;
         }
@@ -980,5 +993,13 @@
                 display: inline-flex;
                 border: 1px solid var(--primary-blue-dark);
                 color: white;
+            }
+            .summary-toggle {
+                font-size: 0.9rem;
+            }
+            .summary-toggle input[type="checkbox"] {
+                width: 20px;
+                height: 20px;
+                accent-color: var(--primary-blue);
             }
         }

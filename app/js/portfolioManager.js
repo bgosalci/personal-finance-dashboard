@@ -46,6 +46,7 @@ const PortfolioManager = (function() {
     const historyBody = document.getElementById('transaction-history-body');
     const menuToggle = document.getElementById('portfolio-menu-toggle');
     const actionsMenu = document.getElementById('portfolio-actions-menu');
+    const summaryToggle = document.getElementById('summary-toggle');
     const API_KEY = 'd1nf8h1r01qovv8iu2dgd1nf8h1r01qovv8iu2e0';
 
     async function fetchQuote(ticker, currency = 'USD') {
@@ -88,8 +89,9 @@ const PortfolioManager = (function() {
         if (list) {
             try { portfolios = JSON.parse(list) || []; } catch (e) { portfolios = []; }
         }
+        portfolios.forEach(p => { if (p.show === undefined) p.show = true; });
         if (portfolios.length === 0) {
-            portfolios = [{ id: 'pf1', name: 'Portfolio 1' }];
+            portfolios = [{ id: 'pf1', name: 'Portfolio 1', show: true }];
             const legacy = localStorage.getItem('portfolioData');
             if (legacy) {
                 localStorage.setItem(getStorageKey('pf1'), legacy);
@@ -108,9 +110,11 @@ const PortfolioManager = (function() {
         if (summaryMode) {
             investments = [];
             portfolios.forEach(p => {
-                const data = localStorage.getItem(getStorageKey(p.id));
-                if (data) {
-                    try { investments = investments.concat(JSON.parse(data) || []); } catch (e) {}
+                if (p.show !== false) {
+                    const data = localStorage.getItem(getStorageKey(p.id));
+                    if (data) {
+                        try { investments = investments.concat(JSON.parse(data) || []); } catch (e) {}
+                    }
                 }
             });
         } else {
@@ -239,13 +243,20 @@ const PortfolioManager = (function() {
         removePortfolioBtn.style.display = summaryMode ? 'none' : 'inline-flex';
         addBtn.style.display = summaryMode ? 'none' : 'inline-flex';
         getPriceBtn.style.display = summaryMode ? 'none' : 'inline-flex';
+        if (summaryToggle) {
+            summaryToggle.style.display = summaryMode ? 'none' : 'inline-flex';
+            if (!summaryMode) {
+                const pf = portfolios.find(p => p.id === currentPortfolioId);
+                summaryToggle.checked = !pf || pf.show !== false;
+            }
+        }
     }
 
     async function addPortfolio() {
         const name = await DialogManager.prompt('Enter portfolio name:', '');
         if (!name) return;
         const id = 'pf' + Date.now();
-        portfolios.push({ id, name });
+        portfolios.push({ id, name, show: true });
         savePortfolioList();
         localStorage.setItem(getStorageKey(id), '[]');
         switchPortfolio(id);
@@ -783,6 +794,16 @@ const PortfolioManager = (function() {
             const expanded = actionsMenu.classList.toggle('open');
             menuToggle.setAttribute('aria-expanded', expanded);
         });
+
+        if (summaryToggle) {
+            summaryToggle.addEventListener('change', () => {
+                const pf = portfolios.find(p => p.id === currentPortfolioId);
+                if (pf) {
+                    pf.show = summaryToggle.checked;
+                    savePortfolioList();
+                }
+            });
+        }
 
         actionsMenu.addEventListener('click', (e) => {
             if (e.target.closest('button')) {
