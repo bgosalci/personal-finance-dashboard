@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', function() {
     FinancialDashboard.init();
     MarketStatus.init();
     PriceUpdater.init();
+    ForexData.init();
 
     const header = document.querySelector('.header');
     const nav = document.querySelector('.nav-tabs');
