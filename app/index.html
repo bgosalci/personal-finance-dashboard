@@ -43,6 +43,7 @@
         <button class="nav-tab" data-tab="calculators">Calculators</button>
         <button class="nav-tab" data-tab="stock-tracker">Stock Performance Tracker</button>
         <button class="nav-tab" data-tab="stock-finance">Stock Finance Performance</button>
+        <button class="nav-tab" data-tab="settings">Settings</button>
     </nav>
 
     <div class="container">
@@ -630,6 +631,20 @@
                     </table>
                 </div>
             </div>
+            <!-- Settings Tab -->
+            <div id="settings" class="tab-content">
+                <div class="section-header">
+                    <h2 class="section-title">Settings</h2>
+                </div>
+                <div class="form-group">
+                    <label for="base-currency-select">Base Currency</label>
+                    <select id="base-currency-select">
+                        <option value="USD">USD</option>
+                        <option value="GBP">GBP</option>
+                        <option value="EUR">EUR</option>
+                    </select>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -657,6 +672,7 @@
     <script src="js/calculator.js"></script>
     <script src="js/stockTracker.js"></script>
     <script src="js/stockFinance.js"></script>
+    <script src="js/settings.js"></script>
     <script src="js/financialDashboard.js"></script>
     <script src="js/marketStatus.js"></script>
     <script src="js/priceUpdater.js"></script>

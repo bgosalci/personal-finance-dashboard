@@ -42,6 +42,7 @@ The Personal Finance Dashboard is designed as a single HTML file application tha
 - Export/import functionality for data portability
 - Data validation and migration for legacy formats
 - Storage usage monitoring with automatic cleanup
+- Configurable base currency stored locally
 
 ## Technology Stack
 

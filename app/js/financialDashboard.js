@@ -3,6 +3,7 @@ const FinancialDashboard = (function() {
 
     function init() {
         TabManager.init();
+        Settings.init();
         PortfolioManager.init();
         Calculator.init();
         StockTracker.init();

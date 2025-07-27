@@ -196,6 +196,12 @@ To start fresh:
 2. Click **"Clear All Data"**
 3. Confirm you want to delete everything
 
+### Changing Base Currency
+
+1. Open the **Settings** tab
+2. Choose your preferred currency (USD, GBP or EUR) from the **Base Currency** dropdown
+3. The selection is saved automatically and will be used across the application
+
 ## Tips for Best Results
 
 ### Portfolio Management Tips
