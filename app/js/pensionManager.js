@@ -269,7 +269,7 @@ const PensionManager = (function() {
             const row = document.createElement('tr');
             row.dataset.index = st.index;
             row.innerHTML = `
-                <td>${st.date}</td>
+                <td>${DateUtils.formatDate(st.date)}</td>
                 ${pensions.find(p=>p.id===currentPensionId).type==='payments'?`<td class="number-cell">${formatCurrency(st.payment)}</td>`:''}
                 <td class="number-cell">${formatCurrency(st.value)}</td>
                 <td class="number-cell">${formatCurrency(st.monthlyPL)}</td>

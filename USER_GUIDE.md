@@ -241,7 +241,7 @@ To start fresh:
 #### Calculations Seem Wrong
 - Verify all input values are correct
 - Check that percentages are entered as numbers (7, not 0.07)
-- Ensure dates are in correct format
+ - Ensure dates are in **dd/mm/yyyy** format
 
 #### Performance Issues
 - Clear old data you no longer need
