@@ -201,6 +201,11 @@
             gap: 0.5rem;
         }
 
+        .button-row {
+            display: flex;
+            gap: 0.5rem;
+        }
+
         .summary-toggle {
             display: flex;
             align-items: center;
@@ -250,7 +255,23 @@
             transition: border-color 0.3s ease;
         }
 
+        .form-group textarea {
+            padding: 0.75rem;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+            width: 100%;
+            resize: vertical;
+        }
+
         .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .form-group textarea:focus {
             outline: none;
             border-color: var(--primary-blue);
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
@@ -718,6 +739,11 @@
             border-bottom: 1px solid var(--border-color);
         }
 
+        /* Extra spacing when a section subtitle follows a form group */
+        .form-group + .section-subtitle {
+            margin-top: 1.5rem;
+        }
+
         /* Enhanced Calculator Section */
         .calculator-section {
             margin-bottom: 0;
@@ -846,6 +872,12 @@
 
         #dialog-modal .modal-content {
             width: 400px;
+            height: auto;
+        }
+
+        #export-pensions-modal .modal-content,
+        #import-pensions-modal .modal-content {
+            width: 500px;
             height: auto;
         }
 
