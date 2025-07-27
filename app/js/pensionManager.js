@@ -132,11 +132,12 @@ const PensionManager = (function() {
         closeNewPensionModal();
     }
 
-    function removePension() {
+    async function removePension() {
         if (pensions.length <= 1) return;
         const idx = pensions.findIndex(p => p.id === currentPensionId);
         if (idx !== -1) {
-            if (!confirm('Delete this pension?')) return;
+            const confirmed = await DialogManager.confirm('Delete this pension?', 'Delete');
+            if (!confirmed) return;
             localStorage.removeItem(getStorageKey(currentPensionId));
             pensions.splice(idx, 1);
             savePensionList();
