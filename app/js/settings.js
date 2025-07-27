@@ -82,6 +82,7 @@ const Settings = (function() {
         function openImport() {
             importFormat.value = 'json';
             if (importFile) importFile.value = '';
+            if (importFile) importFile.focus();
             importModal.style.display = 'flex';
         }
 
