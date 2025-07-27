@@ -185,15 +185,15 @@ const PortfolioManager = (function() {
         let totalCost = 0;
         const data = aggregateInvestments();
         data.forEach(inv => {
-            const value = inv.quantity * inv.lastPrice;
+            const value = CurrencyRates.convertToUSD(inv.quantity * inv.lastPrice, inv.currency);
             totalValue += value;
-            totalCost += inv.quantity * inv.purchasePrice;
+            totalCost += CurrencyRates.convertToUSD(inv.quantity * inv.purchasePrice, inv.currency);
         });
         const totalPL = totalValue - totalCost;
         const totalPLPct = totalCost ? (totalPL / totalCost) * 100 : 0;
 
-        document.getElementById('portfolio-total-value').textContent = formatCurrency(totalValue);
-        document.getElementById('portfolio-total-pl').textContent = formatCurrency(totalPL);
+        document.getElementById('portfolio-total-value').textContent = formatCurrency(totalValue, 'USD');
+        document.getElementById('portfolio-total-pl').textContent = formatCurrency(totalPL, 'USD');
         document.getElementById('portfolio-total-plpct').textContent = totalPLPct.toFixed(2) + '%';
     }
 
@@ -279,12 +279,12 @@ const PortfolioManager = (function() {
 
     function updateCharts() {
         const data = aggregateInvestments();
-        const labels = data.map(inv => inv.ticker);
-        const values = data.map(inv => inv.quantity * inv.lastPrice);
+        const labels = data.map(inv => `${inv.ticker} (${inv.currency})`);
+        const values = data.map(inv => CurrencyRates.convertToUSD(inv.quantity * inv.lastPrice, inv.currency));
         const total = values.reduce((a, b) => a + b, 0);
         const plPercents = data.map(inv => {
-            const cost = inv.quantity * inv.purchasePrice;
-            const value = inv.quantity * inv.lastPrice;
+            const cost = CurrencyRates.convertToUSD(inv.quantity * inv.purchasePrice, inv.currency);
+            const value = CurrencyRates.convertToUSD(inv.quantity * inv.lastPrice, inv.currency);
             return cost ? ((value - cost) / cost) * 100 : 0;
         });
         const colors = labels.map(t => getColor(t));
@@ -402,7 +402,7 @@ const PortfolioManager = (function() {
             row.draggable = true;
             row.innerHTML = `
                 <td class="drag-handle-cell"><ion-icon name="reorder-three-outline"></ion-icon></td>
-                <td>${inv.ticker}</td>
+                <td>${inv.ticker} (${inv.currency || ''})</td>
                 <td>${inv.currency || ''}</td>
                 <td>${inv.name}</td>
                 <td class="number-cell">${formatCurrency(inv.purchasePrice, inv.currency)}</td>
@@ -752,6 +752,7 @@ const PortfolioManager = (function() {
     }
 
     function init() {
+        CurrencyRates.init();
         loadPortfolioList();
         summaryMode = false;
         loadData();

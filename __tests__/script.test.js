@@ -12,6 +12,7 @@ test('FinancialDashboard global object exists with init and removeTicker', () =>
     'dialogManager.js',
     'tabManager.js',
     'portfolioStorage.js',
+    'currencyRates.js',
     'portfolioManager.js',
     'calculator.js',
     'stockTracker.js',
@@ -42,4 +43,17 @@ test('fetchQuote returns price and currency', async () => {
   vm.runInContext(content, context);
   const result = await vm.runInContext('PortfolioManager.fetchQuote("TEST")', context);
   expect(result).toEqual({ price: 123.45, currency: 'EUR' });
+});
+
+test('CurrencyRates converts values to USD', async () => {
+  const dom = new JSDOM('<!DOCTYPE html><html><body></body></html>', {url: 'http://localhost'});
+  const context = vm.createContext(dom.window);
+  dom.window.fetch = jest.fn().mockResolvedValue({
+    json: () => Promise.resolve({ quote: { GBP: 0.8 } })
+  });
+  const content = fs.readFileSync(path.resolve(__dirname, '../app/js/currencyRates.js'), 'utf8');
+  vm.runInContext(content, context);
+  await vm.runInContext('CurrencyRates.init()', context);
+  const usd = vm.runInContext('CurrencyRates.convertToUSD(80, "GBP")', context);
+  expect(usd).toBeCloseTo(100);
 });
