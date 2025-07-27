@@ -48,9 +48,8 @@ test('fetchQuote returns price and currency', async () => {
 
 test('Settings module saves currency to localStorage', () => {
   const html = '<!DOCTYPE html><html><body>' +
-    '<select id="base-currency-select">' +
-    '<option value="USD">USD</option><option value="GBP">GBP</option><option value="EUR">EUR</option>' +
-    '</select></body></html>';
+    '<select id="base-currency-select"></select>' +
+    '</body></html>';
   const dom = new JSDOM(html, {url: 'http://localhost'});
   const { window } = dom;
   const context = vm.createContext(window);
