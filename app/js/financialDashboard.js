@@ -5,6 +5,7 @@ const FinancialDashboard = (function() {
         TabManager.init();
         Settings.init();
         PortfolioManager.init();
+        PensionManager.init();
         Calculator.init();
         StockTracker.init();
         StockFinance.init();
