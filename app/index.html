@@ -244,6 +244,7 @@
                             <button class="btn btn-primary" id="add-pension-entry-btn">Add Entry</button>
                             <button class="btn btn-secondary" id="add-pension-btn">Add Pension</button>
                             <button class="btn btn-secondary" id="remove-pension-btn">Remove Pension</button>
+                            <button class="btn btn-secondary" id="pension-chart-btn">View Chart</button>
                             <label class="summary-toggle"><input type="checkbox" id="pension-summary-toggle" checked> Show in Summary</label>
                         </div>
                     </div>
@@ -344,6 +345,18 @@
                                 <button type="submit" class="btn btn-primary">Save</button>
                             </div>
                         </form>
+                    </div>
+                </div>
+
+                <!-- Pension Chart Popup -->
+                <div id="pension-chart-popup" class="modal">
+                    <div class="modal-content">
+                        <span class="modal-close" id="pension-chart-close">&times;</span>
+                        <h3>Pension Chart</h3>
+                        <div class="chart-control-panel">
+                            <div class="ticker-select" id="pension-chart-select"></div>
+                        </div>
+                        <canvas id="pension-chart-canvas" width="800" height="500"></canvas>
                     </div>
                 </div>
             </div>

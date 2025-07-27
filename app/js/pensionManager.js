@@ -40,6 +40,13 @@ const PensionManager = (function() {
     let editIndex = null;
     const paymentHeader = document.querySelector('#pension-table .payment-col');
 
+    const chartBtn = document.getElementById('pension-chart-btn');
+    const chartModal = document.getElementById('pension-chart-popup');
+    const chartSelect = document.getElementById('pension-chart-select');
+    const chartCanvas = document.getElementById('pension-chart-canvas');
+    const chartClose = document.getElementById('pension-chart-close');
+    let pensionChart = null;
+
     function getStorageKey(id) {
         return STORAGE_PREFIX + id;
     }
@@ -282,6 +289,38 @@ const PensionManager = (function() {
         return new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(val);
     }
 
+    function getEntriesFor(id) {
+        if (id === 'summary') {
+            const included = pensions.filter(p => p.show !== false);
+            const dateSet = new Set();
+            const dataMap = {};
+            included.forEach(p => {
+                const d = localStorage.getItem(getStorageKey(p.id));
+                let arr = [];
+                if (d) { try { arr = JSON.parse(d) || []; } catch (e) { arr = []; } }
+                dataMap[p.id] = arr;
+                arr.forEach(en => dateSet.add(en.date));
+            });
+            const dates = Array.from(dateSet).sort();
+            const prevVals = {};
+            included.forEach(p => { prevVals[p.id] = parseFloat(p.start) || 0; });
+            return dates.map(date => {
+                included.forEach(p => {
+                    const entry = dataMap[p.id].find(e => e.date === date);
+                    if (entry) prevVals[p.id] = entry.value;
+                });
+                const totalVal = included.reduce((s, p) => s + (prevVals[p.id] || 0), 0);
+                return { date, value: totalVal };
+            });
+        } else {
+            const data = localStorage.getItem(getStorageKey(id));
+            let arr = [];
+            if (data) { try { arr = JSON.parse(data) || []; } catch (e) { arr = []; } }
+            arr.sort((a,b)=>new Date(a.date)-new Date(b.date));
+            return arr.map(en => ({ date: en.date, value: parseFloat(en.value) }));
+        }
+    }
+
 
     function computeStats() {
         const current = summaryMode ? summaryInfo : pensions.find(p => p.id === currentPensionId);
@@ -317,6 +356,59 @@ const PensionManager = (function() {
                 index: idx
             });
         });
+    }
+
+    function showChart() {
+        if (!chartModal || !chartCanvas || !chartSelect) return;
+        chartSelect.innerHTML = '';
+        pensions.forEach(p => {
+            const label = document.createElement('label');
+            const cb = document.createElement('input');
+            cb.type = 'checkbox';
+            cb.value = p.id;
+            cb.checked = !summaryMode && p.id === currentPensionId;
+            label.appendChild(cb);
+            label.appendChild(document.createTextNode(' ' + p.name));
+            chartSelect.appendChild(label);
+            cb.addEventListener('change', updateChart);
+        });
+
+        function updateChart() {
+            const ids = Array.from(chartSelect.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value);
+            const dateSet = new Set();
+            const datasets = [];
+            if (summaryMode) {
+                const ents = getEntriesFor('summary');
+                ents.forEach(en => dateSet.add(en.date));
+                datasets.push({ id: 'summary', name: 'Summary', entries: ents });
+            }
+            ids.forEach(id => {
+                const ents = getEntriesFor(id);
+                ents.forEach(en => dateSet.add(en.date));
+                const name = (pensions.find(p => p.id === id) || {}).name || id;
+                datasets.push({ id, name, entries: ents });
+            });
+            const dates = Array.from(dateSet).sort();
+            const chartDatasets = datasets.map((ds, idx) => {
+                const map = new Map(ds.entries.map(e => [e.date, e.value]));
+                const data = dates.map(d => map.get(d) ?? null);
+                const color = `hsl(${(idx * 360 / datasets.length) % 360},70%,60%)`;
+                return { label: ds.name, data, borderColor: color, backgroundColor: color, fill: false, tension: 0.2 };
+            });
+            if (pensionChart) pensionChart.destroy();
+            pensionChart = new Chart(chartCanvas.getContext('2d'), {
+                type: 'line',
+                data: { labels: dates.map(DateUtils.formatDate), datasets: chartDatasets },
+                options: { responsive: true }
+            });
+        }
+
+        updateChart();
+        chartModal.style.display = 'flex';
+    }
+
+    function closeChart() {
+        if (chartModal) chartModal.style.display = 'none';
     }
 
     async function renderTable() {
@@ -390,6 +482,10 @@ const PensionManager = (function() {
         addEntryBtn.addEventListener('click', openEntryModal);
         entryCancel.addEventListener('click', closeEntryModal);
         entryForm.addEventListener('submit', addEntry);
+
+        if (chartBtn) chartBtn.addEventListener('click', showChart);
+        if (chartClose) chartClose.addEventListener('click', closeChart);
+        if (chartModal) chartModal.addEventListener('click', e => { if (e.target === chartModal) closeChart(); });
 
         document.getElementById('pension-body').addEventListener('click', handleRowAction);
         editCancel.addEventListener('click', closeEditEntryModal);
