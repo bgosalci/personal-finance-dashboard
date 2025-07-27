@@ -739,6 +739,11 @@
             border-bottom: 1px solid var(--border-color);
         }
 
+        /* Extra spacing when a section subtitle follows a form group */
+        .form-group + .section-subtitle {
+            margin-top: 1.5rem;
+        }
+
         /* Enhanced Calculator Section */
         .calculator-section {
             margin-bottom: 0;
