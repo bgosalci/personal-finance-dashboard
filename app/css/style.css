@@ -325,7 +325,7 @@
             color: var(--text-secondary);
         }
 
-        /* Make first two columns sticky for finance table */
+        /* Make first column sticky for finance table */
         #financials-table th:first-child {
             position: sticky;
             left: 0;
@@ -341,18 +341,6 @@
             z-index: 2;
         }
 
-        #financials-table th:nth-child(2) {
-            position: sticky;
-            left: 150px; /* offset by width of label column */
-            z-index: 2;
-        }
-
-        #financials-table td:nth-child(2) {
-            position: sticky;
-            left: 150px; /* offset by width of label column */
-            background: var(--background-primary);
-            z-index: 1;
-        }
 
         /* Shorten label column for finance table */
         #financials-table td:first-child {
@@ -401,19 +389,24 @@
             z-index: 2;
         }
 
-        .data-table th:nth-child(2),
-        .data-table td:nth-child(2) {
+        .data-table th:nth-child(1) {
+            position: sticky;
+            left: 0;
+            z-index: 3;
+        }
+
+        .data-table td:nth-child(1) {
             position: sticky;
             left: 0;
             z-index: 1;
             background: var(--background-primary);
         }
 
-        .data-table .summary-row td:nth-child(2) {
+        .data-table .summary-row td:nth-child(1) {
             background: var(--background-secondary);
         }
 
-        .data-table tbody tr:hover td:nth-child(2) {
+        .data-table tbody tr:hover td:nth-child(1) {
             background: var(--background-secondary);
         }
 
@@ -898,24 +891,10 @@
             white-space: nowrap;
         }
 
-        .drag-handle-cell {
-            width: 24px;
-            text-align: center;
-            cursor: grab;
-        }
-
-        tr.dragging .drag-handle-cell {
-            cursor: grabbing;
-        }
-
         tr.dragging {
             opacity: 0.5;
         }
 
-        .drag-handle-cell ion-icon {
-            font-size: 20px;
-            color: var(--text-secondary);
-        }
 
         .icon-btn {
             border: none;
