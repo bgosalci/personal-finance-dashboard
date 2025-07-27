@@ -268,16 +268,25 @@ const PensionManager = (function() {
         stats.forEach(st => {
             const row = document.createElement('tr');
             row.dataset.index = st.index;
+
+            const monthlyClass = st.monthlyPL < 0 ? 'growth-negative' : '';
+            const ytdClass = st.ytdPL < 0 ? 'growth-negative' : '';
+            const totalClass = st.totalPL < 0 ? 'growth-negative' : '';
+
+            const monthlyPctClass = st.monthlyPLPct > 0 ? 'growth-positive' : st.monthlyPLPct < 0 ? 'growth-negative' : '';
+            const ytdPctClass = st.ytdPLPct > 0 ? 'growth-positive' : st.ytdPLPct < 0 ? 'growth-negative' : '';
+            const totalPctClass = st.totalPLPct > 0 ? 'growth-positive' : st.totalPLPct < 0 ? 'growth-negative' : '';
+
             row.innerHTML = `
                 <td>${DateUtils.formatDate(st.date)}</td>
                 ${pensions.find(p=>p.id===currentPensionId).type==='payments'?`<td class="number-cell">${formatCurrency(st.payment)}</td>`:''}
                 <td class="number-cell">${formatCurrency(st.value)}</td>
-                <td class="number-cell">${formatCurrency(st.monthlyPL)}</td>
-                <td class="number-cell">${st.monthlyPLPct.toFixed(2)}%</td>
-                <td class="number-cell">${formatCurrency(st.ytdPL)}</td>
-                <td class="number-cell">${st.ytdPLPct.toFixed(2)}%</td>
-                <td class="number-cell">${formatCurrency(st.totalPL)}</td>
-                <td class="number-cell">${st.totalPLPct.toFixed(2)}%</td>
+                <td class="number-cell ${monthlyClass}">${formatCurrency(st.monthlyPL)}</td>
+                <td class="number-cell ${monthlyPctClass}">${st.monthlyPLPct.toFixed(2)}%</td>
+                <td class="number-cell ${ytdClass}">${formatCurrency(st.ytdPL)}</td>
+                <td class="number-cell ${ytdPctClass}">${st.ytdPLPct.toFixed(2)}%</td>
+                <td class="number-cell ${totalClass}">${formatCurrency(st.totalPL)}</td>
+                <td class="number-cell ${totalPctClass}">${st.totalPLPct.toFixed(2)}%</td>
                 <td class="actions-cell">
                     <button class="icon-btn edit-btn" data-index="${st.index}" title="Edit">
                         <svg width="16" height="16" viewBox="0 0 512 512"><polygon points="364.13 125.25 87 403 64 448 108.99 425 386.75 147.87 364.13 125.25" style="fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"/><path d="M420.69,68.69,398.07,91.31l22.62,22.63,22.62-22.63a16,16,0,0,0,0-22.62h0A16,16,0,0,0,420.69,68.69Z" style="fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"/></svg>
