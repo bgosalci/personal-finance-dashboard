@@ -51,6 +51,6 @@ test('investment forms allow selecting currency', () => {
   expect(editSelect.tagName).toBe('SELECT');
   const addOptions = Array.from(addSelect.querySelectorAll('option')).map(o => o.value);
   const editOptions = Array.from(editSelect.querySelectorAll('option')).map(o => o.value);
-  expect(addOptions).toEqual(expect.arrayContaining(['USD', 'GBP']));
-  expect(editOptions).toEqual(expect.arrayContaining(['USD', 'GBP']));
+  expect(addOptions).toEqual(expect.arrayContaining(['USD', 'GBP', 'EUR']));
+  expect(editOptions).toEqual(expect.arrayContaining(['USD', 'GBP', 'EUR']));
 });

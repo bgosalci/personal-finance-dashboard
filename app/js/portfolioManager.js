@@ -751,8 +751,8 @@ const PortfolioManager = (function() {
         }
     }
 
-    function init() {
-        CurrencyRates.init();
+    async function init() {
+        await CurrencyRates.init();
         loadPortfolioList();
         summaryMode = false;
         loadData();
