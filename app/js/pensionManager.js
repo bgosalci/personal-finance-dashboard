@@ -5,12 +5,15 @@ const PensionManager = (function() {
     const STORAGE_PREFIX = 'pensionData_';
     let pensions = [];
     let currentPensionId = null;
+    let summaryMode = false;
+    let summaryInfo = { type: 'growth', start: 0 };
     let entries = [];
 
     const pensionTabs = document.getElementById('pension-tabs');
     const addPensionBtn = document.getElementById('add-pension-btn');
     const removePensionBtn = document.getElementById('remove-pension-btn');
     const addEntryBtn = document.getElementById('add-pension-entry-btn');
+    const summaryToggle = document.getElementById('pension-summary-toggle');
 
     const newPensionModal = document.getElementById('new-pension-modal');
     const pensionForm = document.getElementById('new-pension-form');
@@ -45,8 +48,9 @@ const PensionManager = (function() {
         if (list) {
             try { pensions = JSON.parse(list) || []; } catch (e) { pensions = []; }
         }
+        pensions.forEach(p => { if (p.show === undefined) p.show = true; });
         if (pensions.length === 0) {
-            pensions = [{ id: 'pen1', name: 'Pension 1', type: 'growth', start: 0 }];
+            pensions = [{ id: 'pen1', name: 'Pension 1', type: 'growth', start: 0, show: true }];
             savePensionList();
             localStorage.setItem(getStorageKey('pen1'), '[]');
         }
@@ -58,11 +62,42 @@ const PensionManager = (function() {
     }
 
     function loadEntries() {
-        const data = localStorage.getItem(getStorageKey(currentPensionId));
-        if (data) {
-            try { entries = JSON.parse(data) || []; } catch (e) { entries = []; }
-        } else {
+        if (summaryMode) {
+            const included = pensions.filter(p => p.show !== false);
+            summaryInfo.start = included.reduce((a, p) => a + (parseFloat(p.start) || 0), 0);
+            summaryInfo.type = included.some(p => p.type === 'payments') ? 'payments' : 'growth';
+            const dateSet = new Set();
+            const dataMap = {};
+            included.forEach(p => {
+                const d = localStorage.getItem(getStorageKey(p.id));
+                let arr = [];
+                if (d) { try { arr = JSON.parse(d) || []; } catch (e) { arr = []; } }
+                dataMap[p.id] = arr;
+                arr.forEach(en => dateSet.add(en.date));
+            });
+            const dates = Array.from(dateSet).sort();
+            const prevVals = {};
+            included.forEach(p => { prevVals[p.id] = parseFloat(p.start) || 0; });
             entries = [];
+            dates.forEach(date => {
+                let paymentSum = 0;
+                included.forEach(p => {
+                    const entry = dataMap[p.id].find(e => e.date === date);
+                    if (entry) {
+                        prevVals[p.id] = entry.value;
+                        if (p.type === 'payments') paymentSum += parseFloat(entry.payment) || 0;
+                    }
+                });
+                const totalVal = included.reduce((s, p) => s + (prevVals[p.id] || 0), 0);
+                entries.push({ date, value: totalVal, payment: paymentSum });
+            });
+        } else {
+            const data = localStorage.getItem(getStorageKey(currentPensionId));
+            if (data) {
+                try { entries = JSON.parse(data) || []; } catch (e) { entries = []; }
+            } else {
+                entries = [];
+            }
         }
     }
 
@@ -71,7 +106,7 @@ const PensionManager = (function() {
     }
 
     function updatePaymentHeader() {
-        const current = pensions.find(p => p.id === currentPensionId);
+        const current = summaryMode ? summaryInfo : pensions.find(p => p.id === currentPensionId);
         if (!paymentHeader) return;
         paymentHeader.style.display = current && current.type === 'payments' ? 'table-cell' : 'none';
     }
@@ -79,9 +114,14 @@ const PensionManager = (function() {
     function renderTabs() {
         if (!pensionTabs) return;
         pensionTabs.innerHTML = '';
+        const summaryTab = document.createElement('button');
+        summaryTab.className = 'sub-nav-tab' + (summaryMode ? ' active' : '');
+        summaryTab.textContent = 'Summary';
+        summaryTab.dataset.id = 'summary';
+        pensionTabs.appendChild(summaryTab);
         pensions.forEach(p => {
             const btn = document.createElement('button');
-            btn.className = 'sub-nav-tab' + (p.id === currentPensionId ? ' active' : '');
+            btn.className = 'sub-nav-tab' + (!summaryMode && p.id === currentPensionId ? ' active' : '');
             btn.textContent = p.name;
             btn.dataset.id = p.id;
             pensionTabs.appendChild(btn);
@@ -89,11 +129,22 @@ const PensionManager = (function() {
     }
 
     function switchPension(id) {
-        currentPensionId = id;
+        summaryMode = (id === 'summary');
+        if (!summaryMode) currentPensionId = id;
         loadEntries();
         renderTabs();
         updatePaymentHeader();
         renderTable();
+        removePensionBtn.style.display = summaryMode ? 'none' : 'inline-flex';
+        addEntryBtn.style.display = summaryMode ? 'none' : 'inline-flex';
+        addPensionBtn.style.display = 'inline-flex';
+        if (summaryToggle) {
+            summaryToggle.style.display = summaryMode ? 'none' : 'inline-flex';
+            if (!summaryMode) {
+                const p = pensions.find(p => p.id === currentPensionId);
+                summaryToggle.checked = !p || p.show !== false;
+            }
+        }
     }
 
     function openNewPensionModal() {
@@ -109,6 +160,7 @@ const PensionManager = (function() {
     }
 
     function openEntryModal() {
+        if (summaryMode) return;
         entryDateInput.value = new Date().toISOString().split('T')[0];
         entryValueInput.value = '';
         entryPaymentInput.value = '';
@@ -133,7 +185,7 @@ const PensionManager = (function() {
         const start = parseFloat(pensionStartInput.value);
         if (!name || isNaN(start)) return;
         const id = 'pen' + Date.now();
-        pensions.push({ id, name, type, start });
+        pensions.push({ id, name, type, start, show: true });
         savePensionList();
         localStorage.setItem(getStorageKey(id), '[]');
         switchPension(id);
@@ -158,6 +210,7 @@ const PensionManager = (function() {
 
     function addEntry(e) {
         e.preventDefault();
+        if (summaryMode) return;
         const date = entryDateInput.value;
         const value = parseFloat(entryValueInput.value);
         const payment = parseFloat(entryPaymentInput.value) || 0;
@@ -170,6 +223,7 @@ const PensionManager = (function() {
     }
 
     function openEditEntryModal(idx) {
+        if (summaryMode) return;
         editIndex = idx;
         const entry = entries[idx];
         if (!entry) return;
@@ -193,6 +247,7 @@ const PensionManager = (function() {
 
     function saveEditEntry(e) {
         e.preventDefault();
+        if (summaryMode) return;
         if (editIndex === null) return;
         const date = editDateInput.value;
         const value = parseFloat(editValueInput.value);
@@ -206,6 +261,7 @@ const PensionManager = (function() {
     }
 
     async function handleRowAction(e) {
+        if (summaryMode) return;
         const btn = e.target.closest('button');
         if (!btn) return;
         const idx = parseInt(btn.dataset.index, 10);
@@ -235,7 +291,7 @@ const PensionManager = (function() {
     }
 
     function computeStats() {
-        const current = pensions.find(p => p.id === currentPensionId);
+        const current = summaryMode ? summaryInfo : pensions.find(p => p.id === currentPensionId);
         if (!current) return [];
         const type = current.type;
         const startVal = parseFloat(current.start) || 0;
@@ -297,24 +353,25 @@ const PensionManager = (function() {
             const ytdVal = convertCurrency(st.ytdPL, 'USD', baseCurrency, rates);
             const totalVal = convertCurrency(st.totalPL, 'USD', baseCurrency, rates);
 
+            const type = summaryMode ? summaryInfo.type : pensions.find(p=>p.id===currentPensionId).type;
             row.innerHTML = `
                 <td>${DateUtils.formatDate(st.date)}</td>
-                ${pensions.find(p=>p.id===currentPensionId).type==='payments'?`<td class="number-cell">${formatCurrency(paymentVal, baseCurrency)}</td>`:''}
-                <td class="number-cell">${formatCurrency(valueVal, baseCurrency)}</td>
-                <td class="number-cell ${monthlyClass}">${formatCurrency(monthlyVal, baseCurrency)}</td>
+                ${pensions.find(p=>p.id===currentPensionId).type==='payments'?`<td class="number-cell">${formatCurrency(st.payment)}</td>`:''}
+                <td class="number-cell">${formatCurrency(st.value)}</td>
+                <td class="number-cell ${monthlyClass}">${formatCurrency(st.monthlyPL)}</td>
                 <td class="number-cell ${monthlyPctClass}">${st.monthlyPLPct.toFixed(2)}%</td>
                 <td class="number-cell ${ytdClass}">${formatCurrency(ytdVal, baseCurrency)}</td>
                 <td class="number-cell ${ytdPctClass}">${st.ytdPLPct.toFixed(2)}%</td>
                 <td class="number-cell ${totalClass}">${formatCurrency(totalVal, baseCurrency)}</td>
                 <td class="number-cell ${totalPctClass}">${st.totalPLPct.toFixed(2)}%</td>
-                <td class="actions-cell">
+                ${summaryMode ? '' : `<td class="actions-cell">
                     <button class="icon-btn edit-btn" data-index="${st.index}" title="Edit">
                         <svg width="16" height="16" viewBox="0 0 512 512"><polygon points="364.13 125.25 87 403 64 448 108.99 425 386.75 147.87 364.13 125.25" style="fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"/><path d="M420.69,68.69,398.07,91.31l22.62,22.63,22.62-22.63a16,16,0,0,0,0-22.62h0A16,16,0,0,0,420.69,68.69Z" style="fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"/></svg>
                     </button>
                     <button class="icon-btn delete-btn" data-index="${st.index}" title="Delete">
                         <svg width="16" height="16" viewBox="0 0 512 512"><path d="M112,112l20,320c.95,18.49,14.4,32,32,32H348c17.67,0,30.87-13.51,32-32l20-320" style="fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"/><line x1="80" y1="112" x2="432" y2="112" style="stroke:currentColor;stroke-linecap:round;stroke-miterlimit:10;stroke-width:32px"/><path d="M192,112V72h0a23.93,23.93,0,0,1,24-24h80a23.93,23.93,0,0,1,24,24h0v40" style="fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"/><line x1="256" y1="176" x2="256" y2="400" style="fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"/><line x1="184" y1="176" x2="192" y2="400" style="fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"/><line x1="328" y1="176" x2="320" y2="400" style="fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"/></svg>
                     </button>
-                </td>
+                </td>`}
             `;
             tbody.appendChild(row);
         });
@@ -349,6 +406,16 @@ const PensionManager = (function() {
 
         newPensionModal.addEventListener('click', e => { if (e.target === newPensionModal) closeNewPensionModal(); });
         entryModal.addEventListener('click', e => { if (e.target === entryModal) closeEntryModal(); });
+
+        if (summaryToggle) {
+            summaryToggle.addEventListener('change', () => {
+                const p = pensions.find(p => p.id === currentPensionId);
+                if (p) {
+                    p.show = summaryToggle.checked;
+                    savePensionList();
+                }
+            });
+        }
     }
 
     return { init };
