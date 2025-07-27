@@ -358,6 +358,75 @@ const PensionManager = (function() {
         });
     }
 
+    function computeAnalysis(stats) {
+        if (!stats || stats.length === 0) return null;
+        const current = summaryMode ? summaryInfo : pensions.find(p => p.id === currentPensionId);
+        const startVal = parseFloat(current.start) || 0;
+        const startDate = new Date(stats[0].date);
+        const endDate = new Date(stats[stats.length - 1].date);
+        const years = (endDate - startDate) / (365.25 * 24 * 3600 * 1000);
+        const endVal = stats[stats.length - 1].value;
+        const cagr = years > 0 && startVal > 0 ? (Math.pow(endVal / startVal, 1 / years) - 1) * 100 : 0;
+
+        let bestMonth = stats[0];
+        let worstMonth = stats[0];
+        stats.forEach(st => {
+            if (st.monthlyPLPct > bestMonth.monthlyPLPct) bestMonth = st;
+            if (st.monthlyPLPct < worstMonth.monthlyPLPct) worstMonth = st;
+        });
+
+        const yearEndMap = {};
+        stats.forEach((st, idx) => {
+            const year = new Date(st.date).getFullYear();
+            const nextYear = idx < stats.length - 1 ? new Date(stats[idx + 1].date).getFullYear() : year;
+            if (nextYear !== year || idx === stats.length - 1) {
+                yearEndMap[year] = st.ytdPLPct;
+            }
+        });
+        let bestYear = null;
+        let worstYear = null;
+        Object.keys(yearEndMap).forEach(y => {
+            const pct = yearEndMap[y];
+            if (bestYear === null || pct > yearEndMap[bestYear]) bestYear = y;
+            if (worstYear === null || pct < yearEndMap[worstYear]) worstYear = y;
+        });
+
+        return {
+            cagr,
+            bestMonth: { date: bestMonth.date, pct: bestMonth.monthlyPLPct },
+            worstMonth: { date: worstMonth.date, pct: worstMonth.monthlyPLPct },
+            bestYear: bestYear ? { year: parseInt(bestYear, 10), pct: yearEndMap[bestYear] } : null,
+            worstYear: worstYear ? { year: parseInt(worstYear, 10), pct: yearEndMap[worstYear] } : null
+        };
+    }
+
+    function updateSummaryCards(stats) {
+        const container = document.getElementById('pension-summary-cards');
+        if (!container) return;
+        if (!stats || stats.length === 0) {
+            container.style.display = 'none';
+            return;
+        }
+        const analysis = computeAnalysis(stats);
+        if (!analysis) {
+            container.style.display = 'none';
+            return;
+        }
+        const cagrEl = document.getElementById('pension-current-cagr');
+        const bestMonthEl = document.getElementById('pension-best-month');
+        const worstMonthEl = document.getElementById('pension-worst-month');
+        const bestYearEl = document.getElementById('pension-best-year');
+        const worstYearEl = document.getElementById('pension-worst-year');
+
+        cagrEl.textContent = analysis.cagr ? analysis.cagr.toFixed(2) + '%' : '---';
+        bestMonthEl.textContent = analysis.bestMonth ? `${DateUtils.formatDate(analysis.bestMonth.date)} (${analysis.bestMonth.pct.toFixed(2)}%)` : '---';
+        worstMonthEl.textContent = analysis.worstMonth ? `${DateUtils.formatDate(analysis.worstMonth.date)} (${analysis.worstMonth.pct.toFixed(2)}%)` : '---';
+        bestYearEl.textContent = analysis.bestYear ? `${analysis.bestYear.year} (${analysis.bestYear.pct.toFixed(2)}%)` : '---';
+        worstYearEl.textContent = analysis.worstYear ? `${analysis.worstYear.year} (${analysis.worstYear.pct.toFixed(2)}%)` : '---';
+
+        container.style.display = 'flex';
+    }
+
     function showChart() {
         if (!chartModal || !chartCanvas || !chartSelect) return;
         chartSelect.innerHTML = '';
@@ -459,6 +528,7 @@ const PensionManager = (function() {
             `;
             tbody.appendChild(row);
         });
+        updateSummaryCards(stats);
     }
 
     function init() {
