@@ -47,6 +47,8 @@ const PensionManager = (function() {
     const chartSelect = document.getElementById('pension-chart-select');
     const chartCanvas = document.getElementById('pension-chart-canvas');
     const chartClose = document.getElementById('pension-chart-close');
+    const chartTypeValue = document.getElementById('pension-chart-type-value');
+    const chartTypeGrowth = document.getElementById('pension-chart-type-growth');
     let pensionChart = null;
 
     function getStorageKey(id) {
@@ -448,33 +450,50 @@ const PensionManager = (function() {
             cb.addEventListener('change', updateChart);
         });
 
+        if (chartTypeValue) chartTypeValue.checked = true;
+        if (chartTypeGrowth) chartTypeGrowth.checked = false;
+        if (chartTypeValue) chartTypeValue.addEventListener('change', updateChart);
+        if (chartTypeGrowth) chartTypeGrowth.addEventListener('change', updateChart);
+
         function updateChart() {
             const ids = Array.from(chartSelect.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value);
+            const chartType = chartTypeGrowth && chartTypeGrowth.checked ? 'growth' : 'value';
             const dateSet = new Set();
             const datasets = [];
             if (summaryMode) {
                 const ents = getEntriesFor('summary');
                 ents.forEach(en => dateSet.add(en.date));
-                datasets.push({ id: 'summary', name: 'Summary', entries: ents });
+                datasets.push({ id: 'summary', name: 'Summary', entries: ents, start: summaryInfo.start });
             }
             ids.forEach(id => {
                 const ents = getEntriesFor(id);
                 ents.forEach(en => dateSet.add(en.date));
-                const name = (pensions.find(p => p.id === id) || {}).name || id;
-                datasets.push({ id, name, entries: ents });
+                const p = pensions.find(p => p.id === id) || { start: 0 };
+                const name = p.name || id;
+                datasets.push({ id, name, entries: ents, start: parseFloat(p.start) || 0 });
             });
             const dates = Array.from(dateSet).sort();
             const chartDatasets = datasets.map((ds, idx) => {
                 const map = new Map(ds.entries.map(e => [e.date, e.value]));
-                const data = dates.map(d => map.get(d) ?? null);
+                const data = dates.map(d => {
+                    const val = map.get(d);
+                    if (chartType === 'growth') {
+                        return val != null ? ((val - ds.start) / ds.start) * 100 : null;
+                    }
+                    return val ?? null;
+                });
                 const color = `hsl(${(idx * 360 / datasets.length) % 360},70%,60%)`;
                 return { label: ds.name, data, borderColor: color, backgroundColor: color, fill: false, tension: 0.2, spanGaps: true };
             });
             if (pensionChart) pensionChart.destroy();
+            const options = { responsive: true };
+            if (chartType === 'growth') {
+                options.scales = { y: { ticks: { callback: v => v + '%' } } };
+            }
             pensionChart = new Chart(chartCanvas.getContext('2d'), {
                 type: 'line',
                 data: { labels: dates.map(DateUtils.formatDate), datasets: chartDatasets },
-                options: { responsive: true }
+                options
             });
         }
 

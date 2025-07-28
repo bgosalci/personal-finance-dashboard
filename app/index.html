@@ -377,6 +377,10 @@
                         <span class="modal-close" id="pension-chart-close">&times;</span>
                         <h3>Pension Chart</h3>
                         <div class="chart-control-panel">
+                            <div class="chart-type">
+                                <label><input type="radio" name="pension-chart-type" id="pension-chart-type-value" value="value" checked> Value</label>
+                                <label><input type="radio" name="pension-chart-type" id="pension-chart-type-growth" value="growth"> Growth</label>
+                            </div>
                             <div class="ticker-select" id="pension-chart-select"></div>
                         </div>
                         <canvas id="pension-chart-canvas" width="800" height="500"></canvas>
