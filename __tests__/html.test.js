@@ -98,3 +98,12 @@ test('pension header shows base currency label', () => {
   const label = doc.getElementById('pension-base-currency-label');
   expect(label).not.toBeNull();
 });
+
+test('pension table includes Total Payments column', () => {
+  const htmlPath = path.resolve(__dirname, '../app/index.html');
+  const html = fs.readFileSync(htmlPath, 'utf8');
+  const dom = new JSDOM(html);
+  const doc = dom.window.document;
+  const headers = Array.from(doc.querySelectorAll('#pension-table thead th')).map(th => th.textContent.trim());
+  expect(headers).toContain('Total Payments (USD)');
+});

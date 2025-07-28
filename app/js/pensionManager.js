@@ -30,6 +30,7 @@ const PensionManager = (function() {
     const entryCancel = document.getElementById('cancel-pension-entry');
     const baseCurrencyLabel = document.getElementById('pension-base-currency-label');
     const paymentCurrencyLabel = document.getElementById('pension-payment-currency-label');
+    const totalPaymentCurrencyLabel = document.getElementById('pension-total-payment-currency-label');
 
     const editEntryModal = document.getElementById('pension-edit-modal');
     const editEntryForm = document.getElementById('pension-edit-form');
@@ -39,6 +40,7 @@ const PensionManager = (function() {
     const editCancel = document.getElementById('cancel-pension-edit');
     let editIndex = null;
     const paymentHeader = document.querySelector('#pension-table .payment-col');
+    const totalPaymentHeader = document.querySelector('#pension-table .total-payment-col');
 
     const chartBtn = document.getElementById('pension-chart-btn');
     const chartModal = document.getElementById('pension-chart-popup');
@@ -115,8 +117,10 @@ const PensionManager = (function() {
 
     function updatePaymentHeader() {
         const current = summaryMode ? summaryInfo : pensions.find(p => p.id === currentPensionId);
-        if (!paymentHeader) return;
-        paymentHeader.style.display = current && current.type === 'payments' ? 'table-cell' : 'none';
+        if (!paymentHeader || !totalPaymentHeader) return;
+        const show = current && current.type === 'payments' ? 'table-cell' : 'none';
+        paymentHeader.style.display = show;
+        totalPaymentHeader.style.display = show;
     }
 
     function renderTabs() {
@@ -354,6 +358,7 @@ const PensionManager = (function() {
                 monthlyPL, monthlyPLPct,
                 ytdPL, ytdPLPct,
                 totalPL, totalPLPct,
+                totalPayments,
                 index: idx
             });
         });
@@ -489,6 +494,7 @@ const PensionManager = (function() {
         const baseCurrency = Settings.getBaseCurrency ? Settings.getBaseCurrency() : 'USD';
         if (baseCurrencyLabel) baseCurrencyLabel.textContent = baseCurrency;
         if (paymentCurrencyLabel) paymentCurrencyLabel.textContent = baseCurrency;
+        if (totalPaymentCurrencyLabel) totalPaymentCurrencyLabel.textContent = baseCurrency;
         stats.forEach(st => {
             const row = document.createElement('tr');
             row.dataset.index = st.index;
@@ -510,7 +516,7 @@ const PensionManager = (function() {
             const type = summaryMode ? summaryInfo.type : pensions.find(p=>p.id===currentPensionId).type;
             row.innerHTML = `
                 <td>${DateUtils.formatDate(st.date)}</td>
-                ${pensions.find(p=>p.id===currentPensionId).type==='payments'?`<td class="number-cell">${formatCurrency(paymentVal, baseCurrency)}</td>`:''}
+                ${type==='payments'?`<td class="number-cell">${formatCurrency(paymentVal, baseCurrency)}</td><td class="number-cell">${formatCurrency(st.totalPayments, baseCurrency)}</td>`:''}
                 <td class="number-cell">${formatCurrency(valueVal, baseCurrency)}</td>
                 <td class="number-cell ${monthlyClass}">${formatCurrency(monthlyVal, baseCurrency)}</td>
                 <td class="number-cell ${monthlyPctClass}">${st.monthlyPLPct.toFixed(2)}%</td>
