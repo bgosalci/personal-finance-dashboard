@@ -475,10 +475,11 @@ const PensionManager = (function() {
             const dates = Array.from(dateSet).sort();
             const chartDatasets = datasets.map((ds, idx) => {
                 const map = new Map(ds.entries.map(e => [e.date, e.value]));
+                const base = ds.start || (ds.entries[0] ? ds.entries[0].value : 0);
                 const data = dates.map(d => {
                     const val = map.get(d);
                     if (chartType === 'growth') {
-                        return val != null ? ((val - ds.start) / ds.start) * 100 : null;
+                        return val != null && base ? ((val - base) / base) * 100 : null;
                     }
                     return val ?? null;
                 });

@@ -246,3 +246,53 @@ test('Pension growth chart calculates percentage data', () => {
   expect(data[1]).toBeCloseTo(20);
   expect(window.chartOptions.options.scales.y.ticks.callback(10)).toBe('10%');
 });
+
+test('Pension growth chart shows multiple pensions', () => {
+  const html = `<!DOCTYPE html><html><body>
+    <div id="pension-chart-popup" class="modal">
+      <div class="modal-content">
+        <div class="chart-control-panel">
+          <div class="chart-type">
+            <input type="radio" id="pension-chart-type-value" name="pension-chart-type" value="value">
+            <input type="radio" id="pension-chart-type-growth" name="pension-chart-type" value="growth">
+          </div>
+          <div id="pension-chart-select"></div>
+        </div>
+        <canvas id="pension-chart-canvas"></canvas>
+      </div>
+    </div>`;
+  const dom = new JSDOM(html, { url: 'http://localhost' });
+  const { window } = dom;
+  const context = vm.createContext(window);
+  window.HTMLCanvasElement.prototype.getContext = () => ({}) ;
+  context.Chart = function(ctx, opts) { window.chartOptions = opts; this.destroy = () => {}; };
+  context.DateUtils = { formatDate: d => d };
+  let pmCode = fs.readFileSync(path.resolve(__dirname, '../app/js/pensionManager.js'), 'utf8');
+  pmCode = pmCode.replace(
+    'return { init, exportData, importData, deleteAllData };',
+    'window.__setData = (p, e, id) => { pensions = p; entries = e; currentPensionId = id; summaryMode = false; }; window.__showChart = showChart; return { init, exportData, importData, deleteAllData };'
+  );
+  vm.runInContext(pmCode, context);
+  window.localStorage.setItem('pensionData_pen1', JSON.stringify([
+    { date: '2024-01-01', value: 100 },
+    { date: '2024-02-01', value: 120 }
+  ]));
+  window.localStorage.setItem('pensionData_pen2', JSON.stringify([
+    { date: '2024-01-01', value: 50 },
+    { date: '2024-02-01', value: 60 }
+  ]));
+  vm.runInContext('__setData(' + JSON.stringify([
+    { id: "pen1", name: "P1", type: "growth", start: 100 },
+    { id: "pen2", name: "P2", type: "payments", start: 0 }
+  ]) + ', [], "pen1")', context);
+  vm.runInContext('__showChart()', context);
+  const cb2 = window.document.querySelector('#pension-chart-select input[value="pen2"]');
+  cb2.checked = true;
+  cb2.dispatchEvent(new window.Event('change'));
+  window.document.getElementById('pension-chart-type-growth').checked = true;
+  window.document.getElementById('pension-chart-type-growth').dispatchEvent(new window.Event('change'));
+  const sets = window.chartOptions.data.datasets;
+  expect(sets.length).toBe(2);
+  expect(sets[1].data[0]).toBe(0);
+  expect(sets[1].data[1]).toBeCloseTo(20);
+});
