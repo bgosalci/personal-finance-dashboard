@@ -99,3 +99,24 @@ test('Edit modal focuses name input when opened', () => {
   vm.runInContext('__openEditModal(0)', context);
   expect(dom.window.document.activeElement.id).toBe('edit-name');
 });
+
+test('Add Portfolio prompt focuses text input when opened', () => {
+  const html = `<!DOCTYPE html><html><body>
+    <div id="dialog-modal" class="modal">
+      <div class="modal-content">
+        <span id="dialog-close">&times;</span>
+        <p id="dialog-message"></p>
+        <div id="dialog-input-group" class="form-group">
+          <input type="text" id="dialog-input">
+        </div>
+        <button id="dialog-cancel">No</button>
+        <button id="dialog-ok">Yes</button>
+      </div>
+    </div>`;
+  const dom = new JSDOM(html, {url: 'http://localhost'});
+  const context = vm.createContext(dom.window);
+  const dm = fs.readFileSync(path.resolve(__dirname, '../app/js/dialogManager.js'), 'utf8');
+  vm.runInContext(dm, context);
+  vm.runInContext('DialogManager.prompt("Enter portfolio name:")', context);
+  expect(dom.window.document.activeElement.id).toBe('dialog-input');
+});
