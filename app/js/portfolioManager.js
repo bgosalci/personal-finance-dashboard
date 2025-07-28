@@ -693,15 +693,20 @@ const PortfolioManager = (function() {
         editTotal.textContent = formatCurrency(qty * price, currency);
     }
 
-    async function fetchLastPrices() {
-        if (investments.length === 0) return;
+    async function updatePortfolioPrices(portfolioId) {
+        const key = getStorageKey(portfolioId);
+        const data = localStorage.getItem(key);
+        if (!data) return;
+        let list;
+        try { list = JSON.parse(data) || []; } catch (e) { list = []; }
+        if (list.length === 0) return;
 
         const priceMap = {};
         const currencyMap = {};
-        const tickers = Array.from(new Set(investments.map(inv => inv.ticker)));
+        const tickers = Array.from(new Set(list.map(inv => inv.ticker)));
 
         const fetches = tickers.map(ticker => {
-            const inv = investments.find(i => i.ticker === ticker);
+            const inv = list.find(i => i.ticker === ticker);
             const curr = inv ? inv.currency || 'USD' : 'USD';
             return fetchQuote(ticker, curr).then(res => {
                 if (res.price !== null) {
@@ -713,14 +718,21 @@ const PortfolioManager = (function() {
 
         await Promise.all(fetches);
 
-        investments.forEach(inv => {
+        list.forEach(inv => {
             if (priceMap[inv.ticker] !== undefined) {
                 inv.lastPrice = priceMap[inv.ticker];
                 inv.currency = currencyMap[inv.ticker] || inv.currency;
             }
         });
 
-        saveData();
+        localStorage.setItem(key, JSON.stringify(list));
+    }
+
+    async function fetchLastPrices() {
+        for (const pf of portfolios) {
+            await updatePortfolioPrices(pf.id);
+        }
+        loadData();
         renderTable();
     }
 
@@ -940,5 +952,5 @@ const PortfolioManager = (function() {
         renderTable();
     }
 
-    return { init, fetchQuote, fetchLastPrices, exportData, importData, deleteAllData };
+    return { init, fetchQuote, fetchLastPrices, exportData, importData, deleteAllData, updatePortfolioPrices };
 })();
