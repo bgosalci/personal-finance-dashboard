@@ -186,3 +186,23 @@ test('computeStats includes payments in total percent', () => {
   const stats = vm.runInContext('__computeStats()', context);
   expect(stats[1].totalPLPct).toBeCloseTo(10);
 });
+
+test('computeStats returns cumulative payments', () => {
+  const dom = new JSDOM('<!DOCTYPE html><html><body></body></html>', { url: 'http://localhost' });
+  const context = vm.createContext(dom.window);
+  let pmCode = fs.readFileSync(path.resolve(__dirname, '../app/js/pensionManager.js'), 'utf8');
+  pmCode = pmCode.replace(
+    'return { init, exportData, importData, deleteAllData };',
+    'window.__setData = (p, e, id) => { pensions = p; entries = e; currentPensionId = id; summaryMode = false; }; window.__computeStats = computeStats; return { init, exportData, importData, deleteAllData };'
+  );
+  vm.runInContext(pmCode, context);
+  vm.runInContext('__setData(' +
+    JSON.stringify([{ id: "pen1", name: "Test", type: "payments", start: 0 }]) + ', ' +
+    JSON.stringify([
+      { date: "2024-01-01", value: 100, payment: 100 },
+      { date: "2024-02-01", value: 220, payment: 50 }
+    ]) + ', "pen1")', context);
+  const stats = vm.runInContext('__computeStats()', context);
+  expect(stats[0].totalPayments).toBe(100);
+  expect(stats[1].totalPayments).toBe(150);
+});
