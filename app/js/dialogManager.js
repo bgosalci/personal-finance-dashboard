@@ -13,7 +13,6 @@ const DialogManager = (function() {
         if (type === 'prompt') {
             inputGroup.style.display = 'block';
             inputEl.value = def || '';
-            inputEl.focus();
         } else {
             inputGroup.style.display = 'none';
         }
@@ -26,6 +25,7 @@ const DialogManager = (function() {
             okBtn.textContent = actionLabel ? `Yes, ${actionLabel}` : 'Yes';
         }
         modal.style.display = 'flex';
+        if (type === 'prompt') inputEl.focus();
 
         return new Promise(resolve => {
             function cleanup(result) {

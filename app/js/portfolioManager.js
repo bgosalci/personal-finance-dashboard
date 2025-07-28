@@ -645,6 +645,7 @@ const PortfolioManager = (function() {
 
         populateEditFields(index);
         editModal.style.display = 'flex';
+        document.getElementById('edit-name').focus();
         fetchQuote(ticker, investments[index].currency || 'USD').then(res => {
             if (res.price !== null) {
                 document.getElementById('edit-last-price').value = res.price;
