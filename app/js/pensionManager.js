@@ -347,7 +347,8 @@ const PensionManager = (function() {
             const ytdPL = entry.value - ytdStart - ytdPayments;
             const ytdPLPct = ytdStart ? (ytdPL / ytdStart) * 100 : 0;
             const totalPL = entry.value - startVal - totalPayments;
-            const totalPLPct = startVal ? (totalPL / startVal) * 100 : 0;
+            const baseAmount = startVal + totalPayments;
+            const totalPLPct = baseAmount ? (totalPL / baseAmount) * 100 : 0;
             prev = entry.value;
             return Object.assign({}, entry, {
                 monthlyPL, monthlyPLPct,

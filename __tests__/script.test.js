@@ -91,8 +91,8 @@ test('Edit modal focuses name input when opened', () => {
   const context = vm.createContext(dom.window);
   let pm = fs.readFileSync(path.resolve(__dirname, '../app/js/portfolioManager.js'), 'utf8');
   pm = pm.replace(
-    'return { init, fetchQuote, fetchLastPrices, exportData, importData, deleteAllData };',
-    'window.__setInvestments = arr => { investments = arr; }; window.__openEditModal = openEditModal; return { init, fetchQuote, fetchLastPrices, exportData, importData, deleteAllData };'
+    'return { init, fetchQuote, fetchLastPrices, exportData, importData, deleteAllData, updatePortfolioPrices };',
+    'window.__setInvestments = arr => { investments = arr; }; window.__openEditModal = openEditModal; return { init, fetchQuote, fetchLastPrices, exportData, importData, deleteAllData, updatePortfolioPrices };'
   );
   vm.runInContext(pm, context);
   vm.runInContext('__setInvestments([{ ticker: "AAA", name: "Test", quantity: 1, purchasePrice: 1, lastPrice: 1, tradeDate: "2024-01-01", currency: "USD" }])', context);
@@ -119,7 +119,8 @@ test('Add Portfolio prompt focuses text input when opened', () => {
   vm.runInContext(dm, context);
   vm.runInContext('DialogManager.prompt("Enter portfolio name:")', context);
   expect(dom.window.document.activeElement.id).toBe('dialog-input');
-  
+});
+
 test('fetchLastPrices updates multiple portfolios', async () => {
   const dom = new JSDOM('<!DOCTYPE html><html><body></body></html>', {url: 'http://localhost'});
   const { window } = dom;
@@ -136,6 +137,11 @@ test('fetchLastPrices updates multiple portfolios', async () => {
   context.Chart = function() { this.data={labels:[],datasets:[{data:[]}]}; this.options={plugins:{tooltip:{callbacks:{}},title:{},legend:{}}}; this.update=() => {}; };
   context.Settings = { getBaseCurrency: () => 'USD' };
   context.ForexData = { getRates: () => Promise.resolve({ conversion_rates: { USD: 1 } }) };
+  window.HTMLCanvasElement.prototype.getContext = () => ({
+    fillRect: () => {},
+    clearRect: () => {},
+    getContext: () => ({})
+  });
 
   window.fetch = jest.fn(url => {
     if (url.includes('AAA')) {
@@ -160,4 +166,23 @@ test('fetchLastPrices updates multiple portfolios', async () => {
   const pf2 = JSON.parse(window.localStorage.getItem('portfolioData_pf2'));
   expect(pf1[0].lastPrice).toBe(111);
   expect(pf2[0].lastPrice).toBe(222);
+});
+
+test('computeStats includes payments in total percent', () => {
+  const dom = new JSDOM('<!DOCTYPE html><html><body></body></html>', { url: 'http://localhost' });
+  const context = vm.createContext(dom.window);
+  let pmCode = fs.readFileSync(path.resolve(__dirname, '../app/js/pensionManager.js'), 'utf8');
+  pmCode = pmCode.replace(
+    'return { init, exportData, importData, deleteAllData };',
+    'window.__setData = (p, e, id) => { pensions = p; entries = e; currentPensionId = id; summaryMode = false; }; window.__computeStats = computeStats; return { init, exportData, importData, deleteAllData };'
+  );
+  vm.runInContext(pmCode, context);
+  vm.runInContext('__setData(' +
+    JSON.stringify([{ id: "pen1", name: "Test", type: "payments", start: 0 }]) + ', ' +
+    JSON.stringify([
+      { date: "2024-01-01", value: 100, payment: 100 },
+      { date: "2024-02-01", value: 220, payment: 100 }
+    ]) + ', "pen1")', context);
+  const stats = vm.runInContext('__computeStats()', context);
+  expect(stats[1].totalPLPct).toBeCloseTo(10);
 });
