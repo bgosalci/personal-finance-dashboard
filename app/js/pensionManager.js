@@ -468,7 +468,7 @@ const PensionManager = (function() {
                 const map = new Map(ds.entries.map(e => [e.date, e.value]));
                 const data = dates.map(d => map.get(d) ?? null);
                 const color = `hsl(${(idx * 360 / datasets.length) % 360},70%,60%)`;
-                return { label: ds.name, data, borderColor: color, backgroundColor: color, fill: false, tension: 0.2 };
+                return { label: ds.name, data, borderColor: color, backgroundColor: color, fill: false, tension: 0.2, spanGaps: true };
             });
             if (pensionChart) pensionChart.destroy();
             pensionChart = new Chart(chartCanvas.getContext('2d'), {
