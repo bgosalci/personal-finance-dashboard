@@ -336,6 +336,7 @@ const PortfolioManager = (function() {
         } else {
             pieChart.data.labels = labels;
             pieChart.data.datasets[0].data = values;
+            pieChart.data.datasets[0].backgroundColor = colors;
             pieChart.options.plugins.tooltip.callbacks.label = (ctx) => {
                 const pct = total ? (ctx.parsed * 100 / total) : 0;
                 return `${ctx.label}: ${pct.toFixed(2)}%`;
@@ -377,6 +378,7 @@ const PortfolioManager = (function() {
         } else {
             barChart.data.labels = labels;
             barChart.data.datasets[0].data = plPercents;
+            barChart.data.datasets[0].backgroundColor = colors;
             barChart.update();
         }
     }

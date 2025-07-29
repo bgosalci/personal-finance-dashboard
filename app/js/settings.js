@@ -277,6 +277,10 @@ const Settings = (function() {
         } else {
             populateOptions();
         }
+
+        if (typeof AppVersion !== 'undefined' && AppVersion.display) {
+            AppVersion.display();
+        }
     }
 
     return { init, getBaseCurrency, setBaseCurrency };
