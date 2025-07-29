@@ -233,19 +233,23 @@ const PortfolioManager = (function() {
 
     function renderPortfolioTabs() {
         if (!portfolioTabs) return;
+        const activeId = summaryMode ? 'summary' : currentPortfolioId;
         portfolioTabs.innerHTML = '';
         const summaryTab = document.createElement('button');
-        summaryTab.className = 'sub-nav-tab' + (summaryMode ? ' active' : '');
+        summaryTab.className = 'sub-nav-tab';
         summaryTab.textContent = 'Summary';
         summaryTab.dataset.id = 'summary';
         portfolioTabs.appendChild(summaryTab);
         portfolios.forEach(p => {
             const btn = document.createElement('button');
-            btn.className = 'sub-nav-tab' + (!summaryMode && p.id === currentPortfolioId ? ' active' : '');
+            btn.className = 'sub-nav-tab';
             btn.textContent = p.name;
             btn.dataset.id = p.id;
             portfolioTabs.appendChild(btn);
         });
+        portfolioTabs.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
+        const activeBtn = portfolioTabs.querySelector(`button[data-id="${activeId}"]`);
+        if (activeBtn) activeBtn.classList.add('active');
     }
 
     function switchPortfolio(id) {
