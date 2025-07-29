@@ -508,6 +508,11 @@ const CONFIG = {
 Users can customize various aspects of the application through the settings interface or by modifying the configuration object.
 
 ## Latest Changes
+- Pension tracking with charts and summary view.
+- Portfolio export/import and deletion options.
+- Portfolio-wide price refresh capability.
+- Base-currency calculations and sticky table improvements.
+- Automatic input focus in dialog and edit modals.
 - Expanded to cover newly modularized functions.
 - Updated `.gitignore` prevents test artifacts from being committed.
 - For more details, see [RULES.md](RULES.md).

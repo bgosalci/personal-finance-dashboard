@@ -191,6 +191,20 @@ function calculateMonthlyPayment(principal, rate, term) {
 - Consider data compression for storage
 - Provide multiple visualization options
 
+### PensionManager Module
+**Purpose**: Oversees pension account tracking and analytics
+
+**Key Responsibilities**:
+- Manage contributions and balances for multiple pension plans
+- Render pension growth charts and summary views
+- Import, export, and delete pension data
+- Integrate with `PortfolioManager` for total net worth calculations
+- Persist data using `localStorage`
+
+**Development Notes**:
+- Optimize for long-term datasets
+- Respect base-currency settings when aggregating values
+
 ## Development Best Practices
 
 ### Code Style Guidelines
@@ -599,6 +613,11 @@ For offline use:
 This development guide should help you understand the codebase structure, development patterns, and best practices for maintaining and extending the Personal Finance Dashboard application.
 
 ## Latest Changes
+- Pension tracking with charts and summary view.
+- Portfolio export/import and deletion options.
+- Portfolio-wide price refresh capability.
+- Base-currency calculations and sticky table improvements.
+- Automatic input focus in dialog and edit modals.
 - JavaScript modules refactored across `app/js`.
 - `.gitignore` updated to ignore Node modules and coverage files.
 - Additional rules available in [RULES.md](RULES.md).

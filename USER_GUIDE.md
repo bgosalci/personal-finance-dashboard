@@ -321,6 +321,11 @@ A: Each browser stores its own data. Different users would need separate browser
 A: Update investment prices weekly or monthly for accurate tracking. More frequent updates provide better insights.
 
 ## Latest Changes
+- Pension tracking with charts and summary view.
+- Portfolio export/import and deletion options.
+- Portfolio-wide price refresh capability.
+- Base-currency calculations and sticky table improvements.
+- Automatic input focus in dialog and edit modals.
 - Interface scripts reorganized into modules.
 - `.gitignore` now excludes Node dependencies.
 - Review [RULES.md](RULES.md) before contributing.

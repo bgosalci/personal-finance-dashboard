@@ -298,6 +298,11 @@ This project is open source and available under the MIT License.
 - **Jest & JSDOM** - For reliable testing infrastructure
 
 ## Latest Changes
+- Pension tracking with charts and summary view.
+- Portfolio export/import and deletion options.
+- Portfolio-wide price refresh capability.
+- Base-currency calculations and sticky table improvements.
+- Automatic input focus in dialog and edit modals.
 - JavaScript modules refactored for maintainability.
 - Updated `.gitignore` to exclude dependencies and build artifacts.
 - See [RULES.md](RULES.md) for contribution guidelines.

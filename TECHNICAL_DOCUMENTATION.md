@@ -370,6 +370,11 @@ No build process required - the application runs directly in the browser.
 5. Implement proper state management
 
 ## Latest Changes
+- Pension tracking with charts and summary view.
+- Portfolio export/import and deletion options.
+- Portfolio-wide price refresh capability.
+- Base-currency calculations and sticky table improvements.
+- Automatic input focus in dialog and edit modals.
 - Module structure clarified with separate files.
 - `.gitignore` updated for cleaner repos.
 - Refer to [RULES.md](RULES.md) for coding standards.
