@@ -661,6 +661,7 @@ jobs:
 - [ ] Complex functions have JSDoc comments
 - [ ] README updated if needed
 - [ ] API changes documented
+- [ ] Update `DEVELOPMENT_GUIDE.md` with any new features or architectural changes
 
 #### Performance
 - [ ] No memory leaks introduced
@@ -806,3 +807,4 @@ This guide should be used alongside the comprehensive [DEVELOPMENT_GUIDE.md](DEV
 - Documented new module architecture.
 - `.gitignore` updated to keep repos clean.
 - Contribution rules summarized in [RULES.md](RULES.md).
+- Documentation checklist now includes updating `DEVELOPMENT_GUIDE.md` for new features or architectural changes.
