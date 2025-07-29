@@ -278,3 +278,20 @@ test('selecting portfolio summary does not change active pension tab', () => {
   expect(penActive.length).toBe(1);
   expect(penActive[0].dataset.id).toBe('pen1');
 });
+
+test('StockTracker export and import cycle', () => {
+  const html = '<!DOCTYPE html><html><body>' +
+    '<select id="start-year"></select>' +
+    '<div id="ticker-tags"></div>' +
+    '</body></html>';
+  const dom = new JSDOM(html, { url: 'http://localhost' });
+  const context = vm.createContext(dom.window);
+  const code = fs.readFileSync(path.resolve(__dirname, '../app/js/stockTracker.js'), 'utf8');
+  vm.runInContext(code, context);
+  vm.runInContext('stockData = { tickers:["AAA"], startYear:2020, prices:{AAA:{2020:10}} }; localStorage.setItem("stockTrackerData", JSON.stringify(stockData));', context);
+  const csv = vm.runInContext('StockTracker.exportData("csv")', context);
+  vm.runInContext('StockTracker.deleteAllData()', context);
+  expect(context.localStorage.getItem('stockTrackerData')).toBeNull();
+  vm.runInContext(`StockTracker.importData(${JSON.stringify(csv)}, 'csv')`, context);
+  expect(context.localStorage.getItem('stockTrackerData')).not.toBeNull();
+});

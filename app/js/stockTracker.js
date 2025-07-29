@@ -482,6 +482,68 @@ const StockTracker = (function() {
     }
 
 
+    function exportData(format = 'json') {
+        if (format === 'csv') {
+            const lines = ['ticker,year,price'];
+            stockData.tickers.forEach(t => {
+                const prices = stockData.prices[t] || {};
+                Object.keys(prices).forEach(y => {
+                    lines.push(`${t},${y},${prices[y]}`);
+                });
+            });
+            return lines.join('\n');
+        }
+        return JSON.stringify(stockData, null, 2);
+    }
+
+    function importData(text, format = 'json') {
+        let obj = null;
+        if (format === 'csv') {
+            const lines = text.trim().split(/\r?\n/).filter(l => l.trim());
+            lines.shift();
+            const prices = {};
+            const tickers = new Set();
+            lines.forEach(line => {
+                const parts = line.split(',');
+                const ticker = (parts[0] || '').trim().toUpperCase();
+                const year = parseInt(parts[1]);
+                const price = parseFloat(parts[2]);
+                if (!ticker) return;
+                tickers.add(ticker);
+                if (!prices[ticker]) prices[ticker] = {};
+                if (!isNaN(year) && !isNaN(price)) prices[ticker][year] = price;
+            });
+            const years = Object.values(prices).flatMap(p => Object.keys(p).map(y => parseInt(y)));
+            const startYear = years.length ? Math.min(...years) : stockData.startYear;
+            obj = { tickers: Array.from(tickers), startYear, prices };
+        } else {
+            try { obj = JSON.parse(text); } catch (e) { obj = null; }
+        }
+        if (!obj) return;
+        stockData.tickers = Array.isArray(obj.tickers) ? obj.tickers : [];
+        stockData.startYear = obj.startYear || stockData.startYear;
+        stockData.prices = obj.prices || {};
+        saveData();
+        if (document.getElementById('ticker-tags')) updateTickerTags();
+        if (stockData.tickers.length > 0 && document.getElementById('performance-table')) {
+            generatePerformanceTable();
+        } else {
+            const cont = document.getElementById('performance-table-container');
+            if (cont) cont.style.display = 'none';
+        }
+        if (document.getElementById('stock-summary-cards')) updateSummaryCards();
+    }
+
+    function deleteAllData() {
+        localStorage.removeItem(STORAGE_KEY);
+        stockData = { tickers: [], startYear: new Date().getFullYear() - 5, prices: {} };
+        if (document.getElementById('ticker-tags')) updateTickerTags();
+        const cont = document.getElementById('performance-table-container');
+        if (cont) cont.style.display = 'none';
+        if (document.getElementById('stock-summary-cards')) updateSummaryCards();
+    }
+
+
     
 
     function init() {
@@ -519,6 +581,9 @@ const StockTracker = (function() {
 
     return {
         init,
-        removeTicker
+        removeTicker,
+        exportData,
+        importData,
+        deleteAllData
     };
 })();
