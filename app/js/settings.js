@@ -70,6 +70,18 @@ const Settings = (function() {
         const impPortfolioFile = document.getElementById('import-portfolio-file');
         const impPortfolioCancel = document.getElementById('cancel-import-portfolio');
         const delPortfolioBtn = document.getElementById('delete-portfolio-btn');
+        const expStockBtn = document.getElementById('export-stock-btn');
+        const impStockBtn = document.getElementById('import-stock-btn');
+        const delStockBtn = document.getElementById('delete-stock-btn');
+        const expStockModal = document.getElementById('export-stock-modal');
+        const expStockFormat = document.getElementById('export-stock-format');
+        const expStockCancel = document.getElementById('cancel-export-stock');
+        const expStockDownload = document.getElementById('download-export-stock');
+        const impStockModal = document.getElementById('import-stock-modal');
+        const impStockForm = document.getElementById('import-stock-form');
+        const impStockFormat = document.getElementById('import-stock-format');
+        const impStockFile = document.getElementById('import-stock-file');
+        const impStockCancel = document.getElementById('cancel-import-stock');
 
         function openExport() {
             exportFormat.value = 'json';
@@ -163,15 +175,71 @@ const Settings = (function() {
             reader.readAsText(file);
         }
 
+        function openStockExport() {
+            expStockFormat.value = 'json';
+            expStockModal.style.display = 'flex';
+        }
+
+        function closeStockExport() {
+            expStockModal.style.display = 'none';
+        }
+
+        function downloadStockExport() {
+            const fmt = expStockFormat.value;
+            const data = StockTracker.exportData(fmt);
+            const blob = new Blob([data], { type: fmt === 'json' ? 'application/json' : 'text/csv' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'stock-data.' + (fmt === 'json' ? 'json' : 'csv');
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(a.href);
+            closeStockExport();
+        }
+
+        function openStockImport() {
+            impStockFormat.value = 'json';
+            if (impStockFile) impStockFile.value = '';
+            if (impStockFile) impStockFile.focus();
+            impStockModal.style.display = 'flex';
+        }
+
+        function closeStockImport() {
+            impStockModal.style.display = 'none';
+        }
+
+        function handleStockImport(e) {
+            e.preventDefault();
+            const file = impStockFile.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function() {
+                StockTracker.importData(reader.result, impStockFormat.value);
+                closeStockImport();
+            };
+            reader.readAsText(file);
+        }
+
         if (expPortfolioBtn) expPortfolioBtn.addEventListener('click', openPortfolioExport);
         if (expPortfolioCancel) expPortfolioCancel.addEventListener('click', closePortfolioExport);
         if (expPortfolioDownload) expPortfolioDownload.addEventListener('click', downloadPortfolioExport);
         if (expPortfolioModal) expPortfolioModal.addEventListener('click', e => { if (e.target === expPortfolioModal) closePortfolioExport(); });
 
+        if (expStockBtn) expStockBtn.addEventListener('click', openStockExport);
+        if (expStockCancel) expStockCancel.addEventListener('click', closeStockExport);
+        if (expStockDownload) expStockDownload.addEventListener('click', downloadStockExport);
+        if (expStockModal) expStockModal.addEventListener('click', e => { if (e.target === expStockModal) closeStockExport(); });
+
         if (impPortfolioBtn) impPortfolioBtn.addEventListener('click', openPortfolioImport);
         if (impPortfolioCancel) impPortfolioCancel.addEventListener('click', closePortfolioImport);
         if (impPortfolioForm) impPortfolioForm.addEventListener('submit', handlePortfolioImport);
         if (impPortfolioModal) impPortfolioModal.addEventListener('click', e => { if (e.target === impPortfolioModal) closePortfolioImport(); });
+
+        if (impStockBtn) impStockBtn.addEventListener('click', openStockImport);
+        if (impStockCancel) impStockCancel.addEventListener('click', closeStockImport);
+        if (impStockForm) impStockForm.addEventListener('submit', handleStockImport);
+        if (impStockModal) impStockModal.addEventListener('click', e => { if (e.target === impStockModal) closeStockImport(); });
 
         if (delPensionsBtn) {
             delPensionsBtn.addEventListener('click', async () => {
@@ -184,6 +252,13 @@ const Settings = (function() {
             delPortfolioBtn.addEventListener('click', async () => {
                 const c = await DialogManager.confirm('Delete all portfolio data?', 'Delete');
                 if (c) PortfolioManager.deleteAllData();
+            });
+        }
+
+        if (delStockBtn) {
+            delStockBtn.addEventListener('click', async () => {
+                const c = await DialogManager.confirm('Delete all stock tracker data?', 'Delete');
+                if (c) StockTracker.deleteAllData();
             });
         }
 
