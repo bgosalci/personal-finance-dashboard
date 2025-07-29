@@ -5,7 +5,7 @@ This document provides a comprehensive analysis and documentation package for th
 
 ## Repository Information
 - **Repository**: bgosalci/personal-finance-dashboard
-- **Main File**: app/financial_dashboard.html (single-page application)
+- **Main File**: app/index.html (single-page application)
 - **Architecture**: Vanilla JavaScript with modular IIFE pattern
 - **Size**: ~2,429 lines of code (HTML, CSS, JavaScript combined)
 
