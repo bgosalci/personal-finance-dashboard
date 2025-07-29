@@ -143,6 +143,12 @@ personal-finance-dashboard/
 │       ├── calculator.js         # Financial calculators
 │       ├── stockTracker.js       # Stock performance tracker
 │       ├── stockFinance.js       # Financial statements
+│       ├── pensionManager.js     # Pension tracking
+│       ├── priceUpdater.js       # Portfolio-wide price refresh
+│       ├── forexData.js          # Foreign exchange data
+│       ├── dateUtils.js          # Date helper functions
+│       ├── settings.js           # Application settings
+│       ├── appVersion.js         # Display version info
 │       ├── financialDashboard.js # Main application controller
 │       ├── marketStatus.js       # Market status indicator
 │       ├── main.js               # App initialization
@@ -305,4 +311,7 @@ This project is open source and available under the MIT License.
 - Automatic input focus in dialog and edit modals.
 - JavaScript modules refactored for maintainability.
 - Updated `.gitignore` to exclude dependencies and build artifacts.
+- Stock tracker import/export now supports CSV format with a delete-all option.
+- Settings page shows the current web app version.
+- Portfolio summary charts use unique colors for each ticker.
 - See [RULES.md](RULES.md) for contribution guidelines.
