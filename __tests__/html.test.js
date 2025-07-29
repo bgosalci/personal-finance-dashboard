@@ -116,3 +116,12 @@ test('settings include stock tracker buttons', () => {
   const btn = doc.getElementById('export-stock-btn');
   expect(btn).not.toBeNull();
 });
+
+test('settings display app version placeholder', () => {
+  const htmlPath = path.resolve(__dirname, '../app/index.html');
+  const html = fs.readFileSync(htmlPath, 'utf8');
+  const dom = new JSDOM(html);
+  const doc = dom.window.document;
+  const version = doc.getElementById('app-version');
+  expect(version).not.toBeNull();
+});
