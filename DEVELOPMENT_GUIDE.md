@@ -10,7 +10,7 @@
 
 ### Local Development
 1. Clone the repository
-2. Open `app/financial_dashboard.html` in your preferred editor
+2. Open `app/index.html` in your preferred editor
 3. Open the file in a web browser for testing
 4. Use browser developer tools for debugging
 
@@ -28,8 +28,7 @@
 ```
 personal-finance-dashboard/
 ├── app/
-│   ├── financial_dashboard.html    # Main application file
-│   └── index.html                  # Landing page
+│   └── index.html                  # Main application file
 ├── README.md                  # Project overview
 ├── TECHNICAL_DOCUMENTATION.md # Technical details
 ├── API_REFERENCE.md          # API documentation
@@ -37,7 +36,7 @@ personal-finance-dashboard/
 └── DEVELOPMENT_GUIDE.md      # This file
 ```
 
-### Code Sections in financial_dashboard.html
+### Code Sections in index.html
 1. **HTML Structure** (lines 1-773)
    - Document head with meta tags and title
    - Main application layout
