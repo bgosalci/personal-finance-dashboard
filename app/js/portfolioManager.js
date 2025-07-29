@@ -8,6 +8,7 @@ const PortfolioManager = (function() {
     let pieChart = null;
     let barChart = null;
     const COLOR_KEY = 'portfolioColors';
+    const COLOR_INDEX_KEY = 'portfolioColorIndex';
     const COLOR_PALETTE = [
         '#e6194b','#3cb44b','#ffe119','#4363d8','#f58231',
         '#911eb4','#46f0f0','#f032e6','#bcf60c','#fabebe',
@@ -154,14 +155,17 @@ const PortfolioManager = (function() {
             }
         }
         const colorData = localStorage.getItem(COLOR_KEY);
+        const idxData = localStorage.getItem(COLOR_INDEX_KEY);
         if (colorData) {
             try {
                 tickerColors = JSON.parse(colorData) || {};
-                colorIndex = Object.keys(tickerColors).length;
             } catch (e) {
                 tickerColors = {};
-                colorIndex = 0;
             }
+        }
+        colorIndex = parseInt(idxData, 10);
+        if (isNaN(colorIndex)) {
+            colorIndex = Object.keys(tickerColors).length;
         }
         investments.forEach(inv => {
             if (!tickerColors[inv.ticker]) {
@@ -174,6 +178,7 @@ const PortfolioManager = (function() {
         if (summaryMode) return;
         localStorage.setItem(getStorageKey(currentPortfolioId), JSON.stringify(investments));
         localStorage.setItem(COLOR_KEY, JSON.stringify(tickerColors));
+        localStorage.setItem(COLOR_INDEX_KEY, String(colorIndex));
     }
 
     function formatCurrency(value, currency = 'USD') {
@@ -223,6 +228,8 @@ const PortfolioManager = (function() {
         if (!tickerColors[ticker]) {
             tickerColors[ticker] = generateColor(colorIndex);
             colorIndex++;
+            localStorage.setItem(COLOR_KEY, JSON.stringify(tickerColors));
+            localStorage.setItem(COLOR_INDEX_KEY, String(colorIndex));
         }
     }
 
@@ -784,7 +791,7 @@ const PortfolioManager = (function() {
                 const removed = investments.splice(idx, 1)[0];
                 if (removed && !investments.some(inv => inv.ticker === removed.ticker)) {
                     delete tickerColors[removed.ticker];
-                    colorIndex = Object.keys(tickerColors).length;
+                    localStorage.setItem(COLOR_KEY, JSON.stringify(tickerColors));
                 }
                 saveData();
                 renderTable();
@@ -946,6 +953,7 @@ const PortfolioManager = (function() {
         });
         localStorage.removeItem(PORTFOLIO_LIST_KEY);
         localStorage.removeItem(COLOR_KEY);
+        localStorage.removeItem(COLOR_INDEX_KEY);
         portfolios = [];
         investments = [];
         tickerColors = {};
