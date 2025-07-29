@@ -214,6 +214,11 @@ This documentation package provides everything needed to understand, use, mainta
 This comprehensive documentation package ensures the Personal Finance Dashboard codebase is well-documented, maintainable, and accessible to users and developers at all levels.
 
 ## Latest Changes
+- Pension tracking with charts and summary view.
+- Portfolio export/import and deletion options.
+- Portfolio-wide price refresh capability.
+- Base-currency calculations and sticky table improvements.
+- Automatic input focus in dialog and edit modals.
 - Documentation updated for modularized codebase.
 - `.gitignore` improvements noted.
 - See [RULES.md](RULES.md) for contribution guidelines.
