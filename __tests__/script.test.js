@@ -241,3 +241,40 @@ test('initial tabs highlight only selected portfolio and pension', () => {
   expect(penActive.length).toBe(1);
   expect(penActive[0].dataset.id).toBe('pen1');
 });
+
+test('selecting portfolio summary does not change active pension tab', () => {
+  const html = '<!DOCTYPE html><html><body>' +
+    '<div id="portfolio-tabs"></div>' +
+    '<div id="pension-tabs"></div>' +
+    '</body></html>';
+  const dom = new JSDOM(html, { url: 'http://localhost' });
+  const context = vm.createContext(dom.window);
+
+  let pmCode = fs.readFileSync(path.resolve(__dirname, '../app/js/portfolioManager.js'), 'utf8');
+  pmCode = pmCode.replace(
+    'return { init, fetchQuote, fetchLastPrices, exportData, importData, deleteAllData, updatePortfolioPrices };',
+    'window.__setPortfolios=(p,id,s)=>{ portfolios=p; currentPortfolioId=id; summaryMode=s; }; window.__renderPortfolioTabs=renderPortfolioTabs; return { init, fetchQuote, fetchLastPrices, exportData, importData, deleteAllData, updatePortfolioPrices };'
+  );
+  vm.runInContext(pmCode, context);
+
+  let penCode = fs.readFileSync(path.resolve(__dirname, '../app/js/pensionManager.js'), 'utf8');
+  penCode = penCode.replace(
+    'return { init, exportData, importData, deleteAllData };',
+    'window.__setPensions=(p,id,s)=>{ pensions=p; currentPensionId=id; summaryMode=s; }; window.__renderPensionTabs=renderTabs; return { init, exportData, importData, deleteAllData };'
+  );
+  vm.runInContext(penCode, context);
+
+  vm.runInContext('__setPortfolios([{id:"pf1",name:"One"},{id:"pf2",name:"Two"}],"pf1",false); __renderPortfolioTabs();', context);
+  vm.runInContext('__setPensions([{id:"pen1",name:"A"},{id:"pen2",name:"B"}],"pen1",false); __renderPensionTabs();', context);
+
+  vm.runInContext('__setPortfolios([{id:"pf1",name:"One"},{id:"pf2",name:"Two"}],"pf1",true); __renderPortfolioTabs();', context);
+
+  const doc = dom.window.document;
+  const pfActive = doc.querySelectorAll('#portfolio-tabs button.active');
+  const penActive = doc.querySelectorAll('#pension-tabs button.active');
+
+  expect(pfActive.length).toBe(1);
+  expect(pfActive[0].dataset.id).toBe('summary');
+  expect(penActive.length).toBe(1);
+  expect(penActive[0].dataset.id).toBe('pen1');
+});
