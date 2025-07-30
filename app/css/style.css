@@ -436,6 +436,11 @@
             background: var(--background-primary);
         }
 
+        /* Emphasize ticker symbol in portfolio table */
+        #portfolio-table td:nth-child(1) {
+            font-weight: 600;
+        }
+
         .data-table .summary-row td:nth-child(1) {
             background: var(--background-secondary);
         }
