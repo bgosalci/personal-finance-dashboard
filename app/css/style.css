@@ -997,6 +997,12 @@
             height: 300px;
         }
 
+        /* Smaller portfolio charts */
+        #investment-spread-chart,
+        #plpct-chart {
+            height: 150px;
+        }
+
         /* Tooltip styling for finance tables */
         .tooltip {
             position: absolute;
