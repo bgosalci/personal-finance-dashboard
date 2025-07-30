@@ -79,6 +79,15 @@ test('portfolio table shows totals row', () => {
   expect(value).not.toBeNull();
 });
 
+test('portfolio stats include ticker CAGR table', () => {
+  const htmlPath = path.resolve(__dirname, '../app/index.html');
+  const html = fs.readFileSync(htmlPath, 'utf8');
+  const dom = new JSDOM(html);
+  const doc = dom.window.document;
+  expect(doc.getElementById('ticker-cagr-table')).not.toBeNull();
+  expect(doc.getElementById('ticker-cagr-body')).not.toBeNull();
+});
+
 test('pension tab contains entry table', () => {
   const htmlPath = path.resolve(__dirname, '../app/index.html');
   const html = fs.readFileSync(htmlPath, 'utf8');

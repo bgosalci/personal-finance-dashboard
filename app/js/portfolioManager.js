@@ -201,19 +201,78 @@ const PortfolioManager = (function() {
         const data = aggregateInvestments();
         const ratesData = await ForexData.getRates();
         const rates = ratesData && ratesData.conversion_rates ? ratesData.conversion_rates : null;
+        let bestTicker = null;
+        let bestPct = -Infinity;
         data.forEach(inv => {
             const value = inv.quantity * inv.lastPrice;
             const cost = inv.quantity * inv.purchasePrice;
             totalValueBase += convertCurrency(value, inv.currency, baseCurrency, rates);
             totalCostBase += convertCurrency(cost, inv.currency, baseCurrency, rates);
+            const plPct = cost ? ((value - cost) / cost) * 100 : 0;
+            if (!bestTicker || plPct > bestPct) {
+                bestPct = plPct;
+                bestTicker = inv.ticker;
+            }
         });
         const basePL = totalValueBase - totalCostBase;
         const basePLPct = totalCostBase ? (basePL / totalCostBase) * 100 : 0;
+
+        const today = new Date();
+        let weightedCagr = 0;
+        let totalCostForCagr = 0;
+        const tickerMap = {};
+        investments.forEach(inv => {
+            const cost = inv.quantity * inv.purchasePrice;
+            const value = inv.quantity * inv.lastPrice;
+            const years = (today - new Date(inv.tradeDate)) / (365.25 * 24 * 3600 * 1000);
+            if (cost > 0 && years > 0) {
+                const cagr = Math.pow(value / cost, 1 / years) - 1;
+                const baseCost = convertCurrency(cost, inv.currency, baseCurrency, rates);
+                weightedCagr += cagr * baseCost;
+                totalCostForCagr += baseCost;
+                if (!tickerMap[inv.ticker]) {
+                    tickerMap[inv.ticker] = { cagr: 0, cost: 0, start: new Date(inv.tradeDate) };
+                } else if (new Date(inv.tradeDate) < tickerMap[inv.ticker].start) {
+                    tickerMap[inv.ticker].start = new Date(inv.tradeDate);
+                }
+                tickerMap[inv.ticker].cagr += cagr * baseCost;
+                tickerMap[inv.ticker].cost += baseCost;
+            }
+        });
+        const portfolioCagr = totalCostForCagr ? (weightedCagr / totalCostForCagr) * 100 : 0;
 
         document.getElementById('portfolio-base-currency-label').textContent = baseCurrency;
         document.getElementById('portfolio-total-value').textContent = formatCurrency(totalValueBase, baseCurrency);
         document.getElementById('portfolio-total-pl').textContent = formatCurrency(basePL, baseCurrency);
         document.getElementById('portfolio-total-plpct').textContent = basePLPct.toFixed(2) + '%';
+        const cagrEl = document.getElementById('portfolio-cagr');
+        if (cagrEl) {
+            cagrEl.textContent = totalCostForCagr ? portfolioCagr.toFixed(2) + '%' : '---';
+        }
+        const bestEl = document.getElementById('portfolio-best-ticker');
+        if (bestEl) {
+            bestEl.textContent = bestTicker ? `${bestTicker} (${bestPct.toFixed(2)}%)` : '---';
+        }
+        const tableBody = document.getElementById('ticker-cagr-body');
+        if (tableBody) {
+            tableBody.innerHTML = '';
+            Object.keys(tickerMap).sort().forEach(ticker => {
+                const info = tickerMap[ticker];
+                const years = (today - info.start) / (365.25 * 24 * 3600 * 1000);
+                const cagrPct = info.cost ? (info.cagr / info.cost) * 100 : 0;
+                const tr = document.createElement('tr');
+                const tTd = document.createElement('td');
+                tTd.textContent = ticker;
+                const cTd = document.createElement('td');
+                cTd.textContent = cagrPct.toFixed(2) + '%';
+                const yTd = document.createElement('td');
+                yTd.textContent = years.toFixed(2);
+                tr.appendChild(tTd);
+                tr.appendChild(cTd);
+                tr.appendChild(yTd);
+                tableBody.appendChild(tr);
+            });
+        }
     }
 
     function generateColor(idx) {
