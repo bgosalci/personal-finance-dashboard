@@ -662,6 +662,7 @@ jobs:
 - [ ] README updated if needed
 - [ ] API changes documented
 - [ ] Update `DEVELOPMENT_GUIDE.md` with any new features or architectural changes
+- [ ] **AI Agent:** Increment the last segment of the version string in `app/js/appVersion.js` and update any tests referencing it whenever opening a new PR
 
 #### Performance
 - [ ] No memory leaks introduced
