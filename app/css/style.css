@@ -1025,6 +1025,7 @@
         .icon-btn.menu-toggle {
             display: none;
             border: 1px solid var(--primary-blue-dark);
+            background: var(--primary-blue-dark);
             color: white;
         }
 
@@ -1032,6 +1033,7 @@
             .icon-btn.menu-toggle {
                 display: inline-flex;
                 border: 1px solid var(--primary-blue-dark);
+                background: var(--primary-blue-dark);
                 color: white;
             }
             .summary-toggle {
