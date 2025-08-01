@@ -1028,11 +1028,18 @@
             color: white;
         }
 
+        .icon-btn.menu-toggle ion-icon {
+            fill: var(--primary-blue-dark);
+        }
+
         @media (max-width: 768px) {
             .icon-btn.menu-toggle {
                 display: inline-flex;
                 border: 1px solid var(--primary-blue-dark);
                 color: white;
+            }
+            .icon-btn.menu-toggle ion-icon {
+                fill: var(--primary-blue-dark);
             }
             .summary-toggle {
                 font-size: 0.9rem;
