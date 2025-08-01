@@ -584,6 +584,7 @@ const StockTracker = (function() {
         removeTicker,
         exportData,
         importData,
-        deleteAllData
+        deleteAllData,
+        fetchLatestPrices
     };
 })();

@@ -299,3 +299,12 @@ test('StockTracker export and import cycle', () => {
   vm.runInContext(`StockTracker.importData(${JSON.stringify(csv)}, 'csv')`, context);
   expect(context.localStorage.getItem('stockTrackerData')).not.toBeNull();
 });
+
+test('StockTracker exposes fetchLatestPrices', () => {
+  const dom = new JSDOM('<!DOCTYPE html><html><body></body></html>', { url: 'http://localhost' });
+  const context = vm.createContext(dom.window);
+  const code = fs.readFileSync(path.resolve(__dirname, '../app/js/stockTracker.js'), 'utf8');
+  vm.runInContext(code, context);
+  const fnType = vm.runInContext('typeof StockTracker.fetchLatestPrices', context);
+  expect(fnType).toBe('function');
+});
