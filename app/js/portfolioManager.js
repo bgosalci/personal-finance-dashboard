@@ -49,14 +49,56 @@ const PortfolioManager = (function() {
     const actionsMenu = document.getElementById('portfolio-actions-menu');
     const summaryToggle = document.getElementById('summary-toggle');
     const API_KEY = 'd1nf8h1r01qovv8iu2dgd1nf8h1r01qovv8iu2e0';
+    const EXCEPTION_KEY = 'finnhub_exceptions';
+
+    function getToday() {
+        return new Date().toISOString().split('T')[0];
+    }
+
+    function loadExceptions() {
+        try {
+            const data = localStorage.getItem(EXCEPTION_KEY);
+            if (data) return JSON.parse(data);
+        } catch (e) {}
+        return { date: '', tickers: [] };
+    }
+
+    function saveExceptions(obj) {
+        try { localStorage.setItem(EXCEPTION_KEY, JSON.stringify(obj)); } catch (e) {}
+    }
+
+    function isTickerExcluded(ticker) {
+        const list = loadExceptions();
+        return list.date === getToday() && list.tickers.includes(ticker.toUpperCase());
+    }
+
+    function addTickerException(ticker) {
+        const today = getToday();
+        const list = loadExceptions();
+        if (list.date !== today) {
+            list.date = today;
+            list.tickers = [];
+        }
+        const t = ticker.toUpperCase();
+        if (!list.tickers.includes(t)) {
+            list.tickers.push(t);
+            saveExceptions(list);
+        }
+    }
 
     async function fetchQuote(ticker, currency = 'USD') {
+        if (isTickerExcluded(ticker)) {
+            return { price: null, currency };
+        }
         const url = `https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(ticker)}&token=${API_KEY}&currency=${encodeURIComponent(currency)}`;
         try {
             const res = await fetch(url);
             const data = await res.json();
             if (data && typeof data.c === 'number') {
                 return { price: parseFloat(data.c), currency: data.currency || currency };
+            }
+            if (data && data.error && data.error.toLowerCase().includes('access')) {
+                addTickerException(ticker);
             }
         } catch (e) {
             // ignore errors and return null

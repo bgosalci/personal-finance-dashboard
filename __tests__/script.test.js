@@ -48,6 +48,23 @@ test('fetchQuote returns price and currency', async () => {
   expect(result).toEqual({ price: 123.45, currency: 'EUR' });
 });
 
+test('fetchQuote caches access error for one day', async () => {
+  const dom = new JSDOM('<!DOCTYPE html><html><body></body></html>', {url: 'http://localhost'});
+  const fetchMock = jest.fn()
+    .mockResolvedValueOnce({ json: () => Promise.resolve({ error: "You don't have access to this resource." }) })
+    .mockResolvedValue({ json: () => Promise.resolve({ c: 200, currency: 'USD' }) });
+  dom.window.fetch = fetchMock;
+  const context = vm.createContext(dom.window);
+  const content = fs.readFileSync(path.resolve(__dirname, '../app/js/portfolioManager.js'), 'utf8');
+  vm.runInContext(content, context);
+  const first = await vm.runInContext('PortfolioManager.fetchQuote("VUSA.L")', context);
+  expect(first).toEqual({ price: null, currency: 'USD' });
+  expect(fetchMock).toHaveBeenCalledTimes(1);
+  const second = await vm.runInContext('PortfolioManager.fetchQuote("VUSA.L")', context);
+  expect(second).toEqual({ price: null, currency: 'USD' });
+  expect(fetchMock).toHaveBeenCalledTimes(1);
+});
+
 test('Settings module saves currency to localStorage', () => {
   const html = '<!DOCTYPE html><html><body>' +
     '<select id="base-currency-select"></select>' +
