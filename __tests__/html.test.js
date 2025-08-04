@@ -108,6 +108,15 @@ test('pension header shows base currency label', () => {
   expect(label).not.toBeNull();
 });
 
+test('loan and investment calculators show base currency labels', () => {
+  const htmlPath = path.resolve(__dirname, '../app/index.html');
+  const html = fs.readFileSync(htmlPath, 'utf8');
+  const dom = new JSDOM(html);
+  const doc = dom.window.document;
+  expect(doc.getElementById('loan-base-currency-label')).not.toBeNull();
+  expect(doc.getElementById('invest-base-currency-label')).not.toBeNull();
+});
+
 test('pension table includes Total Payments column', () => {
   const htmlPath = path.resolve(__dirname, '../app/index.html');
   const html = fs.readFileSync(htmlPath, 'utf8');

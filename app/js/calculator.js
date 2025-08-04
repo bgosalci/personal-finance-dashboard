@@ -4,9 +4,12 @@ const Calculator = (function() {
     let currentFairValueSection = 'dcf';
     
     function formatCurrency(amount) {
+        const currency = Settings && typeof Settings.getBaseCurrency === 'function'
+            ? Settings.getBaseCurrency()
+            : 'USD';
         return new Intl.NumberFormat('en-US', {
             style: 'currency',
-            currency: 'USD',
+            currency,
             minimumFractionDigits: 2
         }).format(amount);
     }
@@ -17,6 +20,24 @@ const Calculator = (function() {
 
     function formatNumber(num) {
         return num.toFixed(2);
+    }
+
+    function updateCurrencyDisplays() {
+        const currency = Settings && typeof Settings.getBaseCurrency === 'function'
+            ? Settings.getBaseCurrency()
+            : 'USD';
+        const loanLabel = document.getElementById('loan-base-currency-label');
+        const investLabel = document.getElementById('invest-base-currency-label');
+        if (loanLabel) loanLabel.textContent = currency;
+        if (investLabel) investLabel.textContent = currency;
+        ['loan-monthly-payment', 'loan-total-interest', 'loan-total-amount'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.textContent = formatCurrency(0);
+        });
+        ['invest-total-return', 'invest-final-value'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.textContent = formatCurrency(0);
+        });
     }
 
     // Sub-Tab Management
@@ -347,6 +368,9 @@ const Calculator = (function() {
     })();
 
     function init() {
+        updateCurrencyDisplays();
+        document.addEventListener('baseCurrencyChanged', updateCurrencyDisplays);
+
         // Initialize sub-tab navigation
         const subTabs = document.querySelectorAll('.sub-nav-tab');
         subTabs.forEach(tab => {

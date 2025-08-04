@@ -418,7 +418,7 @@
                         <h3 class="calculator-title">Loan Calculator</h3>
                         <div class="form-grid">
                             <div class="form-group">
-                                <label for="loan-principal">Principal Amount ($)</label>
+                                <label for="loan-principal">Principal Amount (<span id="loan-base-currency-label">USD</span>)</label>
                                 <input type="number" id="loan-principal" min="0" step="1000">
                             </div>
                             <div class="form-group">
@@ -433,15 +433,15 @@
                         <div id="loan-results" class="result-display" style="display: none;">
                             <div class="result-item">
                                 <span>Monthly Payment:</span>
-                                <span id="loan-monthly-payment">$0.00</span>
+                                <span id="loan-monthly-payment">0</span>
                             </div>
                             <div class="result-item">
                                 <span>Total Interest:</span>
-                                <span id="loan-total-interest">$0.00</span>
+                                <span id="loan-total-interest">0</span>
                             </div>
                             <div class="result-item">
                                 <span>Total Amount:</span>
-                                <span id="loan-total-amount">$0.00</span>
+                                <span id="loan-total-amount">0</span>
                             </div>
                         </div>
                     </div>
@@ -453,7 +453,7 @@
                         <h3 class="calculator-title">Investment Calculator</h3>
                         <div class="form-grid">
                             <div class="form-group">
-                                <label for="invest-initial">Initial Investment ($)</label>
+                                <label for="invest-initial">Initial Investment (<span id="invest-base-currency-label">USD</span>)</label>
                                 <input type="number" id="invest-initial" min="0" step="1000">
                             </div>
                             <div class="form-group">
@@ -468,11 +468,11 @@
                         <div id="investment-results" class="result-display" style="display: none;">
                             <div class="result-item">
                                 <span>Total Return (Interest):</span>
-                                <span id="invest-total-return">$0.00</span>
+                                <span id="invest-total-return">0</span>
                             </div>
                             <div class="result-item">
                                 <span>Final Value:</span>
-                                <span id="invest-final-value">$0.00</span>
+                                <span id="invest-final-value">0</span>
                             </div>
                         </div>
                         <div id="investment-growth-container" class="table-container" style="display: none; margin-top: 1rem;">
