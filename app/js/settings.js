@@ -42,6 +42,7 @@ const Settings = (function() {
         if (!select) return;
         select.addEventListener('change', () => {
             save(select.value);
+            document.dispatchEvent(new CustomEvent('baseCurrencyChanged', { detail: select.value }));
         });
 
         const exportBtn = document.getElementById('export-pensions-btn');

@@ -75,6 +75,8 @@ Each investment shows:
 
 ## Financial Calculators
 
+All calculator results use the base currency selected in Settings.
+
 ### Loan Calculator
 
 Calculate monthly payments and total interest for loans.
