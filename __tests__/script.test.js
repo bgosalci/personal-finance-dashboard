@@ -99,10 +99,10 @@ test('Edit modal focuses name input when opened', () => {
           <select id="edit-record-select"></select>
         </div>
         <input type="text" id="edit-name">
-        <input type="number" id="edit-quantity">
-        <input type="number" id="edit-purchase-price">
+        <input type="text" id="edit-quantity">
+        <input type="text" id="edit-purchase-price">
         <input type="date" id="edit-purchase-date">
-        <input type="number" id="edit-last-price">
+        <input type="text" id="edit-last-price">
         <select id="edit-currency"></select>
         <span id="edit-total-value"></span>
       </div>

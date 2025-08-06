@@ -1,4 +1,5 @@
 const PortfolioManager = (function() {
+    'use strict';
     const PORTFOLIO_LIST_KEY = 'portfolioList';
     const STORAGE_PREFIX = 'portfolioData_';
     let portfolios = [];
@@ -95,7 +96,8 @@ const PortfolioManager = (function() {
             const res = await fetch(url);
             const data = await res.json();
             if (data && typeof data.c === 'number') {
-                return { price: parseFloat(data.c), currency: data.currency || currency };
+                const price = Number(parseFloat(data.c).toFixed(2));
+                return { price, currency: data.currency || currency };
             }
             if (data && data.error && data.error.toLowerCase().includes('access')) {
                 addTickerException(ticker);
@@ -225,6 +227,13 @@ const PortfolioManager = (function() {
 
     function formatCurrency(value, currency = 'USD') {
         return new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(value);
+    }
+
+    function formatNumber(value, decimals = 2) {
+        if (value === null || value === undefined || value === '') return '';
+        const num = Number(value);
+        if (isNaN(num)) return '';
+        return num.toLocaleString('en-US', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
     }
 
     function convertCurrency(value, from, to, rates) {
@@ -533,7 +542,7 @@ const PortfolioManager = (function() {
                 <td>${inv.currency || ''}</td>
                 <td>${inv.name}</td>
                 <td class="number-cell">${formatCurrency(inv.purchasePrice, inv.currency)}</td>
-                <td class="number-cell">${inv.quantity}</td>
+                <td class="number-cell">${formatNumber(inv.quantity, 4)}</td>
                 <td class="number-cell">${formatCurrency(inv.lastPrice, inv.currency)}</td>
                 <td class="value-cell"></td>
                 <td class="pl-cell"></td>
@@ -625,9 +634,19 @@ const PortfolioManager = (function() {
     }
 
     function handleFormInput() {
-        const qty = parseFloat(document.getElementById('investment-quantity').value) || 0;
-        const lastPrice = parseFloat(document.getElementById('investment-last-price').value) || 0;
+        const qtyField = document.getElementById('investment-quantity');
+        const purchaseField = document.getElementById('investment-purchase-price');
+        const lastField = document.getElementById('investment-last-price');
         const currency = document.getElementById('investment-currency').value || 'USD';
+
+        const qty = parseFloat((qtyField.value || '').replace(/,/g, '')) || 0;
+        const purchasePrice = parseFloat((purchaseField.value || '').replace(/,/g, '')) || 0;
+        const lastPrice = parseFloat((lastField.value || '').replace(/,/g, '')) || 0;
+
+        qtyField.value = qty ? formatNumber(qty, 4) : '';
+        purchaseField.value = purchasePrice ? formatNumber(purchasePrice) : '';
+        lastField.value = lastPrice ? formatNumber(lastPrice) : '';
+
         totalDisplay.textContent = formatCurrency(qty * lastPrice, currency);
     }
 
@@ -651,7 +670,7 @@ const PortfolioManager = (function() {
             const lastPriceEl = document.getElementById('investment-last-price');
             const currencyEl = document.getElementById('investment-currency');
             if (price !== null) {
-                lastPriceEl.value = price;
+                lastPriceEl.value = formatNumber(price);
             }
             if (currencyEl) currencyEl.value = currency || 'USD';
 
@@ -675,10 +694,10 @@ const PortfolioManager = (function() {
         if (summaryMode) return;
         const ticker = document.getElementById('investment-ticker').value.trim().toUpperCase();
         const name = document.getElementById('investment-name').value.trim();
-        const quantity = parseFloat(document.getElementById('investment-quantity').value) || 0;
-        const purchasePrice = parseFloat(document.getElementById('investment-purchase-price').value) || 0;
+        const quantity = parseFloat((document.getElementById('investment-quantity').value || '').replace(/,/g, '')) || 0;
+        const purchasePrice = parseFloat((document.getElementById('investment-purchase-price').value || '').replace(/,/g, '')) || 0;
         const purchaseDate = document.getElementById('investment-purchase-date').value;
-        const lastPrice = parseFloat(document.getElementById('investment-last-price').value) || 0;
+        const lastPrice = parseFloat((document.getElementById('investment-last-price').value || '').replace(/,/g, '')) || 0;
         const currency = document.getElementById('investment-currency').value || 'USD';
         if (!tickerValid) {
             DialogManager.alert('Please enter a valid ticker symbol.');
@@ -715,15 +734,15 @@ const PortfolioManager = (function() {
         editIndex = idx;
         const inv = investments[idx];
         document.getElementById('edit-name').value = inv.name || '';
-        document.getElementById('edit-quantity').value = inv.quantity;
-        document.getElementById('edit-purchase-price').value = inv.purchasePrice;
+        document.getElementById('edit-quantity').value = formatNumber(inv.quantity, 4);
+        document.getElementById('edit-purchase-price').value = formatNumber(inv.purchasePrice);
         const dateField = document.getElementById('edit-purchase-date');
         const today = new Date().toISOString().split('T')[0];
         if (dateField) {
             dateField.max = today;
             dateField.value = inv.tradeDate || today;
         }
-        document.getElementById('edit-last-price').value = inv.lastPrice;
+        document.getElementById('edit-last-price').value = formatNumber(inv.lastPrice);
         const currencyField = document.getElementById('edit-currency');
         if (currencyField) currencyField.value = inv.currency || 'USD';
         editTotal.textContent = formatCurrency(inv.quantity * inv.lastPrice, inv.currency);
@@ -743,7 +762,7 @@ const PortfolioManager = (function() {
                 const inv = investments[i];
                 const opt = document.createElement('option');
                 opt.value = i;
-                opt.textContent = `${inv.quantity} @ ${formatCurrency(inv.purchasePrice, inv.currency)} on ${DateUtils.formatDate(inv.tradeDate)}`;
+                opt.textContent = `${formatNumber(inv.quantity, 4)} @ ${formatCurrency(inv.purchasePrice, inv.currency)} on ${DateUtils.formatDate(inv.tradeDate)}`;
                 editRecordSelect.appendChild(opt);
             });
             editRecordGroup.style.display = 'block';
@@ -762,7 +781,7 @@ const PortfolioManager = (function() {
         document.getElementById('edit-name').focus();
         fetchQuote(ticker, investments[index].currency || 'USD').then(res => {
             if (res.price !== null) {
-                document.getElementById('edit-last-price').value = res.price;
+                document.getElementById('edit-last-price').value = formatNumber(res.price);
             }
             const currencyField = document.getElementById('edit-currency');
             if (currencyField) currencyField.value = res.currency || 'USD';
@@ -783,7 +802,7 @@ const PortfolioManager = (function() {
                 <td>${inv.ticker}</td>
                 <td>${inv.currency || ''}</td>
                 <td>${inv.name || ''}</td>
-                <td class="number-cell">${inv.quantity}</td>
+                <td class="number-cell">${formatNumber(inv.quantity, 4)}</td>
                 <td class="number-cell">${formatCurrency(inv.purchasePrice, inv.currency)}</td>
                 <td class="number-cell">${formatCurrency(inv.lastPrice, inv.currency)}</td>
                 <td>${DateUtils.formatDate(inv.tradeDate)}</td>`;
@@ -801,9 +820,19 @@ const PortfolioManager = (function() {
     }
 
     function handleEditInput() {
-        const qty = parseFloat(document.getElementById('edit-quantity').value) || 0;
-        const price = parseFloat(document.getElementById('edit-last-price').value) || 0;
+        const qtyField = document.getElementById('edit-quantity');
+        const purchaseField = document.getElementById('edit-purchase-price');
+        const priceField = document.getElementById('edit-last-price');
         const currency = document.getElementById('edit-currency').value || 'USD';
+
+        const qty = parseFloat((qtyField.value || '').replace(/,/g, '')) || 0;
+        const purchase = parseFloat((purchaseField.value || '').replace(/,/g, '')) || 0;
+        const price = parseFloat((priceField.value || '').replace(/,/g, '')) || 0;
+
+        qtyField.value = qty ? formatNumber(qty, 4) : '';
+        purchaseField.value = purchase ? formatNumber(purchase) : '';
+        priceField.value = price ? formatNumber(price) : '';
+
         editTotal.textContent = formatCurrency(qty * price, currency);
     }
 
@@ -855,10 +884,10 @@ const PortfolioManager = (function() {
         if (summaryMode) return;
         if (editIndex === null) return;
         const name = document.getElementById('edit-name').value || '';
-        const qty = parseFloat(document.getElementById('edit-quantity').value) || 0;
-        const purchase = parseFloat(document.getElementById('edit-purchase-price').value) || 0;
+        const qty = parseFloat((document.getElementById('edit-quantity').value || '').replace(/,/g, '')) || 0;
+        const purchase = parseFloat((document.getElementById('edit-purchase-price').value || '').replace(/,/g, '')) || 0;
         const date = document.getElementById('edit-purchase-date').value;
-        const last = parseFloat(document.getElementById('edit-last-price').value) || 0;
+        const last = parseFloat((document.getElementById('edit-last-price').value || '').replace(/,/g, '')) || 0;
         const currency = document.getElementById('edit-currency').value || 'USD';
         if (qty <= 0 || purchase <= 0 || last <= 0) return;
         const today = new Date().toISOString().split('T')[0];
@@ -1019,9 +1048,9 @@ const PortfolioManager = (function() {
                     map[pname].items.push({
                         ticker,
                         name,
-                        quantity: parseFloat(qty) || 0,
-                        purchasePrice: parseFloat(purchase) || 0,
-                        lastPrice: parseFloat(last) || 0,
+                        quantity: parseFloat((qty || '').replace(/,/g, '')) || 0,
+                        purchasePrice: parseFloat((purchase || '').replace(/,/g, '')) || 0,
+                        lastPrice: parseFloat((last || '').replace(/,/g, '')) || 0,
                         tradeDate: date,
                         currency: curr || 'USD'
                     });
@@ -1037,9 +1066,9 @@ const PortfolioManager = (function() {
             localStorage.setItem(getStorageKey(id), JSON.stringify((p.items || []).map(it => ({
                 ticker: it.ticker,
                 name: it.name,
-                quantity: parseFloat(it.quantity) || 0,
-                purchasePrice: parseFloat(it.purchasePrice) || 0,
-                lastPrice: parseFloat(it.lastPrice) || 0,
+                quantity: parseFloat((it.quantity || '').toString().replace(/,/g, '')) || 0,
+                purchasePrice: parseFloat((it.purchasePrice || '').toString().replace(/,/g, '')) || 0,
+                lastPrice: parseFloat((it.lastPrice || '').toString().replace(/,/g, '')) || 0,
                 tradeDate: it.tradeDate,
                 currency: it.currency || 'USD'
             }))));

@@ -5,6 +5,7 @@ let stockData = {
 };
 
 const StockTracker = (function() {
+    'use strict';
     const STORAGE_KEY = 'stockTrackerData';
     let editMode = false;
     const API_KEY = 'd1nf8h1r01qovv8iu2dgd1nf8h1r01qovv8iu2e0';
@@ -28,6 +29,13 @@ const StockTracker = (function() {
                 console.error('Failed to parse stored stock data', e);
             }
         }
+    }
+
+    function formatNumber(value) {
+        if (value === null || value === undefined || value === '') return '';
+        const num = Number(value);
+        if (isNaN(num)) return '';
+        return num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     }
     
     function initializeYearSelect() {
@@ -135,10 +143,10 @@ const StockTracker = (function() {
                 .then(res => res.json())
                 .then(data => {
                     if (data && typeof data.c === 'number') {
-                        const price = parseFloat(data.c);
+                        const price = Number(parseFloat(data.c).toFixed(2));
                         stockData.prices[ticker][currentYear] = price;
                         const input = document.querySelector(`#table-body input.price-input[data-ticker="${ticker}"][data-year="${currentYear}"]`);
-                        if (input) input.value = price;
+                        if (input) input.value = formatNumber(price);
                         updateGrowthCalculations(ticker);
                     }
                 })
@@ -177,20 +185,21 @@ const StockTracker = (function() {
             stockData.tickers.forEach(ticker => {
                 const cell = document.createElement('td');
                 const priceInput = document.createElement('input');
-                priceInput.type = 'number';
+                priceInput.type = 'text';
+                priceInput.inputMode = 'decimal';
                 priceInput.className = 'price-input';
-                priceInput.step = '0.01';
-                priceInput.min = '0';
-                priceInput.value = stockData.prices[ticker][year] || '';
+                priceInput.value = stockData.prices[ticker][year] ? formatNumber(stockData.prices[ticker][year]) : '';
                 priceInput.dataset.ticker = ticker;
                 priceInput.dataset.year = year;
                 priceInput.readOnly = !editMode;
                 
                 priceInput.addEventListener('input', () => {
-                    const price = parseFloat(priceInput.value);
+                    const price = parseFloat(priceInput.value.replace(/,/g, ''));
                     if (!isNaN(price) && price > 0) {
                         stockData.prices[ticker][year] = price;
+                        priceInput.value = formatNumber(price);
                     } else {
+                        priceInput.value = '';
                         delete stockData.prices[ticker][year];
                     }
                     updateGrowthCalculations(ticker);
@@ -507,7 +516,7 @@ const StockTracker = (function() {
                 const parts = line.split(',');
                 const ticker = (parts[0] || '').trim().toUpperCase();
                 const year = parseInt(parts[1]);
-                const price = parseFloat(parts[2]);
+                const price = parseFloat(parts[2].replace(/,/g, ''));
                 if (!ticker) return;
                 tickers.add(ticker);
                 if (!prices[ticker]) prices[ticker] = {};
