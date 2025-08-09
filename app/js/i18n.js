@@ -5,7 +5,6 @@ const I18n = (function() {
     const isFileProtocol = typeof location !== 'undefined' && location.protocol === 'file:';
     let currentLocale = 'en';
     let translations = {};
-    let availableLocales = ['en', 'es', 'fr', 'de', 'it', 'sq'];
 
     const DEFAULT_TRANSLATIONS = {
         "en": {
@@ -526,6 +525,9 @@ const I18n = (function() {
         }
     };
 
+    const availableLocales = Object.keys(DEFAULT_TRANSLATIONS);
+    availableLocales.push('pseudo');
+
     function getLocale() {
         return localStorage.getItem(LOCALE_KEY) || 'en';
     }
@@ -556,10 +558,13 @@ const I18n = (function() {
             }
         }
 
-        if (locale === 'en') {
-            translations = DEFAULT_TRANSLATIONS;
+        if (DEFAULT_TRANSLATIONS[locale]) {
+            translations = DEFAULT_TRANSLATIONS[locale];
             localStorage.setItem(storeKey, JSON.stringify(translations));
-            currentLocale = 'en';
+            currentLocale = locale;
+            if (locale !== 'en' && !localStorage.getItem('locale-en')) {
+                localStorage.setItem('locale-en', JSON.stringify(DEFAULT_TRANSLATIONS.en));
+            }
         } else {
             await loadLocale('en');
         }
@@ -630,7 +635,7 @@ const I18n = (function() {
                         console.warn('Failed to fetch base locale for pseudo', e);
                     }
                 }
-                if (!base) base = DEFAULT_TRANSLATIONS;
+                if (!base) base = DEFAULT_TRANSLATIONS.en;
                 localStorage.setItem('locale-en', JSON.stringify(base));
             }
             translations = pseudolocalizeObject(base);
