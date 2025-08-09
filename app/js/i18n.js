@@ -380,7 +380,105 @@ const I18n = (function() {
                     "investment": "Kalkulator investimesh",
                     "cagr": "Kalkulator CAGR",
                     "fairValue": "Kalkulator i vlerës së drejtë"
+                },
+
+                "loan": {
+                    "labels": {
+                        "principal": "Shuma e kredisë",
+                        "rate": "Norma vjetore e interesit (%)",
+                        "term": "Afati i huasë (Vite)",
+                    },
+                    "results": {
+                        "monthlyPayment": "Pagesa mujore:",
+                        "totalInterest": "Interesi total:",
+                        "totalAmount": "Shuma totale:",
+                    }
+                },
+                "investment": {
+                    "labels": {
+                        "initial": "Investimi fillestar",
+                        "rate": "Norma e kthimit vjetor (%)",
+                        "years": "Periudha e investimit (Vite)",
+                    },
+                    "results": {
+                        "totalReturn": "Kthimi total (Interesi):",
+                        "finalValue": "Vlera përfundimtare:",
+                    },
+                    "table": {
+                        "year": "Vit",
+                        "growth": "Rritje",
+                        "value": "Vlera",
+                        "start": "Fillimi",
+                    }
+                },
+                "cagr": {
+                    "labels": {
+                        "beginning": "Vlera fillestare ($)",
+                        "ending": "Vlera përfundimtare ($)",
+                        "years": "Numri i viteve",
+                    },
+                    "results": {
+                        "totalReturn": "Kthimi total:",
+                        "cagr": "Norma vjetore e rritjes së përbërë (CAGR):",
+                    }
+                },
+                "fairValue": {
+                    "tabs": {
+                        "dcf": "Analiza DCF",
+                        "pe": "Analiza e raportit P/E",
+                        "intrinsic": "Vlera e brendshme",
+                    },
+                    "dcf": {
+                        "title": "Analiza e fluksit të parasë së zbritur (DCF)",
+                        "labels": {
+                            "currentFCF": "Fluksi i lirë i parave vjetor aktual",
+                            "growthRate": "Norma e rritjes (%)",
+                            "terminalRate": "Norma terminale e rritjes (%)",
+                            "discountRate": "Norma e zbritjes (WACC) (%)",
+                            "years": "Vitet e projeksionit",
+                            "shares": "Aksionet në qarkullim (M)",
+                        },
+                        "results": {
+                            "enterpriseValue": "Vlera e ndërmarrjes:",
+                            "pvCashflows": "Vlera e tashme e flukseve të parasë:",
+                            "terminalValue": "Vlera terminale:",
+                            "perShare": "Vlera e brendshme për aksion:",
+                        }
+                    },
+                    "pe": {
+                        "title": "Analiza e raportit P/E",
+                        "labels": {
+                            "currentPrice": "Çmimi aktual i aksionit ($)",
+                            "eps": "Fitimi për aksion (EPS) ($)",
+                            "industryPE": "P/E mesatare e industrisë",
+                            "growthRate": "Norma e pritshme e rritjes së EPS (%)",
+                        },
+                        "results": {
+                            "currentPE": "Raporti aktual P/E:",
+                            "fairValue": "Vlera e drejtë (P/E i industrisë):",
+                            "pegRatio": "Raporti PEG:",
+                            "valuation": "Statusi i vlerësimit:",
+                        }
+                    },
+                    "intrinsic": {
+                        "title": "Analiza e vlerës së brendshme",
+                        "labels": {
+                            "bookValue": "Vlera kontabël për aksion ($)",
+                            "roe": "Kthimi mbi kapitalin (ROE) (%)",
+                            "dividendYield": "Rendimenti i dividendës (%)",
+                            "requiredReturn": "Norma e kërkuar e kthimit (%)",
+                            "growthRate": "Norma e qëndrueshme e rritjes (%)",
+                            "eps": "EPS aktual ($)",
+                        },
+                        "results": {
+                            "graham": "Numri i Graham:",
+                            "ddm": "Modeli i zbritjes së dividendëve:",
+                            "bookMultiple": "Shumëzues i vlerës kontabël:",
+                            "average": "Vlera mesatare e brendshme:",
+                        }
+                    }
                 }
+
             },
             "stockTracker": {
                 "title": "Gjurmues i performancës së aksioneve",
@@ -388,7 +486,8 @@ const I18n = (function() {
                     "edit": "Redakto",
                     "getLastPrice": "Merr çmimin e fundit",
                     "addTicker": "Shto Ticker",
-                    "generateTable": "Gjenero Tabelën"
+                    "generateTable": "Gjenero Tabelën",
+                    "done": "Kryer",
                 },
                 "labels": {
                     "addStockTicker": "Shto Ticker Aksionesh",
@@ -568,7 +667,105 @@ const I18n = (function() {
                     "investment": "Calculateur d'investissement",
                     "cagr": "Calculateur de TCAC",
                     "fairValue": "Calculateur de juste valeur"
+                },
+
+                "loan": {
+                    "labels": {
+                        "principal": "Montant du capital",
+                        "rate": "Taux d'intérêt annuel (%)",
+                        "term": "Durée du prêt (années)",
+                    },
+                    "results": {
+                        "monthlyPayment": "Paiement mensuel:",
+                        "totalInterest": "Intérêt total:",
+                        "totalAmount": "Montant total:",
+                    }
+                },
+                "investment": {
+                    "labels": {
+                        "initial": "Investissement initial",
+                        "rate": "Taux de rendement annuel (%)",
+                        "years": "Période d'investissement (années)",
+                    },
+                    "results": {
+                        "totalReturn": "Rendement total (Intérêt):",
+                        "finalValue": "Valeur finale:",
+                    },
+                    "table": {
+                        "year": "Année",
+                        "growth": "Croissance",
+                        "value": "Valeur",
+                        "start": "Début",
+                    }
+                },
+                "cagr": {
+                    "labels": {
+                        "beginning": "Valeur initiale ($)",
+                        "ending": "Valeur finale ($)",
+                        "years": "Nombre d'années",
+                    },
+                    "results": {
+                        "totalReturn": "Rendement total:",
+                        "cagr": "Taux de croissance annuel composé (TCAC):",
+                    }
+                },
+                "fairValue": {
+                    "tabs": {
+                        "dcf": "Analyse DCF",
+                        "pe": "Analyse du ratio P/E",
+                        "intrinsic": "Valeur intrinsèque",
+                    },
+                    "dcf": {
+                        "title": "Analyse des flux de trésorerie actualisés (DCF)",
+                        "labels": {
+                            "currentFCF": "Flux de trésorerie disponible annuel actuel",
+                            "growthRate": "Taux de croissance (%)",
+                            "terminalRate": "Taux de croissance terminal (%)",
+                            "discountRate": "Taux d'actualisation (WACC) (%)",
+                            "years": "Années de projection",
+                            "shares": "Actions en circulation (M)",
+                        },
+                        "results": {
+                            "enterpriseValue": "Valeur d'entreprise:",
+                            "pvCashflows": "Valeur actuelle des flux de trésorerie:",
+                            "terminalValue": "Valeur terminale:",
+                            "perShare": "Valeur intrinsèque par action:",
+                        }
+                    },
+                    "pe": {
+                        "title": "Analyse du ratio P/E",
+                        "labels": {
+                            "currentPrice": "Prix actuel de l'action ($)",
+                            "eps": "Bénéfice par action (BPA) ($)",
+                            "industryPE": "P/E moyen de l'industrie",
+                            "growthRate": "Taux de croissance prévu du BPA (%)",
+                        },
+                        "results": {
+                            "currentPE": "Ratio P/E actuel:",
+                            "fairValue": "Juste valeur (P/E de l'industrie):",
+                            "pegRatio": "Ratio PEG:",
+                            "valuation": "Statut de l'évaluation:",
+                        }
+                    },
+                    "intrinsic": {
+                        "title": "Analyse de la valeur intrinsèque",
+                        "labels": {
+                            "bookValue": "Valeur comptable par action ($)",
+                            "roe": "Rendement des capitaux propres (ROE) (%)",
+                            "dividendYield": "Rendement du dividende (%)",
+                            "requiredReturn": "Taux de rendement requis (%)",
+                            "growthRate": "Taux de croissance durable (%)",
+                            "eps": "BPA actuel ($)",
+                        },
+                        "results": {
+                            "graham": "Nombre de Graham:",
+                            "ddm": "Modèle d'actualisation des dividendes:",
+                            "bookMultiple": "Multiple de la valeur comptable:",
+                            "average": "Valeur intrinsèque moyenne:",
+                        }
+                    }
                 }
+
             },
             "stockTracker": {
                 "title": "Suivi de performance des actions",
@@ -576,7 +773,8 @@ const I18n = (function() {
                     "edit": "Modifier",
                     "getLastPrice": "Obtenir le dernier prix",
                     "addTicker": "Ajouter le ticker",
-                    "generateTable": "Générer une table"
+                    "generateTable": "Générer une table",
+                    "done": "Terminé",
                 },
                 "labels": {
                     "addStockTicker": "Ajouter un ticker d'actions",
@@ -756,7 +954,105 @@ const I18n = (function() {
                     "investment": "Investmentrechner",
                     "cagr": "CAGR-Rechner",
                     "fairValue": "Fair-Value-Rechner"
+                },
+
+                "loan": {
+                    "labels": {
+                        "principal": "Darlehensbetrag",
+                        "rate": "Jährlicher Zinssatz (%)",
+                        "term": "Darlehenslaufzeit (Jahre)",
+                    },
+                    "results": {
+                        "monthlyPayment": "Monatliche Zahlung:",
+                        "totalInterest": "Gesamtzins:",
+                        "totalAmount": "Gesamtbetrag:",
+                    }
+                },
+                "investment": {
+                    "labels": {
+                        "initial": "Anfangsinvestition",
+                        "rate": "Jährliche Rendite (%)",
+                        "years": "Anlagezeitraum (Jahre)",
+                    },
+                    "results": {
+                        "totalReturn": "Gesamtrendite (Zinsen):",
+                        "finalValue": "Endwert:",
+                    },
+                    "table": {
+                        "year": "Jahr",
+                        "growth": "Wachstum",
+                        "value": "Wert",
+                        "start": "Start",
+                    }
+                },
+                "cagr": {
+                    "labels": {
+                        "beginning": "Anfangswert ($)",
+                        "ending": "Endwert ($)",
+                        "years": "Anzahl der Jahre",
+                    },
+                    "results": {
+                        "totalReturn": "Gesamtrendite:",
+                        "cagr": "Jährliche Wachstumsrate (CAGR):",
+                    }
+                },
+                "fairValue": {
+                    "tabs": {
+                        "dcf": "DCF-Analyse",
+                        "pe": "P/E-Verhältnis-Analyse",
+                        "intrinsic": "Innerer Wert",
+                    },
+                    "dcf": {
+                        "title": "Discounted Cashflow (DCF)-Analyse",
+                        "labels": {
+                            "currentFCF": "Aktueller jährlicher Free Cashflow",
+                            "growthRate": "Wachstumsrate (%)",
+                            "terminalRate": "Terminale Wachstumsrate (%)",
+                            "discountRate": "Abzinsungssatz (WACC) (%)",
+                            "years": "Prognosejahre",
+                            "shares": "Ausstehende Aktien (M)",
+                        },
+                        "results": {
+                            "enterpriseValue": "Unternehmenswert:",
+                            "pvCashflows": "Barwert der Cashflows:",
+                            "terminalValue": "Terminalwert:",
+                            "perShare": "Innerer Wert je Aktie:",
+                        }
+                    },
+                    "pe": {
+                        "title": "P/E-Verhältnis-Analyse",
+                        "labels": {
+                            "currentPrice": "Aktueller Aktienkurs ($)",
+                            "eps": "Gewinn je Aktie (EPS) ($)",
+                            "industryPE": "Branchendurchschnitt P/E",
+                            "growthRate": "Erwartete EPS-Wachstumsrate (%)",
+                        },
+                        "results": {
+                            "currentPE": "Aktuelles P/E-Verhältnis:",
+                            "fairValue": "Fairer Wert (Branchen-P/E):",
+                            "pegRatio": "PEG-Verhältnis:",
+                            "valuation": "Bewertungsstatus:",
+                        }
+                    },
+                    "intrinsic": {
+                        "title": "Analyse des inneren Wertes",
+                        "labels": {
+                            "bookValue": "Buchwert je Aktie ($)",
+                            "roe": "Eigenkapitalrendite (ROE) (%)",
+                            "dividendYield": "Dividendenrendite (%)",
+                            "requiredReturn": "Erforderliche Rendite (%)",
+                            "growthRate": "Nachhaltige Wachstumsrate (%)",
+                            "eps": "Aktuelles EPS ($)",
+                        },
+                        "results": {
+                            "graham": "Graham-Zahl:",
+                            "ddm": "Dividenden-Discount-Modell:",
+                            "bookMultiple": "Buchwert-Multiple:",
+                            "average": "Durchschnittlicher innerer Wert:",
+                        }
+                    }
                 }
+
             },
             "stockTracker": {
                 "title": "Aktien-Performance-Tracker",
@@ -764,7 +1060,8 @@ const I18n = (function() {
                     "edit": "Bearbeiten",
                     "getLastPrice": "Letzten Preis abrufen",
                     "addTicker": "Ticker hinzufügen",
-                    "generateTable": "Tabelle erzeugen"
+                    "generateTable": "Tabelle erzeugen",
+                    "done": "Fertig",
                 },
                 "labels": {
                     "addStockTicker": "Aktien-Ticker hinzufügen",
@@ -944,7 +1241,105 @@ const I18n = (function() {
                     "investment": "Calculadora de inversiones",
                     "cagr": "Calculadora CAGR",
                     "fairValue": "Calculadora de valor razonable"
+                },
+
+                "loan": {
+                    "labels": {
+                        "principal": "Monto del préstamo",
+                        "rate": "Tasa de interés anual (%)",
+                        "term": "Plazo del préstamo (años)",
+                    },
+                    "results": {
+                        "monthlyPayment": "Pago mensual:",
+                        "totalInterest": "Interés total:",
+                        "totalAmount": "Monto total:",
+                    }
+                },
+                "investment": {
+                    "labels": {
+                        "initial": "Inversión inicial",
+                        "rate": "Tasa de retorno anual (%)",
+                        "years": "Periodo de inversión (años)",
+                    },
+                    "results": {
+                        "totalReturn": "Retorno total (interés):",
+                        "finalValue": "Valor final:",
+                    },
+                    "table": {
+                        "year": "Año",
+                        "growth": "Crecimiento",
+                        "value": "Valor",
+                        "start": "Inicio",
+                    }
+                },
+                "cagr": {
+                    "labels": {
+                        "beginning": "Valor inicial ($)",
+                        "ending": "Valor final ($)",
+                        "years": "Número de años",
+                    },
+                    "results": {
+                        "totalReturn": "Retorno total:",
+                        "cagr": "Tasa de crecimiento anual compuesta (CAGR):",
+                    }
+                },
+                "fairValue": {
+                    "tabs": {
+                        "dcf": "Análisis DCF",
+                        "pe": "Análisis del ratio P/E",
+                        "intrinsic": "Valor intrínseco",
+                    },
+                    "dcf": {
+                        "title": "Análisis de flujo de caja descontado (DCF)",
+                        "labels": {
+                            "currentFCF": "Flujo de caja libre anual actual",
+                            "growthRate": "Tasa de crecimiento (%)",
+                            "terminalRate": "Tasa de crecimiento terminal (%)",
+                            "discountRate": "Tasa de descuento (WACC) (%)",
+                            "years": "Años de proyección",
+                            "shares": "Acciones en circulación (M)",
+                        },
+                        "results": {
+                            "enterpriseValue": "Valor empresarial:",
+                            "pvCashflows": "Valor presente de los flujos de caja:",
+                            "terminalValue": "Valor terminal:",
+                            "perShare": "Valor intrínseco por acción:",
+                        }
+                    },
+                    "pe": {
+                        "title": "Análisis del ratio P/E",
+                        "labels": {
+                            "currentPrice": "Precio actual de la acción ($)",
+                            "eps": "Ganancias por acción (EPS) ($)",
+                            "industryPE": "P/E promedio de la industria",
+                            "growthRate": "Tasa de crecimiento esperada del EPS (%)",
+                        },
+                        "results": {
+                            "currentPE": "Ratio P/E actual:",
+                            "fairValue": "Valor justo (P/E de la industria):",
+                            "pegRatio": "Ratio PEG:",
+                            "valuation": "Estado de valoración:",
+                        }
+                    },
+                    "intrinsic": {
+                        "title": "Análisis del valor intrínseco",
+                        "labels": {
+                            "bookValue": "Valor en libros por acción ($)",
+                            "roe": "Retorno sobre el patrimonio (ROE) (%)",
+                            "dividendYield": "Rendimiento de dividendos (%)",
+                            "requiredReturn": "Tasa de retorno requerida (%)",
+                            "growthRate": "Tasa de crecimiento sostenible (%)",
+                            "eps": "EPS actual ($)",
+                        },
+                        "results": {
+                            "graham": "Número de Graham:",
+                            "ddm": "Modelo de descuento de dividendos:",
+                            "bookMultiple": "Múltiplo del valor en libros:",
+                            "average": "Valor intrínseco promedio:",
+                        }
+                    }
                 }
+
             },
             "stockTracker": {
                 "title": "Rastreador de rendimiento de acciones",
@@ -952,7 +1347,8 @@ const I18n = (function() {
                     "edit": "Editar",
                     "getLastPrice": "Obtener el último precio",
                     "addTicker": "Agregar ticker",
-                    "generateTable": "Generar tabla"
+                    "generateTable": "Generar tabla",
+                    "done": "Listo",
                 },
                 "labels": {
                     "addStockTicker": "Agregar ticker de acciones",
@@ -1132,7 +1528,105 @@ const I18n = (function() {
                     "investment": "Calcolatore di investimento",
                     "cagr": "Calcolatore CAGR",
                     "fairValue": "Calcolatore del valore equo"
+                },
+
+                "loan": {
+                    "labels": {
+                        "principal": "Importo del prestito",
+                        "rate": "Tasso di interesse annuale (%)",
+                        "term": "Durata del prestito (anni)",
+                    },
+                    "results": {
+                        "monthlyPayment": "Rata mensile:",
+                        "totalInterest": "Interessi totali:",
+                        "totalAmount": "Importo totale:",
+                    }
+                },
+                "investment": {
+                    "labels": {
+                        "initial": "Investimento iniziale",
+                        "rate": "Tasso di rendimento annuale (%)",
+                        "years": "Periodo di investimento (anni)",
+                    },
+                    "results": {
+                        "totalReturn": "Rendimento totale (interessi):",
+                        "finalValue": "Valore finale:",
+                    },
+                    "table": {
+                        "year": "Anno",
+                        "growth": "Crescita",
+                        "value": "Valore",
+                        "start": "Inizio",
+                    }
+                },
+                "cagr": {
+                    "labels": {
+                        "beginning": "Valore iniziale ($)",
+                        "ending": "Valore finale ($)",
+                        "years": "Numero di anni",
+                    },
+                    "results": {
+                        "totalReturn": "Rendimento totale:",
+                        "cagr": "Tasso di crescita annuale composto (CAGR):",
+                    }
+                },
+                "fairValue": {
+                    "tabs": {
+                        "dcf": "Analisi DCF",
+                        "pe": "Analisi del rapporto P/E",
+                        "intrinsic": "Valore intrinseco",
+                    },
+                    "dcf": {
+                        "title": "Analisi del flusso di cassa scontato (DCF)",
+                        "labels": {
+                            "currentFCF": "Flusso di cassa libero annuale attuale",
+                            "growthRate": "Tasso di crescita (%)",
+                            "terminalRate": "Tasso di crescita terminale (%)",
+                            "discountRate": "Tasso di sconto (WACC) (%)",
+                            "years": "Anni di previsione",
+                            "shares": "Azioni in circolazione (M)",
+                        },
+                        "results": {
+                            "enterpriseValue": "Valore d'impresa:",
+                            "pvCashflows": "Valore attuale dei flussi di cassa:",
+                            "terminalValue": "Valore terminale:",
+                            "perShare": "Valore intrinseco per azione:",
+                        }
+                    },
+                    "pe": {
+                        "title": "Analisi del rapporto P/E",
+                        "labels": {
+                            "currentPrice": "Prezzo attuale dell'azione ($)",
+                            "eps": "Utile per azione (EPS) ($)",
+                            "industryPE": "P/E medio del settore",
+                            "growthRate": "Tasso di crescita previsto dell'EPS (%)",
+                        },
+                        "results": {
+                            "currentPE": "Rapporto P/E attuale:",
+                            "fairValue": "Valore equo (P/E del settore):",
+                            "pegRatio": "Rapporto PEG:",
+                            "valuation": "Stato della valutazione:",
+                        }
+                    },
+                    "intrinsic": {
+                        "title": "Analisi del valore intrinseco",
+                        "labels": {
+                            "bookValue": "Valore contabile per azione ($)",
+                            "roe": "Rendimento del capitale proprio (ROE) (%)",
+                            "dividendYield": "Rendimento da dividendo (%)",
+                            "requiredReturn": "Tasso di rendimento richiesto (%)",
+                            "growthRate": "Tasso di crescita sostenibile (%)",
+                            "eps": "EPS attuale ($)",
+                        },
+                        "results": {
+                            "graham": "Numero di Graham:",
+                            "ddm": "Modello di sconto dei dividendi:",
+                            "bookMultiple": "Multiplo del valore contabile:",
+                            "average": "Valore intrinseco medio:",
+                        }
+                    }
                 }
+
             },
             "stockTracker": {
                 "title": "Tracker delle prestazioni azionarie",
@@ -1140,7 +1634,8 @@ const I18n = (function() {
                     "edit": "Modifica",
                     "getLastPrice": "Ottieni l'ultimo prezzo",
                     "addTicker": "Aggiungi ticker",
-                    "generateTable": "Genera tabella"
+                    "generateTable": "Genera tabella",
+                    "done": "Fatto",
                 },
                 "labels": {
                     "addStockTicker": "Aggiungi ticker azionario",
