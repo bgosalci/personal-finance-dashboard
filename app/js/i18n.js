@@ -58,6 +58,36 @@ const I18n = (function() {
                 "years": "Years"
                 }
             },
+            "pension": {
+                "title": "Pension",
+                "actions": {
+                    "addEntry": "Add Entry",
+                    "addPension": "Add Pension",
+                    "removePension": "Remove Pension",
+                    "viewChart": "View Chart",
+                    "showInSummary": "Show in Summary"
+                },
+                "table": {
+                    "date": "Date",
+                    "payment": "Payment",
+                    "totalPayments": "Total Payments",
+                    "currentValue": "Current Value",
+                    "monthlyPL": "Monthly P&L",
+                    "monthlyPct": "Monthly %",
+                    "ytdPL": "YTD P&L",
+                    "ytdPct": "YTD %",
+                    "totalPL": "Total P&L",
+                    "totalPct": "Total %",
+                    "actions": "Actions"
+                },
+                "summaryCards": {
+                    "currentCAGR": "Current CAGR",
+                    "bestMonth": "Best Month",
+                    "worstMonth": "Worst Month",
+                    "bestYear": "Best Year",
+                    "worstYear": "Worst Year"
+                }
+            },
             "settings": {
                 "title": "Settings",
                 "baseCurrency": "Base Currency",
@@ -90,7 +120,8 @@ const I18n = (function() {
                 "file": "File",
                 "cancel": "Cancel",
                 "import": "Import",
-                "export": "Export"
+                "export": "Export",
+                "summary": "Summary"
             }
         },
         "sq": {
@@ -144,6 +175,36 @@ const I18n = (function() {
                 "years": "Vitet"
                 }
             },
+            "pension": {
+                "title": "Pensioni",
+                "actions": {
+                    "addEntry": "Shto Regjistrim",
+                    "addPension": "Shto Pension",
+                    "removePension": "Hiq Pension",
+                    "viewChart": "Shiko Grafik",
+                    "showInSummary": "Shfaq në Përmbledhje"
+                },
+                "table": {
+                    "date": "Data",
+                    "payment": "Pagesa",
+                    "totalPayments": "Pagesat Totale",
+                    "currentValue": "Vlera Aktuale",
+                    "monthlyPL": "Fitimi/Humbja Mujore",
+                    "monthlyPct": "% Mujore",
+                    "ytdPL": "Fitimi/Humbja YTD",
+                    "ytdPct": "% YTD",
+                    "totalPL": "Fitimi/Humbja Totale",
+                    "totalPct": "% Totale",
+                    "actions": "Veprimet"
+                },
+                "summaryCards": {
+                    "currentCAGR": "CAGR Aktual",
+                    "bestMonth": "Muaji Më i Mirë",
+                    "worstMonth": "Muaji Më i Keq",
+                    "bestYear": "Viti Më i Mirë",
+                    "worstYear": "Viti Më i Keq"
+                }
+            },
             "settings": {
                 "title": "Cilësimet",
                 "baseCurrency": "Monedha Bazë",
@@ -176,7 +237,8 @@ const I18n = (function() {
                 "file": "Skedari",
                 "cancel": "Anulo",
                 "import": "Importo",
-                "export": "Eksporto"
+                "export": "Eksporto",
+                "summary": "Përmbledhje"
             }
         },
         "fr": {
@@ -230,6 +292,36 @@ const I18n = (function() {
                 "years": "Années"
                 }
             },
+            "pension": {
+                "title": "Pension",
+                "actions": {
+                    "addEntry": "Ajouter une Entrée",
+                    "addPension": "Ajouter une Pension",
+                    "removePension": "Supprimer la Pension",
+                    "viewChart": "Voir le Graphique",
+                    "showInSummary": "Afficher dans le Résumé"
+                },
+                "table": {
+                    "date": "Date",
+                    "payment": "Paiement",
+                    "totalPayments": "Paiements Totaux",
+                    "currentValue": "Valeur Actuelle",
+                    "monthlyPL": "P&L Mensuel",
+                    "monthlyPct": "% Mensuel",
+                    "ytdPL": "P&L YTD",
+                    "ytdPct": "% YTD",
+                    "totalPL": "P&L Total",
+                    "totalPct": "% Total",
+                    "actions": "Actions"
+                },
+                "summaryCards": {
+                    "currentCAGR": "CAGR Actuel",
+                    "bestMonth": "Meilleur Mois",
+                    "worstMonth": "Pire Mois",
+                    "bestYear": "Meilleure Année",
+                    "worstYear": "Pire Année"
+                }
+            },
             "settings": {
                 "title": "Paramètres",
                 "baseCurrency": "Devise de Base",
@@ -262,7 +354,8 @@ const I18n = (function() {
                 "file": "Fichier",
                 "cancel": "Annuler",
                 "import": "Importer",
-                "export": "Exporter"
+                "export": "Exporter",
+                "summary": "Résumé"
             }
         },
         "de": {
@@ -316,6 +409,36 @@ const I18n = (function() {
                 "years": "Jahre"
                 }
             },
+            "pension": {
+                "title": "Rente",
+                "actions": {
+                    "addEntry": "Eintrag hinzufügen",
+                    "addPension": "Rente hinzufügen",
+                    "removePension": "Rente entfernen",
+                    "viewChart": "Diagramm anzeigen",
+                    "showInSummary": "In Zusammenfassung anzeigen"
+                },
+                "table": {
+                    "date": "Datum",
+                    "payment": "Zahlung",
+                    "totalPayments": "Gesamtzahlungen",
+                    "currentValue": "Aktueller Wert",
+                    "monthlyPL": "Monatlicher G&V",
+                    "monthlyPct": "Monatlich %",
+                    "ytdPL": "G&V seit Jahresbeginn",
+                    "ytdPct": "YTD %",
+                    "totalPL": "Gesamt G&V",
+                    "totalPct": "Gesamt %",
+                    "actions": "Aktionen"
+                },
+                "summaryCards": {
+                    "currentCAGR": "Aktueller CAGR",
+                    "bestMonth": "Bester Monat",
+                    "worstMonth": "Schlechtester Monat",
+                    "bestYear": "Bestes Jahr",
+                    "worstYear": "Schlechtestes Jahr"
+                }
+            },
             "settings": {
                 "title": "Einstellungen",
                 "baseCurrency": "Basiswährung",
@@ -348,7 +471,8 @@ const I18n = (function() {
                 "file": "Datei",
                 "cancel": "Abbrechen",
                 "import": "Importieren",
-                "export": "Exportieren"
+                "export": "Exportieren",
+                "summary": "Zusammenfassung"
             }
         },
         "es": {
@@ -402,6 +526,36 @@ const I18n = (function() {
                 "years": "Años"
                 }
             },
+            "pension": {
+                "title": "Pensión",
+                "actions": {
+                    "addEntry": "Agregar Entrada",
+                    "addPension": "Agregar Pensión",
+                    "removePension": "Eliminar Pensión",
+                    "viewChart": "Ver Gráfico",
+                    "showInSummary": "Mostrar en el Resumen"
+                },
+                "table": {
+                    "date": "Fecha",
+                    "payment": "Pago",
+                    "totalPayments": "Pagos Totales",
+                    "currentValue": "Valor Actual",
+                    "monthlyPL": "P&L Mensual",
+                    "monthlyPct": "% Mensual",
+                    "ytdPL": "P&L YTD",
+                    "ytdPct": "% YTD",
+                    "totalPL": "P&L Total",
+                    "totalPct": "% Total",
+                    "actions": "Acciones"
+                },
+                "summaryCards": {
+                    "currentCAGR": "CAGR Actual",
+                    "bestMonth": "Mejor Mes",
+                    "worstMonth": "Peor Mes",
+                    "bestYear": "Mejor Año",
+                    "worstYear": "Peor Año"
+                }
+            },
             "settings": {
                 "title": "Configuración",
                 "baseCurrency": "Moneda Base",
@@ -434,7 +588,8 @@ const I18n = (function() {
                 "file": "Archivo",
                 "cancel": "Cancelar",
                 "import": "Importar",
-                "export": "Exportar"
+                "export": "Exportar",
+                "summary": "Resumen"
             }
         },
         "it": {
@@ -488,6 +643,36 @@ const I18n = (function() {
                 "years": "Anni"
                 }
             },
+            "pension": {
+                "title": "Pensione",
+                "actions": {
+                    "addEntry": "Aggiungi Voce",
+                    "addPension": "Aggiungi Pensione",
+                    "removePension": "Rimuovi Pensione",
+                    "viewChart": "Visualizza Grafico",
+                    "showInSummary": "Mostra nel Riepilogo"
+                },
+                "table": {
+                    "date": "Data",
+                    "payment": "Pagamento",
+                    "totalPayments": "Pagamenti Totali",
+                    "currentValue": "Valore Attuale",
+                    "monthlyPL": "Utile/Perdita Mensile",
+                    "monthlyPct": "% Mensile",
+                    "ytdPL": "Utile/Perdita YTD",
+                    "ytdPct": "% YTD",
+                    "totalPL": "Utile/Perdita Totale",
+                    "totalPct": "% Totale",
+                    "actions": "Azioni"
+                },
+                "summaryCards": {
+                    "currentCAGR": "CAGR Attuale",
+                    "bestMonth": "Mese Migliore",
+                    "worstMonth": "Mese Peggiore",
+                    "bestYear": "Anno Migliore",
+                    "worstYear": "Anno Peggiore"
+                }
+            },
             "settings": {
                 "title": "Impostazioni",
                 "baseCurrency": "Valuta Base",
@@ -520,10 +705,24 @@ const I18n = (function() {
                 "file": "File",
                 "cancel": "Annulla",
                 "import": "Importa",
-                "export": "Esporta"
+                "export": "Esporta",
+                "summary": "Riepilogo"
             }
         }
     };
+
+    function mergeDeep(target, source) {
+        Object.keys(source).forEach(key => {
+            const src = source[key];
+            if (src && typeof src === 'object' && !Array.isArray(src)) {
+                if (!target[key]) target[key] = {};
+                mergeDeep(target[key], src);
+            } else {
+                target[key] = src;
+            }
+        });
+        return target;
+    }
 
     const availableLocales = Object.keys(DEFAULT_TRANSLATIONS);
     availableLocales.push('pseudo');
@@ -538,35 +737,34 @@ const I18n = (function() {
 
     async function loadLocale(locale) {
         const storeKey = 'locale-' + locale;
+        let loaded = null;
         const cached = localStorage.getItem(storeKey);
         if (cached) {
-            translations = JSON.parse(cached);
-            currentLocale = locale;
-            return;
+            try { loaded = JSON.parse(cached); } catch {}
         }
-
-        if (typeof fetch === 'function' && !isFileProtocol) {
+        if (!loaded && typeof fetch === 'function' && !isFileProtocol) {
             try {
                 const resp = await fetch('locales/' + locale + '.json');
-                if (!resp.ok) throw new Error('Failed to fetch');
-                translations = await resp.json();
-                localStorage.setItem(storeKey, JSON.stringify(translations));
-                currentLocale = locale;
-                return;
+                if (resp.ok) {
+                    loaded = await resp.json();
+                }
             } catch (e) {
                 console.warn('Failed to load locale', locale, e);
             }
         }
-
-        if (DEFAULT_TRANSLATIONS[locale]) {
-            translations = DEFAULT_TRANSLATIONS[locale];
-            localStorage.setItem(storeKey, JSON.stringify(translations));
-            currentLocale = locale;
-            if (locale !== 'en' && !localStorage.getItem('locale-en')) {
-                localStorage.setItem('locale-en', JSON.stringify(DEFAULT_TRANSLATIONS.en));
-            }
-        } else {
+        if (!loaded && DEFAULT_TRANSLATIONS[locale]) {
+            loaded = DEFAULT_TRANSLATIONS[locale];
+        }
+        if (!loaded) {
             await loadLocale('en');
+            return;
+        }
+        const base = DEFAULT_TRANSLATIONS[locale] ? JSON.parse(JSON.stringify(DEFAULT_TRANSLATIONS[locale])) : {};
+        translations = mergeDeep(base, loaded);
+        localStorage.setItem(storeKey, JSON.stringify(translations));
+        currentLocale = locale;
+        if (locale !== 'en' && !localStorage.getItem('locale-en')) {
+            localStorage.setItem('locale-en', JSON.stringify(DEFAULT_TRANSLATIONS.en));
         }
     }
 
