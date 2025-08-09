@@ -255,6 +255,10 @@
             transition: border-color 0.3s ease;
         }
 
+        #language-select {
+            margin-bottom: 1rem;
+        }
+
         .form-group textarea {
             padding: 0.75rem;
             border: 2px solid var(--border-color);

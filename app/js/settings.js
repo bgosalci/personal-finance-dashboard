@@ -56,7 +56,8 @@ const Settings = (function() {
                 sq: '🇦🇱',
                 pseudo: '🏳️'
             };
-            I18n.availableLocales.forEach(l => {
+            const locales = I18n.getAvailableLocales();
+            locales.forEach(l => {
                 const opt = document.createElement('option');
                 opt.value = l;
                 const flag = localeFlags[l] || '';
