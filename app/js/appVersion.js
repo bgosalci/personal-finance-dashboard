@@ -1,6 +1,6 @@
 const AppVersion = (function() {
     'use strict';
-    const VERSION = '1.1.1';
+    const VERSION = '1.2.1';
     function get() {
         return VERSION;
     }
