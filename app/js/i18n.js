@@ -5,7 +5,9 @@ const I18n = (function() {
     const isFileProtocol = typeof location !== 'undefined' && location.protocol === 'file:';
     let currentLocale = 'en';
     let translations = {};
-    const availableLocales = ['en', 'es', 'fr', 'de', 'sq', 'pseudo'];
+    let availableLocales = [];
+    let allTranslations = {};
+    const LOCALES_KEY = 'pf_locales';
 
     const DEFAULT_TRANSLATIONS = {
         "header": {
@@ -100,35 +102,29 @@ const I18n = (function() {
         return currentLocale;
     }
 
-    async function loadLocale(locale) {
-        const storeKey = 'locale-' + locale;
-        const cached = localStorage.getItem(storeKey);
+    async function loadLocales() {
+        if (Object.keys(allTranslations).length) return;
+        const cached = localStorage.getItem(LOCALES_KEY);
         if (cached) {
-            translations = JSON.parse(cached);
-            currentLocale = locale;
+            allTranslations = JSON.parse(cached);
+            availableLocales = Object.keys(allTranslations);
             return;
         }
-
         if (typeof fetch === 'function' && !isFileProtocol) {
             try {
-                const resp = await fetch('locales/' + locale + '.json');
+                const resp = await fetch('locales/locale.json');
                 if (!resp.ok) throw new Error('Failed to fetch');
-                translations = await resp.json();
-                localStorage.setItem(storeKey, JSON.stringify(translations));
-                currentLocale = locale;
+                const data = await resp.json();
+                allTranslations = data.locales || {};
+                availableLocales = Object.keys(allTranslations);
+                localStorage.setItem(LOCALES_KEY, JSON.stringify(allTranslations));
                 return;
             } catch (e) {
-                console.warn('Failed to load locale', locale, e);
+                console.warn('Failed to load locales', e);
             }
         }
-
-        if (locale === 'en') {
-            translations = DEFAULT_TRANSLATIONS;
-            localStorage.setItem(storeKey, JSON.stringify(translations));
-            currentLocale = 'en';
-        } else {
-            await loadLocale('en');
-        }
+        allTranslations = { en: DEFAULT_TRANSLATIONS };
+        availableLocales = ['en'];
     }
 
     function t(key) {
@@ -144,7 +140,7 @@ const I18n = (function() {
         }
         if (typeof obj === 'string') return obj;
         // fallback to en
-        const en = JSON.parse(localStorage.getItem('locale-en') || '{}');
+        const en = allTranslations.en || DEFAULT_TRANSLATIONS;
         obj = en;
         for (const p of parts) {
             if (obj && Object.prototype.hasOwnProperty.call(obj, p)) {
@@ -182,35 +178,25 @@ const I18n = (function() {
     }
 
     async function setLocale(locale) {
+        await loadLocales();
         if (locale === 'pseudo') {
-            const enStore = localStorage.getItem('locale-en');
-            let base = enStore ? JSON.parse(enStore) : null;
-            if (!base) {
-                if (typeof fetch === 'function' && !isFileProtocol) {
-                    try {
-                        const resp = await fetch('locales/en.json');
-                        if (resp.ok) {
-                            base = await resp.json();
-                        }
-                    } catch (e) {
-                        console.warn('Failed to fetch base locale for pseudo', e);
-                    }
-                }
-                if (!base) base = DEFAULT_TRANSLATIONS;
-                localStorage.setItem('locale-en', JSON.stringify(base));
-            }
+            const base = allTranslations.en || DEFAULT_TRANSLATIONS;
             translations = pseudolocalizeObject(base);
             currentLocale = 'pseudo';
         } else {
-            await loadLocale(locale);
+            translations = allTranslations[locale] || DEFAULT_TRANSLATIONS;
+            currentLocale = allTranslations[locale] ? locale : 'en';
         }
-        localStorage.setItem(LOCALE_KEY, locale);
+        localStorage.setItem(LOCALE_KEY, currentLocale);
         apply();
     }
 
     async function init() {
         const locale = getLocale();
         await setLocale(locale);
+        if (!availableLocales.includes('pseudo')) {
+            availableLocales.push('pseudo');
+        }
     }
 
     function formatNumber(num, options = {}) {
@@ -254,7 +240,12 @@ const I18n = (function() {
         try {
             const obj = JSON.parse(data);
             if (obj.locale && obj.translations) {
-                localStorage.setItem('locale-' + obj.locale, JSON.stringify(obj.translations));
+                allTranslations[obj.locale] = obj.translations;
+                localStorage.setItem(LOCALES_KEY, JSON.stringify(allTranslations));
+                availableLocales = Object.keys(allTranslations);
+                if (!availableLocales.includes('pseudo')) {
+                    availableLocales.push('pseudo');
+                }
                 if (obj.locale === currentLocale) {
                     translations = obj.translations;
                     apply();
