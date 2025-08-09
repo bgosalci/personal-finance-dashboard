@@ -283,6 +283,23 @@ const I18n = (function() {
                 "importLang": "Import Language",
                 "rtlToggle": "Enable RTL"
             },
+            "dialog": {
+                "yes": "Yes",
+                "no": "No",
+                "close": "Close",
+                "delete": "Delete",
+                "enterPortfolioName": "Enter portfolio name:",
+                "deletePortfolio": "Delete this portfolio?",
+                "tickerNotExist": "Ticker symbol does not exist",
+                "enterValidTicker": "Please enter a valid ticker symbol.",
+                "purchaseDateFuture": "Purchase date cannot be in the future.",
+                "deleteInvestment": "Delete this investment?",
+                "deletePension": "Delete this pension?",
+                "deleteEntry": "Delete this entry?",
+                "deleteAllPension": "Delete all pension data?",
+                "deleteAllPortfolio": "Delete all portfolio data?",
+                "deleteAllStock": "Delete all stock tracker data?"
+            },
             "common": {
                 "format": "Format",
                 "file": "File",
@@ -569,6 +586,23 @@ const I18n = (function() {
                 "exportLang": "Eksporto Gjuhën",
                 "importLang": "Importo Gjuhën",
                 "rtlToggle": "Aktivizo RTL"
+            },
+            "dialog": {
+                "yes": "Po",
+                "no": "Jo",
+                "close": "Mbyll",
+                "delete": "Fshi",
+                "enterPortfolioName": "Shkruani emrin e portofolit:",
+                "deletePortfolio": "Ta fshij këtë portofol?",
+                "tickerNotExist": "Simboli i aksionit nuk ekziston",
+                "enterValidTicker": "Ju lutemi, shkruani një simbol të vlefshëm.",
+                "purchaseDateFuture": "Data e blerjes nuk mund të jetë në të ardhmen.",
+                "deleteInvestment": "Ta fshij këtë investim?",
+                "deletePension": "Ta fshij këtë pension?",
+                "deleteEntry": "Ta fshij këtë shënim?",
+                "deleteAllPension": "Të fshij të gjithë të dhënat e pensionit?",
+                "deleteAllPortfolio": "Të fshij të gjitha të dhënat e portofolit?",
+                "deleteAllStock": "Të fshij të gjitha të dhënat e gjurmuesit të aksioneve?"
             },
             "common": {
                 "format": "Formati",
@@ -857,6 +891,23 @@ const I18n = (function() {
                 "importLang": "Importer la Langue",
                 "rtlToggle": "Activer RTL"
             },
+            "dialog": {
+                "yes": "Oui",
+                "no": "Non",
+                "close": "Fermer",
+                "delete": "Supprimer",
+                "enterPortfolioName": "Entrez le nom du portefeuille :",
+                "deletePortfolio": "Supprimer ce portefeuille ?",
+                "tickerNotExist": "Le symbole boursier n'existe pas",
+                "enterValidTicker": "Veuillez entrer un symbole valide.",
+                "purchaseDateFuture": "La date d'achat ne peut pas être dans le futur.",
+                "deleteInvestment": "Supprimer cet investissement ?",
+                "deletePension": "Supprimer cette pension ?",
+                "deleteEntry": "Supprimer cette entrée ?",
+                "deleteAllPension": "Supprimer toutes les données de retraite ?",
+                "deleteAllPortfolio": "Supprimer toutes les données de portefeuille ?",
+                "deleteAllStock": "Supprimer toutes les données du suivi des actions ?"
+            },
             "common": {
                 "format": "Format",
                 "file": "Fichier",
@@ -1143,6 +1194,23 @@ const I18n = (function() {
                 "exportLang": "Sprache exportieren",
                 "importLang": "Sprache importieren",
                 "rtlToggle": "RTL aktivieren"
+            },
+            "dialog": {
+                "yes": "Ja",
+                "no": "Nein",
+                "close": "Schließen",
+                "delete": "Löschen",
+                "enterPortfolioName": "Portfolionamen eingeben:",
+                "deletePortfolio": "Dieses Portfolio löschen?",
+                "tickerNotExist": "Tickersymbol existiert nicht",
+                "enterValidTicker": "Bitte geben Sie ein gültiges Tickersymbol ein.",
+                "purchaseDateFuture": "Kaufdatum darf nicht in der Zukunft liegen.",
+                "deleteInvestment": "Diese Investition löschen?",
+                "deletePension": "Diese Rente löschen?",
+                "deleteEntry": "Diesen Eintrag löschen?",
+                "deleteAllPension": "Alle Rentendaten löschen?",
+                "deleteAllPortfolio": "Alle Portfoliodaten löschen?",
+                "deleteAllStock": "Alle Daten des Aktien-Trackers löschen?"
             },
             "common": {
                 "format": "Format",
@@ -1431,6 +1499,23 @@ const I18n = (function() {
                 "importLang": "Importar Idioma",
                 "rtlToggle": "Habilitar RTL"
             },
+            "dialog": {
+                "yes": "Sí",
+                "no": "No",
+                "close": "Cerrar",
+                "delete": "Eliminar",
+                "enterPortfolioName": "Ingrese el nombre del portafolio:",
+                "deletePortfolio": "¿Eliminar este portafolio?",
+                "tickerNotExist": "El símbolo de cotización no existe",
+                "enterValidTicker": "Por favor, ingrese un símbolo válido.",
+                "purchaseDateFuture": "La fecha de compra no puede estar en el futuro.",
+                "deleteInvestment": "¿Eliminar esta inversión?",
+                "deletePension": "¿Eliminar esta pensión?",
+                "deleteEntry": "¿Eliminar esta entrada?",
+                "deleteAllPension": "¿Eliminar todos los datos de pensión?",
+                "deleteAllPortfolio": "¿Eliminar todos los datos de portafolio?",
+                "deleteAllStock": "¿Eliminar todos los datos del rastreador de acciones?"
+            },
             "common": {
                 "format": "Formato",
                 "file": "Archivo",
@@ -1717,6 +1802,23 @@ const I18n = (function() {
                 "exportLang": "Esporta Lingua",
                 "importLang": "Importa Lingua",
                 "rtlToggle": "Abilita RTL"
+            },
+            "dialog": {
+                "yes": "Sì",
+                "no": "No",
+                "close": "Chiudi",
+                "delete": "Elimina",
+                "enterPortfolioName": "Inserisci il nome del portafoglio:",
+                "deletePortfolio": "Eliminare questo portafoglio?",
+                "tickerNotExist": "Il simbolo ticker non esiste",
+                "enterValidTicker": "Per favore inserisci un simbolo valido.",
+                "purchaseDateFuture": "La data di acquisto non può essere nel futuro.",
+                "deleteInvestment": "Eliminare questo investimento?",
+                "deletePension": "Eliminare questa pensione?",
+                "deleteEntry": "Eliminare questa voce?",
+                "deleteAllPension": "Eliminare tutti i dati della pensione?",
+                "deleteAllPortfolio": "Eliminare tutti i dati del portafoglio?",
+                "deleteAllStock": "Eliminare tutti i dati del tracker azionario?"
             },
             "common": {
                 "format": "Formato",

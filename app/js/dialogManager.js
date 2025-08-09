@@ -17,12 +17,13 @@ const DialogManager = (function() {
             inputGroup.style.display = 'none';
         }
         cancelBtn.style.display = type === 'alert' ? 'none' : 'inline-flex';
-        cancelBtn.textContent = 'No';
+        cancelBtn.textContent = I18n.t('dialog.no');
 
         if (type === 'alert') {
-            okBtn.textContent = 'Close';
+            okBtn.textContent = I18n.t('dialog.close');
         } else {
-            okBtn.textContent = actionLabel ? `Yes, ${actionLabel}` : 'Yes';
+            const yes = I18n.t('dialog.yes');
+            okBtn.textContent = actionLabel ? `${yes}, ${actionLabel}` : yes;
         }
         modal.style.display = 'flex';
         if (type === 'prompt') inputEl.focus();

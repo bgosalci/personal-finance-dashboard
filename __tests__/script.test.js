@@ -204,9 +204,10 @@ test('Add Portfolio prompt focuses text input when opened', () => {
     </div>`;
   const dom = new JSDOM(html, {url: 'http://localhost'});
   const context = vm.createContext(dom.window);
+  vm.runInContext(i18nCode, context);
   const dm = fs.readFileSync(path.resolve(__dirname, '../app/js/dialogManager.js'), 'utf8');
   vm.runInContext(dm, context);
-  vm.runInContext('DialogManager.prompt("Enter portfolio name:")', context);
+  vm.runInContext('DialogManager.prompt(I18n.t("dialog.enterPortfolioName"))', context);
   expect(dom.window.document.activeElement.id).toBe('dialog-input');
 });
 
