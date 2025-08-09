@@ -12,8 +12,5 @@ The Settings tab provides a language selector and RTL toggle. Chosen locale and 
 
 If the app is opened directly from the filesystem (`file://`), locale files cannot be fetched due to browser restrictions. In that case the built-in English translations are used automatically so the interface remains functional offline.
 
-## Export/Import
-Language files can be exported and imported from the Settings tab for custom localisation.
-
 ## Pseudolocalisation
 Select the `pseudo` locale to enable pseudolocalisation for QA.

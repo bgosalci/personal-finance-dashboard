@@ -76,37 +76,6 @@ const Settings = (function() {
             });
         }
 
-        const exportLangBtn = document.getElementById('export-lang-btn');
-        const importLangBtn = document.getElementById('import-lang-btn');
-        const importLangFile = document.getElementById('import-lang-file');
-
-        if (exportLangBtn) {
-            exportLangBtn.addEventListener('click', () => {
-                const data = I18n.exportLocale();
-                const blob = new Blob([data], { type: 'application/json' });
-                const a = document.createElement('a');
-                a.href = URL.createObjectURL(blob);
-                a.download = 'locale-' + I18n.getCurrentLocale() + '.json';
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(a.href);
-            });
-        }
-
-        if (importLangBtn && importLangFile) {
-            importLangBtn.addEventListener('click', () => importLangFile.click());
-            importLangFile.addEventListener('change', () => {
-                const file = importLangFile.files[0];
-                if (!file) return;
-                const reader = new FileReader();
-                reader.onload = () => {
-                    I18n.importLocale(reader.result);
-                };
-                reader.readAsText(file);
-            });
-        }
-
         const exportBtn = document.getElementById('export-pensions-btn');
         const importBtn = document.getElementById('import-pensions-btn');
         const exportModal = document.getElementById('export-pensions-modal');
