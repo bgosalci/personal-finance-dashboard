@@ -2,9 +2,97 @@ const I18n = (function() {
     'use strict';
     const LOCALE_KEY = 'pf_locale';
     const RTL_KEY = 'pf_rtl';
+    const isFileProtocol = typeof location !== 'undefined' && location.protocol === 'file:';
     let currentLocale = 'en';
     let translations = {};
     const availableLocales = ['en', 'es', 'fr', 'de', 'sq', 'pseudo'];
+
+    const DEFAULT_TRANSLATIONS = {
+        "header": {
+            "title": "Financial Dashboard",
+            "tagline": "Personal Investment Tracking & Financial Planning Tool"
+        },
+        "market": {
+            "pre": "Pre Market",
+            "status": "Market Status",
+            "after": "After Market"
+        },
+        "nav": {
+            "portfolio": "Portfolio",
+            "pension": "Pension",
+            "calculators": "Calculators",
+            "stockTracker": "Stock Performance Tracker",
+            "stockFinance": "Stock Finance Performance",
+            "settings": "Settings"
+        },
+        "portfolio": {
+            "actions": {
+                "addInvestment": "Add Investment",
+                "getLastPrice": "Get The Last Price",
+                "transactionHistory": "Transaction History",
+                "addPortfolio": "Add Portfolio",
+                "removePortfolio": "Remove Portfolio",
+                "showInSummary": "Show in Summary"
+            },
+            "table": {
+                "ticker": "Ticker",
+                "currency": "Currency",
+                "name": "Name",
+                "purchasePrice": "Purchase Price",
+                "principal": "Principal",
+                "quantity": "Quantity",
+                "lastPrice": "Last Price",
+                "value": "Value",
+                "pl": "P&L",
+                "plPct": "P&L %",
+                "actions": "Actions"
+            },
+            "total": "Total",
+            "charts": {
+                "investmentSpread": "Investment Spread",
+                "plpct": "P&L%",
+                "stats": "Portfolio Stats",
+                "cagr": "CAGR",
+                "bestTicker": "Best Ticker",
+                "tickerCAGR": "Ticker CAGR",
+                "years": "Years"
+            }
+        },
+        "settings": {
+            "title": "Settings",
+            "baseCurrency": "Base Currency",
+            "baseCurrencyHint": "Exchange rates refresh once a day to keep totals accurate.",
+            "sectionTitles": {
+                "language": "Language",
+                "pension": "Pension",
+                "portfolio": "Portfolio",
+                "stockTracker": "Stock Performance Tracker",
+                "about": "About"
+            },
+            "exportPensions": "Export Pensions",
+            "importPensions": "Import Pensions",
+            "deletePensions": "Delete Pensions",
+            "exportPortfolio": "Export Portfolio",
+            "importPortfolio": "Import Portfolio",
+            "editColumnLabels": "Edit Column Labels",
+            "deletePortfolio": "Delete Portfolio",
+            "exportStock": "Export Stock Data",
+            "importStock": "Import Stock Data",
+            "deleteStock": "Delete Data",
+            "versionLabel": "Web App Version",
+            "languageLabel": "Language",
+            "exportLang": "Export Language",
+            "importLang": "Import Language",
+            "rtlToggle": "Enable RTL"
+        },
+        "common": {
+            "format": "Format",
+            "file": "File",
+            "cancel": "Cancel",
+            "import": "Import",
+            "export": "Export"
+        }
+    };
 
     function getLocale() {
         return localStorage.getItem(LOCALE_KEY) || 'en';
@@ -19,12 +107,30 @@ const I18n = (function() {
         const cached = localStorage.getItem(storeKey);
         if (cached) {
             translations = JSON.parse(cached);
-        } else {
-            const resp = await fetch('locales/' + locale + '.json');
-            translations = await resp.json();
-            localStorage.setItem(storeKey, JSON.stringify(translations));
+            currentLocale = locale;
+            return;
         }
-        currentLocale = locale;
+
+        if (typeof fetch === 'function' && !isFileProtocol) {
+            try {
+                const resp = await fetch('locales/' + locale + '.json');
+                if (!resp.ok) throw new Error('Failed to fetch');
+                translations = await resp.json();
+                localStorage.setItem(storeKey, JSON.stringify(translations));
+                currentLocale = locale;
+                return;
+            } catch (e) {
+                console.warn('Failed to load locale', locale, e);
+            }
+        }
+
+        if (locale === 'en') {
+            translations = DEFAULT_TRANSLATIONS;
+            localStorage.setItem(storeKey, JSON.stringify(translations));
+            currentLocale = 'en';
+        } else {
+            await loadLocale('en');
+        }
     }
 
     function t(key) {
@@ -80,10 +186,19 @@ const I18n = (function() {
     async function setLocale(locale) {
         if (locale === 'pseudo') {
             const enStore = localStorage.getItem('locale-en');
-            let base = enStore ? JSON.parse(enStore) : {};
-            if (!enStore) {
-                const resp = await fetch('locales/en.json');
-                base = await resp.json();
+            let base = enStore ? JSON.parse(enStore) : null;
+            if (!base) {
+                if (typeof fetch === 'function' && !isFileProtocol) {
+                    try {
+                        const resp = await fetch('locales/en.json');
+                        if (resp.ok) {
+                            base = await resp.json();
+                        }
+                    } catch (e) {
+                        console.warn('Failed to fetch base locale for pseudo', e);
+                    }
+                }
+                if (!base) base = DEFAULT_TRANSLATIONS;
                 localStorage.setItem('locale-en', JSON.stringify(base));
             }
             translations = pseudolocalizeObject(base);

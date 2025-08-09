@@ -38,6 +38,16 @@ test('FinancialDashboard global object exists with init and removeTicker', () =>
   expect(typeof ms.init).toBe('function');
 });
 
+test('I18n falls back to embedded locale when fetch unavailable', async () => {
+  const dom = new JSDOM('<!DOCTYPE html><html><body></body></html>', {url: 'http://localhost'});
+  const context = vm.createContext(dom.window);
+  context.location = { protocol: 'file:' };
+  vm.runInContext(i18nCode, context);
+  await vm.runInContext('I18n.setLocale("en")', context);
+  const title = vm.runInContext('I18n.t("header.title")', context);
+  expect(title).toBe('Financial Dashboard');
+});
+
 test('fetchQuote returns price and currency', async () => {
   const dom = new JSDOM('<!DOCTYPE html><html><body></body></html>', {url: 'http://localhost'});
   const context = vm.createContext(dom.window);
