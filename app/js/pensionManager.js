@@ -129,7 +129,7 @@ const PensionManager = (function() {
         pensionTabs.innerHTML = '';
         const summaryTab = document.createElement('button');
         summaryTab.className = 'sub-nav-tab';
-        summaryTab.textContent = 'Summary';
+        summaryTab.textContent = I18n.t('common.summary');
         summaryTab.dataset.id = 'summary';
         pensionTabs.appendChild(summaryTab);
         pensions.forEach(p => {
@@ -429,8 +429,8 @@ const PensionManager = (function() {
         const worstYearEl = document.getElementById('pension-worst-year');
 
         cagrEl.textContent = analysis.cagr ? analysis.cagr.toFixed(2) + '%' : '---';
-        bestMonthEl.textContent = analysis.bestMonth ? `${DateUtils.formatDate(analysis.bestMonth.date)} (${analysis.bestMonth.pct.toFixed(2)}%)` : '---';
-        worstMonthEl.textContent = analysis.worstMonth ? `${DateUtils.formatDate(analysis.worstMonth.date)} (${analysis.worstMonth.pct.toFixed(2)}%)` : '---';
+        bestMonthEl.textContent = analysis.bestMonth ? `${analysis.bestMonth.date} (${analysis.bestMonth.pct.toFixed(2)}%)` : '---';
+        worstMonthEl.textContent = analysis.worstMonth ? `${analysis.worstMonth.date} (${analysis.worstMonth.pct.toFixed(2)}%)` : '---';
         bestYearEl.textContent = analysis.bestYear ? `${analysis.bestYear.year} (${analysis.bestYear.pct.toFixed(2)}%)` : '---';
         worstYearEl.textContent = analysis.worstYear ? `${analysis.worstYear.year} (${analysis.worstYear.pct.toFixed(2)}%)` : '---';
 
@@ -459,7 +459,7 @@ const PensionManager = (function() {
             if (summaryMode) {
                 const ents = getEntriesFor('summary');
                 ents.forEach(en => dateSet.add(en.date));
-                datasets.push({ id: 'summary', name: 'Summary', entries: ents });
+                datasets.push({ id: 'summary', name: I18n.t('common.summary'), entries: ents });
             }
             ids.forEach(id => {
                 const ents = getEntriesFor(id);
@@ -477,7 +477,7 @@ const PensionManager = (function() {
             if (pensionChart) pensionChart.destroy();
             pensionChart = new Chart(chartCanvas.getContext('2d'), {
                 type: 'line',
-                data: { labels: dates.map(DateUtils.formatDate), datasets: chartDatasets },
+                data: { labels: dates, datasets: chartDatasets },
                 options: { responsive: true }
             });
         }
@@ -519,7 +519,7 @@ const PensionManager = (function() {
 
             const type = summaryMode ? summaryInfo.type : pensions.find(p=>p.id===currentPensionId).type;
             row.innerHTML = `
-                <td>${DateUtils.formatDate(st.date)}</td>
+                <td>${st.date}</td>
                 ${type==='payments'?`<td class="number-cell">${formatCurrency(paymentVal, baseCurrency)}</td><td class="number-cell">${formatCurrency(st.totalPayments, baseCurrency)}</td>`:''}
                 <td class="number-cell">${formatCurrency(valueVal, baseCurrency)}</td>
                 <td class="number-cell ${monthlyClass}">${formatCurrency(monthlyVal, baseCurrency)}</td>
