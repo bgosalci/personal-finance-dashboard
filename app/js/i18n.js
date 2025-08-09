@@ -711,6 +711,19 @@ const I18n = (function() {
         }
     };
 
+    function mergeDeep(target, source) {
+        Object.keys(source).forEach(key => {
+            const src = source[key];
+            if (src && typeof src === 'object' && !Array.isArray(src)) {
+                if (!target[key]) target[key] = {};
+                mergeDeep(target[key], src);
+            } else {
+                target[key] = src;
+            }
+        });
+        return target;
+    }
+
     const availableLocales = Object.keys(DEFAULT_TRANSLATIONS);
     availableLocales.push('pseudo');
 
@@ -724,35 +737,34 @@ const I18n = (function() {
 
     async function loadLocale(locale) {
         const storeKey = 'locale-' + locale;
+        let loaded = null;
         const cached = localStorage.getItem(storeKey);
         if (cached) {
-            translations = JSON.parse(cached);
-            currentLocale = locale;
-            return;
+            try { loaded = JSON.parse(cached); } catch {}
         }
-
-        if (typeof fetch === 'function' && !isFileProtocol) {
+        if (!loaded && typeof fetch === 'function' && !isFileProtocol) {
             try {
                 const resp = await fetch('locales/' + locale + '.json');
-                if (!resp.ok) throw new Error('Failed to fetch');
-                translations = await resp.json();
-                localStorage.setItem(storeKey, JSON.stringify(translations));
-                currentLocale = locale;
-                return;
+                if (resp.ok) {
+                    loaded = await resp.json();
+                }
             } catch (e) {
                 console.warn('Failed to load locale', locale, e);
             }
         }
-
-        if (DEFAULT_TRANSLATIONS[locale]) {
-            translations = DEFAULT_TRANSLATIONS[locale];
-            localStorage.setItem(storeKey, JSON.stringify(translations));
-            currentLocale = locale;
-            if (locale !== 'en' && !localStorage.getItem('locale-en')) {
-                localStorage.setItem('locale-en', JSON.stringify(DEFAULT_TRANSLATIONS.en));
-            }
-        } else {
+        if (!loaded && DEFAULT_TRANSLATIONS[locale]) {
+            loaded = DEFAULT_TRANSLATIONS[locale];
+        }
+        if (!loaded) {
             await loadLocale('en');
+            return;
+        }
+        const base = DEFAULT_TRANSLATIONS[locale] ? JSON.parse(JSON.stringify(DEFAULT_TRANSLATIONS[locale])) : {};
+        translations = mergeDeep(base, loaded);
+        localStorage.setItem(storeKey, JSON.stringify(translations));
+        currentLocale = locale;
+        if (locale !== 'en' && !localStorage.getItem('locale-en')) {
+            localStorage.setItem('locale-en', JSON.stringify(DEFAULT_TRANSLATIONS.en));
         }
     }
 
