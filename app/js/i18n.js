@@ -81,8 +81,6 @@ const I18n = (function() {
             "deleteStock": "Delete Data",
             "versionLabel": "Web App Version",
             "languageLabel": "Language",
-            "exportLang": "Export Language",
-            "importLang": "Import Language",
             "rtlToggle": "Enable RTL"
         },
         "common": {
