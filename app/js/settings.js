@@ -39,11 +39,64 @@ const Settings = (function() {
 
     function init() {
         const select = document.getElementById('base-currency-select');
-        if (!select) return;
-        select.addEventListener('change', () => {
-            save(select.value);
-            document.dispatchEvent(new CustomEvent('baseCurrencyChanged', { detail: select.value }));
-        });
+        if (select) {
+            select.addEventListener('change', () => {
+                save(select.value);
+                document.dispatchEvent(new CustomEvent('baseCurrencyChanged', { detail: select.value }));
+            });
+        }
+
+        const langSelect = document.getElementById('language-select');
+        if (langSelect) {
+            I18n.availableLocales.forEach(l => {
+                const opt = document.createElement('option');
+                opt.value = l;
+                opt.textContent = l;
+                langSelect.appendChild(opt);
+            });
+            langSelect.value = I18n.getLocale();
+            langSelect.addEventListener('change', () => {
+                I18n.setLocale(langSelect.value);
+            });
+        }
+
+        const rtlToggle = document.getElementById('rtl-toggle');
+        if (rtlToggle) {
+            rtlToggle.addEventListener('change', () => {
+                I18n.toggleDir(rtlToggle.checked);
+            });
+        }
+
+        const exportLangBtn = document.getElementById('export-lang-btn');
+        const importLangBtn = document.getElementById('import-lang-btn');
+        const importLangFile = document.getElementById('import-lang-file');
+
+        if (exportLangBtn) {
+            exportLangBtn.addEventListener('click', () => {
+                const data = I18n.exportLocale();
+                const blob = new Blob([data], { type: 'application/json' });
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = 'locale-' + I18n.getCurrentLocale() + '.json';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(a.href);
+            });
+        }
+
+        if (importLangBtn && importLangFile) {
+            importLangBtn.addEventListener('click', () => importLangFile.click());
+            importLangFile.addEventListener('change', () => {
+                const file = importLangFile.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = () => {
+                    I18n.importLocale(reader.result);
+                };
+                reader.readAsText(file);
+            });
+        }
 
         const exportBtn = document.getElementById('export-pensions-btn');
         const importBtn = document.getElementById('import-pensions-btn');

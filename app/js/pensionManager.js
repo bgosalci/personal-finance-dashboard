@@ -294,7 +294,7 @@ const PensionManager = (function() {
     }
 
     function formatCurrency(val, currency = 'USD') {
-        return new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(val);
+        return I18n.formatCurrency(val, currency);
     }
 
     function getEntriesFor(id) {

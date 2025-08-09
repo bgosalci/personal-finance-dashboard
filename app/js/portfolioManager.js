@@ -224,7 +224,7 @@ const PortfolioManager = (function() {
     }
 
     function formatCurrency(value, currency = 'USD') {
-        return new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(value);
+        return I18n.formatCurrency(value, currency);
     }
 
     function convertCurrency(value, from, to, rates) {
