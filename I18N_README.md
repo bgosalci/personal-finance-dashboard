@@ -5,7 +5,7 @@ The application now supports multiple languages via JSON locale files stored in 
 ## Adding a Language
 1. Copy `app/locales/en.json` to `app/locales/{code}.json`.
 2. Translate each value.
-3. Add the locale code to `I18n.availableLocales` if not already present.
+3. Languages listed in the selector are generated from the keys in `DEFAULT_TRANSLATIONS`, so no additional configuration is required.
 
 ## Runtime Selection
 The Settings tab provides a language selector and RTL toggle. Chosen locale and direction are stored in `localStorage`.

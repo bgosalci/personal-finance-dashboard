@@ -53,6 +53,7 @@ const Settings = (function() {
                 es: '🇪🇸',
                 fr: '🇫🇷',
                 de: '🇩🇪',
+                it: '🇮🇹',
                 sq: '🇦🇱',
                 pseudo: '🏳️'
             };
@@ -260,8 +261,9 @@ const Settings = (function() {
 
         function openLabels() {
             const labels = PortfolioColumns.getLabels();
+            const defaults = PortfolioColumns.getDefaultLabels();
             labelsBody.innerHTML = '';
-            Object.keys(PortfolioColumns.DEFAULT_LABELS).forEach(key => {
+            Object.keys(defaults).forEach(key => {
                 const tr = document.createElement('tr');
                 const tdCur = document.createElement('td');
                 tdCur.textContent = labels[key];
@@ -289,10 +291,11 @@ const Settings = (function() {
 
         function saveLabels(e) {
             e.preventDefault();
+            const defaults = PortfolioColumns.getDefaultLabels();
             const newLabels = {};
-            Object.keys(PortfolioColumns.DEFAULT_LABELS).forEach(key => {
+            Object.keys(defaults).forEach(key => {
                 const input = document.getElementById('label-input-' + key);
-                newLabels[key] = input.value.trim() || PortfolioColumns.DEFAULT_LABELS[key];
+                newLabels[key] = input.value.trim() || defaults[key];
             });
             PortfolioColumns.setLabels(newLabels);
             closeLabels();
