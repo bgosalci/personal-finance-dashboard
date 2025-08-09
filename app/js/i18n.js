@@ -88,6 +88,77 @@ const I18n = (function() {
                     "worstYear": "Worst Year"
                 }
             },
+            "calculators": {
+                "title": "Financial Calculators",
+                "tabs": {
+                    "loan": "Loan Calculator",
+                    "investment": "Investment Calculator",
+                    "cagr": "CAGR Calculator",
+                    "fairValue": "Fair Value Calculator"
+                }
+            },
+            "stockTracker": {
+                "title": "Stock Performance Tracker",
+                "actions": {
+                    "edit": "Edit",
+                    "getLastPrice": "Get The Last Price",
+                    "addTicker": "Add Ticker",
+                    "generateTable": "Generate Table"
+                },
+                "labels": {
+                    "addStockTicker": "Add Stock Ticker",
+                    "startYear": "Starting Year"
+                },
+                "table": {
+                    "year": "Year",
+                    "totalGrowth": "Total Growth",
+                    "cagr": "CAGR",
+                    "chart": "Chart"
+                },
+                "summary": {
+                    "investment": "Investment Analysis",
+                    "best": "Best Performer",
+                    "worst": "Worst Performer",
+                    "consistent": "Most Consistent"
+                },
+                "chart": {
+                    "price": "Price",
+                    "growth": "Growth"
+                }
+            },
+            "stockFinance": {
+                "title": "Stock Finance Performance",
+                "labels": {
+                    "ticker": "Ticker",
+                    "reportsFrom": "Reports starting from",
+                    "timeframe": "Timeframe",
+                    "getReports": "Get Reports",
+                    "timeframes": {
+                        "quarterly": "Quarterly",
+                        "annual": "Annual",
+                        "ttm": "TTM"
+                    }
+                },
+                "tabs": {
+                    "income": "Income Statement",
+                    "balance": "Balance Sheet",
+                    "cash": "Cash Flow",
+                    "stats": "Statistics"
+                },
+                "table": {
+                    "label": "Label"
+                },
+                "messages": {
+                    "noData": "No data available",
+                    "loadFailed": "Failed to load data"
+                },
+                "zeroInfo": "Values trimmed by removing 6 trailing zeros (\"000,000\")",
+                "stats": {
+                    "peRatio": "PE Ratio",
+                    "grossMargin": "Gross Margin",
+                    "netMargin": "Net Margin"
+                }
+            },
             "settings": {
                 "title": "Settings",
                 "baseCurrency": "Base Currency",
@@ -203,6 +274,77 @@ const I18n = (function() {
                     "worstMonth": "Muaji Më i Keq",
                     "bestYear": "Viti Më i Mirë",
                     "worstYear": "Viti Më i Keq"
+                }
+            },
+            "calculators": {
+                "title": "Kalkulatorë financiarë",
+                "tabs": {
+                    "loan": "Kalkulator i huasë",
+                    "investment": "Kalkulator investimesh",
+                    "cagr": "Kalkulator CAGR",
+                    "fairValue": "Kalkulator i vlerës së drejtë"
+                }
+            },
+            "stockTracker": {
+                "title": "Gjurmues i performancës së aksioneve",
+                "actions": {
+                    "edit": "Redakto",
+                    "getLastPrice": "Merr çmimin e fundit",
+                    "addTicker": "Shto Ticker",
+                    "generateTable": "Gjenero Tabelën"
+                },
+                "labels": {
+                    "addStockTicker": "Shto Ticker Aksionesh",
+                    "startYear": "Viti i fillimit"
+                },
+                "table": {
+                    "year": "Vit",
+                    "totalGrowth": "Rritje totale",
+                    "cagr": "CAGR",
+                    "chart": "Grafik"
+                },
+                "summary": {
+                    "investment": "Analiza e investimeve",
+                    "best": "Performuesi më i mirë",
+                    "worst": "Performuesi më i keq",
+                    "consistent": "Më i qëndrueshëm"
+                },
+                "chart": {
+                    "price": "Çmim",
+                    "growth": "Rritje"
+                }
+            },
+            "stockFinance": {
+                "title": "Performanca e financave të aksioneve",
+                "labels": {
+                    "ticker": "Ticker",
+                    "reportsFrom": "Raportet duke filluar nga",
+                    "timeframe": "Afat kohor",
+                    "getReports": "Merr Raporte",
+                    "timeframes": {
+                        "quarterly": "Tremujor",
+                        "annual": "Vjetor",
+                        "ttm": "TTM"
+                    }
+                },
+                "tabs": {
+                    "income": "Pasqyrë e të ardhurave",
+                    "balance": "Bilanc",
+                    "cash": "Fluksi i parave",
+                    "stats": "Statistika"
+                },
+                "table": {
+                    "label": "Etiketë"
+                },
+                "messages": {
+                    "noData": "Asnjë të dhënë në dispozicion",
+                    "loadFailed": "Dështoi të ngarkojë të dhënat"
+                },
+                "zeroInfo": "Vlerat u shkurtohen duke hequr 6 zero në fund (\"000,000\")",
+                "stats": {
+                    "peRatio": "Raporti P/E",
+                    "grossMargin": "Marzha bruto",
+                    "netMargin": "Marzha neto"
                 }
             },
             "settings": {
@@ -322,6 +464,77 @@ const I18n = (function() {
                     "worstYear": "Pire Année"
                 }
             },
+            "calculators": {
+                "title": "Calculatrices financières",
+                "tabs": {
+                    "loan": "Calculateur de prêt",
+                    "investment": "Calculateur d'investissement",
+                    "cagr": "Calculateur de TCAC",
+                    "fairValue": "Calculateur de juste valeur"
+                }
+            },
+            "stockTracker": {
+                "title": "Suivi de performance des actions",
+                "actions": {
+                    "edit": "Modifier",
+                    "getLastPrice": "Obtenir le dernier prix",
+                    "addTicker": "Ajouter le ticker",
+                    "generateTable": "Générer une table"
+                },
+                "labels": {
+                    "addStockTicker": "Ajouter un ticker d'actions",
+                    "startYear": "Année de départ"
+                },
+                "table": {
+                    "year": "Année",
+                    "totalGrowth": "Croissance totale",
+                    "cagr": "TCAC",
+                    "chart": "Graphique"
+                },
+                "summary": {
+                    "investment": "Analyse des investissements",
+                    "best": "Meilleur interprète",
+                    "worst": "Pire interprète",
+                    "consistent": "Le plus cohérent"
+                },
+                "chart": {
+                    "price": "Prix",
+                    "growth": "Croissance"
+                }
+            },
+            "stockFinance": {
+                "title": "Performance financière des actions",
+                "labels": {
+                    "ticker": "Ticker",
+                    "reportsFrom": "Rapports à partir de",
+                    "timeframe": "Période",
+                    "getReports": "Obtenir des rapports",
+                    "timeframes": {
+                        "quarterly": "Trimestriel",
+                        "annual": "Annuel",
+                        "ttm": "TTM"
+                    }
+                },
+                "tabs": {
+                    "income": "Compte de résultat",
+                    "balance": "Bilan",
+                    "cash": "Flux de trésorerie",
+                    "stats": "Statistiques"
+                },
+                "table": {
+                    "label": "Étiquette"
+                },
+                "messages": {
+                    "noData": "Aucune donnée disponible",
+                    "loadFailed": "Échec du chargement des données"
+                },
+                "zeroInfo": "Valeurs raccourcies en supprimant 6 zéros finaux (\"000 000\")",
+                "stats": {
+                    "peRatio": "Ratio P/E",
+                    "grossMargin": "Marge brute",
+                    "netMargin": "Marge nette"
+                }
+            },
             "settings": {
                 "title": "Paramètres",
                 "baseCurrency": "Devise de Base",
@@ -437,6 +650,77 @@ const I18n = (function() {
                     "worstMonth": "Schlechtester Monat",
                     "bestYear": "Bestes Jahr",
                     "worstYear": "Schlechtestes Jahr"
+                }
+            },
+            "calculators": {
+                "title": "Finanzrechner",
+                "tabs": {
+                    "loan": "Kreditrechner",
+                    "investment": "Investmentrechner",
+                    "cagr": "CAGR-Rechner",
+                    "fairValue": "Fair-Value-Rechner"
+                }
+            },
+            "stockTracker": {
+                "title": "Aktien-Performance-Tracker",
+                "actions": {
+                    "edit": "Bearbeiten",
+                    "getLastPrice": "Letzten Preis abrufen",
+                    "addTicker": "Ticker hinzufügen",
+                    "generateTable": "Tabelle erzeugen"
+                },
+                "labels": {
+                    "addStockTicker": "Aktien-Ticker hinzufügen",
+                    "startYear": "Startjahr"
+                },
+                "table": {
+                    "year": "Jahr",
+                    "totalGrowth": "Gesamtwachstum",
+                    "cagr": "CAGR",
+                    "chart": "Diagramm"
+                },
+                "summary": {
+                    "investment": "Investitionsanalyse",
+                    "best": "Bester Performer",
+                    "worst": "Schlechtester Performer",
+                    "consistent": "Am beständigsten"
+                },
+                "chart": {
+                    "price": "Preis",
+                    "growth": "Wachstum"
+                }
+            },
+            "stockFinance": {
+                "title": "Finanzielle Aktienperformance",
+                "labels": {
+                    "ticker": "Ticker",
+                    "reportsFrom": "Berichte ab",
+                    "timeframe": "Zeitrahmen",
+                    "getReports": "Berichte abrufen",
+                    "timeframes": {
+                        "quarterly": "Vierteljährlich",
+                        "annual": "Jährlich",
+                        "ttm": "TTM"
+                    }
+                },
+                "tabs": {
+                    "income": "Gewinn- und Verlustrechnung",
+                    "balance": "Bilanz",
+                    "cash": "Cashflow",
+                    "stats": "Statistiken"
+                },
+                "table": {
+                    "label": "Etikett"
+                },
+                "messages": {
+                    "noData": "Keine Daten verfügbar",
+                    "loadFailed": "Daten konnten nicht geladen werden"
+                },
+                "zeroInfo": "Werte gekürzt, indem 6 nachgestellte Nullen (\"000.000\") entfernt wurden",
+                "stats": {
+                    "peRatio": "P/E-Verhältnis",
+                    "grossMargin": "Bruttomarge",
+                    "netMargin": "Nettomarge"
                 }
             },
             "settings": {
@@ -556,6 +840,77 @@ const I18n = (function() {
                     "worstYear": "Peor Año"
                 }
             },
+            "calculators": {
+                "title": "Calculadoras financieras",
+                "tabs": {
+                    "loan": "Calculadora de préstamos",
+                    "investment": "Calculadora de inversiones",
+                    "cagr": "Calculadora CAGR",
+                    "fairValue": "Calculadora de valor razonable"
+                }
+            },
+            "stockTracker": {
+                "title": "Rastreador de rendimiento de acciones",
+                "actions": {
+                    "edit": "Editar",
+                    "getLastPrice": "Obtener el último precio",
+                    "addTicker": "Agregar ticker",
+                    "generateTable": "Generar tabla"
+                },
+                "labels": {
+                    "addStockTicker": "Agregar ticker de acciones",
+                    "startYear": "Año inicial"
+                },
+                "table": {
+                    "year": "Año",
+                    "totalGrowth": "Crecimiento total",
+                    "cagr": "CAGR",
+                    "chart": "Gráfico"
+                },
+                "summary": {
+                    "investment": "Análisis de inversiones",
+                    "best": "Mejor desempeño",
+                    "worst": "Peor desempeño",
+                    "consistent": "Más consistente"
+                },
+                "chart": {
+                    "price": "Precio",
+                    "growth": "Crecimiento"
+                }
+            },
+            "stockFinance": {
+                "title": "Rendimiento financiero de acciones",
+                "labels": {
+                    "ticker": "Ticker",
+                    "reportsFrom": "Informes que comienzan desde",
+                    "timeframe": "Período de tiempo",
+                    "getReports": "Obtener informes",
+                    "timeframes": {
+                        "quarterly": "Trimestral",
+                        "annual": "Anual",
+                        "ttm": "TTM"
+                    }
+                },
+                "tabs": {
+                    "income": "Estado de resultados",
+                    "balance": "Balance",
+                    "cash": "Flujo de efectivo",
+                    "stats": "Estadísticas"
+                },
+                "table": {
+                    "label": "Etiqueta"
+                },
+                "messages": {
+                    "noData": "No hay datos disponibles",
+                    "loadFailed": "Error al cargar los datos"
+                },
+                "zeroInfo": "Valores recortados eliminando 6 ceros finales (\"000,000\")",
+                "stats": {
+                    "peRatio": "Relación P/E",
+                    "grossMargin": "Margen bruto",
+                    "netMargin": "Margen neto"
+                }
+            },
             "settings": {
                 "title": "Configuración",
                 "baseCurrency": "Moneda Base",
@@ -671,6 +1026,77 @@ const I18n = (function() {
                     "worstMonth": "Mese Peggiore",
                     "bestYear": "Anno Migliore",
                     "worstYear": "Anno Peggiore"
+                }
+            },
+            "calculators": {
+                "title": "Calcolatori finanziari",
+                "tabs": {
+                    "loan": "Calcolatore del prestito",
+                    "investment": "Calcolatore di investimento",
+                    "cagr": "Calcolatore CAGR",
+                    "fairValue": "Calcolatore del valore equo"
+                }
+            },
+            "stockTracker": {
+                "title": "Tracker delle prestazioni azionarie",
+                "actions": {
+                    "edit": "Modifica",
+                    "getLastPrice": "Ottieni l'ultimo prezzo",
+                    "addTicker": "Aggiungi ticker",
+                    "generateTable": "Genera tabella"
+                },
+                "labels": {
+                    "addStockTicker": "Aggiungi ticker azionario",
+                    "startYear": "Anno di partenza"
+                },
+                "table": {
+                    "year": "Anno",
+                    "totalGrowth": "Crescita totale",
+                    "cagr": "CAGR",
+                    "chart": "Grafico"
+                },
+                "summary": {
+                    "investment": "Analisi degli investimenti",
+                    "best": "Miglior performer",
+                    "worst": "Peggior performer",
+                    "consistent": "Più coerente"
+                },
+                "chart": {
+                    "price": "Prezzo",
+                    "growth": "Crescita"
+                }
+            },
+            "stockFinance": {
+                "title": "Prestazioni finanziarie delle azioni",
+                "labels": {
+                    "ticker": "Ticker",
+                    "reportsFrom": "Report a partire da",
+                    "timeframe": "Periodo di riferimento",
+                    "getReports": "Ottieni rapporti",
+                    "timeframes": {
+                        "quarterly": "Trimestrale",
+                        "annual": "Annuale",
+                        "ttm": "TTM"
+                    }
+                },
+                "tabs": {
+                    "income": "Conto economico",
+                    "balance": "Bilancio",
+                    "cash": "Flusso di cassa",
+                    "stats": "Statistiche"
+                },
+                "table": {
+                    "label": "Etichetta"
+                },
+                "messages": {
+                    "noData": "Nessun dato disponibile",
+                    "loadFailed": "Impossibile caricare i dati"
+                },
+                "zeroInfo": "Valori ridotti rimuovendo 6 zeri finali (\"000,000\")",
+                "stats": {
+                    "peRatio": "Rapporto P/E",
+                    "grossMargin": "Margine lordo",
+                    "netMargin": "Margine netto"
                 }
             },
             "settings": {
