@@ -328,21 +328,21 @@ const Settings = (function() {
 
         if (delPensionsBtn) {
             delPensionsBtn.addEventListener('click', async () => {
-                const c = await DialogManager.confirm('Delete all pension data?', 'Delete');
+                const c = await DialogManager.confirm(I18n.t('dialog.deleteAllPension'), I18n.t('dialog.delete'));
                 if (c) PensionManager.deleteAllData();
             });
         }
 
         if (delPortfolioBtn) {
             delPortfolioBtn.addEventListener('click', async () => {
-                const c = await DialogManager.confirm('Delete all portfolio data?', 'Delete');
+                const c = await DialogManager.confirm(I18n.t('dialog.deleteAllPortfolio'), I18n.t('dialog.delete'));
                 if (c) PortfolioManager.deleteAllData();
             });
         }
 
         if (delStockBtn) {
             delStockBtn.addEventListener('click', async () => {
-                const c = await DialogManager.confirm('Delete all stock tracker data?', 'Delete');
+                const c = await DialogManager.confirm(I18n.t('dialog.deleteAllStock'), I18n.t('dialog.delete'));
                 if (c) StockTracker.deleteAllData();
             });
         }

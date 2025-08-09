@@ -220,7 +220,7 @@ const PensionManager = (function() {
         if (pensions.length <= 1) return;
         const idx = pensions.findIndex(p => p.id === currentPensionId);
         if (idx !== -1) {
-            const confirmed = await DialogManager.confirm('Delete this pension?', 'Delete');
+            const confirmed = await DialogManager.confirm(I18n.t('dialog.deletePension'), I18n.t('dialog.delete'));
             if (!confirmed) return;
             localStorage.removeItem(getStorageKey(currentPensionId));
             pensions.splice(idx, 1);
@@ -291,7 +291,7 @@ const PensionManager = (function() {
         if (btn.classList.contains('edit-btn')) {
             openEditEntryModal(idx);
         } else if (btn.classList.contains('delete-btn')) {
-            const confirmed = await DialogManager.confirm('Delete this entry?', 'Delete');
+            const confirmed = await DialogManager.confirm(I18n.t('dialog.deleteEntry'), I18n.t('dialog.delete'));
             if (confirmed) {
                 entries.splice(idx, 1);
                 saveEntries();

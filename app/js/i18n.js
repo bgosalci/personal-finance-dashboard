@@ -42,6 +42,7 @@ const I18n = (function() {
                 "principal": "Principal",
                 "quantity": "Quantity",
                 "lastPrice": "Last Price",
+                "purchaseDate": "Purchase Date",
                 "value": "Value",
                 "pl": "P&L",
                 "plPct": "P&L %",
@@ -86,6 +87,23 @@ const I18n = (function() {
                     "worstMonth": "Worst Month",
                     "bestYear": "Best Year",
                     "worstYear": "Worst Year"
+                },
+                "dialogs": {
+                    "new": {
+                        "title": "New Pension",
+                        "type": "Type",
+                        "startingValue": "Starting Value",
+                        "options": {
+                            "growth": "Growth Only",
+                            "payments": "Growth with Payments"
+                        }
+                    },
+                    "editEntry": {
+                        "title": "Edit Entry"
+                    }
+                },
+                "chart": {
+                    "title": "Pension Chart"
                 }
             },
             "calculators": {
@@ -219,6 +237,7 @@ const I18n = (function() {
                     "consistent": "Most Consistent"
                 },
                 "chart": {
+                    "title": "Stock Chart",
                     "price": "Price",
                     "growth": "Growth"
                 }
@@ -283,12 +302,31 @@ const I18n = (function() {
                 "importLang": "Import Language",
                 "rtlToggle": "Enable RTL"
             },
+            "dialog": {
+                "yes": "Yes",
+                "no": "No",
+                "close": "Close",
+                "delete": "Delete",
+                "enterPortfolioName": "Enter portfolio name:",
+                "deletePortfolio": "Delete this portfolio?",
+                "tickerNotExist": "Ticker symbol does not exist",
+                "enterValidTicker": "Please enter a valid ticker symbol.",
+                "purchaseDateFuture": "Purchase date cannot be in the future.",
+                "deleteInvestment": "Delete this investment?",
+                "deletePension": "Delete this pension?",
+                "deleteEntry": "Delete this entry?",
+                "deleteAllPension": "Delete all pension data?",
+                "deleteAllPortfolio": "Delete all portfolio data?",
+                "deleteAllStock": "Delete all stock tracker data?"
+            },
             "common": {
                 "format": "Format",
                 "file": "File",
                 "cancel": "Cancel",
                 "import": "Import",
                 "export": "Export",
+                "add": "Add",
+                "save": "Save",
                 "summary": "Summary"
             }
         },
@@ -327,6 +365,7 @@ const I18n = (function() {
                 "principal": "Kapitali",
                 "quantity": "Sasia",
                 "lastPrice": "Çmimi i Fundit",
+                "purchaseDate": "Data e Blerjes",
                 "value": "Vlera",
                 "pl": "Fitimi/Humbja",
                 "plPct": "Fitimi/Humbja %",
@@ -371,6 +410,23 @@ const I18n = (function() {
                     "worstMonth": "Muaji Më i Keq",
                     "bestYear": "Viti Më i Mirë",
                     "worstYear": "Viti Më i Keq"
+                },
+                "dialogs": {
+                    "new": {
+                        "title": "Pension i Ri",
+                        "type": "Lloji",
+                        "startingValue": "Vlera Fillestare",
+                        "options": {
+                            "growth": "Vetëm Rritje",
+                            "payments": "Rritje me Pagesa"
+                        }
+                    },
+                    "editEntry": {
+                        "title": "Ndrysho Shënimin"
+                    }
+                },
+                "chart": {
+                    "title": "Grafiku i Pensionit"
                 }
             },
             "calculators": {
@@ -506,6 +562,7 @@ const I18n = (function() {
                     "consistent": "Më i qëndrueshëm"
                 },
                 "chart": {
+                    "title": "Grafiku i Aksioneve",
                     "price": "Çmim",
                     "growth": "Rritje"
                 }
@@ -570,12 +627,31 @@ const I18n = (function() {
                 "importLang": "Importo Gjuhën",
                 "rtlToggle": "Aktivizo RTL"
             },
+            "dialog": {
+                "yes": "Po",
+                "no": "Jo",
+                "close": "Mbyll",
+                "delete": "Fshi",
+                "enterPortfolioName": "Shkruani emrin e portofolit:",
+                "deletePortfolio": "Ta fshij këtë portofol?",
+                "tickerNotExist": "Simboli i aksionit nuk ekziston",
+                "enterValidTicker": "Ju lutemi, shkruani një simbol të vlefshëm.",
+                "purchaseDateFuture": "Data e blerjes nuk mund të jetë në të ardhmen.",
+                "deleteInvestment": "Ta fshij këtë investim?",
+                "deletePension": "Ta fshij këtë pension?",
+                "deleteEntry": "Ta fshij këtë shënim?",
+                "deleteAllPension": "Të fshij të gjithë të dhënat e pensionit?",
+                "deleteAllPortfolio": "Të fshij të gjitha të dhënat e portofolit?",
+                "deleteAllStock": "Të fshij të gjitha të dhënat e gjurmuesit të aksioneve?"
+            },
             "common": {
                 "format": "Formati",
                 "file": "Skedari",
                 "cancel": "Anulo",
                 "import": "Importo",
                 "export": "Eksporto",
+                "add": "Shto",
+                "save": "Ruaj",
                 "summary": "Përmbledhje"
             }
         },
@@ -614,6 +690,7 @@ const I18n = (function() {
                 "principal": "Capital",
                 "quantity": "Quantité",
                 "lastPrice": "Dernier Prix",
+                "purchaseDate": "Date d'Achat",
                 "value": "Valeur",
                 "pl": "P&L",
                 "plPct": "P&L %",
@@ -658,6 +735,23 @@ const I18n = (function() {
                     "worstMonth": "Pire Mois",
                     "bestYear": "Meilleure Année",
                     "worstYear": "Pire Année"
+                },
+                "dialogs": {
+                    "new": {
+                        "title": "Nouvelle Pension",
+                        "type": "Type",
+                        "startingValue": "Valeur Initiale",
+                        "options": {
+                            "growth": "Croissance seule",
+                            "payments": "Croissance avec versements"
+                        }
+                    },
+                    "editEntry": {
+                        "title": "Modifier l'entrée"
+                    }
+                },
+                "chart": {
+                    "title": "Graphique de Pension"
                 }
             },
             "calculators": {
@@ -793,6 +887,7 @@ const I18n = (function() {
                     "consistent": "Le plus cohérent"
                 },
                 "chart": {
+                    "title": "Graphique Boursier",
                     "price": "Prix",
                     "growth": "Croissance"
                 }
@@ -857,12 +952,31 @@ const I18n = (function() {
                 "importLang": "Importer la Langue",
                 "rtlToggle": "Activer RTL"
             },
+            "dialog": {
+                "yes": "Oui",
+                "no": "Non",
+                "close": "Fermer",
+                "delete": "Supprimer",
+                "enterPortfolioName": "Entrez le nom du portefeuille :",
+                "deletePortfolio": "Supprimer ce portefeuille ?",
+                "tickerNotExist": "Le symbole boursier n'existe pas",
+                "enterValidTicker": "Veuillez entrer un symbole valide.",
+                "purchaseDateFuture": "La date d'achat ne peut pas être dans le futur.",
+                "deleteInvestment": "Supprimer cet investissement ?",
+                "deletePension": "Supprimer cette pension ?",
+                "deleteEntry": "Supprimer cette entrée ?",
+                "deleteAllPension": "Supprimer toutes les données de retraite ?",
+                "deleteAllPortfolio": "Supprimer toutes les données de portefeuille ?",
+                "deleteAllStock": "Supprimer toutes les données du suivi des actions ?"
+            },
             "common": {
                 "format": "Format",
                 "file": "Fichier",
                 "cancel": "Annuler",
                 "import": "Importer",
                 "export": "Exporter",
+                "add": "Ajouter",
+                "save": "Enregistrer",
                 "summary": "Résumé"
             }
         },
@@ -901,6 +1015,7 @@ const I18n = (function() {
                 "principal": "Kapital",
                 "quantity": "Menge",
                 "lastPrice": "Letzter Preis",
+                "purchaseDate": "Kaufdatum",
                 "value": "Wert",
                 "pl": "Gewinn/Verlust",
                 "plPct": "Gewinn/Verlust %",
@@ -945,6 +1060,23 @@ const I18n = (function() {
                     "worstMonth": "Schlechtester Monat",
                     "bestYear": "Bestes Jahr",
                     "worstYear": "Schlechtestes Jahr"
+                },
+                "dialogs": {
+                    "new": {
+                        "title": "Neue Rente",
+                        "type": "Typ",
+                        "startingValue": "Startwert",
+                        "options": {
+                            "growth": "Nur Wachstum",
+                            "payments": "Wachstum mit Einzahlungen"
+                        }
+                    },
+                    "editEntry": {
+                        "title": "Eintrag bearbeiten"
+                    }
+                },
+                "chart": {
+                    "title": "Rentendiagramm"
                 }
             },
             "calculators": {
@@ -1080,6 +1212,7 @@ const I18n = (function() {
                     "consistent": "Am beständigsten"
                 },
                 "chart": {
+                    "title": "Aktienchart",
                     "price": "Preis",
                     "growth": "Wachstum"
                 }
@@ -1144,12 +1277,31 @@ const I18n = (function() {
                 "importLang": "Sprache importieren",
                 "rtlToggle": "RTL aktivieren"
             },
+            "dialog": {
+                "yes": "Ja",
+                "no": "Nein",
+                "close": "Schließen",
+                "delete": "Löschen",
+                "enterPortfolioName": "Portfolionamen eingeben:",
+                "deletePortfolio": "Dieses Portfolio löschen?",
+                "tickerNotExist": "Tickersymbol existiert nicht",
+                "enterValidTicker": "Bitte geben Sie ein gültiges Tickersymbol ein.",
+                "purchaseDateFuture": "Kaufdatum darf nicht in der Zukunft liegen.",
+                "deleteInvestment": "Diese Investition löschen?",
+                "deletePension": "Diese Rente löschen?",
+                "deleteEntry": "Diesen Eintrag löschen?",
+                "deleteAllPension": "Alle Rentendaten löschen?",
+                "deleteAllPortfolio": "Alle Portfoliodaten löschen?",
+                "deleteAllStock": "Alle Daten des Aktien-Trackers löschen?"
+            },
             "common": {
                 "format": "Format",
                 "file": "Datei",
                 "cancel": "Abbrechen",
                 "import": "Importieren",
                 "export": "Exportieren",
+                "add": "Hinzufügen",
+                "save": "Speichern",
                 "summary": "Zusammenfassung"
             }
         },
@@ -1188,6 +1340,7 @@ const I18n = (function() {
                 "principal": "Capital",
                 "quantity": "Cantidad",
                 "lastPrice": "Último Precio",
+                "purchaseDate": "Fecha de Compra",
                 "value": "Valor",
                 "pl": "Ganancia/Pérdida",
                 "plPct": "Ganancia/Pérdida %",
@@ -1232,6 +1385,23 @@ const I18n = (function() {
                     "worstMonth": "Peor Mes",
                     "bestYear": "Mejor Año",
                     "worstYear": "Peor Año"
+                },
+                "dialogs": {
+                    "new": {
+                        "title": "Nueva Pensión",
+                        "type": "Tipo",
+                        "startingValue": "Valor Inicial",
+                        "options": {
+                            "growth": "Solo Crecimiento",
+                            "payments": "Crecimiento con Pagos"
+                        }
+                    },
+                    "editEntry": {
+                        "title": "Editar Entrada"
+                    }
+                },
+                "chart": {
+                    "title": "Gráfico de Pensión"
                 }
             },
             "calculators": {
@@ -1367,6 +1537,7 @@ const I18n = (function() {
                     "consistent": "Más consistente"
                 },
                 "chart": {
+                    "title": "Gráfico de Acciones",
                     "price": "Precio",
                     "growth": "Crecimiento"
                 }
@@ -1431,12 +1602,31 @@ const I18n = (function() {
                 "importLang": "Importar Idioma",
                 "rtlToggle": "Habilitar RTL"
             },
+            "dialog": {
+                "yes": "Sí",
+                "no": "No",
+                "close": "Cerrar",
+                "delete": "Eliminar",
+                "enterPortfolioName": "Ingrese el nombre del portafolio:",
+                "deletePortfolio": "¿Eliminar este portafolio?",
+                "tickerNotExist": "El símbolo de cotización no existe",
+                "enterValidTicker": "Por favor, ingrese un símbolo válido.",
+                "purchaseDateFuture": "La fecha de compra no puede estar en el futuro.",
+                "deleteInvestment": "¿Eliminar esta inversión?",
+                "deletePension": "¿Eliminar esta pensión?",
+                "deleteEntry": "¿Eliminar esta entrada?",
+                "deleteAllPension": "¿Eliminar todos los datos de pensión?",
+                "deleteAllPortfolio": "¿Eliminar todos los datos de portafolio?",
+                "deleteAllStock": "¿Eliminar todos los datos del rastreador de acciones?"
+            },
             "common": {
                 "format": "Formato",
                 "file": "Archivo",
                 "cancel": "Cancelar",
                 "import": "Importar",
                 "export": "Exportar",
+                "add": "Añadir",
+                "save": "Guardar",
                 "summary": "Resumen"
             }
         },
@@ -1475,6 +1665,7 @@ const I18n = (function() {
                 "principal": "Capitale",
                 "quantity": "Quantità",
                 "lastPrice": "Ultimo Prezzo",
+                "purchaseDate": "Data di Acquisto",
                 "value": "Valore",
                 "pl": "Utile/Perdita",
                 "plPct": "Utile/Perdita %",
@@ -1519,6 +1710,23 @@ const I18n = (function() {
                     "worstMonth": "Mese Peggiore",
                     "bestYear": "Anno Migliore",
                     "worstYear": "Anno Peggiore"
+                },
+                "dialogs": {
+                    "new": {
+                        "title": "Nuova Pensione",
+                        "type": "Tipo",
+                        "startingValue": "Valore Iniziale",
+                        "options": {
+                            "growth": "Solo Crescita",
+                            "payments": "Crescita con Versamenti"
+                        }
+                    },
+                    "editEntry": {
+                        "title": "Modifica Voce"
+                    }
+                },
+                "chart": {
+                    "title": "Grafico Pensione"
                 }
             },
             "calculators": {
@@ -1654,6 +1862,7 @@ const I18n = (function() {
                     "consistent": "Più coerente"
                 },
                 "chart": {
+                    "title": "Grafico Azioni",
                     "price": "Prezzo",
                     "growth": "Crescita"
                 }
@@ -1718,12 +1927,31 @@ const I18n = (function() {
                 "importLang": "Importa Lingua",
                 "rtlToggle": "Abilita RTL"
             },
+            "dialog": {
+                "yes": "Sì",
+                "no": "No",
+                "close": "Chiudi",
+                "delete": "Elimina",
+                "enterPortfolioName": "Inserisci il nome del portafoglio:",
+                "deletePortfolio": "Eliminare questo portafoglio?",
+                "tickerNotExist": "Il simbolo ticker non esiste",
+                "enterValidTicker": "Per favore inserisci un simbolo valido.",
+                "purchaseDateFuture": "La data di acquisto non può essere nel futuro.",
+                "deleteInvestment": "Eliminare questo investimento?",
+                "deletePension": "Eliminare questa pensione?",
+                "deleteEntry": "Eliminare questa voce?",
+                "deleteAllPension": "Eliminare tutti i dati della pensione?",
+                "deleteAllPortfolio": "Eliminare tutti i dati del portafoglio?",
+                "deleteAllStock": "Eliminare tutti i dati del tracker azionario?"
+            },
             "common": {
                 "format": "Formato",
                 "file": "File",
                 "cancel": "Annulla",
                 "import": "Importa",
                 "export": "Esporta",
+                "add": "Aggiungi",
+                "save": "Salva",
                 "summary": "Riepilogo"
             }
         }

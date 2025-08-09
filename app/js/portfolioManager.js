@@ -385,7 +385,7 @@ const PortfolioManager = (function() {
     }
 
     async function addPortfolio() {
-        const name = await DialogManager.prompt('Enter portfolio name:', '');
+        const name = await DialogManager.prompt(I18n.t('dialog.enterPortfolioName'), '');
         if (!name) return;
         const id = 'pf' + Date.now();
         portfolios.push({ id, name, show: true });
@@ -397,7 +397,7 @@ const PortfolioManager = (function() {
     async function removePortfolio() {
         if (summaryMode) return;
         if (portfolios.length <= 1) return;
-        const confirmed = await DialogManager.confirm('Delete this portfolio?', 'Delete');
+        const confirmed = await DialogManager.confirm(I18n.t('dialog.deletePortfolio'), I18n.t('dialog.delete'));
         if (!confirmed) return;
         const idx = portfolios.findIndex(p => p.id === currentPortfolioId);
         if (idx !== -1) {
@@ -669,7 +669,7 @@ const PortfolioManager = (function() {
             } else {
                 tickerValid = false;
                 document.getElementById('investment-name').value = '';
-                DialogManager.alert('Ticker symbol does not exist');
+                DialogManager.alert(I18n.t('dialog.tickerNotExist'));
             }
         } catch (e) {
             // If the request fails or times out, allow the ticker without validation
@@ -689,13 +689,13 @@ const PortfolioManager = (function() {
         const lastPrice = parseFloat(document.getElementById('investment-last-price').value) || 0;
         const currency = document.getElementById('investment-currency').value || 'USD';
         if (!tickerValid) {
-            DialogManager.alert('Please enter a valid ticker symbol.');
+            DialogManager.alert(I18n.t('dialog.enterValidTicker'));
             return;
         }
         const today = new Date().toISOString().split('T')[0];
         if (!ticker || quantity <= 0 || purchasePrice <= 0 || lastPrice <= 0) return;
         if (!purchaseDate || purchaseDate > today) {
-            DialogManager.alert('Purchase date cannot be in the future.');
+            DialogManager.alert(I18n.t('dialog.purchaseDateFuture'));
             return;
         }
 
@@ -871,7 +871,7 @@ const PortfolioManager = (function() {
         if (qty <= 0 || purchase <= 0 || last <= 0) return;
         const today = new Date().toISOString().split('T')[0];
         if (!date || date > today) {
-            DialogManager.alert('Purchase date cannot be in the future.');
+            DialogManager.alert(I18n.t('dialog.purchaseDateFuture'));
             return;
         }
 
@@ -897,7 +897,7 @@ const PortfolioManager = (function() {
             openEditModal(idx);
         } else if (btn.classList.contains('delete-btn')) {
             const idx = parseInt(btn.dataset.index, 10);
-            const confirmed = await DialogManager.confirm('Delete this investment?', 'Delete');
+            const confirmed = await DialogManager.confirm(I18n.t('dialog.deleteInvestment'), I18n.t('dialog.delete'));
             if (confirmed) {
                 const removed = investments.splice(idx, 1)[0];
                 if (removed && !investments.some(inv => inv.ticker === removed.ticker)) {
