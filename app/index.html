@@ -812,6 +812,8 @@
                     <div class="button-row">
                         <button type="button" class="btn btn-secondary" id="export-lang-btn" data-i18n="settings.exportLang">Export Language</button>
                         <button type="button" class="btn btn-secondary" id="import-lang-btn" data-i18n="settings.importLang">Import Language</button>
+                        <button type="button" class="btn btn-secondary" id="edit-current-locale-btn" data-i18n="settings.editLocale">Edit Current Locale</button>
+                        <button type="button" class="btn btn-secondary" id="edit-locale-file-btn" data-i18n="settings.editLocaleFile">Edit Locale File</button>
                         <input type="file" id="import-lang-file" accept=".json" style="display:none">
                     </div>
                 </div>
@@ -949,6 +951,28 @@
                 </table>
                 <div class="modal-actions">
                     <button type="button" class="btn btn-secondary" id="cancel-portfolio-labels">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="locale-editor-modal" class="modal">
+        <div class="modal-content">
+            <h3>Edit Locale</h3>
+            <div class="form-group" id="locale-editor-select-group">
+                <label for="locale-editor-select">Locale</label>
+                <select id="locale-editor-select"></select>
+            </div>
+            <form id="locale-editor-form">
+                <table class="data-table">
+                    <thead>
+                        <tr><th>Section</th><th>Key</th><th>Value</th><th>New Value</th></tr>
+                    </thead>
+                    <tbody id="locale-editor-body"></tbody>
+                </table>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" id="cancel-locale-editor" data-i18n="common.cancel">Cancel</button>
                     <button type="submit" class="btn btn-primary">Save</button>
                 </div>
             </form>

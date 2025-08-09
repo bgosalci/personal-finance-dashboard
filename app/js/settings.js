@@ -70,6 +70,14 @@ const Settings = (function() {
         const exportLangBtn = document.getElementById('export-lang-btn');
         const importLangBtn = document.getElementById('import-lang-btn');
         const importLangFile = document.getElementById('import-lang-file');
+        const editLocaleBtn = document.getElementById('edit-current-locale-btn');
+        const editLocaleFileBtn = document.getElementById('edit-locale-file-btn');
+        const localeModal = document.getElementById('locale-editor-modal');
+        const localeForm = document.getElementById('locale-editor-form');
+        const localeBody = document.getElementById('locale-editor-body');
+        const localeCancel = document.getElementById('cancel-locale-editor');
+        const localeSelectGroup = document.getElementById('locale-editor-select-group');
+        const localeSelect = document.getElementById('locale-editor-select');
 
         if (exportLangBtn) {
             exportLangBtn.addEventListener('click', () => {
@@ -319,6 +327,105 @@ const Settings = (function() {
             PortfolioColumns.setLabels(newLabels);
             closeLabels();
         }
+
+        function flattenTranslations(obj, prefix = '') {
+            const res = [];
+            Object.keys(obj).forEach(k => {
+                const val = obj[k];
+                const path = prefix ? prefix + '.' + k : k;
+                if (val && typeof val === 'object') {
+                    res.push(...flattenTranslations(val, path));
+                } else {
+                    const last = path.lastIndexOf('.');
+                    const section = last === -1 ? '' : path.slice(0, last);
+                    const key = last === -1 ? path : path.slice(last + 1);
+                    res.push({ section, key, value: val });
+                }
+            });
+            return res;
+        }
+
+        async function openLocaleEditor(locale, allowSelect) {
+            const data = await I18n.getLocaleData(locale);
+            if (!data) return;
+            localeBody.innerHTML = '';
+            flattenTranslations(data).forEach(item => {
+                const tr = document.createElement('tr');
+                const tdSec = document.createElement('td');
+                tdSec.textContent = item.section;
+                const tdKey = document.createElement('td');
+                tdKey.textContent = item.key;
+                const tdVal = document.createElement('td');
+                tdVal.textContent = item.value;
+                const tdInput = document.createElement('td');
+                const group = document.createElement('div');
+                group.className = 'form-group';
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.value = item.value;
+                input.dataset.section = item.section;
+                input.dataset.key = item.key;
+                group.appendChild(input);
+                tdInput.appendChild(group);
+                tr.appendChild(tdSec);
+                tr.appendChild(tdKey);
+                tr.appendChild(tdVal);
+                tr.appendChild(tdInput);
+                localeBody.appendChild(tr);
+            });
+
+            if (allowSelect) {
+                localeSelectGroup.style.display = '';
+                localeSelect.innerHTML = '';
+                I18n.availableLocales.forEach(l => {
+                    const opt = document.createElement('option');
+                    opt.value = l;
+                    opt.textContent = l;
+                    localeSelect.appendChild(opt);
+                });
+                localeSelect.value = locale;
+                localeSelect.disabled = false;
+            } else {
+                localeSelectGroup.style.display = 'none';
+                localeSelect.value = locale;
+            }
+
+            localeModal.style.display = 'flex';
+            const firstInput = localeBody.querySelector('input');
+            if (firstInput) firstInput.focus();
+        }
+
+        function closeLocaleEditor() {
+            localeModal.style.display = 'none';
+        }
+
+        async function saveLocaleChanges(e) {
+            e.preventDefault();
+            const locale = localeSelect.value;
+            const data = await I18n.getLocaleData(locale) || {};
+            const inputs = localeBody.querySelectorAll('input');
+            inputs.forEach(input => {
+                const section = input.dataset.section;
+                const key = input.dataset.key;
+                let target = data;
+                if (section) {
+                    section.split('.').forEach(part => {
+                        if (!target[part]) target[part] = {};
+                        target = target[part];
+                    });
+                }
+                target[key] = input.value;
+            });
+            I18n.saveLocaleData(locale, data);
+            closeLocaleEditor();
+        }
+
+        if (editLocaleBtn) editLocaleBtn.addEventListener('click', () => openLocaleEditor(I18n.getCurrentLocale(), false));
+        if (editLocaleFileBtn) editLocaleFileBtn.addEventListener('click', () => openLocaleEditor(I18n.getCurrentLocale(), true));
+        if (localeCancel) localeCancel.addEventListener('click', closeLocaleEditor);
+        if (localeForm) localeForm.addEventListener('submit', saveLocaleChanges);
+        if (localeModal) localeModal.addEventListener('click', e => { if (e.target === localeModal) closeLocaleEditor(); });
+        if (localeSelect) localeSelect.addEventListener('change', () => openLocaleEditor(localeSelect.value, true));
 
         if (expPortfolioBtn) expPortfolioBtn.addEventListener('click', openPortfolioExport);
         if (expPortfolioCancel) expPortfolioCancel.addEventListener('click', closePortfolioExport);

@@ -83,7 +83,9 @@ const I18n = (function() {
             "languageLabel": "Language",
             "exportLang": "Export Language",
             "importLang": "Import Language",
-            "rtlToggle": "Enable RTL"
+            "rtlToggle": "Enable RTL",
+            "editLocale": "Edit Current Locale",
+            "editLocaleFile": "Edit Locale File"
         },
         "common": {
             "format": "Format",
@@ -267,6 +269,36 @@ const I18n = (function() {
         }
     }
 
+    async function getLocaleData(locale) {
+        if (locale === currentLocale) {
+            return JSON.parse(JSON.stringify(translations));
+        }
+        const storeKey = 'locale-' + locale;
+        const cached = localStorage.getItem(storeKey);
+        if (cached) return JSON.parse(cached);
+        if (typeof fetch === 'function' && !isFileProtocol) {
+            try {
+                const resp = await fetch('locales/' + locale + '.json');
+                if (resp.ok) {
+                    const data = await resp.json();
+                    localStorage.setItem(storeKey, JSON.stringify(data));
+                    return data;
+                }
+            } catch (e) {
+                console.warn('Failed to fetch locale', locale, e);
+            }
+        }
+        return null;
+    }
+
+    function saveLocaleData(locale, data) {
+        localStorage.setItem('locale-' + locale, JSON.stringify(data));
+        if (locale === currentLocale) {
+            translations = data;
+            apply();
+        }
+    }
+
     return {
         init,
         setLocale,
@@ -281,6 +313,8 @@ const I18n = (function() {
         exportLocale,
         importLocale,
         getLocale: getLocale,
-        getCurrentLocale
+        getCurrentLocale,
+        getLocaleData,
+        saveLocaleData
     };
 })();
