@@ -14,22 +14,22 @@
         <div class="container header-container">
             <img src="gosalci_logo.png" alt="GoSalci Logo" class="header-logo">
             <div class="header-text">
-                <h1>Financial Dashboard</h1>
-                <p>Personal Investment Tracking & Financial Planning Tool</p>
+                <h1 data-i18n="header.title">Financial Dashboard</h1>
+                <p data-i18n="header.tagline">Personal Investment Tracking & Financial Planning Tool</p>
             </div>
             <div class="market-status">
                 <div class="status-row">
-                    <span>Pre Market</span>
+                    <span data-i18n="market.pre">Pre Market</span>
                     <span id="early-led" class="led-light led-red"></span>
                     <span id="early-session" class="market-session"></span>
                 </div>
                 <div class="status-row">
-                    <span>Market Status</span>
+                    <span data-i18n="market.status">Market Status</span>
                     <span id="market-led" class="led-light led-red"></span>
                     <span id="market-session" class="market-session"></span>
                 </div>
                 <div class="status-row">
-                    <span>After Market</span>
+                    <span data-i18n="market.after">After Market</span>
                     <span id="after-led" class="led-light led-red"></span>
                     <span id="after-session" class="market-session"></span>
                 </div>
@@ -38,12 +38,12 @@
     </header>
 
     <nav class="nav-tabs">
-        <button class="nav-tab active" data-tab="portfolio">Portfolio</button>
-        <button class="nav-tab" data-tab="pension">Pension</button>
-        <button class="nav-tab" data-tab="calculators">Calculators</button>
-        <button class="nav-tab" data-tab="stock-tracker">Stock Performance Tracker</button>
-        <button class="nav-tab" data-tab="stock-finance">Stock Finance Performance</button>
-        <button class="nav-tab" data-tab="settings">Settings</button>
+        <button class="nav-tab active" data-tab="portfolio" data-i18n="nav.portfolio">Portfolio</button>
+        <button class="nav-tab" data-tab="pension" data-i18n="nav.pension">Pension</button>
+        <button class="nav-tab" data-tab="calculators" data-i18n="nav.calculators">Calculators</button>
+        <button class="nav-tab" data-tab="stock-tracker" data-i18n="nav.stockTracker">Stock Performance Tracker</button>
+        <button class="nav-tab" data-tab="stock-finance" data-i18n="nav.stockFinance">Stock Finance Performance</button>
+        <button class="nav-tab" data-tab="settings" data-i18n="nav.settings">Settings</button>
     </nav>
 
     <div class="container">
@@ -51,15 +51,15 @@
             <!-- Portfolio Tab -->
             <div id="portfolio" class="tab-content active">
                 <div class="section-header">
-                    <h2 class="section-title">Portfolio</h2>
+                    <h2 class="section-title" data-i18n="nav.portfolio">Portfolio</h2>
                     <div class="portfolio-actions">
                         <div id="portfolio-actions-menu" class="action-buttons" role="menu">
-                            <button class="btn btn-primary" id="add-investment-btn">Add Investment</button>
-                            <button class="btn btn-secondary" id="get-last-price-btn">Get The Last Price</button>
-                            <button class="btn btn-secondary" id="transaction-history-btn">Transaction History</button>
-                            <button class="btn btn-secondary" id="add-portfolio-btn">Add Portfolio</button>
-                            <button class="btn btn-secondary" id="remove-portfolio-btn">Remove Portfolio</button>
-                            <label class="summary-toggle"><input type="checkbox" id="summary-toggle" checked> Show in Summary</label>
+                            <button class="btn btn-primary" id="add-investment-btn" data-i18n="portfolio.actions.addInvestment">Add Investment</button>
+                            <button class="btn btn-secondary" id="get-last-price-btn" data-i18n="portfolio.actions.getLastPrice">Get The Last Price</button>
+                            <button class="btn btn-secondary" id="transaction-history-btn" data-i18n="portfolio.actions.transactionHistory">Transaction History</button>
+                            <button class="btn btn-secondary" id="add-portfolio-btn" data-i18n="portfolio.actions.addPortfolio">Add Portfolio</button>
+                            <button class="btn btn-secondary" id="remove-portfolio-btn" data-i18n="portfolio.actions.removePortfolio">Remove Portfolio</button>
+                            <label class="summary-toggle"><input type="checkbox" id="summary-toggle" checked> <span data-i18n="portfolio.actions.showInSummary">Show in Summary</span></label>
                         </div>
                         <button class="icon-btn menu-toggle" id="portfolio-menu-toggle" aria-label="More actions" aria-expanded="false" aria-controls="portfolio-actions-menu">
                             <ion-icon name="ellipsis-vertical"></ion-icon>
@@ -71,23 +71,23 @@
                     <table class="data-table" id="portfolio-table">
                         <thead>
                             <tr>
-                                <th id="col-ticker">Ticker</th>
-                                <th id="col-currency">Currency</th>
-                                <th id="col-name">Name</th>
-                                <th id="col-purchasePrice">Purchase Price</th>
-                                <th id="col-principal">Principal</th>
-                                <th id="col-quantity">Quantity</th>
-                                <th id="col-lastPrice">Last Price</th>
-                                <th id="col-value">Value</th>
-                                <th id="col-pl">P&amp;L</th>
-                                <th id="col-plPct">P&amp;L %</th>
-                                <th id="col-actions">Actions</th>
+                                <th id="col-ticker" data-i18n="portfolio.table.ticker">Ticker</th>
+                                <th id="col-currency" data-i18n="portfolio.table.currency">Currency</th>
+                                <th id="col-name" data-i18n="portfolio.table.name">Name</th>
+                                <th id="col-purchasePrice" data-i18n="portfolio.table.purchasePrice">Purchase Price</th>
+                                <th id="col-principal" data-i18n="portfolio.table.principal">Principal</th>
+                                <th id="col-quantity" data-i18n="portfolio.table.quantity">Quantity</th>
+                                <th id="col-lastPrice" data-i18n="portfolio.table.lastPrice">Last Price</th>
+                                <th id="col-value" data-i18n="portfolio.table.value">Value</th>
+                                <th id="col-pl" data-i18n="portfolio.table.pl">P&amp;L</th>
+                                <th id="col-plPct" data-i18n="portfolio.table.plPct">P&amp;L %</th>
+                                <th id="col-actions" data-i18n="portfolio.table.actions">Actions</th>
                             </tr>
                         </thead>
                         <tbody id="portfolio-body"></tbody>
                         <tfoot>
                             <tr class="summary-row" id="portfolio-total-row">
-                                <td colspan="4">Total (<span id="portfolio-base-currency-label">USD</span>)</td>
+                                <td colspan="4" data-i18n="portfolio.total">Total (<span id="portfolio-base-currency-label">USD</span>)</td>
                                 <td id="portfolio-total-principal" class="number-cell">$0.00</td>
                                 <td></td>
                                 <td></td>
@@ -102,24 +102,24 @@
 
                 <div class="charts-container">
                     <div class="chart-box">
-                        <h3>Investment Spread</h3>
+                        <h3 data-i18n="portfolio.charts.investmentSpread">Investment Spread</h3>
                         <canvas id="investment-spread-chart"></canvas>
                     </div>
                     <div class="chart-box">
-                        <h3>P&amp;L%</h3>
+                        <h3 data-i18n="portfolio.charts.plpct">P&amp;L%</h3>
                         <canvas id="plpct-chart"></canvas>
                     </div>
                     <div class="chart-box">
-                        <h3>Portfolio Stats</h3>
-                        <p>CAGR: <span id="portfolio-cagr">---</span></p>
-                        <p>Best Ticker: <span id="portfolio-best-ticker">---</span></p>
-                        <h4>Ticker CAGR</h4>
+                        <h3 data-i18n="portfolio.charts.stats">Portfolio Stats</h3>
+                        <p><span data-i18n="portfolio.charts.cagr">CAGR</span>: <span id="portfolio-cagr">---</span></p>
+                        <p><span data-i18n="portfolio.charts.bestTicker">Best Ticker</span>: <span id="portfolio-best-ticker">---</span></p>
+                        <h4 data-i18n="portfolio.charts.tickerCAGR">Ticker CAGR</h4>
                         <table class="data-table" id="ticker-cagr-table">
                             <thead>
                                 <tr>
-                                    <th>Ticker</th>
-                                    <th>CAGR %</th>
-                                    <th>Years</th>
+                                    <th data-i18n="portfolio.table.ticker">Ticker</th>
+                                    <th data-i18n="portfolio.charts.cagr">CAGR %</th>
+                                    <th data-i18n="portfolio.charts.years">Years</th>
                                 </tr>
                             </thead>
                             <tbody id="ticker-cagr-body"></tbody>
@@ -793,44 +793,59 @@
             <!-- Settings Tab -->
             <div id="settings" class="tab-content">
                 <div class="section-header">
-                    <h2 class="section-title">Settings</h2>
+                    <h2 class="section-title" data-i18n="settings.title">Settings</h2>
                 </div>
                 <div class="form-group">
-                    <label for="base-currency-select">Base Currency</label>
+                    <label for="base-currency-select" data-i18n="settings.baseCurrency">Base Currency</label>
                     <select id="base-currency-select"></select>
-                    <p class="form-hint">Exchange rates refresh once a day to keep totals accurate.</p>
+                    <p class="form-hint" data-i18n="settings.baseCurrencyHint">Exchange rates refresh once a day to keep totals accurate.</p>
                 </div>
-                <h3 class="section-subtitle">Pension</h3>
+                <h3 class="section-subtitle" data-i18n="settings.sectionTitles.language">Language</h3>
+                <div class="form-group">
+                    <label for="language-select" data-i18n="settings.languageLabel">Language</label>
+                    <select id="language-select"></select>
+                </div>
+                <div class="form-group">
+                    <label><input type="checkbox" id="rtl-toggle"> <span data-i18n="settings.rtlToggle">Enable RTL</span></label>
+                </div>
                 <div class="form-group">
                     <div class="button-row">
-                        <button type="button" class="btn btn-secondary" id="export-pensions-btn">Export Pensions</button>
-                        <button type="button" class="btn btn-secondary" id="import-pensions-btn">Import Pensions</button>
-                        <button type="button" class="btn btn-danger" id="delete-pensions-btn">Delete Pensions</button>
+                        <button type="button" class="btn btn-secondary" id="export-lang-btn" data-i18n="settings.exportLang">Export Language</button>
+                        <button type="button" class="btn btn-secondary" id="import-lang-btn" data-i18n="settings.importLang">Import Language</button>
+                        <input type="file" id="import-lang-file" accept=".json" style="display:none">
+                    </div>
+                </div>
+                <h3 class="section-subtitle" data-i18n="settings.sectionTitles.pension">Pension</h3>
+                <div class="form-group">
+                    <div class="button-row">
+                        <button type="button" class="btn btn-secondary" id="export-pensions-btn" data-i18n="settings.exportPensions">Export Pensions</button>
+                        <button type="button" class="btn btn-secondary" id="import-pensions-btn" data-i18n="settings.importPensions">Import Pensions</button>
+                        <button type="button" class="btn btn-danger" id="delete-pensions-btn" data-i18n="settings.deletePensions">Delete Pensions</button>
                     </div>
                 </div>
 
-                <h3 class="section-subtitle">Portfolio</h3>
+                <h3 class="section-subtitle" data-i18n="settings.sectionTitles.portfolio">Portfolio</h3>
                 <div class="form-group">
                     <div class="button-row">
-                        <button type="button" class="btn btn-secondary" id="export-portfolio-btn">Export Portfolio</button>
-                        <button type="button" class="btn btn-secondary" id="import-portfolio-btn">Import Portfolio</button>
-                        <button type="button" class="btn btn-secondary" id="edit-portfolio-labels-btn">Edit Column Labels</button>
-                        <button type="button" class="btn btn-danger" id="delete-portfolio-btn">Delete Portfolio</button>
+                        <button type="button" class="btn btn-secondary" id="export-portfolio-btn" data-i18n="settings.exportPortfolio">Export Portfolio</button>
+                        <button type="button" class="btn btn-secondary" id="import-portfolio-btn" data-i18n="settings.importPortfolio">Import Portfolio</button>
+                        <button type="button" class="btn btn-secondary" id="edit-portfolio-labels-btn" data-i18n="settings.editColumnLabels">Edit Column Labels</button>
+                        <button type="button" class="btn btn-danger" id="delete-portfolio-btn" data-i18n="settings.deletePortfolio">Delete Portfolio</button>
                     </div>
                 </div>
 
-                <h3 class="section-subtitle">Stock Performance Tracker</h3>
+                <h3 class="section-subtitle" data-i18n="settings.sectionTitles.stockTracker">Stock Performance Tracker</h3>
                 <div class="form-group">
                     <div class="button-row">
-                        <button type="button" class="btn btn-secondary" id="export-stock-btn">Export Data</button>
-                        <button type="button" class="btn btn-secondary" id="import-stock-btn">Import Data</button>
-                        <button type="button" class="btn btn-danger" id="delete-stock-btn">Delete Data</button>
+                        <button type="button" class="btn btn-secondary" id="export-stock-btn" data-i18n="settings.exportStock">Export Data</button>
+                        <button type="button" class="btn btn-secondary" id="import-stock-btn" data-i18n="settings.importStock">Import Data</button>
+                        <button type="button" class="btn btn-danger" id="delete-stock-btn" data-i18n="settings.deleteStock">Delete Data</button>
                     </div>
                 </div>
 
-                <h3 class="section-subtitle">About</h3>
+                <h3 class="section-subtitle" data-i18n="settings.sectionTitles.about">About</h3>
                 <div class="form-group">
-                    <label>Web App Version</label>
+                    <label data-i18n="settings.versionLabel">Web App Version</label>
                     <span id="app-version"></span>
                 </div>
             </div>
@@ -840,17 +855,17 @@
     <!-- Export Pensions Modal -->
     <div id="export-pensions-modal" class="modal">
         <div class="modal-content">
-            <h3>Export Pensions</h3>
+            <h3 data-i18n="settings.exportPensions">Export Pensions</h3>
             <div class="form-group">
-                <label for="export-pensions-format">Format</label>
+                <label for="export-pensions-format" data-i18n="common.format">Format</label>
                 <select id="export-pensions-format">
                     <option value="json">JSON</option>
                     <option value="csv">CSV</option>
                 </select>
             </div>
             <div class="modal-actions">
-                <button type="button" class="btn btn-secondary" id="cancel-export-pensions">Cancel</button>
-                <button type="button" class="btn btn-primary" id="download-export-pensions">Export</button>
+                <button type="button" class="btn btn-secondary" id="cancel-export-pensions" data-i18n="common.cancel">Cancel</button>
+                <button type="button" class="btn btn-primary" id="download-export-pensions" data-i18n="common.export">Export</button>
             </div>
         </div>
     </div>
@@ -858,22 +873,22 @@
     <!-- Import Pensions Modal -->
     <div id="import-pensions-modal" class="modal">
         <div class="modal-content">
-            <h3>Import Pensions</h3>
+            <h3 data-i18n="settings.importPensions">Import Pensions</h3>
             <form id="import-pensions-form">
                 <div class="form-group">
-                    <label for="import-pensions-format">Format</label>
+                    <label for="import-pensions-format" data-i18n="common.format">Format</label>
                     <select id="import-pensions-format">
                         <option value="json">JSON</option>
                         <option value="csv">CSV</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="import-pensions-file">File</label>
+                    <label for="import-pensions-file" data-i18n="common.file">File</label>
                     <input type="file" id="import-pensions-file" accept=".json,.csv" required>
                 </div>
                 <div class="modal-actions">
-                    <button type="button" class="btn btn-secondary" id="cancel-import-pensions">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Import</button>
+                    <button type="button" class="btn btn-secondary" id="cancel-import-pensions" data-i18n="common.cancel">Cancel</button>
+                    <button type="submit" class="btn btn-primary" data-i18n="common.import">Import</button>
                 </div>
             </form>
         </div>
@@ -882,17 +897,17 @@
     <!-- Export Portfolio Modal -->
     <div id="export-portfolio-modal" class="modal">
         <div class="modal-content">
-            <h3>Export Portfolio</h3>
+            <h3 data-i18n="settings.exportPortfolio">Export Portfolio</h3>
             <div class="form-group">
-                <label for="export-portfolio-format">Format</label>
+                <label for="export-portfolio-format" data-i18n="common.format">Format</label>
                 <select id="export-portfolio-format">
                     <option value="json">JSON</option>
                     <option value="csv">CSV</option>
                 </select>
             </div>
             <div class="modal-actions">
-                <button type="button" class="btn btn-secondary" id="cancel-export-portfolio">Cancel</button>
-                <button type="button" class="btn btn-primary" id="download-export-portfolio">Export</button>
+                <button type="button" class="btn btn-secondary" id="cancel-export-portfolio" data-i18n="common.cancel">Cancel</button>
+                <button type="button" class="btn btn-primary" id="download-export-portfolio" data-i18n="common.export">Export</button>
             </div>
         </div>
     </div>
@@ -900,22 +915,22 @@
     <!-- Import Portfolio Modal -->
     <div id="import-portfolio-modal" class="modal">
         <div class="modal-content">
-            <h3>Import Portfolio</h3>
+            <h3 data-i18n="settings.importPortfolio">Import Portfolio</h3>
             <form id="import-portfolio-form">
                 <div class="form-group">
-                    <label for="import-portfolio-format">Format</label>
+                    <label for="import-portfolio-format" data-i18n="common.format">Format</label>
                     <select id="import-portfolio-format">
                         <option value="json">JSON</option>
                         <option value="csv">CSV</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="import-portfolio-file">File</label>
+                    <label for="import-portfolio-file" data-i18n="common.file">File</label>
                     <input type="file" id="import-portfolio-file" accept=".json,.csv" required>
                 </div>
                 <div class="modal-actions">
-                    <button type="button" class="btn btn-secondary" id="cancel-import-portfolio">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Import</button>
+                    <button type="button" class="btn btn-secondary" id="cancel-import-portfolio" data-i18n="common.cancel">Cancel</button>
+                    <button type="submit" class="btn btn-primary" data-i18n="common.import">Import</button>
                 </div>
             </form>
         </div>
@@ -943,17 +958,17 @@
     <!-- Export Stock Data Modal -->
     <div id="export-stock-modal" class="modal">
         <div class="modal-content">
-            <h3>Export Stock Data</h3>
+            <h3 data-i18n="settings.exportStock">Export Stock Data</h3>
             <div class="form-group">
-                <label for="export-stock-format">Format</label>
+                <label for="export-stock-format" data-i18n="common.format">Format</label>
                 <select id="export-stock-format">
                     <option value="json">JSON</option>
                     <option value="csv">CSV</option>
                 </select>
             </div>
             <div class="modal-actions">
-                <button type="button" class="btn btn-secondary" id="cancel-export-stock">Cancel</button>
-                <button type="button" class="btn btn-primary" id="download-export-stock">Export</button>
+                <button type="button" class="btn btn-secondary" id="cancel-export-stock" data-i18n="common.cancel">Cancel</button>
+                <button type="button" class="btn btn-primary" id="download-export-stock" data-i18n="common.export">Export</button>
             </div>
         </div>
     </div>
@@ -961,22 +976,22 @@
     <!-- Import Stock Data Modal -->
     <div id="import-stock-modal" class="modal">
         <div class="modal-content">
-            <h3>Import Stock Data</h3>
+            <h3 data-i18n="settings.importStock">Import Stock Data</h3>
             <form id="import-stock-form">
                 <div class="form-group">
-                    <label for="import-stock-format">Format</label>
+                    <label for="import-stock-format" data-i18n="common.format">Format</label>
                     <select id="import-stock-format">
                         <option value="json">JSON</option>
                         <option value="csv">CSV</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="import-stock-file">File</label>
+                    <label for="import-stock-file" data-i18n="common.file">File</label>
                     <input type="file" id="import-stock-file" accept=".json,.csv" required>
                 </div>
                 <div class="modal-actions">
-                    <button type="button" class="btn btn-secondary" id="cancel-import-stock">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Import</button>
+                    <button type="button" class="btn btn-secondary" id="cancel-import-stock" data-i18n="common.cancel">Cancel</button>
+                    <button type="submit" class="btn btn-primary" data-i18n="common.import">Import</button>
                 </div>
             </form>
         </div>
@@ -999,6 +1014,7 @@
 
     <div id="tooltip" class="tooltip"></div>
 
+    <script src="js/i18n.js"></script>
     <script src="js/dialogManager.js"></script>
     <script src="js/dateUtils.js"></script>
     <script src="js/tabManager.js"></script>

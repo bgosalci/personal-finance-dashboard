@@ -622,3 +622,4 @@ This development guide should help you understand the codebase structure, develo
 - JavaScript modules refactored across `app/js`.
 - `.gitignore` updated to ignore Node modules and coverage files.
 - Additional rules available in [RULES.md](RULES.md).
+- Internationalization support with language switcher and locale files.

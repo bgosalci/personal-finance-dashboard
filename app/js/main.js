@@ -1,5 +1,7 @@
 // Initialize the application when DOM is ready
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
+    await I18n.init();
+    I18n.initDir();
     FinancialDashboard.init();
     MarketStatus.init();
     PriceUpdater.init();

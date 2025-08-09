@@ -140,7 +140,7 @@ const StockFinance = (function() {
         if (val === undefined || val === null || val === '') return '';
         const num = Number(val);
         if (isNaN(num)) return val;
-        let formatted = num.toLocaleString('en-US');
+        let formatted = I18n.formatNumber(num);
         if (formatted.endsWith('000,000')) {
             formatted = formatted.slice(0, -8);
             if (formatted.endsWith(',')) {

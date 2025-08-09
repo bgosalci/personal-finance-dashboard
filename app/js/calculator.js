@@ -7,19 +7,15 @@ const Calculator = (function() {
         const currency = Settings && typeof Settings.getBaseCurrency === 'function'
             ? Settings.getBaseCurrency()
             : 'USD';
-        return new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency,
-            minimumFractionDigits: 2
-        }).format(amount);
+        return I18n.formatCurrency(amount, currency);
     }
 
     function formatPercentage(rate) {
-        return (rate).toFixed(2) + '%';
+        return I18n.formatNumber(rate, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '%';
     }
 
     function formatNumber(num) {
-        return num.toFixed(2);
+        return I18n.formatNumber(num, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     }
 
     function updateCurrencyDisplays() {
