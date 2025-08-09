@@ -42,6 +42,7 @@ const I18n = (function() {
                 "principal": "Principal",
                 "quantity": "Quantity",
                 "lastPrice": "Last Price",
+                "purchaseDate": "Purchase Date",
                 "value": "Value",
                 "pl": "P&L",
                 "plPct": "P&L %",
@@ -86,6 +87,23 @@ const I18n = (function() {
                     "worstMonth": "Worst Month",
                     "bestYear": "Best Year",
                     "worstYear": "Worst Year"
+                },
+                "dialogs": {
+                    "new": {
+                        "title": "New Pension",
+                        "type": "Type",
+                        "startingValue": "Starting Value",
+                        "options": {
+                            "growth": "Growth Only",
+                            "payments": "Growth with Payments"
+                        }
+                    },
+                    "editEntry": {
+                        "title": "Edit Entry"
+                    }
+                },
+                "chart": {
+                    "title": "Pension Chart"
                 }
             },
             "calculators": {
@@ -219,6 +237,7 @@ const I18n = (function() {
                     "consistent": "Most Consistent"
                 },
                 "chart": {
+                    "title": "Stock Chart",
                     "price": "Price",
                     "growth": "Growth"
                 }
@@ -306,6 +325,8 @@ const I18n = (function() {
                 "cancel": "Cancel",
                 "import": "Import",
                 "export": "Export",
+                "add": "Add",
+                "save": "Save",
                 "summary": "Summary"
             }
         },
@@ -344,6 +365,7 @@ const I18n = (function() {
                 "principal": "Kapitali",
                 "quantity": "Sasia",
                 "lastPrice": "Çmimi i Fundit",
+                "purchaseDate": "Data e Blerjes",
                 "value": "Vlera",
                 "pl": "Fitimi/Humbja",
                 "plPct": "Fitimi/Humbja %",
@@ -388,6 +410,23 @@ const I18n = (function() {
                     "worstMonth": "Muaji Më i Keq",
                     "bestYear": "Viti Më i Mirë",
                     "worstYear": "Viti Më i Keq"
+                },
+                "dialogs": {
+                    "new": {
+                        "title": "Pension i Ri",
+                        "type": "Lloji",
+                        "startingValue": "Vlera Fillestare",
+                        "options": {
+                            "growth": "Vetëm Rritje",
+                            "payments": "Rritje me Pagesa"
+                        }
+                    },
+                    "editEntry": {
+                        "title": "Ndrysho Shënimin"
+                    }
+                },
+                "chart": {
+                    "title": "Grafiku i Pensionit"
                 }
             },
             "calculators": {
@@ -523,6 +562,7 @@ const I18n = (function() {
                     "consistent": "Më i qëndrueshëm"
                 },
                 "chart": {
+                    "title": "Grafiku i Aksioneve",
                     "price": "Çmim",
                     "growth": "Rritje"
                 }
@@ -610,6 +650,8 @@ const I18n = (function() {
                 "cancel": "Anulo",
                 "import": "Importo",
                 "export": "Eksporto",
+                "add": "Shto",
+                "save": "Ruaj",
                 "summary": "Përmbledhje"
             }
         },
@@ -648,6 +690,7 @@ const I18n = (function() {
                 "principal": "Capital",
                 "quantity": "Quantité",
                 "lastPrice": "Dernier Prix",
+                "purchaseDate": "Date d'Achat",
                 "value": "Valeur",
                 "pl": "P&L",
                 "plPct": "P&L %",
@@ -692,6 +735,23 @@ const I18n = (function() {
                     "worstMonth": "Pire Mois",
                     "bestYear": "Meilleure Année",
                     "worstYear": "Pire Année"
+                },
+                "dialogs": {
+                    "new": {
+                        "title": "Nouvelle Pension",
+                        "type": "Type",
+                        "startingValue": "Valeur Initiale",
+                        "options": {
+                            "growth": "Croissance seule",
+                            "payments": "Croissance avec versements"
+                        }
+                    },
+                    "editEntry": {
+                        "title": "Modifier l'entrée"
+                    }
+                },
+                "chart": {
+                    "title": "Graphique de Pension"
                 }
             },
             "calculators": {
@@ -827,6 +887,7 @@ const I18n = (function() {
                     "consistent": "Le plus cohérent"
                 },
                 "chart": {
+                    "title": "Graphique Boursier",
                     "price": "Prix",
                     "growth": "Croissance"
                 }
@@ -914,6 +975,8 @@ const I18n = (function() {
                 "cancel": "Annuler",
                 "import": "Importer",
                 "export": "Exporter",
+                "add": "Ajouter",
+                "save": "Enregistrer",
                 "summary": "Résumé"
             }
         },
@@ -952,6 +1015,7 @@ const I18n = (function() {
                 "principal": "Kapital",
                 "quantity": "Menge",
                 "lastPrice": "Letzter Preis",
+                "purchaseDate": "Kaufdatum",
                 "value": "Wert",
                 "pl": "Gewinn/Verlust",
                 "plPct": "Gewinn/Verlust %",
@@ -996,6 +1060,23 @@ const I18n = (function() {
                     "worstMonth": "Schlechtester Monat",
                     "bestYear": "Bestes Jahr",
                     "worstYear": "Schlechtestes Jahr"
+                },
+                "dialogs": {
+                    "new": {
+                        "title": "Neue Rente",
+                        "type": "Typ",
+                        "startingValue": "Startwert",
+                        "options": {
+                            "growth": "Nur Wachstum",
+                            "payments": "Wachstum mit Einzahlungen"
+                        }
+                    },
+                    "editEntry": {
+                        "title": "Eintrag bearbeiten"
+                    }
+                },
+                "chart": {
+                    "title": "Rentendiagramm"
                 }
             },
             "calculators": {
@@ -1131,6 +1212,7 @@ const I18n = (function() {
                     "consistent": "Am beständigsten"
                 },
                 "chart": {
+                    "title": "Aktienchart",
                     "price": "Preis",
                     "growth": "Wachstum"
                 }
@@ -1218,6 +1300,8 @@ const I18n = (function() {
                 "cancel": "Abbrechen",
                 "import": "Importieren",
                 "export": "Exportieren",
+                "add": "Hinzufügen",
+                "save": "Speichern",
                 "summary": "Zusammenfassung"
             }
         },
@@ -1256,6 +1340,7 @@ const I18n = (function() {
                 "principal": "Capital",
                 "quantity": "Cantidad",
                 "lastPrice": "Último Precio",
+                "purchaseDate": "Fecha de Compra",
                 "value": "Valor",
                 "pl": "Ganancia/Pérdida",
                 "plPct": "Ganancia/Pérdida %",
@@ -1300,6 +1385,23 @@ const I18n = (function() {
                     "worstMonth": "Peor Mes",
                     "bestYear": "Mejor Año",
                     "worstYear": "Peor Año"
+                },
+                "dialogs": {
+                    "new": {
+                        "title": "Nueva Pensión",
+                        "type": "Tipo",
+                        "startingValue": "Valor Inicial",
+                        "options": {
+                            "growth": "Solo Crecimiento",
+                            "payments": "Crecimiento con Pagos"
+                        }
+                    },
+                    "editEntry": {
+                        "title": "Editar Entrada"
+                    }
+                },
+                "chart": {
+                    "title": "Gráfico de Pensión"
                 }
             },
             "calculators": {
@@ -1435,6 +1537,7 @@ const I18n = (function() {
                     "consistent": "Más consistente"
                 },
                 "chart": {
+                    "title": "Gráfico de Acciones",
                     "price": "Precio",
                     "growth": "Crecimiento"
                 }
@@ -1522,6 +1625,8 @@ const I18n = (function() {
                 "cancel": "Cancelar",
                 "import": "Importar",
                 "export": "Exportar",
+                "add": "Añadir",
+                "save": "Guardar",
                 "summary": "Resumen"
             }
         },
@@ -1560,6 +1665,7 @@ const I18n = (function() {
                 "principal": "Capitale",
                 "quantity": "Quantità",
                 "lastPrice": "Ultimo Prezzo",
+                "purchaseDate": "Data di Acquisto",
                 "value": "Valore",
                 "pl": "Utile/Perdita",
                 "plPct": "Utile/Perdita %",
@@ -1604,6 +1710,23 @@ const I18n = (function() {
                     "worstMonth": "Mese Peggiore",
                     "bestYear": "Anno Migliore",
                     "worstYear": "Anno Peggiore"
+                },
+                "dialogs": {
+                    "new": {
+                        "title": "Nuova Pensione",
+                        "type": "Tipo",
+                        "startingValue": "Valore Iniziale",
+                        "options": {
+                            "growth": "Solo Crescita",
+                            "payments": "Crescita con Versamenti"
+                        }
+                    },
+                    "editEntry": {
+                        "title": "Modifica Voce"
+                    }
+                },
+                "chart": {
+                    "title": "Grafico Pensione"
                 }
             },
             "calculators": {
@@ -1739,6 +1862,7 @@ const I18n = (function() {
                     "consistent": "Più coerente"
                 },
                 "chart": {
+                    "title": "Grafico Azioni",
                     "price": "Prezzo",
                     "growth": "Crescita"
                 }
@@ -1826,6 +1950,8 @@ const I18n = (function() {
                 "cancel": "Annulla",
                 "import": "Importa",
                 "export": "Esporta",
+                "add": "Aggiungi",
+                "save": "Salva",
                 "summary": "Riepilogo"
             }
         }

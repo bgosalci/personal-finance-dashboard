@@ -404,7 +404,7 @@ const StockTracker = (function() {
         const modal = document.getElementById("stock-chart-popup");
         const canvas = document.getElementById("chartjs-canvas");
         const titleEl = document.getElementById("chart-popup-title");
-        if (titleEl) titleEl.textContent = "Stock Chart";
+        if (titleEl) titleEl.textContent = I18n.t('stockTracker.chart.title');
 
         const tickerContainer = document.getElementById('chart-ticker-select');
         tickerContainer.innerHTML = '';
