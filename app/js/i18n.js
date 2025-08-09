@@ -32,7 +32,9 @@ const I18n = (function() {
                 "transactionHistory": "Transaction History",
                 "addPortfolio": "Add Portfolio",
                 "removePortfolio": "Remove Portfolio",
-                "showInSummary": "Show in Summary"
+                "showInSummary": "Show in Summary",
+                "edit": "Edit",
+                "delete": "Delete"
                 },
                 "table": {
                 "ticker": "Ticker",
@@ -57,9 +59,15 @@ const I18n = (function() {
                 "bestTicker": "Best Ticker",
                 "tickerCAGR": "Ticker CAGR",
                 "years": "Years"
+                },
+                "dialogs": {
+                "addInvestment": { "title": "Add Investment" },
+                "editInvestment": { "title": "Edit Investment", "selectRecord": "Select Record" },
+                "totalValue": "Total Value",
+                "saveAddAnother": "Save & Add Another"
                 }
             },
-            "pension": {
+        "pension": {
                 "title": "Pension",
                 "actions": {
                     "addEntry": "Add Entry",
@@ -355,7 +363,9 @@ const I18n = (function() {
                 "transactionHistory": "Historia e Transaksioneve",
                 "addPortfolio": "Shto Portofol",
                 "removePortfolio": "Hiq Portofol",
-                "showInSummary": "Shfaq në Përmbledhje"
+                "showInSummary": "Shfaq në Përmbledhje",
+                "edit": "Redakto",
+                "delete": "Fshi"
                 },
                 "table": {
                 "ticker": "Simboli",
@@ -380,6 +390,12 @@ const I18n = (function() {
                 "bestTicker": "Simboli Më i Mirë",
                 "tickerCAGR": "CAGR i Simbolit",
                 "years": "Vitet"
+                },
+                "dialogs": {
+                "addInvestment": { "title": "Shto Investim" },
+                "editInvestment": { "title": "Redakto Investimin", "selectRecord": "Zgjidh Regjistrimin" },
+                "totalValue": "Vlera Totale",
+                "saveAddAnother": "Ruaj & Shto Tjetër"
                 }
             },
             "pension": {
@@ -680,7 +696,9 @@ const I18n = (function() {
                 "transactionHistory": "Historique des Transactions",
                 "addPortfolio": "Ajouter un Portefeuille",
                 "removePortfolio": "Supprimer le Portefeuille",
-                "showInSummary": "Afficher dans le Résumé"
+                "showInSummary": "Afficher dans le Résumé",
+                "edit": "Modifier",
+                "delete": "Supprimer"
                 },
                 "table": {
                 "ticker": "Symbole",
@@ -705,6 +723,12 @@ const I18n = (function() {
                 "bestTicker": "Meilleur Symbole",
                 "tickerCAGR": "TCAM par Symbole",
                 "years": "Années"
+                },
+                "dialogs": {
+                "addInvestment": { "title": "Ajouter un Investissement" },
+                "editInvestment": { "title": "Modifier l'investissement", "selectRecord": "Sélectionner l'enregistrement" },
+                "totalValue": "Valeur Totale",
+                "saveAddAnother": "Enregistrer et Ajouter un Autre"
                 }
             },
             "pension": {
@@ -1005,7 +1029,9 @@ const I18n = (function() {
                 "transactionHistory": "Transaktionshistorie",
                 "addPortfolio": "Portfolio hinzufügen",
                 "removePortfolio": "Portfolio entfernen",
-                "showInSummary": "In Zusammenfassung anzeigen"
+                "showInSummary": "In Zusammenfassung anzeigen",
+                "edit": "Bearbeiten",
+                "delete": "Löschen"
                 },
                 "table": {
                 "ticker": "Ticker",
@@ -1030,6 +1056,12 @@ const I18n = (function() {
                 "bestTicker": "Bester Ticker",
                 "tickerCAGR": "Ticker-CAGR",
                 "years": "Jahre"
+                },
+                "dialogs": {
+                "addInvestment": { "title": "Investition hinzufügen" },
+                "editInvestment": { "title": "Investition bearbeiten", "selectRecord": "Datensatz auswählen" },
+                "totalValue": "Gesamtwert",
+                "saveAddAnother": "Speichern & Weiteres hinzufügen"
                 }
             },
             "pension": {
@@ -1330,7 +1362,9 @@ const I18n = (function() {
                 "transactionHistory": "Historial de Transacciones",
                 "addPortfolio": "Agregar Cartera",
                 "removePortfolio": "Eliminar Cartera",
-                "showInSummary": "Mostrar en el Resumen"
+                "showInSummary": "Mostrar en el Resumen",
+                "edit": "Editar",
+                "delete": "Eliminar"
                 },
                 "table": {
                 "ticker": "Símbolo",
@@ -1355,6 +1389,12 @@ const I18n = (function() {
                 "bestTicker": "Mejor Símbolo",
                 "tickerCAGR": "CAGR por Símbolo",
                 "years": "Años"
+                },
+                "dialogs": {
+                "addInvestment": { "title": "Agregar Inversión" },
+                "editInvestment": { "title": "Editar Inversión", "selectRecord": "Seleccionar registro" },
+                "totalValue": "Valor Total",
+                "saveAddAnother": "Guardar y Añadir Otro"
                 }
             },
             "pension": {
@@ -1655,7 +1695,9 @@ const I18n = (function() {
                 "transactionHistory": "Storico delle Transazioni",
                 "addPortfolio": "Aggiungi Portafoglio",
                 "removePortfolio": "Rimuovi Portafoglio",
-                "showInSummary": "Mostra nel Riepilogo"
+                "showInSummary": "Mostra nel Riepilogo",
+                "edit": "Modifica",
+                "delete": "Elimina"
                 },
                 "table": {
                 "ticker": "Simbolo",
@@ -1680,6 +1722,12 @@ const I18n = (function() {
                 "bestTicker": "Miglior Simbolo",
                 "tickerCAGR": "CAGR per Simbolo",
                 "years": "Anni"
+                },
+                "dialogs": {
+                "addInvestment": { "title": "Aggiungi Investimento" },
+                "editInvestment": { "title": "Modifica Investimento", "selectRecord": "Seleziona record" },
+                "totalValue": "Valore Totale",
+                "saveAddAnother": "Salva e Aggiungi Un Altro"
                 }
             },
             "pension": {
