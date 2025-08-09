@@ -283,10 +283,16 @@ const PortfolioManager = (function() {
         });
         const portfolioCagr = totalCostForCagr ? (weightedCagr / totalCostForCagr) * 100 : 0;
 
-        document.getElementById('portfolio-base-currency-label').textContent = baseCurrency;
-        document.getElementById('portfolio-total-value').textContent = formatCurrency(totalValueBase, baseCurrency);
-        document.getElementById('portfolio-total-pl').textContent = formatCurrency(basePL, baseCurrency);
-        document.getElementById('portfolio-total-plpct').textContent = basePLPct.toFixed(2) + '%';
+        const baseLabelEl = document.getElementById('portfolio-base-currency-label');
+        if (baseLabelEl) baseLabelEl.textContent = baseCurrency;
+        const principalEl = document.getElementById('portfolio-total-principal');
+        if (principalEl) principalEl.textContent = formatCurrency(totalCostBase, baseCurrency);
+        const valueEl = document.getElementById('portfolio-total-value');
+        if (valueEl) valueEl.textContent = formatCurrency(totalValueBase, baseCurrency);
+        const plEl = document.getElementById('portfolio-total-pl');
+        if (plEl) plEl.textContent = formatCurrency(basePL, baseCurrency);
+        const plPctEl = document.getElementById('portfolio-total-plpct');
+        if (plPctEl) plPctEl.textContent = basePLPct.toFixed(2) + '%';
         const cagrEl = document.getElementById('portfolio-cagr');
         if (cagrEl) {
             cagrEl.textContent = totalCostForCagr ? portfolioCagr.toFixed(2) + '%' : '---';
@@ -533,6 +539,7 @@ const PortfolioManager = (function() {
                 <td>${inv.currency || ''}</td>
                 <td>${inv.name}</td>
                 <td class="number-cell">${formatCurrency(inv.purchasePrice, inv.currency)}</td>
+                <td class="number-cell principal-cell"></td>
                 <td class="number-cell">${inv.quantity}</td>
                 <td class="number-cell">${formatCurrency(inv.lastPrice, inv.currency)}</td>
                 <td class="value-cell"></td>
@@ -564,6 +571,7 @@ const PortfolioManager = (function() {
             const pl = value - cost;
             const plPct = cost ? (pl / cost) * 100 : 0;
 
+            row.querySelector('.principal-cell').textContent = formatCurrency(cost, inv.currency);
             row.querySelector('.value-cell').textContent = formatCurrency(value, inv.currency);
             row.querySelector('.pl-cell').textContent = formatCurrency(pl, inv.currency);
             row.querySelector('.pl-cell').className = 'pl-cell ' + (pl >= 0 ? 'growth-positive' : 'growth-negative');

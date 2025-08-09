@@ -40,6 +40,15 @@ test('portfolio table includes currency column', () => {
   expect(headers).toContain('Currency');
 });
 
+test('portfolio table includes principal column', () => {
+  const htmlPath = path.resolve(__dirname, '../app/index.html');
+  const html = fs.readFileSync(htmlPath, 'utf8');
+  const dom = new JSDOM(html);
+  const doc = dom.window.document;
+  const headers = Array.from(doc.querySelectorAll('#portfolio-table thead th')).map(th => th.textContent.trim());
+  expect(headers).toContain('Principal');
+});
+
 test('investment forms allow selecting currency', () => {
   const htmlPath = path.resolve(__dirname, '../app/index.html');
   const html = fs.readFileSync(htmlPath, 'utf8');
@@ -75,8 +84,10 @@ test('portfolio table shows totals row', () => {
   const doc = dom.window.document;
   const row = doc.getElementById('portfolio-total-row');
   const value = doc.getElementById('portfolio-total-value');
+  const principal = doc.getElementById('portfolio-total-principal');
   expect(row).not.toBeNull();
   expect(value).not.toBeNull();
+  expect(principal).not.toBeNull();
 });
 
 test('portfolio stats include ticker CAGR table', () => {
