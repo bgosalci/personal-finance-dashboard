@@ -406,45 +406,45 @@
 
             <!-- Calculators Tab -->
             <div id="calculators" class="tab-content">
-                <h2 class="section-title">Financial Calculators</h2>
+                <h2 class="section-title" data-i18n="calculators.title">Financial Calculators</h2>
                 
                 <!-- Calculator Sub-Tabs -->
                 <div class="sub-nav-tabs">
-                    <button class="sub-nav-tab active" data-subtab="loan">Loan Calculator</button>
-                    <button class="sub-nav-tab" data-subtab="investment">Investment Calculator</button>
-                    <button class="sub-nav-tab" data-subtab="cagr">CAGR Calculator</button>
-                    <button class="sub-nav-tab" data-subtab="fair-value">Fair Value Calculator</button>
+                    <button class="sub-nav-tab active" data-subtab="loan" data-i18n="calculators.tabs.loan">Loan Calculator</button>
+                    <button class="sub-nav-tab" data-subtab="investment" data-i18n="calculators.tabs.investment">Investment Calculator</button>
+                    <button class="sub-nav-tab" data-subtab="cagr" data-i18n="calculators.tabs.cagr">CAGR Calculator</button>
+                    <button class="sub-nav-tab" data-subtab="fair-value" data-i18n="calculators.tabs.fairValue">Fair Value Calculator</button>
                 </div>
 
                 <!-- Loan Calculator Sub-Tab -->
                 <div id="loan" class="sub-tab-content active">
                     <div class="calculator-section">
-                        <h3 class="calculator-title">Loan Calculator</h3>
+                        <h3 class="calculator-title" data-i18n="calculators.tabs.loan">Loan Calculator</h3>
                         <div class="form-grid">
                             <div class="form-group">
-                                <label for="loan-principal">Principal Amount (<span id="loan-base-currency-label">USD</span>)</label>
+                                <label for="loan-principal"><span data-i18n="calculators.loan.labels.principal">Principal Amount</span> (<span id="loan-base-currency-label">USD</span>)</label>
                                 <input type="number" id="loan-principal" min="0" step="1000">
                             </div>
                             <div class="form-group">
-                                <label for="loan-rate">Annual Interest Rate (%)</label>
+                                <label for="loan-rate" data-i18n="calculators.loan.labels.rate">Annual Interest Rate (%)</label>
                                 <input type="number" id="loan-rate" min="0" max="50" step="0.1">
                             </div>
                             <div class="form-group">
-                                <label for="loan-term">Loan Term (Years)</label>
+                                <label for="loan-term" data-i18n="calculators.loan.labels.term">Loan Term (Years)</label>
                                 <input type="number" id="loan-term" min="1" max="50">
                             </div>
                         </div>
                         <div id="loan-results" class="result-display" style="display: none;">
                             <div class="result-item">
-                                <span>Monthly Payment:</span>
+                                <span data-i18n="calculators.loan.results.monthlyPayment">Monthly Payment:</span>
                                 <span id="loan-monthly-payment">0</span>
                             </div>
                             <div class="result-item">
-                                <span>Total Interest:</span>
+                                <span data-i18n="calculators.loan.results.totalInterest">Total Interest:</span>
                                 <span id="loan-total-interest">0</span>
                             </div>
                             <div class="result-item">
-                                <span>Total Amount:</span>
+                                <span data-i18n="calculators.loan.results.totalAmount">Total Amount:</span>
                                 <span id="loan-total-amount">0</span>
                             </div>
                         </div>
@@ -454,28 +454,28 @@
                 <!-- Investment Calculator Sub-Tab -->
                 <div id="investment" class="sub-tab-content">
                     <div class="calculator-section">
-                        <h3 class="calculator-title">Investment Calculator</h3>
+                        <h3 class="calculator-title" data-i18n="calculators.tabs.investment">Investment Calculator</h3>
                         <div class="form-grid">
                             <div class="form-group">
-                                <label for="invest-initial">Initial Investment (<span id="invest-base-currency-label">USD</span>)</label>
+                                <label for="invest-initial"><span data-i18n="calculators.investment.labels.initial">Initial Investment</span> (<span id="invest-base-currency-label">USD</span>)</label>
                                 <input type="number" id="invest-initial" min="0" step="1000">
                             </div>
                             <div class="form-group">
-                                <label for="invest-rate">Annual Return Rate (%)</label>
+                                <label for="invest-rate" data-i18n="calculators.investment.labels.rate">Annual Return Rate (%)</label>
                                 <input type="number" id="invest-rate" min="0" max="50" step="0.1">
                             </div>
                             <div class="form-group">
-                                <label for="invest-years">Investment Period (Years)</label>
+                                <label for="invest-years" data-i18n="calculators.investment.labels.years">Investment Period (Years)</label>
                                 <input type="number" id="invest-years" min="1" max="100">
                             </div>
                         </div>
                         <div id="investment-results" class="result-display" style="display: none;">
                             <div class="result-item">
-                                <span>Total Return (Interest):</span>
+                                <span data-i18n="calculators.investment.results.totalReturn">Total Return (Interest):</span>
                                 <span id="invest-total-return">0</span>
                             </div>
                             <div class="result-item">
-                                <span>Final Value:</span>
+                                <span data-i18n="calculators.investment.results.finalValue">Final Value:</span>
                                 <span id="invest-final-value">0</span>
                             </div>
                         </div>
@@ -483,9 +483,9 @@
                             <table class="data-table" id="investment-growth-table">
                                 <thead>
                                     <tr>
-                                        <th>Year</th>
-                                        <th>Growth</th>
-                                        <th>Value</th>
+                                        <th data-i18n="calculators.investment.table.year">Year</th>
+                                        <th data-i18n="calculators.investment.table.growth">Growth</th>
+                                        <th data-i18n="calculators.investment.table.value">Value</th>
                                     </tr>
                                 </thead>
                                 <tbody id="investment-growth-body"></tbody>
@@ -497,28 +497,28 @@
                 <!-- CAGR Calculator Sub-Tab -->
                 <div id="cagr" class="sub-tab-content">
                     <div class="calculator-section">
-                        <h3 class="calculator-title">CAGR Calculator</h3>
+                        <h3 class="calculator-title" data-i18n="calculators.tabs.cagr">CAGR Calculator</h3>
                         <div class="form-grid">
                             <div class="form-group">
-                                <label for="cagr-beginning">Beginning Value ($)</label>
+                                <label for="cagr-beginning" data-i18n="calculators.cagr.labels.beginning">Beginning Value ($)</label>
                                 <input type="number" id="cagr-beginning" min="0" step="1000">
                             </div>
                             <div class="form-group">
-                                <label for="cagr-ending">Ending Value ($)</label>
+                                <label for="cagr-ending" data-i18n="calculators.cagr.labels.ending">Ending Value ($)</label>
                                 <input type="number" id="cagr-ending" min="0" step="1000">
                             </div>
                             <div class="form-group">
-                                <label for="cagr-years">Number of Years</label>
+                                <label for="cagr-years" data-i18n="calculators.cagr.labels.years">Number of Years</label>
                                 <input type="number" id="cagr-years" min="1" max="100" step="0.1">
                             </div>
                         </div>
                         <div id="cagr-results" class="result-display" style="display: none;">
                             <div class="result-item">
-                                <span>Total Return:</span>
+                                <span data-i18n="calculators.cagr.results.totalReturn">Total Return:</span>
                                 <span id="cagr-total-return">0.00%</span>
                             </div>
                             <div class="result-item">
-                                <span>Compound Annual Growth Rate (CAGR):</span>
+                                <span data-i18n="calculators.cagr.results.cagr">Compound Annual Growth Rate (CAGR):</span>
                                 <span id="cagr-rate">0.00%</span>
                             </div>
                         </div>
@@ -528,60 +528,60 @@
                 <!-- Fair Value Calculator Sub-Tab -->
                 <div id="fair-value" class="sub-tab-content">
                     <div class="calculator-section">
-                        <h3 class="calculator-title">Fair Value Calculator</h3>
+                        <h3 class="calculator-title" data-i18n="calculators.tabs.fairValue">Fair Value Calculator</h3>
                         
                         <!-- Fair Value Sub-Sections -->
                         <div class="fair-value-sections">
                             <div class="fair-value-nav">
-                                <button class="fair-value-btn active" data-section="dcf">DCF Analysis</button>
-                                <button class="fair-value-btn" data-section="pe">P/E Ratio Analysis</button>
-                                <button class="fair-value-btn" data-section="intrinsic">Intrinsic Value</button>
+                                <button class="fair-value-btn active" data-section="dcf" data-i18n="calculators.fairValue.tabs.dcf">DCF Analysis</button>
+                                <button class="fair-value-btn" data-section="pe" data-i18n="calculators.fairValue.tabs.pe">P/E Ratio Analysis</button>
+                                <button class="fair-value-btn" data-section="intrinsic" data-i18n="calculators.fairValue.tabs.intrinsic">Intrinsic Value</button>
                             </div>
 
                             <!-- DCF Calculator -->
                             <div id="dcf" class="fair-value-section active">
-                                <h4 class="section-subtitle">Discounted Cash Flow (DCF) Analysis</h4>
+                                <h4 class="section-subtitle" data-i18n="calculators.fairValue.dcf.title">Discounted Cash Flow (DCF) Analysis</h4>
                                 <div class="form-grid">
                                     <div class="form-group">
-                                        <label for="dcf-current-fcf">Current Annual Free Cash Flow ($M)</label>
+                                        <label for="dcf-current-fcf"><span data-i18n="calculators.fairValue.dcf.labels.currentFCF">Current Annual Free Cash Flow</span> ($M)</label>
                                         <input type="number" id="dcf-current-fcf" min="0" step="10">
                                     </div>
                                     <div class="form-group">
-                                        <label for="dcf-growth-rate">Growth Rate (%)</label>
+                                        <label for="dcf-growth-rate" data-i18n="calculators.fairValue.dcf.labels.growthRate">Growth Rate (%)</label>
                                         <input type="number" id="dcf-growth-rate" min="0" max="50" step="0.1">
                                     </div>
                                     <div class="form-group">
-                                        <label for="dcf-terminal-rate">Terminal Growth Rate (%)</label>
+                                        <label for="dcf-terminal-rate" data-i18n="calculators.fairValue.dcf.labels.terminalRate">Terminal Growth Rate (%)</label>
                                         <input type="number" id="dcf-terminal-rate" min="0" max="10" step="0.1">
                                     </div>
                                     <div class="form-group">
-                                        <label for="dcf-discount-rate">Discount Rate (WACC) (%)</label>
+                                        <label for="dcf-discount-rate" data-i18n="calculators.fairValue.dcf.labels.discountRate">Discount Rate (WACC) (%)</label>
                                         <input type="number" id="dcf-discount-rate" min="0" max="30" step="0.1">
                                     </div>
                                     <div class="form-group">
-                                        <label for="dcf-years">Projection Years</label>
+                                        <label for="dcf-years" data-i18n="calculators.fairValue.dcf.labels.years">Projection Years</label>
                                         <input type="number" id="dcf-years" min="5" max="20" step="1">
                                     </div>
                                     <div class="form-group">
-                                        <label for="dcf-shares">Shares Outstanding (M)</label>
+                                        <label for="dcf-shares" data-i18n="calculators.fairValue.dcf.labels.shares">Shares Outstanding (M)</label>
                                         <input type="number" id="dcf-shares" min="1" step="0.1">
                                     </div>
                                 </div>
                                 <div id="dcf-results" class="result-display" style="display: none;">
                                     <div class="result-item">
-                                        <span>Enterprise Value:</span>
+                                        <span data-i18n="calculators.fairValue.dcf.results.enterpriseValue">Enterprise Value:</span>
                                         <span id="dcf-enterprise-value">$0.00</span>
                                     </div>
                                     <div class="result-item">
-                                        <span>Present Value of Cash Flows:</span>
+                                        <span data-i18n="calculators.fairValue.dcf.results.pvCashflows">Present Value of Cash Flows:</span>
                                         <span id="dcf-pv-cashflows">$0.00</span>
                                     </div>
                                     <div class="result-item">
-                                        <span>Terminal Value:</span>
+                                        <span data-i18n="calculators.fairValue.dcf.results.terminalValue">Terminal Value:</span>
                                         <span id="dcf-terminal-value">$0.00</span>
                                     </div>
                                     <div class="result-item">
-                                        <span>Intrinsic Value Per Share:</span>
+                                        <span data-i18n="calculators.fairValue.dcf.results.perShare">Intrinsic Value Per Share:</span>
                                         <span id="dcf-per-share">$0.00</span>
                                     </div>
                                 </div>
@@ -589,40 +589,40 @@
 
                             <!-- P/E Ratio Analysis -->
                             <div id="pe" class="fair-value-section">
-                                <h4 class="section-subtitle">P/E Ratio Analysis</h4>
+                                <h4 class="section-subtitle" data-i18n="calculators.fairValue.pe.title">P/E Ratio Analysis</h4>
                                 <div class="form-grid">
                                     <div class="form-group">
-                                        <label for="pe-current-price">Current Stock Price ($)</label>
+                                        <label for="pe-current-price" data-i18n="calculators.fairValue.pe.labels.currentPrice">Current Stock Price ($)</label>
                                         <input type="number" id="pe-current-price" min="0" step="0.01">
                                     </div>
                                     <div class="form-group">
-                                        <label for="pe-eps">Earnings Per Share (EPS) ($)</label>
+                                        <label for="pe-eps" data-i18n="calculators.fairValue.pe.labels.eps">Earnings Per Share (EPS) ($)</label>
                                         <input type="number" id="pe-eps" min="0" step="0.01">
                                     </div>
                                     <div class="form-group">
-                                        <label for="pe-industry-avg">Industry Average P/E</label>
+                                        <label for="pe-industry-avg" data-i18n="calculators.fairValue.pe.labels.industryPE">Industry Average P/E</label>
                                         <input type="number" id="pe-industry-avg" min="0" step="0.1">
                                     </div>
                                     <div class="form-group">
-                                        <label for="pe-growth-rate">Expected EPS Growth Rate (%)</label>
+                                        <label for="pe-growth-rate" data-i18n="calculators.fairValue.pe.labels.growthRate">Expected EPS Growth Rate (%)</label>
                                         <input type="number" id="pe-growth-rate" min="0" max="100" step="0.1">
                                     </div>
                                 </div>
                                 <div id="pe-results" class="result-display" style="display: none;">
                                     <div class="result-item">
-                                        <span>Current P/E Ratio:</span>
+                                        <span data-i18n="calculators.fairValue.pe.results.currentPE">Current P/E Ratio:</span>
                                         <span id="pe-current-ratio">0.00</span>
                                     </div>
                                     <div class="result-item">
-                                        <span>Fair Value (Industry P/E):</span>
+                                        <span data-i18n="calculators.fairValue.pe.results.fairValue">Fair Value (Industry P/E):</span>
                                         <span id="pe-fair-value">$0.00</span>
                                     </div>
                                     <div class="result-item">
-                                        <span>PEG Ratio:</span>
+                                        <span data-i18n="calculators.fairValue.pe.results.pegRatio">PEG Ratio:</span>
                                         <span id="pe-peg-ratio">0.00</span>
                                     </div>
                                     <div class="result-item">
-                                        <span>Valuation Status:</span>
+                                        <span data-i18n="calculators.fairValue.pe.results.valuation">Valuation Status:</span>
                                         <span id="pe-valuation-status">--</span>
                                     </div>
                                 </div>
@@ -630,48 +630,48 @@
 
                             <!-- Intrinsic Value Calculator -->
                             <div id="intrinsic" class="fair-value-section">
-                                <h4 class="section-subtitle">Intrinsic Value Analysis</h4>
+                                <h4 class="section-subtitle" data-i18n="calculators.fairValue.intrinsic.title">Intrinsic Value Analysis</h4>
                                 <div class="form-grid">
                                     <div class="form-group">
-                                        <label for="intrinsic-book-value">Book Value Per Share ($)</label>
+                                        <label for="intrinsic-book-value" data-i18n="calculators.fairValue.intrinsic.labels.bookValue">Book Value Per Share ($)</label>
                                         <input type="number" id="intrinsic-book-value" min="0" step="0.01">
                                     </div>
                                     <div class="form-group">
-                                        <label for="intrinsic-roe">Return on Equity (ROE) (%)</label>
+                                        <label for="intrinsic-roe" data-i18n="calculators.fairValue.intrinsic.labels.roe">Return on Equity (ROE) (%)</label>
                                         <input type="number" id="intrinsic-roe" min="0" max="100" step="0.1">
                                     </div>
                                     <div class="form-group">
-                                        <label for="intrinsic-dividend-yield">Dividend Yield (%)</label>
+                                        <label for="intrinsic-dividend-yield" data-i18n="calculators.fairValue.intrinsic.labels.dividendYield">Dividend Yield (%)</label>
                                         <input type="number" id="intrinsic-dividend-yield" min="0" max="20" step="0.1">
                                     </div>
                                     <div class="form-group">
-                                        <label for="intrinsic-required-return">Required Rate of Return (%)</label>
+                                        <label for="intrinsic-required-return" data-i18n="calculators.fairValue.intrinsic.labels.requiredReturn">Required Rate of Return (%)</label>
                                         <input type="number" id="intrinsic-required-return" min="0" max="30" step="0.1">
                                     </div>
                                     <div class="form-group">
-                                        <label for="intrinsic-growth-rate">Sustainable Growth Rate (%)</label>
+                                        <label for="intrinsic-growth-rate" data-i18n="calculators.fairValue.intrinsic.labels.growthRate">Sustainable Growth Rate (%)</label>
                                         <input type="number" id="intrinsic-growth-rate" min="0" max="50" step="0.1">
                                     </div>
                                     <div class="form-group">
-                                        <label for="intrinsic-eps">Current EPS ($)</label>
+                                        <label for="intrinsic-eps" data-i18n="calculators.fairValue.intrinsic.labels.eps">Current EPS ($)</label>
                                         <input type="number" id="intrinsic-eps" min="0" step="0.01">
                                     </div>
                                 </div>
                                 <div id="intrinsic-results" class="result-display" style="display: none;">
                                     <div class="result-item">
-                                        <span>Graham Number:</span>
+                                        <span data-i18n="calculators.fairValue.intrinsic.results.graham">Graham Number:</span>
                                         <span id="intrinsic-graham">$0.00</span>
                                     </div>
                                     <div class="result-item">
-                                        <span>Dividend Discount Model:</span>
+                                        <span data-i18n="calculators.fairValue.intrinsic.results.ddm">Dividend Discount Model:</span>
                                         <span id="intrinsic-ddm">$0.00</span>
                                     </div>
                                     <div class="result-item">
-                                        <span>Book Value Multiple:</span>
+                                        <span data-i18n="calculators.fairValue.intrinsic.results.bookMultiple">Book Value Multiple:</span>
                                         <span id="intrinsic-book-multiple">$0.00</span>
                                     </div>
                                     <div class="result-item">
-                                        <span>Average Intrinsic Value:</span>
+                                        <span data-i18n="calculators.fairValue.intrinsic.results.average">Average Intrinsic Value:</span>
                                         <span id="intrinsic-average">$0.00</span>
                                     </div>
                                 </div>
@@ -684,24 +684,24 @@
             <!-- Stock Performance Tracker Tab -->
             <div id="stock-tracker" class="tab-content">
                 <div class="section-header">
-                    <h2 class="section-title">Stock Performance Tracker</h2>
+                    <h2 class="section-title" data-i18n="stockTracker.title">Stock Performance Tracker</h2>
                     <div>
-                        <button class="btn btn-secondary" id="edit-stock-btn">Edit</button>
-                        <button class="btn btn-secondary" id="get-stock-last-price-btn">Get The Last Price</button>
+                        <button class="btn btn-secondary" id="edit-stock-btn" data-i18n="stockTracker.actions.edit">Edit</button>
+                        <button class="btn btn-secondary" id="get-stock-last-price-btn" data-i18n="stockTracker.actions.getLastPrice">Get The Last Price</button>
                     </div>
                 </div>
                 
                 <div class="ticker-management" style="display: none;">
                     <div class="form-group">
-                        <label for="ticker-input">Add Stock Ticker</label>
+                        <label for="ticker-input" data-i18n="stockTracker.labels.addStockTicker">Add Stock Ticker</label>
                         <input type="text" id="ticker-input" style="text-transform: uppercase;">
                     </div>
                     <div class="form-group">
-                        <label for="start-year">Starting Year</label>
+                        <label for="start-year" data-i18n="stockTracker.labels.startYear">Starting Year</label>
                         <select id="start-year"></select>
                     </div>
-                    <button class="btn btn-primary" id="add-ticker-btn">Add Ticker</button>
-                    <button class="btn btn-secondary" id="generate-table-btn" style="display: none;">Generate Table</button>
+                    <button class="btn btn-primary" id="add-ticker-btn" data-i18n="stockTracker.actions.addTicker">Add Ticker</button>
+                    <button class="btn btn-secondary" id="generate-table-btn" style="display: none;" data-i18n="stockTracker.actions.generateTable">Generate Table</button>
                 </div>
 
                 <div class="ticker-tags" id="ticker-tags"></div>
@@ -714,19 +714,19 @@
                 </div>
                 <div class="summary-cards" id="stock-summary-cards" style="display: none;">
                     <div class="summary-card">
-                        <h4>Investment Analysis</h4>
+                        <h4 data-i18n="stockTracker.summary.investment">Investment Analysis</h4>
                         <p id="summary-investment-range"></p>
                     </div>
                     <div class="summary-card">
-                        <h4>Best Performer</h4>
+                        <h4 data-i18n="stockTracker.summary.best">Best Performer</h4>
                         <p id="summary-best"></p>
                     </div>
                     <div class="summary-card">
-                        <h4>Worst Performer</h4>
+                        <h4 data-i18n="stockTracker.summary.worst">Worst Performer</h4>
                         <p id="summary-worst"></p>
                     </div>
                     <div class="summary-card">
-                        <h4>Most Consistent</h4>
+                        <h4 data-i18n="stockTracker.summary.consistent">Most Consistent</h4>
                         <p id="summary-consistent"></p>
                     </div>
                 </div>
@@ -738,8 +738,8 @@
                         <h3 id="chart-popup-title"></h3>
                         <div class="chart-control-panel">
                             <div class="chart-type">
-                                <label><input type="radio" name="chart-type" id="chart-type-price" value="price" checked> Price</label>
-                                <label><input type="radio" name="chart-type" id="chart-type-growth" value="growth"> Growth</label>
+                                <label><input type="radio" name="chart-type" id="chart-type-price" value="price" checked> <span data-i18n="stockTracker.chart.price">Price</span></label>
+                                <label><input type="radio" name="chart-type" id="chart-type-growth" value="growth"> <span data-i18n="stockTracker.chart.growth">Growth</span></label>
                             </div>
                             <div class="ticker-select" id="chart-ticker-select"></div>
                         </div>
@@ -751,34 +751,34 @@
             <!-- Stock Finance Performance Tab -->
             <div id="stock-finance" class="tab-content">
                 <div class="section-header">
-                    <h2 class="section-title">Stock Finance Performance</h2>
+                    <h2 class="section-title" data-i18n="stockFinance.title">Stock Finance Performance</h2>
                 </div>
 
                 <div class="ticker-management">
                     <div class="form-group">
-                        <label for="finance-ticker">Ticker</label>
+                        <label for="finance-ticker" data-i18n="stockFinance.labels.ticker">Ticker</label>
                         <input type="text" id="finance-ticker" style="text-transform: uppercase;">
                     </div>
                     <div class="form-group">
-                        <label for="finance-date">Reports starting from</label>
+                        <label for="finance-date" data-i18n="stockFinance.labels.reportsFrom">Reports starting from</label>
                         <input type="date" id="finance-date" min="2011-01-01">
                     </div>
                     <div class="form-group">
-                        <label for="finance-timeframe">Timeframe</label>
+                        <label for="finance-timeframe" data-i18n="stockFinance.labels.timeframe">Timeframe</label>
                         <select id="finance-timeframe">
-                            <option value="quarterly">Quarterly</option>
-                            <option value="annual">Annual</option>
-                            <option value="ttm">TTM</option>
+                            <option value="quarterly" data-i18n="stockFinance.labels.timeframes.quarterly">Quarterly</option>
+                            <option value="annual" data-i18n="stockFinance.labels.timeframes.annual">Annual</option>
+                            <option value="ttm" data-i18n="stockFinance.labels.timeframes.ttm">TTM</option>
                         </select>
                     </div>
-                    <button class="btn btn-primary" id="fetch-financials-btn">Get Reports</button>
+                    <button class="btn btn-primary" id="fetch-financials-btn" data-i18n="stockFinance.labels.getReports">Get Reports</button>
                 </div>
 
                 <div class="sub-nav-tabs" id="finance-subtabs">
-                    <button class="sub-nav-tab active" data-fin-subtab="income">Income Statement</button>
-                    <button class="sub-nav-tab" data-fin-subtab="balance">Balance Sheet</button>
-                    <button class="sub-nav-tab" data-fin-subtab="cash">Cash Flow</button>
-                    <button class="sub-nav-tab" data-fin-subtab="stats">Statistics</button>
+                    <button class="sub-nav-tab active" data-fin-subtab="income" data-i18n="stockFinance.tabs.income">Income Statement</button>
+                    <button class="sub-nav-tab" data-fin-subtab="balance" data-i18n="stockFinance.tabs.balance">Balance Sheet</button>
+                    <button class="sub-nav-tab" data-fin-subtab="cash" data-i18n="stockFinance.tabs.cash">Cash Flow</button>
+                    <button class="sub-nav-tab" data-fin-subtab="stats" data-i18n="stockFinance.tabs.stats">Statistics</button>
                 </div>
 
                 <div id="finance-zero-info" class="zero-info" style="display:none;"></div>
