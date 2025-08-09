@@ -144,13 +144,13 @@ const Calculator = (function() {
             tbody.innerHTML = '';
             let value = initial;
             const row0 = document.createElement('tr');
-            row0.innerHTML = `<td>Start</td><td>-</td><td>${formatCurrency(value)}</td>`;
+            row0.innerHTML = `<td>${I18n.t('calculators.investment.table.start')}</td><td>-</td><td>${formatCurrency(value)}</td>`;
             tbody.appendChild(row0);
             for (let i = 1; i <= years; i++) {
                 const newValue = value * (1 + annualRateDecimal);
                 const growth = newValue - value;
                 const tr = document.createElement('tr');
-                tr.innerHTML = `<td>Year ${i}</td><td>${formatCurrency(growth)}</td><td>${formatCurrency(newValue)}</td>`;
+                tr.innerHTML = `<td>${I18n.t('calculators.investment.table.year')} ${i}</td><td>${formatCurrency(growth)}</td><td>${formatCurrency(newValue)}</td>`;
                 tbody.appendChild(tr);
                 value = newValue;
             }
