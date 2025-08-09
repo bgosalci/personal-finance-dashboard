@@ -533,6 +533,7 @@ const PortfolioManager = (function() {
                 <td>${inv.currency || ''}</td>
                 <td>${inv.name}</td>
                 <td class="number-cell">${formatCurrency(inv.purchasePrice, inv.currency)}</td>
+                <td class="number-cell principal-cell"></td>
                 <td class="number-cell">${inv.quantity}</td>
                 <td class="number-cell">${formatCurrency(inv.lastPrice, inv.currency)}</td>
                 <td class="value-cell"></td>
@@ -564,6 +565,7 @@ const PortfolioManager = (function() {
             const pl = value - cost;
             const plPct = cost ? (pl / cost) * 100 : 0;
 
+            row.querySelector('.principal-cell').textContent = formatCurrency(cost, inv.currency);
             row.querySelector('.value-cell').textContent = formatCurrency(value, inv.currency);
             row.querySelector('.pl-cell').textContent = formatCurrency(pl, inv.currency);
             row.querySelector('.pl-cell').className = 'pl-cell ' + (pl >= 0 ? 'growth-positive' : 'growth-negative');
