@@ -656,11 +656,11 @@ const I18n = (function() {
     }
 
     function formatNumber(num, options = {}) {
-        return new Intl.NumberFormat(currentLocale === 'pseudo' ? 'en' : currentLocale, options).format(num);
+        return new Intl.NumberFormat('en', options).format(num);
     }
 
     function formatCurrency(num, currency = 'USD') {
-        return new Intl.NumberFormat(currentLocale === 'pseudo' ? 'en' : currentLocale, {
+        return new Intl.NumberFormat('en', {
             style: 'currency',
             currency
         }).format(num);
