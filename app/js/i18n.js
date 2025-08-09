@@ -601,6 +601,9 @@ const I18n = (function() {
             const key = el.getAttribute('data-i18n');
             el.textContent = t(key);
         });
+        if (typeof PortfolioColumns !== 'undefined' && PortfolioColumns.apply) {
+            PortfolioColumns.apply();
+        }
     }
 
     function pseudolocalize(str) {

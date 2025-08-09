@@ -15,21 +15,44 @@ const PortfolioColumns = (function() {
         actions: 'Actions'
     };
 
-    function load() {
+    function getDefaultLabels() {
+        const labels = {};
+        Object.keys(DEFAULT_LABELS).forEach(key => {
+            labels[key] = (typeof I18n !== 'undefined' ? I18n.t('portfolio.table.' + key) : null) || DEFAULT_LABELS[key];
+        });
+        return labels;
+    }
+
+    function loadStored() {
         try {
             const data = JSON.parse(localStorage.getItem(STORAGE_KEY));
             if (data && typeof data === 'object') {
-                const labels = { ...DEFAULT_LABELS, ...data };
-                // save merged labels to ensure migration of new keys
-                save(labels);
-                return labels;
+                return data;
             }
         } catch (e) {}
-        return { ...DEFAULT_LABELS };
+        return {};
+    }
+
+    function load() {
+        const defaults = getDefaultLabels();
+        const stored = loadStored();
+        const filtered = {};
+        Object.keys(stored).forEach(key => {
+            if (stored[key] !== defaults[key]) {
+                filtered[key] = stored[key];
+            }
+        });
+        return { ...defaults, ...filtered };
     }
 
     function save(labels) {
-        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(labels)); } catch (e) {}
+        try {
+            if (Object.keys(labels).length) {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(labels));
+            } else {
+                localStorage.removeItem(STORAGE_KEY);
+            }
+        } catch (e) {}
     }
 
     function apply(labels) {
@@ -62,10 +85,20 @@ const PortfolioColumns = (function() {
     }
 
     function setLabels(newLabels) {
-        const labels = { ...load(), ...newLabels };
-        save(labels);
-        apply(labels);
+        const defaults = getDefaultLabels();
+        const stored = loadStored();
+        const updated = { ...stored };
+        Object.keys(newLabels).forEach(key => {
+            const val = newLabels[key];
+            if (val && val !== defaults[key]) {
+                updated[key] = val;
+            } else {
+                delete updated[key];
+            }
+        });
+        save(updated);
+        apply({ ...defaults, ...updated });
     }
 
-    return { init, getLabels, setLabels, DEFAULT_LABELS };
+    return { init, getLabels, setLabels, DEFAULT_LABELS, apply, getDefaultLabels };
 })();
