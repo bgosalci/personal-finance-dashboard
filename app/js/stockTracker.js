@@ -122,7 +122,7 @@ const StockTracker = (function() {
     function toggleEditMode() {
         editMode = !editMode;
         const btn = document.getElementById('edit-stock-btn');
-        if (btn) btn.textContent = editMode ? 'Done' : 'Edit';
+        if (btn) btn.textContent = editMode ? I18n.t('stockTracker.actions.done') : I18n.t('stockTracker.actions.edit');
         applyEditMode();
     }
 
@@ -162,7 +162,7 @@ const StockTracker = (function() {
 
         // Generate table header
         const headerRow = document.getElementById('table-header');
-        headerRow.innerHTML = '<tr><th>Year</th>' + 
+        headerRow.innerHTML = `<tr><th>${I18n.t('stockTracker.table.year')}</th>` +
             stockData.tickers.map(ticker => `<th>${ticker}</th>`).join('') + '</tr>';
 
         // Generate table body
@@ -219,15 +219,15 @@ const StockTracker = (function() {
         // Add summary rows
         const totalGrowthRow = document.createElement('tr');
         totalGrowthRow.className = 'summary-row';
-        totalGrowthRow.innerHTML = '<td><strong>Total Growth</strong></td>';
-        
+        totalGrowthRow.innerHTML = `<td><strong>${I18n.t('stockTracker.table.totalGrowth')}</strong></td>`;
+
        const cagrRow = document.createElement('tr');
        cagrRow.className = 'summary-row';
-       cagrRow.innerHTML = '<td><strong>CAGR</strong></td>';
+       cagrRow.innerHTML = `<td><strong>${I18n.t('stockTracker.table.cagr')}</strong></td>`;
 
         const chartRow = document.createElement('tr');
         chartRow.className = 'summary-row';
-        chartRow.innerHTML = '<td><strong>Chart</strong></td>';
+        chartRow.innerHTML = `<td><strong>${I18n.t('stockTracker.table.chart')}</strong></td>`;
 
        stockData.tickers.forEach(ticker => {
             const totalCell = document.createElement('td');

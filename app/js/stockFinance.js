@@ -94,9 +94,9 @@ const StockFinance = (function() {
     };
 
     const STAT_ROWS = [
-        { key: 'pe', label: 'PE Ratio' },
-        { key: 'grossMargin', label: 'Gross Margin' },
-        { key: 'netMargin', label: 'Net Margin' }
+        { key: 'pe', labelKey: 'stockFinance.stats.peRatio' },
+        { key: 'grossMargin', labelKey: 'stockFinance.stats.grossMargin' },
+        { key: 'netMargin', labelKey: 'stockFinance.stats.netMargin' }
     ];
 
     let reports = [];
@@ -132,7 +132,7 @@ const StockFinance = (function() {
 
     function showZeroInfo() {
         if (!zeroInfoEl) return;
-        zeroInfoEl.textContent = 'Values trimmed by removing 6 trailing zeros ("000,000")';
+        zeroInfoEl.textContent = I18n.t('stockFinance.zeroInfo');
         zeroInfoEl.style.display = 'block';
     }
 
@@ -247,14 +247,14 @@ const StockFinance = (function() {
             } else {
                 reports = [];
                 tableHead.innerHTML = '';
-                tableBody.innerHTML = '<tr><td>No data available</td></tr>';
+            tableBody.innerHTML = `<tr><td>${I18n.t('stockFinance.messages.noData')}</td></tr>`;
                 tableContainer.style.display = 'block';
                 if (zeroInfoEl) zeroInfoEl.style.display = 'none';
             }
         } catch (e) {
             reports = [];
             tableHead.innerHTML = '';
-            tableBody.innerHTML = '<tr><td>Failed to load data</td></tr>';
+            tableBody.innerHTML = `<tr><td>${I18n.t('stockFinance.messages.loadFailed')}</td></tr>`;
             tableContainer.style.display = 'block';
             if (zeroInfoEl) zeroInfoEl.style.display = 'none';
         }
@@ -275,7 +275,7 @@ const StockFinance = (function() {
         tableBody.innerHTML = '';
 
         const headerRow = document.createElement('tr');
-        let headerHtml = '<th>Label</th>';
+        let headerHtml = `<th>${I18n.t('stockFinance.table.label')}</th>`;
         reports.forEach(r => {
             const yr = r.fiscal_year || '';
             const period = r.fiscal_period || '';
@@ -304,7 +304,7 @@ const StockFinance = (function() {
         if (currentSubTab === 'stats') {
             const stats = calculateStats();
             STAT_ROWS.forEach(row => {
-                let rowHtml = `<td>${row.label}</td>`;
+                let rowHtml = `<td>${I18n.t(row.labelKey)}</td>`;
                 stats[row.key].forEach(val => {
                     if (val === null || val === undefined || isNaN(val)) {
                         rowHtml += '<td></td>';

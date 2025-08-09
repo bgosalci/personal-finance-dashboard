@@ -95,6 +95,102 @@ const I18n = (function() {
                     "investment": "Investment Calculator",
                     "cagr": "CAGR Calculator",
                     "fairValue": "Fair Value Calculator"
+                },
+                "loan": {
+                    "labels": {
+                        "principal": "Principal Amount",
+                        "rate": "Annual Interest Rate (%)",
+                        "term": "Loan Term (Years)"
+                    },
+                    "results": {
+                        "monthlyPayment": "Monthly Payment:",
+                        "totalInterest": "Total Interest:",
+                        "totalAmount": "Total Amount:"
+                    }
+                },
+                "investment": {
+                    "labels": {
+                        "initial": "Initial Investment",
+                        "rate": "Annual Return Rate (%)",
+                        "years": "Investment Period (Years)"
+                    },
+                    "results": {
+                        "totalReturn": "Total Return (Interest):",
+                        "finalValue": "Final Value:"
+                    },
+                    "table": {
+                        "year": "Year",
+                        "growth": "Growth",
+                        "value": "Value",
+                        "start": "Start"
+                    }
+                },
+                "cagr": {
+                    "labels": {
+                        "beginning": "Beginning Value ($)",
+                        "ending": "Ending Value ($)",
+                        "years": "Number of Years"
+                    },
+                    "results": {
+                        "totalReturn": "Total Return:",
+                        "cagr": "Compound Annual Growth Rate (CAGR):"
+                    }
+                },
+                "fairValue": {
+                    "tabs": {
+                        "dcf": "DCF Analysis",
+                        "pe": "P/E Ratio Analysis",
+                        "intrinsic": "Intrinsic Value"
+                    },
+                    "dcf": {
+                        "title": "Discounted Cash Flow (DCF) Analysis",
+                        "labels": {
+                            "currentFCF": "Current Annual Free Cash Flow",
+                            "growthRate": "Growth Rate (%)",
+                            "terminalRate": "Terminal Growth Rate (%)",
+                            "discountRate": "Discount Rate (WACC) (%)",
+                            "years": "Projection Years",
+                            "shares": "Shares Outstanding (M)"
+                        },
+                        "results": {
+                            "enterpriseValue": "Enterprise Value:",
+                            "pvCashflows": "Present Value of Cash Flows:",
+                            "terminalValue": "Terminal Value:",
+                            "perShare": "Intrinsic Value Per Share:"
+                        }
+                    },
+                    "pe": {
+                        "title": "P/E Ratio Analysis",
+                        "labels": {
+                            "currentPrice": "Current Stock Price ($)",
+                            "eps": "Earnings Per Share (EPS) ($)",
+                            "industryPE": "Industry Average P/E",
+                            "growthRate": "Expected EPS Growth Rate (%)"
+                        },
+                        "results": {
+                            "currentPE": "Current P/E Ratio:",
+                            "fairValue": "Fair Value (Industry P/E):",
+                            "pegRatio": "PEG Ratio:",
+                            "valuation": "Valuation Status:"
+                        }
+                    },
+                    "intrinsic": {
+                        "title": "Intrinsic Value Analysis",
+                        "labels": {
+                            "bookValue": "Book Value Per Share ($)",
+                            "roe": "Return on Equity (ROE) (%)",
+                            "dividendYield": "Dividend Yield (%)",
+                            "requiredReturn": "Required Rate of Return (%)",
+                            "growthRate": "Sustainable Growth Rate (%)",
+                            "eps": "Current EPS ($)"
+                        },
+                        "results": {
+                            "graham": "Graham Number:",
+                            "ddm": "Dividend Discount Model:",
+                            "bookMultiple": "Book Value Multiple:",
+                            "average": "Average Intrinsic Value:"
+                        }
+                    }
                 }
             },
             "stockTracker": {
@@ -103,7 +199,8 @@ const I18n = (function() {
                     "edit": "Edit",
                     "getLastPrice": "Get The Last Price",
                     "addTicker": "Add Ticker",
-                    "generateTable": "Generate Table"
+                    "generateTable": "Generate Table",
+                    "done": "Done"
                 },
                 "labels": {
                     "addStockTicker": "Add Stock Ticker",
