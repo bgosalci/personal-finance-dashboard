@@ -809,3 +809,4 @@ This guide should be used alongside the comprehensive [DEVELOPMENT_GUIDE.md](DEV
 - `.gitignore` updated to keep repos clean.
 - Contribution rules summarized in [RULES.md](RULES.md).
 - Documentation checklist now includes updating `DEVELOPMENT_GUIDE.md` for new features or architectural changes.
+- Portfolio column labels can be customized through Settings.
