@@ -23,6 +23,7 @@ The Personal Finance Dashboard is designed as a single HTML file application tha
 - Investment summary with total values, returns, and transaction history
 - Portfolio totals automatically convert all holdings to your chosen base currency
 - Drag-and-drop reordering of portfolio positions
+- Customize portfolio column labels directly from the Settings tab
 
 ### 🧮 Financial Calculators
 - **Loan Calculator**: Monthly payments, total interest, amortization schedules
@@ -304,6 +305,7 @@ This project is open source and available under the MIT License.
 - **Jest & JSDOM** - For reliable testing infrastructure
 
 ## Latest Changes
+- Portfolio column labels can now be edited from Settings.
 - Pension tracking with charts and summary view.
 - Portfolio export/import and deletion options.
 - Portfolio-wide price refresh capability.

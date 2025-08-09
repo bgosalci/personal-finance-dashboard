@@ -18,6 +18,7 @@ test('FinancialDashboard global object exists with init and removeTicker', () =>
     'calculator.js',
     'stockTracker.js',
     'stockFinance.js',
+    'portfolioColumns.js',
     'settings.js',
     'forexData.js',
     'financialDashboard.js',
@@ -80,7 +81,7 @@ test('Settings module saves currency to localStorage', () => {
   vm.runInContext('Settings.init()', context);
   vm.runInContext('document.getElementById("base-currency-select").value = "GBP"; document.getElementById("base-currency-select").dispatchEvent(new window.Event("change"));', context);
   expect(window.localStorage.getItem('pf_base_currency')).toBe('GBP');
-  expect(window.document.getElementById('app-version').textContent).toBe('1.0.1');
+  expect(window.document.getElementById('app-version').textContent).toBe('1.1.1');
 });
 
 test('DateUtils.formatDate formats date correctly', () => {

@@ -206,6 +206,12 @@ To start fresh:
 3. The selection is saved automatically and will be used across the application
 4. Exchange rates refresh once a day so your totals stay accurate
 
+### Editing Portfolio Column Labels
+
+1. Open the **Settings** tab
+2. In the **Portfolio** section, click **Edit Column Labels**
+3. Enter your preferred header names and save
+
 ## Tips for Best Results
 
 ### Portfolio Management Tips
@@ -323,6 +329,7 @@ A: Each browser stores its own data. Different users would need separate browser
 A: Update investment prices weekly or monthly for accurate tracking. More frequent updates provide better insights.
 
 ## Latest Changes
+- Portfolio column headers are now editable from the Settings tab.
 - Pension tracking with charts and summary view.
 - Portfolio export/import and deletion options.
 - Portfolio-wide price refresh capability.

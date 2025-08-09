@@ -613,6 +613,7 @@ For offline use:
 This development guide should help you understand the codebase structure, development patterns, and best practices for maintaining and extending the Personal Finance Dashboard application.
 
 ## Latest Changes
+- Portfolio column labels configurable through Settings.
 - Pension tracking with charts and summary view.
 - Portfolio export/import and deletion options.
 - Portfolio-wide price refresh capability.
