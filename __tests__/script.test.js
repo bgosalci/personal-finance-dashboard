@@ -84,6 +84,29 @@ test('Settings module saves currency to localStorage', () => {
   expect(window.document.getElementById('app-version').textContent).toBe('1.1.1');
 });
 
+test('Edit portfolio column labels inputs use standard form styling', () => {
+  const html = '<!DOCTYPE html><html><body>' +
+    '<select id="base-currency-select"></select>' +
+    '<span id="app-version"></span>' +
+    '<button id="edit-portfolio-labels-btn"></button>' +
+    '<div id="portfolio-labels-modal" style="display:none;">' +
+      '<form id="portfolio-labels-form"><table><tbody id="portfolio-labels-body"></tbody></table></form>' +
+      '<button id="cancel-portfolio-labels"></button>' +
+    '</div>' +
+    '</body></html>';
+  const dom = new JSDOM(html, {url: 'http://localhost'});
+  const { window } = dom;
+  const context = vm.createContext(window);
+  const pcCode = fs.readFileSync(path.resolve(__dirname, '../app/js/portfolioColumns.js'), 'utf8');
+  vm.runInContext(pcCode, context);
+  const settingsCode = fs.readFileSync(path.resolve(__dirname, '../app/js/settings.js'), 'utf8');
+  vm.runInContext(settingsCode, context);
+  vm.runInContext('Settings.init()', context);
+  vm.runInContext('document.getElementById("edit-portfolio-labels-btn").click();', context);
+  const firstCell = dom.window.document.querySelector('#portfolio-labels-body tr td:nth-child(2)');
+  expect(firstCell.querySelector('.form-group input')).not.toBeNull();
+});
+
 test('DateUtils.formatDate formats date correctly', () => {
   const context = vm.createContext({});
   const content = fs.readFileSync(path.resolve(__dirname, '../app/js/dateUtils.js'), 'utf8');

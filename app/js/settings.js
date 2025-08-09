@@ -235,11 +235,14 @@ const Settings = (function() {
                 const tdCur = document.createElement('td');
                 tdCur.textContent = labels[key];
                 const tdNew = document.createElement('td');
+                const group = document.createElement('div');
+                group.className = 'form-group';
                 const input = document.createElement('input');
                 input.type = 'text';
                 input.id = 'label-input-' + key;
                 input.value = labels[key];
-                tdNew.appendChild(input);
+                group.appendChild(input);
+                tdNew.appendChild(group);
                 tr.appendChild(tdCur);
                 tr.appendChild(tdNew);
                 labelsBody.appendChild(tr);
