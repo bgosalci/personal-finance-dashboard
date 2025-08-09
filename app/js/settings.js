@@ -48,10 +48,19 @@ const Settings = (function() {
 
         const langSelect = document.getElementById('language-select');
         if (langSelect) {
+            const localeFlags = {
+                en: '🇬🇧',
+                es: '🇪🇸',
+                fr: '🇫🇷',
+                de: '🇩🇪',
+                sq: '🇦🇱',
+                pseudo: '🏳️'
+            };
             I18n.availableLocales.forEach(l => {
                 const opt = document.createElement('option');
                 opt.value = l;
-                opt.textContent = l;
+                const flag = localeFlags[l] || '';
+                opt.textContent = flag ? `${flag} ${l}` : l;
                 langSelect.appendChild(opt);
             });
             langSelect.value = I18n.getLocale();
