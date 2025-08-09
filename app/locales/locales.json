@@ -1,0 +1,176 @@
+{
+  "locales": {
+    "en": {
+      "header": {
+        "title": "Financial Dashboard",
+        "tagline": "Personal Investment Tracking & Financial Planning Tool"
+      },
+      "market": {
+        "pre": "Pre Market",
+        "status": "Market Status",
+        "after": "After Market"
+      },
+      "nav": {
+        "portfolio": "Portfolio",
+        "pension": "Pension",
+        "calculators": "Calculators",
+        "stockTracker": "Stock Performance Tracker",
+        "stockFinance": "Stock Finance Performance",
+        "settings": "Settings"
+      },
+      "portfolio": {
+        "actions": {
+          "addInvestment": "Add Investment",
+          "getLastPrice": "Get The Last Price",
+          "transactionHistory": "Transaction History",
+          "addPortfolio": "Add Portfolio",
+          "removePortfolio": "Remove Portfolio",
+          "showInSummary": "Show in Summary"
+        },
+        "table": {
+          "ticker": "Ticker",
+          "currency": "Currency",
+          "name": "Name",
+          "purchasePrice": "Purchase Price",
+          "principal": "Principal",
+          "quantity": "Quantity",
+          "lastPrice": "Last Price",
+          "value": "Value",
+          "pl": "P&L",
+          "plPct": "P&L %",
+          "actions": "Actions"
+        },
+        "total": "Total",
+        "charts": {
+          "investmentSpread": "Investment Spread",
+          "plpct": "P&L%",
+          "stats": "Portfolio Stats",
+          "cagr": "CAGR",
+          "bestTicker": "Best Ticker",
+          "tickerCAGR": "Ticker CAGR",
+          "years": "Years"
+        }
+      },
+      "settings": {
+        "title": "Settings",
+        "baseCurrency": "Base Currency",
+        "baseCurrencyHint": "Exchange rates refresh once a day to keep totals accurate.",
+        "sectionTitles": {
+          "language": "Language",
+          "pension": "Pension",
+          "portfolio": "Portfolio",
+          "stockTracker": "Stock Performance Tracker",
+          "about": "About"
+        },
+        "exportPensions": "Export Pensions",
+        "importPensions": "Import Pensions",
+        "deletePensions": "Delete Pensions",
+        "exportPortfolio": "Export Portfolio",
+        "importPortfolio": "Import Portfolio",
+        "editColumnLabels": "Edit Column Labels",
+        "deletePortfolio": "Delete Portfolio",
+        "exportStock": "Export Stock Data",
+        "importStock": "Import Stock Data",
+        "deleteStock": "Delete Data",
+        "versionLabel": "Web App Version",
+        "languageLabel": "Language",
+        "exportLang": "Export Language",
+        "importLang": "Import Language",
+        "rtlToggle": "Enable RTL"
+      },
+      "common": {
+        "format": "Format",
+        "file": "File",
+        "cancel": "Cancel",
+        "import": "Import",
+        "export": "Export"
+      }
+    },
+    "sq": {
+      "header": {
+        "title": "Pult Financiar",
+        "tagline": "Mjet për Ndjekjen e Investimeve Personale & Planifikimin Financiar"
+      },
+      "market": {
+        "pre": "Para Hapjes së Tregut",
+        "status": "Statusi i Tregut",
+        "after": "Pas Mbylljes së Tregut"
+      },
+      "nav": {
+        "portfolio": "Portofoli",
+        "pension": "Pensioni",
+        "calculators": "Kalkulatorë",
+        "stockTracker": "Ndjekësi i Performancës së Aksioneve",
+        "stockFinance": "Performanca Financiare e Aksioneve",
+        "settings": "Cilësimet"
+      },
+      "portfolio": {
+        "actions": {
+          "addInvestment": "Shto Investim",
+          "getLastPrice": "Merr Çmimin e Fundit",
+          "transactionHistory": "Historia e Transaksioneve",
+          "addPortfolio": "Shto Portofol",
+          "removePortfolio": "Hiq Portofol",
+          "showInSummary": "Shfaq në Përmbledhje"
+        },
+        "table": {
+          "ticker": "Simboli",
+          "currency": "Monedha",
+          "name": "Emri",
+          "purchasePrice": "Çmimi i Blerjes",
+          "principal": "Kapitali",
+          "quantity": "Sasia",
+          "lastPrice": "Çmimi i Fundit",
+          "value": "Vlera",
+          "pl": "Fitimi/Humbja",
+          "plPct": "Fitimi/Humbja %",
+          "actions": "Veprimet"
+        },
+        "total": "Totali",
+        "charts": {
+          "investmentSpread": "Shpërndarja e Investimeve",
+          "plpct": "Fitimi/Humbja %",
+          "stats": "Statistikat e Portofolit",
+          "cagr": "CAGR",
+          "bestTicker": "Simboli Më i Mirë",
+          "tickerCAGR": "CAGR i Simbolit",
+          "years": "Vitet"
+        }
+      },
+      "settings": {
+        "title": "Cilësimet",
+        "baseCurrency": "Monedha Bazë",
+        "baseCurrencyHint": "Kursi i këmbimit rifreskohet një herë në ditë për të mbajtur totalet të sakta.",
+        "sectionTitles": {
+          "language": "Gjuha",
+          "pension": "Pensioni",
+          "portfolio": "Portofoli",
+          "stockTracker": "Ndjekësi i Performancës së Aksioneve",
+          "about": "Rreth"
+        },
+        "exportPensions": "Eksporto Pensionet",
+        "importPensions": "Importo Pensionet",
+        "deletePensions": "Fshi Pensionet",
+        "exportPortfolio": "Eksporto Portofolin",
+        "importPortfolio": "Importo Portofolin",
+        "editColumnLabels": "Ndrysho Etiketat e Kolonave",
+        "deletePortfolio": "Fshi Portofolin",
+        "exportStock": "Eksporto të Dhënat e Aksioneve",
+        "importStock": "Importo të Dhënat e Aksioneve",
+        "deleteStock": "Fshi të Dhënat",
+        "versionLabel": "Versioni i Aplikacionit Web",
+        "languageLabel": "Gjuha",
+        "exportLang": "Eksporto Gjuhën",
+        "importLang": "Importo Gjuhën",
+        "rtlToggle": "Aktivizo RTL"
+      },
+      "common": {
+        "format": "Formati",
+        "file": "Skedari",
+        "cancel": "Anulo",
+        "import": "Importo",
+        "export": "Eksporto"
+      }
+    }
+  }
+}
