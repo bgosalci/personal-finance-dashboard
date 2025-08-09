@@ -131,49 +131,49 @@
                 <div id="investment-modal" class="modal">
                     <div class="modal-content">
                         <span class="modal-close" id="investment-close">&times;</span>
-                        <h3>Add Investment</h3>
+                        <h3 data-i18n="portfolio.dialogs.addInvestment.title">Add Investment</h3>
                         <form id="investment-form">
                             <div class="form-grid">
                                 <div class="form-group">
-                                    <label for="investment-ticker">Ticker</label>
+                                      <label for="investment-ticker" data-i18n="portfolio.table.ticker">Ticker</label>
                                     <input type="text" id="investment-ticker" style="text-transform: uppercase;" required>
                                 </div>
                                 <div class="form-group">
-                                    <label for="investment-name">Name</label>
+                                      <label for="investment-name" data-i18n="portfolio.table.name">Name</label>
                                     <input type="text" id="investment-name">
                                 </div>
                                 <div class="form-group">
-                                    <label for="investment-quantity">Quantity</label>
+                                      <label for="investment-quantity" data-i18n="portfolio.table.quantity">Quantity</label>
                                     <input type="number" step="0.0001" id="investment-quantity" required>
                                 </div>
                                 <div class="form-group">
-                                    <label for="investment-purchase-price">Purchase Price</label>
+                                      <label for="investment-purchase-price" data-i18n="portfolio.table.purchasePrice">Purchase Price</label>
                                     <input type="number" step="0.01" id="investment-purchase-price" required>
                                 </div>
                                 <div class="form-group">
-                                    <label for="investment-purchase-date">Purchase Date</label>
+                                      <label for="investment-purchase-date" data-i18n="portfolio.table.purchaseDate">Purchase Date</label>
                                     <input type="date" id="investment-purchase-date" required>
                                 </div>
                                 <div class="form-group">
-                                    <label for="investment-last-price">Last Price</label>
+                                      <label for="investment-last-price" data-i18n="portfolio.table.lastPrice">Last Price</label>
                                     <input type="number" step="0.01" id="investment-last-price" required>
                                 </div>
                                 <div class="form-group">
-                                    <label for="investment-currency">Currency</label>
+                                      <label for="investment-currency" data-i18n="portfolio.table.currency">Currency</label>
                                     <select id="investment-currency">
                                         <option value="USD">USD</option>
                                         <option value="GBP">GBP</option>
                                     </select>
                                 </div>
                                 <div class="form-group">
-                                    <label>Total Value</label>
+                                      <label data-i18n="portfolio.dialogs.totalValue">Total Value</label>
                                     <span id="investment-total-value">$0.00</span>
                                 </div>
                             </div>
                             <div class="modal-actions">
-                                <button type="button" class="btn btn-secondary" id="save-add-another-btn">Save &amp; Add Another</button>
-                                <button type="button" class="btn btn-secondary" id="cancel-investment-btn">Cancel</button>
-                                <button type="submit" class="btn btn-primary">Add</button>
+                                  <button type="button" class="btn btn-secondary" id="save-add-another-btn" data-i18n="portfolio.dialogs.saveAddAnother">Save &amp; Add Another</button>
+                                  <button type="button" class="btn btn-secondary" id="cancel-investment-btn" data-i18n="common.cancel">Cancel</button>
+                                  <button type="submit" class="btn btn-primary" data-i18n="common.add">Add</button>
                             </div>
                         </form>
                     </div>
@@ -183,48 +183,48 @@
                 <div id="edit-investment-modal" class="modal">
                     <div class="modal-content">
                         <span class="modal-close" id="edit-investment-close">&times;</span>
-                        <h3>Edit Investment</h3>
+                          <h3 data-i18n="portfolio.dialogs.editInvestment.title">Edit Investment</h3>
                         <form id="edit-investment-form">
                             <div class="form-grid">
                                 <div class="form-group">
-                                    <label for="edit-name">Name</label>
+                                      <label for="edit-name" data-i18n="portfolio.table.name">Name</label>
                                     <input type="text" id="edit-name">
                                 </div>
                                 <div class="form-group" id="edit-record-group" style="display:none;">
-                                    <label for="edit-record-select">Select Record</label>
+                                      <label for="edit-record-select" data-i18n="portfolio.dialogs.editInvestment.selectRecord">Select Record</label>
                                     <select id="edit-record-select"></select>
                                 </div>
                                 <div class="form-group">
-                                    <label for="edit-quantity">Quantity</label>
+                                      <label for="edit-quantity" data-i18n="portfolio.table.quantity">Quantity</label>
                                     <input type="number" step="0.0001" id="edit-quantity" required>
                                 </div>
                                 <div class="form-group">
-                                    <label for="edit-purchase-price">Purchase Price</label>
+                                      <label for="edit-purchase-price" data-i18n="portfolio.table.purchasePrice">Purchase Price</label>
                                     <input type="number" step="0.01" id="edit-purchase-price" required>
                                 </div>
                                 <div class="form-group">
-                                    <label for="edit-purchase-date">Purchase Date</label>
+                                      <label for="edit-purchase-date" data-i18n="portfolio.table.purchaseDate">Purchase Date</label>
                                     <input type="date" id="edit-purchase-date" required>
                                 </div>
                                 <div class="form-group">
-                                    <label for="edit-last-price">Last Price</label>
+                                      <label for="edit-last-price" data-i18n="portfolio.table.lastPrice">Last Price</label>
                                     <input type="number" step="0.01" id="edit-last-price" required>
                                 </div>
                                 <div class="form-group">
-                                    <label for="edit-currency">Currency</label>
+                                      <label for="edit-currency" data-i18n="portfolio.table.currency">Currency</label>
                                     <select id="edit-currency">
                                         <option value="USD">USD</option>
                                         <option value="GBP">GBP</option>
                                     </select>
                                 </div>
                                 <div class="form-group">
-                                    <label>Total Value</label>
+                                      <label data-i18n="portfolio.dialogs.totalValue">Total Value</label>
                                     <span id="edit-total-value">$0.00</span>
                                 </div>
                             </div>
                             <div class="modal-actions">
-                                <button type="button" class="btn btn-secondary" id="edit-cancel-btn">Cancel</button>
-                                <button type="submit" class="btn btn-primary">Save</button>
+                                  <button type="button" class="btn btn-secondary" id="edit-cancel-btn" data-i18n="common.cancel">Cancel</button>
+                                  <button type="submit" class="btn btn-primary" data-i18n="common.save">Save</button>
                             </div>
                         </form>
                     </div>
