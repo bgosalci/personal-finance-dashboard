@@ -38,10 +38,13 @@ const PortfolioColumns = (function() {
         const stored = loadStored();
         const filtered = {};
         Object.keys(stored).forEach(key => {
-            if (stored[key] !== defaults[key]) {
+            if (stored[key] !== defaults[key] && stored[key] !== DEFAULT_LABELS[key]) {
                 filtered[key] = stored[key];
             }
         });
+        if (Object.keys(filtered).length !== Object.keys(stored).length) {
+            save(filtered);
+        }
         return { ...defaults, ...filtered };
     }
 
