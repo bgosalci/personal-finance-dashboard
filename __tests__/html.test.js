@@ -84,8 +84,10 @@ test('portfolio table shows totals row', () => {
   const doc = dom.window.document;
   const row = doc.getElementById('portfolio-total-row');
   const value = doc.getElementById('portfolio-total-value');
+  const principal = doc.getElementById('portfolio-total-principal');
   expect(row).not.toBeNull();
   expect(value).not.toBeNull();
+  expect(principal).not.toBeNull();
 });
 
 test('portfolio stats include ticker CAGR table', () => {

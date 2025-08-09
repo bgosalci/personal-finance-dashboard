@@ -283,10 +283,16 @@ const PortfolioManager = (function() {
         });
         const portfolioCagr = totalCostForCagr ? (weightedCagr / totalCostForCagr) * 100 : 0;
 
-        document.getElementById('portfolio-base-currency-label').textContent = baseCurrency;
-        document.getElementById('portfolio-total-value').textContent = formatCurrency(totalValueBase, baseCurrency);
-        document.getElementById('portfolio-total-pl').textContent = formatCurrency(basePL, baseCurrency);
-        document.getElementById('portfolio-total-plpct').textContent = basePLPct.toFixed(2) + '%';
+        const baseLabelEl = document.getElementById('portfolio-base-currency-label');
+        if (baseLabelEl) baseLabelEl.textContent = baseCurrency;
+        const principalEl = document.getElementById('portfolio-total-principal');
+        if (principalEl) principalEl.textContent = formatCurrency(totalCostBase, baseCurrency);
+        const valueEl = document.getElementById('portfolio-total-value');
+        if (valueEl) valueEl.textContent = formatCurrency(totalValueBase, baseCurrency);
+        const plEl = document.getElementById('portfolio-total-pl');
+        if (plEl) plEl.textContent = formatCurrency(basePL, baseCurrency);
+        const plPctEl = document.getElementById('portfolio-total-plpct');
+        if (plPctEl) plPctEl.textContent = basePLPct.toFixed(2) + '%';
         const cagrEl = document.getElementById('portfolio-cagr');
         if (cagrEl) {
             cagrEl.textContent = totalCostForCagr ? portfolioCagr.toFixed(2) + '%' : '---';
