@@ -129,7 +129,7 @@ const PensionManager = (function() {
         pensionTabs.innerHTML = '';
         const summaryTab = document.createElement('button');
         summaryTab.className = 'sub-nav-tab';
-        summaryTab.textContent = 'Summary';
+        summaryTab.textContent = I18n.t('common.summary');
         summaryTab.dataset.id = 'summary';
         pensionTabs.appendChild(summaryTab);
         pensions.forEach(p => {
@@ -459,7 +459,7 @@ const PensionManager = (function() {
             if (summaryMode) {
                 const ents = getEntriesFor('summary');
                 ents.forEach(en => dateSet.add(en.date));
-                datasets.push({ id: 'summary', name: 'Summary', entries: ents });
+                datasets.push({ id: 'summary', name: I18n.t('common.summary'), entries: ents });
             }
             ids.forEach(id => {
                 const ents = getEntriesFor(id);

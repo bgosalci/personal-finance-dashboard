@@ -258,14 +258,14 @@
             <!-- Pension Tab -->
             <div id="pension" class="tab-content">
                 <div class="section-header">
-                    <h2 class="section-title">Pension</h2>
+                    <h2 class="section-title" data-i18n="pension.title">Pension</h2>
                     <div class="pension-actions">
                         <div class="action-buttons">
-                            <button class="btn btn-primary" id="add-pension-entry-btn">Add Entry</button>
-                            <button class="btn btn-secondary" id="add-pension-btn">Add Pension</button>
-                            <button class="btn btn-secondary" id="remove-pension-btn">Remove Pension</button>
-                            <button class="btn btn-secondary" id="pension-chart-btn">View Chart</button>
-                            <label class="summary-toggle"><input type="checkbox" id="pension-summary-toggle" checked> Show in Summary</label>
+                            <button class="btn btn-primary" id="add-pension-entry-btn" data-i18n="pension.actions.addEntry">Add Entry</button>
+                            <button class="btn btn-secondary" id="add-pension-btn" data-i18n="pension.actions.addPension">Add Pension</button>
+                            <button class="btn btn-secondary" id="remove-pension-btn" data-i18n="pension.actions.removePension">Remove Pension</button>
+                            <button class="btn btn-secondary" id="pension-chart-btn" data-i18n="pension.actions.viewChart">View Chart</button>
+                            <label class="summary-toggle"><input type="checkbox" id="pension-summary-toggle" checked> <span data-i18n="pension.actions.showInSummary">Show in Summary</span></label>
                         </div>
                     </div>
                 </div>
@@ -274,17 +274,17 @@
                     <table class="data-table" id="pension-table">
                         <thead>
                             <tr>
-                                <th>Date</th>
-                                <th class="payment-col" style="display:none;">Payment (<span id="pension-payment-currency-label">USD</span>)</th>
-                                <th class="total-payment-col" style="display:none;">Total Payments (<span id="pension-total-payment-currency-label">USD</span>)</th>
-                                <th>Current Value (<span id="pension-base-currency-label">USD</span>)</th>
-                                <th>Monthly P&amp;L</th>
-                                <th>Monthly %</th>
-                                <th>YTD P&amp;L</th>
-                                <th>YTD %</th>
-                                <th>Total P&amp;L</th>
-                                <th>Total %</th>
-                                <th>Actions</th>
+                                <th data-i18n="pension.table.date">Date</th>
+                <th class="payment-col" style="display:none;"><span data-i18n="pension.table.payment">Payment</span> (<span id="pension-payment-currency-label">USD</span>)</th>
+                <th class="total-payment-col" style="display:none;"><span data-i18n="pension.table.totalPayments">Total Payments</span> (<span id="pension-total-payment-currency-label">USD</span>)</th>
+                <th><span data-i18n="pension.table.currentValue">Current Value</span> (<span id="pension-base-currency-label">USD</span>)</th>
+                                <th data-i18n="pension.table.monthlyPL">Monthly P&amp;L</th>
+                                <th data-i18n="pension.table.monthlyPct">Monthly %</th>
+                                <th data-i18n="pension.table.ytdPL">YTD P&amp;L</th>
+                                <th data-i18n="pension.table.ytdPct">YTD %</th>
+                                <th data-i18n="pension.table.totalPL">Total P&amp;L</th>
+                                <th data-i18n="pension.table.totalPct">Total %</th>
+                                <th data-i18n="pension.table.actions">Actions</th>
                             </tr>
                         </thead>
                         <tbody id="pension-body"></tbody>
@@ -292,23 +292,23 @@
                 </div>
                 <div class="summary-cards" id="pension-summary-cards" style="display:none;">
                     <div class="summary-card">
-                        <h4>Current CAGR</h4>
+                        <h4 data-i18n="pension.summaryCards.currentCAGR">Current CAGR</h4>
                         <p id="pension-current-cagr"></p>
                     </div>
                     <div class="summary-card">
-                        <h4>Best Month</h4>
+                        <h4 data-i18n="pension.summaryCards.bestMonth">Best Month</h4>
                         <p id="pension-best-month"></p>
                     </div>
                     <div class="summary-card">
-                        <h4>Worst Month</h4>
+                        <h4 data-i18n="pension.summaryCards.worstMonth">Worst Month</h4>
                         <p id="pension-worst-month"></p>
                     </div>
                     <div class="summary-card">
-                        <h4>Best Year</h4>
+                        <h4 data-i18n="pension.summaryCards.bestYear">Best Year</h4>
                         <p id="pension-best-year"></p>
                     </div>
                     <div class="summary-card">
-                        <h4>Worst Year</h4>
+                        <h4 data-i18n="pension.summaryCards.worstYear">Worst Year</h4>
                         <p id="pension-worst-year"></p>
                     </div>
                 </div>

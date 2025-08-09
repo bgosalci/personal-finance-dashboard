@@ -351,7 +351,7 @@ const PortfolioManager = (function() {
         portfolioTabs.innerHTML = '';
         const summaryTab = document.createElement('button');
         summaryTab.className = 'sub-nav-tab';
-        summaryTab.textContent = 'Summary';
+        summaryTab.textContent = I18n.t('common.summary');
         summaryTab.dataset.id = 'summary';
         portfolioTabs.appendChild(summaryTab);
         portfolios.forEach(p => {
