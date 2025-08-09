@@ -265,6 +265,11 @@
             resize: vertical;
         }
 
+        #base-currency-select {
+            width: fit-content;
+            align-self: flex-start;
+        }
+
         .form-group input:focus, .form-group select:focus {
             outline: none;
             border-color: var(--primary-blue);
