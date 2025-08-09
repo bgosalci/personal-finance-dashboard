@@ -95,7 +95,7 @@ test('Settings module saves currency to localStorage', () => {
   vm.runInContext('Settings.init()', context);
   vm.runInContext('document.getElementById("base-currency-select").value = "GBP"; document.getElementById("base-currency-select").dispatchEvent(new window.Event("change"));', context);
   expect(window.localStorage.getItem('pf_base_currency')).toBe('GBP');
-  expect(window.document.getElementById('app-version').textContent).toBe('1.1.1');
+  expect(window.document.getElementById('app-version').textContent).toBe('1.2.1');
 });
 
 test('Edit portfolio column labels inputs use standard form styling', () => {
@@ -130,6 +130,32 @@ test('DateUtils.formatDate formats date correctly', () => {
   const result = vm.runInContext('DateUtils.formatDate("2024-05-01")', context);
   const expected = new Intl.DateTimeFormat('en', { year: 'numeric', month: 'numeric', day: 'numeric' }).format(new Date('2024-05-01'));
   expect(result).toBe(expected);
+});
+
+test('pension summary tab updates translation on locale change', async () => {
+  const html = '<!DOCTYPE html><html><body>' +
+    '<div id="pension-tabs"></div>' +
+    '<button id="add-pension-btn"></button>' +
+    '<button id="remove-pension-btn"></button>' +
+    '<button id="add-pension-entry-btn"></button>' +
+    '<input type="checkbox" id="pension-summary-toggle">' +
+    '<table id="pension-table"><thead><tr><th class="payment-col"></th><th class="total-payment-col"></th></tr></thead></table>' +
+    '</body></html>';
+  const dom = new JSDOM(html, { url: 'http://localhost' });
+  const context = vm.createContext(dom.window);
+  vm.runInContext(i18nCode, context);
+  let penCode = fs.readFileSync(path.resolve(__dirname, '../app/js/pensionManager.js'), 'utf8');
+  penCode = penCode.replace(
+    'return { init, exportData, importData, deleteAllData };',
+    'window.__renderTabs=renderTabs; return { init, exportData, importData, deleteAllData };'
+  );
+  vm.runInContext(penCode, context);
+  await vm.runInContext('I18n.setLocale("en")', context);
+  context.__renderTabs();
+  const btn = dom.window.document.querySelector('#pension-tabs button');
+  expect(btn.textContent).toBe('Summary');
+  await vm.runInContext('I18n.setLocale("fr")', context);
+  expect(btn.textContent).toBe('Résumé');
 });
 
 test('Edit modal focuses name input when opened', () => {

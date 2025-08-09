@@ -123,14 +123,21 @@ const PensionManager = (function() {
         totalPaymentHeader.style.display = show;
     }
 
+    function formatDisplayDate(dateStr) {
+        if (!dateStr) return '';
+        const [year, month, day] = dateStr.split('-');
+        return `${day}/${month}/${year}`;
+    }
+
     function renderTabs() {
         if (!pensionTabs) return;
         const activeId = summaryMode ? 'summary' : currentPensionId;
         pensionTabs.innerHTML = '';
         const summaryTab = document.createElement('button');
         summaryTab.className = 'sub-nav-tab';
-        summaryTab.textContent = I18n.t('common.summary');
         summaryTab.dataset.id = 'summary';
+        summaryTab.setAttribute('data-i18n', 'common.summary');
+        summaryTab.textContent = I18n.t('common.summary');
         pensionTabs.appendChild(summaryTab);
         pensions.forEach(p => {
             const btn = document.createElement('button');
@@ -429,8 +436,8 @@ const PensionManager = (function() {
         const worstYearEl = document.getElementById('pension-worst-year');
 
         cagrEl.textContent = analysis.cagr ? analysis.cagr.toFixed(2) + '%' : '---';
-        bestMonthEl.textContent = analysis.bestMonth ? `${analysis.bestMonth.date} (${analysis.bestMonth.pct.toFixed(2)}%)` : '---';
-        worstMonthEl.textContent = analysis.worstMonth ? `${analysis.worstMonth.date} (${analysis.worstMonth.pct.toFixed(2)}%)` : '---';
+        bestMonthEl.textContent = analysis.bestMonth ? `${formatDisplayDate(analysis.bestMonth.date)} (${analysis.bestMonth.pct.toFixed(2)}%)` : '---';
+        worstMonthEl.textContent = analysis.worstMonth ? `${formatDisplayDate(analysis.worstMonth.date)} (${analysis.worstMonth.pct.toFixed(2)}%)` : '---';
         bestYearEl.textContent = analysis.bestYear ? `${analysis.bestYear.year} (${analysis.bestYear.pct.toFixed(2)}%)` : '---';
         worstYearEl.textContent = analysis.worstYear ? `${analysis.worstYear.year} (${analysis.worstYear.pct.toFixed(2)}%)` : '---';
 
@@ -467,17 +474,18 @@ const PensionManager = (function() {
                 const name = (pensions.find(p => p.id === id) || {}).name || id;
                 datasets.push({ id, name, entries: ents });
             });
-            const dates = Array.from(dateSet).sort();
+            const rawDates = Array.from(dateSet).sort();
+            const labels = rawDates.map(formatDisplayDate);
             const chartDatasets = datasets.map((ds, idx) => {
                 const map = new Map(ds.entries.map(e => [e.date, e.value]));
-                const data = dates.map(d => map.get(d) ?? null);
+                const data = rawDates.map(d => map.get(d) ?? null);
                 const color = `hsl(${(idx * 360 / datasets.length) % 360},70%,60%)`;
                 return { label: ds.name, data, borderColor: color, backgroundColor: color, fill: false, tension: 0.2, spanGaps: true };
             });
             if (pensionChart) pensionChart.destroy();
             pensionChart = new Chart(chartCanvas.getContext('2d'), {
                 type: 'line',
-                data: { labels: dates, datasets: chartDatasets },
+                data: { labels, datasets: chartDatasets },
                 options: { responsive: true }
             });
         }
@@ -519,7 +527,7 @@ const PensionManager = (function() {
 
             const type = summaryMode ? summaryInfo.type : pensions.find(p=>p.id===currentPensionId).type;
             row.innerHTML = `
-                <td>${st.date}</td>
+                <td>${formatDisplayDate(st.date)}</td>
                 ${type==='payments'?`<td class="number-cell">${formatCurrency(paymentVal, baseCurrency)}</td><td class="number-cell">${formatCurrency(st.totalPayments, baseCurrency)}</td>`:''}
                 <td class="number-cell">${formatCurrency(valueVal, baseCurrency)}</td>
                 <td class="number-cell ${monthlyClass}">${formatCurrency(monthlyVal, baseCurrency)}</td>
