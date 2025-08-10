@@ -47,6 +47,13 @@ const Settings = (function() {
         }
 
         const apiKeyInput = document.getElementById('settings-finnhub-api-key');
+        const apiKeyToggle = document.getElementById('settings-finnhub-api-key-toggle');
+        if (apiKeyToggle && apiKeyInput) {
+            apiKeyToggle.addEventListener('change', () => {
+                apiKeyInput.type = apiKeyToggle.checked ? 'text' : 'password';
+            });
+        }
+
         if (apiKeyInput && typeof QuotesService !== 'undefined') {
             try { apiKeyInput.value = QuotesService.getApiKey(); } catch (e) {}
             apiKeyInput.addEventListener('input', (e) => {
