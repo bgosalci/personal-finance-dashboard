@@ -497,6 +497,26 @@ const CONFIG = {
     currency: 'USD',
     dateFormat: 'MM/DD/YYYY',
     chartColors: ['#3498db', '#e74c3c', '#2ecc71', '#f39c12'],
+## Services
+
+### QuotesService
+- getApiKey(): string
+- setApiKey(key: string): void
+- fetchQuote(ticker: string): Promise<{ price: number|null, raw: any }>
+- searchSymbol(query: string): Promise<any>
+
+Notes:
+- API key is read from localStorage under key "pf_api_key_finnhub"
+- When missing, requests are still attempted; Finnhub may reject unauthenticated or rate-limited calls
+
+### ColorService
+- getColorForKey(key: string): string
+- reset(): void
+
+Notes:
+- Deterministic color assignment with palette and HSL fallback
+- Persists map in localStorage under key "pf_color_map_v1"
+
     autoSave: true,
     autoSaveInterval: 30000, // 30 seconds
     maxInvestments: 100,
