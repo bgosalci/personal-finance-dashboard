@@ -54,8 +54,7 @@ const Settings = (function() {
                 fr: '🇫🇷',
                 de: '🇩🇪',
                 it: '🇮🇹',
-                sq: '🇦🇱',
-                pseudo: '🏳️'
+                sq: '🇦🇱'
             };
             I18n.availableLocales.forEach(l => {
                 const opt = document.createElement('option');

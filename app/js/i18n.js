@@ -2019,7 +2019,6 @@ const I18n = (function() {
     }
 
     const availableLocales = Object.keys(DEFAULT_TRANSLATIONS);
-    availableLocales.push('pseudo');
 
     function getLocale() {
         return localStorage.getItem(LOCALE_KEY) || 'en';
