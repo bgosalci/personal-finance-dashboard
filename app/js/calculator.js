@@ -18,14 +18,17 @@ const Calculator = (function() {
         return I18n.formatNumber(num, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     }
 
-    function formatInputValue(value) {
+    function formatInputValue(value, pad = false) {
         const clean = value.replace(/[^0-9.]/g, '');
         if (clean === '') return '';
         const [intPart, decPart] = clean.split('.');
         const formattedInt = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
         if (decPart !== undefined) {
-            const decimals = decPart.slice(0, 2).padEnd(2, '0');
-            return `${formattedInt}.${decimals}`;
+            if (decPart === '') {
+                return `${formattedInt}.`;
+            }
+            const decimals = decPart.slice(0, 2);
+            return pad ? `${formattedInt}.${decimals.padEnd(2, '0')}` : `${formattedInt}.${decimals}`;
         }
         return formattedInt;
     }
@@ -35,6 +38,9 @@ const Calculator = (function() {
         if (!input) return;
         input.addEventListener('input', (e) => {
             e.target.value = formatInputValue(e.target.value);
+        });
+        input.addEventListener('blur', (e) => {
+            e.target.value = formatInputValue(e.target.value, true);
         });
     }
 
@@ -232,12 +238,12 @@ const Calculator = (function() {
         // DCF Calculator
         const DCFCalculator = (function() {
             function calculate() {
-                const currentFCF = parseFloat(document.getElementById('dcf-current-fcf').value) || 0;
+                const currentFCF = getNumberValue('dcf-current-fcf');
                 const growthRate = parseFloat(document.getElementById('dcf-growth-rate').value) || 0;
                 const terminalRate = parseFloat(document.getElementById('dcf-terminal-rate').value) || 0;
                 const discountRate = parseFloat(document.getElementById('dcf-discount-rate').value) || 0;
                 const projectionYears = parseInt(document.getElementById('dcf-years').value) || 0;
-                const sharesOutstanding = parseFloat(document.getElementById('dcf-shares').value) || 0;
+                const sharesOutstanding = getNumberValue('dcf-shares');
 
                 if (currentFCF <= 0 || discountRate <= 0 || projectionYears <= 0 || sharesOutstanding <= 0) {
                     document.getElementById('dcf-results').style.display = 'none';
@@ -273,6 +279,8 @@ const Calculator = (function() {
             }
 
             function init() {
+                setupAmountInput('dcf-current-fcf');
+                setupAmountInput('dcf-shares');
                 const inputs = ['dcf-current-fcf', 'dcf-growth-rate', 'dcf-terminal-rate', 'dcf-discount-rate', 'dcf-years', 'dcf-shares'];
                 inputs.forEach(id => {
                     document.getElementById(id).addEventListener('input', calculate);
@@ -285,7 +293,7 @@ const Calculator = (function() {
         // P/E Ratio Calculator
         const PECalculator = (function() {
             function calculate() {
-                const currentPrice = parseFloat(document.getElementById('pe-current-price').value) || 0;
+                const currentPrice = getNumberValue('pe-current-price');
                 const eps = parseFloat(document.getElementById('pe-eps').value) || 0;
                 const industryPE = parseFloat(document.getElementById('pe-industry-avg').value) || 0;
                 const growthRate = parseFloat(document.getElementById('pe-growth-rate').value) || 0;
@@ -318,6 +326,7 @@ const Calculator = (function() {
             }
 
             function init() {
+                setupAmountInput('pe-current-price');
                 const inputs = ['pe-current-price', 'pe-eps', 'pe-industry-avg', 'pe-growth-rate'];
                 inputs.forEach(id => {
                     document.getElementById(id).addEventListener('input', calculate);
