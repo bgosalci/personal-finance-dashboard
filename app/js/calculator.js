@@ -18,14 +18,17 @@ const Calculator = (function() {
         return I18n.formatNumber(num, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     }
 
-    function formatInputValue(value) {
+    function formatInputValue(value, pad = false) {
         const clean = value.replace(/[^0-9.]/g, '');
         if (clean === '') return '';
         const [intPart, decPart] = clean.split('.');
         const formattedInt = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
         if (decPart !== undefined) {
-            const decimals = decPart.slice(0, 2).padEnd(2, '0');
-            return `${formattedInt}.${decimals}`;
+            if (decPart === '') {
+                return `${formattedInt}.`;
+            }
+            const decimals = decPart.slice(0, 2);
+            return pad ? `${formattedInt}.${decimals.padEnd(2, '0')}` : `${formattedInt}.${decimals}`;
         }
         return formattedInt;
     }
@@ -35,6 +38,9 @@ const Calculator = (function() {
         if (!input) return;
         input.addEventListener('input', (e) => {
             e.target.value = formatInputValue(e.target.value);
+        });
+        input.addEventListener('blur', (e) => {
+            e.target.value = formatInputValue(e.target.value, true);
         });
     }
 

@@ -49,14 +49,17 @@ const PensionManager = (function() {
     const chartClose = document.getElementById('pension-chart-close');
     let pensionChart = null;
 
-    function formatInputValue(value) {
+    function formatInputValue(value, pad = false) {
         const clean = value.replace(/[^0-9.]/g, '');
         if (clean === '') return '';
         const [intPart, decPart] = clean.split('.');
         const formattedInt = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
         if (decPart !== undefined) {
-            const decimals = decPart.slice(0, 2).padEnd(2, '0');
-            return `${formattedInt}.${decimals}`;
+            if (decPart === '') {
+                return `${formattedInt}.`;
+            }
+            const decimals = decPart.slice(0, 2);
+            return pad ? `${formattedInt}.${decimals.padEnd(2, '0')}` : `${formattedInt}.${decimals}`;
         }
         return formattedInt;
     }
@@ -65,6 +68,9 @@ const PensionManager = (function() {
         if (!input) return;
         input.addEventListener('input', (e) => {
             e.target.value = formatInputValue(e.target.value);
+        });
+        input.addEventListener('blur', (e) => {
+            e.target.value = formatInputValue(e.target.value, true);
         });
     }
 
@@ -270,7 +276,7 @@ const PensionManager = (function() {
         const entry = entries[idx];
         if (!entry) return;
         editDateInput.value = entry.date;
-        editValueInput.value = formatInputValue(String(entry.value));
+        editValueInput.value = formatInputValue(String(entry.value), true);
         editPaymentInput.value = entry.payment || '';
         const current = pensions.find(p => p.id === currentPensionId);
         if (current && current.type === 'growth') {
