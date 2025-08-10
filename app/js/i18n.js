@@ -418,7 +418,7 @@ const I18n = (function() {
                     "monthlyPL": "Fitimi/Humbja Mujore",
                     "monthlyPct": "% Mujore",
                     "ytdPL": "Fitimi/Humbja YTD",
-                    "ytdPct": "% YTD",
+                    "ytdPct": "YTD %",
                     "totalPL": "Fitimi/Humbja Totale",
                     "totalPct": "% Totale",
                     "actions": "Veprimet"
@@ -754,7 +754,7 @@ const I18n = (function() {
                     "monthlyPL": "P&L Mensuel",
                     "monthlyPct": "% Mensuel",
                     "ytdPL": "P&L YTD",
-                    "ytdPct": "% YTD",
+                    "ytdPct": "YTD %",
                     "totalPL": "P&L Total",
                     "totalPct": "% Total",
                     "actions": "Actions"
@@ -1324,7 +1324,7 @@ const I18n = (function() {
             "dialog": {
                 "yes": "Ja",
                 "no": "Nein",
-                "close": "Schließen",
+                "close": "SchlieÙen",
                 "delete": "Löschen",
                 "enterPortfolioName": "Portfolionamen eingeben:",
                 "deletePortfolio": "Dieses Portfolio löschen?",
@@ -1375,7 +1375,7 @@ const I18n = (function() {
                 "addPortfolio": "Agregar Cartera",
                 "removePortfolio": "Eliminar Cartera",
                 "showInSummary": "Mostrar en el Resumen",
-                "edit": "Editar",
+                "edit": "Editeazăr",
                 "delete": "Eliminar"
                 },
                 "table": {
@@ -1404,7 +1404,7 @@ const I18n = (function() {
                 },
                 "dialogs": {
                 "addInvestment": { "title": "Agregar Inversión" },
-                "editInvestment": { "title": "Editar Inversión", "selectRecord": "Seleccionar registro" },
+                "editInvestment": { "title": "Editeazăr Inversión", "selectRecord": "Seleccionar registro" },
                 "totalValue": "Valor Total",
                 "saveAddAnother": "Guardar y Añadir Otro"
                 }
@@ -1426,7 +1426,7 @@ const I18n = (function() {
                     "monthlyPL": "P&L Mensual",
                     "monthlyPct": "% Mensual",
                     "ytdPL": "P&L YTD",
-                    "ytdPct": "% YTD",
+                    "ytdPct": "YTD %",
                     "totalPL": "P&L Total",
                     "totalPct": "% Total",
                     "actions": "Acciones"
@@ -1449,7 +1449,7 @@ const I18n = (function() {
                         }
                     },
                     "editEntry": {
-                        "title": "Editar Entrada"
+                        "title": "Editeazăr Entrada"
                     }
                 },
                 "chart": {
@@ -1566,7 +1566,7 @@ const I18n = (function() {
             "stockTracker": {
                 "title": "Rastreador de rendimiento de acciones",
                 "actions": {
-                    "edit": "Editar",
+                    "edit": "Editeazăr",
                     "getLastPrice": "Obtener el último precio",
                     "addTicker": "Agregar ticker",
                     "generateTable": "Generar tabla",
@@ -1762,7 +1762,7 @@ const I18n = (function() {
                     "monthlyPL": "Utile/Perdita Mensile",
                     "monthlyPct": "% Mensile",
                     "ytdPL": "Utile/Perdita YTD",
-                    "ytdPct": "% YTD",
+                    "ytdPct": "YTD %",
                     "totalPL": "Utile/Perdita Totale",
                     "totalPct": "% Totale",
                     "actions": "Azioni"
@@ -2020,6 +2020,346 @@ const I18n = (function() {
                 "save": "Salva",
                 "summary": "Riepilogo"
             }
+        },
+
+        "ro": {
+            "header": {
+                "title": "Tablou de bord financiar",
+                "tagline": "Instrument de urmărire a investițiilor personale și planificare financiară"
+            },
+            "market": {
+                "pre": "Pre-piață",
+                "status": "Starea pieței",
+                "after": "După piață"
+            },
+            "nav": {
+                "portfolio": "Portofoliu",
+                "pension": "Pensiune",
+                "calculators": "Calculatoare",
+                "stockTracker": "Monitorizare performanță acțiuni",
+                "stockFinance": "Performanță financiară a acțiunilor",
+                "settings": "Setări"
+            },
+            "portfolio": {
+                "actions": {
+                    "addInvestment": "Adaugă investiție",
+                    "getLastPrice": "Obține ultimul preț",
+                    "transactionHistory": "Istoricul tranzacțiilor",
+                    "addPortfolio": "Adaugă portofoliu",
+                    "removePortfolio": "Elimină portofoliul",
+                    "showInSummary": "Afișează în rezumat",
+                    "edit": "Editează",
+                    "delete": "Șterge"
+                },
+                "table": {
+                    "ticker": "Ticker",
+                    "currency": "Valută",
+                    "name": "Nume",
+                    "purchasePrice": "Prețul de cumpărare",
+                    "principal": "Principal",
+                    "quantity": "Cantitate",
+                    "lastPrice": "Ultimul preț",
+                    "purchaseDate": "Data achiziției",
+                    "value": "Valoare",
+                    "pl": "P&L",
+                    "plPct": "P&L %",
+                    "actions": "Acțiuni"
+                },
+                "total": "Total",
+                "charts": {
+                    "investmentSpread": "RăspÚndire a investițiilor",
+                    "plpct": "P&L%",
+                    "stats": "Statistici de portofoliu",
+                    "cagr": "CAGR",
+                    "bestTicker": "Cel mai bun ticker",
+                    "tickerCAGR": "Ticker CAGR",
+                    "years": "Ani"
+                },
+                "dialogs": {
+                    "addInvestment": {
+                        "title": "Adaugă investiție"
+                    },
+                    "editInvestment": {
+                        "title": "Editează investiția",
+                        "selectRecord": "Selectați înregistrare"
+                    },
+                    "totalValue": "Valoare totală",
+                    "saveAddAnother": "Salvați și adăugați altul"
+                }
+            },
+            "pension": {
+                "title": "Pensiune",
+                "actions": {
+                    "addEntry": "Adaugă intrare",
+                    "addPension": "Adaugă pensie",
+                    "removePension": "Elimină pensia",
+                    "viewChart": "Afișează grafic",
+                    "showInSummary": "Afișează în rezumat"
+                },
+                "table": {
+                    "date": "Data",
+                    "payment": "Plată",
+                    "totalPayments": "Total plăți",
+                    "currentValue": "Valoarea curentă",
+                    "monthlyPL": "P&L lunar",
+                    "monthlyPct": "% lunar",
+                    "ytdPL": "YTD P&L",
+                    "ytdPct": "YTD %",
+                    "totalPL": "Total P&L",
+                    "totalPct": "Total %",
+                    "actions": "Acțiuni"
+                },
+                "summaryCards": {
+                    "currentCAGR": "CAGR curent",
+                    "bestMonth": "Cea mai bună lună",
+                    "worstMonth": "Cea mai slabă lună",
+                    "bestYear": "Cel mai bun an",
+                    "worstYear": "Cel mai slab an"
+                },
+                "dialogs": {
+                    "new": {
+                        "title": "Pensie nouă",
+                        "type": "Tip",
+                        "startingValue": "Valoare de pornire",
+                        "options": {
+                            "growth": "Doar creștere",
+                            "payments": "Creștere cu plăți"
+                        }
+                    },
+                    "editEntry": {
+                        "title": "Editeazăți intrarea"
+                    }
+                },
+                "chart": {
+                    "title": "Grafic de pensii"
+                }
+            },
+            "calculators": {
+                "title": "Calculatoare financiare",
+                "tabs": {
+                    "loan": "Calculator de împrumut",
+                    "investment": "Calculator de investiții",
+                    "cagr": "Calculator CAGR",
+                    "fairValue": "Calculator de valoare justă"
+                },
+                "loan": {
+                    "labels": {
+                        "principal": "Suma principală",
+                        "rate": "Rata dobÚnzii anuale (%)",
+                        "term": "Termen de împrumut (ani)"
+                    },
+                    "results": {
+                        "monthlyPayment": "Plata lunară:",
+                        "totalInterest": "DobÚndă totală:",
+                        "totalAmount": "Valoare totală:"
+                    }
+                },
+                "investment": {
+                    "labels": {
+                        "initial": "Investiție inițială",
+                        "rate": "Rata anuală de rentabilitate (%)",
+                        "years": "Perioada de investiții (ani)"
+                    },
+                    "results": {
+                        "totalReturn": "Returnare totală (dobÚndă):",
+                        "finalValue": "Valoarea finală:"
+                    },
+                    "table": {
+                        "year": "An",
+                        "growth": "Creștere",
+                        "value": "Valoare",
+                        "start": "Început"
+                    }
+                },
+                "cagr": {
+                    "labels": {
+                        "beginning": "Valoarea de început ($)",
+                        "ending": "Valoarea de încheiere ($)",
+                        "years": "Numărul de ani"
+                    },
+                    "results": {
+                        "totalReturn": "Returnare totală:",
+                        "cagr": "Rata anuală de creștere compusă (CAGR):"
+                    }
+                },
+                "fairValue": {
+                    "tabs": {
+                        "dcf": "Analiza DCF",
+                        "pe": "Analiza raportului P/E.",
+                        "intrinsic": "Valoare intrinsecă"
+                    },
+                    "dcf": {
+                        "title": "Analiza fluxului de numerar redus (DCF)",
+                        "labels": {
+                            "currentFCF": "Fluxul anual de numerar gratuit anual",
+                            "growthRate": "Rata de creștere (%)",
+                            "terminalRate": "Rata de creștere a terminalului (%)",
+                            "discountRate": "Rata de actualizare (WACC) (%)",
+                            "years": "Ani de proiecție",
+                            "shares": "Acțiuni restante (M)"
+                        },
+                        "results": {
+                            "enterpriseValue": "Valoarea întreprinderii:",
+                            "pvCashflows": "Valoarea actuală a fluxurilor de numerar:",
+                            "terminalValue": "Valoarea terminală:",
+                            "perShare": "Valoare intrinsecă pe acțiune:"
+                        }
+                    },
+                    "pe": {
+                        "title": "Analiza raportului P/E.",
+                        "labels": {
+                            "currentPrice": "Prețul curent al acțiunilor ($)",
+                            "eps": "CÚștiguri pe acțiune (EPS) ($)",
+                            "industryPE": "Media industriei P/E.",
+                            "growthRate": "Rata de creștere a EPS preconizată (%)"
+                        },
+                        "results": {
+                            "currentPE": "Raport P/E curent:",
+                            "fairValue": "Valoare justă (industria P/E):",
+                            "pegRatio": "Raportul PEG:",
+                            "valuation": "Stare de evaluare:"
+                        }
+                    },
+                    "intrinsic": {
+                        "title": "Analiza valorii intrinseci",
+                        "labels": {
+                            "bookValue": "Valoarea contabilă pe acțiune ($)",
+                            "roe": "Returnarea capitalurilor proprii (ROE) (%)",
+                            "dividendYield": "Randament de dividende (%)",
+                            "requiredReturn": "Rata de rentabilitate necesară (%)",
+                            "growthRate": "Rata de creștere durabilă (%)",
+                            "eps": "EPS actual ($)"
+                        },
+                        "results": {
+                            "graham": "Numărul Graham:",
+                            "ddm": "Model de reducere a dividendelor:",
+                            "bookMultiple": "Valoarea contabilă multiplă:",
+                            "average": "Valoare intrinsecă medie:"
+                        }
+                    }
+                }
+            },
+            "stockTracker": {
+                "title": "Monitorizare performanță acțiuni",
+                "actions": {
+                    "edit": "Editează",
+                    "getLastPrice": "Obține ultimul preț",
+                    "addTicker": "Adăugați căpușa",
+                    "generateTable": "Generați tabel",
+                    "done": "Făcut"
+                },
+                "labels": {
+                    "addStockTicker": "Adăugați ticker de stoc",
+                    "startYear": "ÎncepÚnd cu anul"
+                },
+                "table": {
+                    "year": "An",
+                    "totalGrowth": "Creștere totală",
+                    "cagr": "CAGR",
+                    "chart": "Diagramă"
+                },
+                "summary": {
+                    "investment": "Analiza investițiilor",
+                    "best": "Cel mai bun interpret",
+                    "worst": "Cel mai rău interpret",
+                    "consistent": "Cel mai consecvent"
+                },
+                "chart": {
+                    "title": "Grafic de stocuri",
+                    "price": "Preț",
+                    "growth": "Creștere"
+                }
+            },
+            "stockFinance": {
+                "title": "Performanță financiară a acțiunilor",
+                "labels": {
+                    "ticker": "Ticker",
+                    "reportsFrom": "Rapoarte care încep de la",
+                    "timeframe": "Ora de timp",
+                    "getReports": "Obține rapoarte",
+                    "timeframes": {
+                        "quarterly": "Trimestrial",
+                        "annual": "Anual",
+                        "ttm": "TTM"
+                    }
+                },
+                "tabs": {
+                    "income": "Situație de venit",
+                    "balance": "Bilanț",
+                    "cash": "Fluxul de numerar",
+                    "stats": "Statistici"
+                },
+                "table": {
+                    "label": "Eticheta"
+                },
+                "messages": {
+                    "noData": "Nu există date disponibile",
+                    "loadFailed": "Nu a reușit să încarce date"
+                },
+                "zeroInfo": "Valorile tăiate prin eliminarea a 6 zerouri de tracțiune (000.000)",
+                "stats": {
+                    "peRatio": "Raport PE",
+                    "grossMargin": "Marja brută",
+                    "netMargin": "Marja netă"
+                }
+            },
+            "settings": {
+                "title": "Setări",
+                "baseCurrency": "Moneda de bază",
+                "baseCurrencyHint": "Reîmprospătarea ratelor de schimb o dată pe zi pentru a menține totalul exact.",
+                "sectionTitles": {
+                    "language": "Limbă",
+                    "pension": "Pensiune",
+                    "portfolio": "Portofoliu",
+                    "stockTracker": "Monitorizare performanță acțiuni",
+                    "about": "Despre"
+                },
+                "quotesApi": "Citate API",
+                "finnhubApiKey": "Cheia API Finnhub",
+                "realTimeQuotes": "Folosit pentru citate în timp real. Stocat local în browserul dvs.",
+                "showApiKey": "Afișați cheia API",
+                "exportPensions": "Pensii de export",
+                "importPensions": "Import pensii",
+                "deletePensions": "Ștergeți pensiile",
+                "exportPortfolio": "Portofoliu de export",
+                "importPortfolio": "Portofoliu de import",
+                "deletePortfolio": "Ștergeți portofoliul",
+                "exportStock": "Date de stoc de export",
+                "importStock": "Importați datele stocului",
+                "deleteStock": "Ștergeți datele",
+                "versionLabel": "Versiunea aplicației web",
+                "languageLabel": "Limbă",
+                "exportLang": "Limba de export",
+                "importLang": "Limba de import",
+                "rtlToggle": "Activați RTL"
+            },
+            "dialog": {
+                "yes": "Da",
+                "no": "Nu",
+                "close": "Aproape",
+                "delete": "Șterge",
+                "enterPortfolioName": "Introduceți numele portofoliului:",
+                "deletePortfolio": "Ștergeți acest portofoliu?",
+                "tickerNotExist": "Simbolul ticker nu există",
+                "enterValidTicker": "Vă rugăm să introduceți un simbol valabil.",
+                "purchaseDateFuture": "Data achiziției nu poate fi în viitor.",
+                "deleteInvestment": "Ștergeți această investiție?",
+                "deletePension": "Ștergeți această pensie?",
+                "deleteEntry": "Ștergeți această intrare?",
+                "deleteAllPension": "Ștergeți toate datele de pensii?",
+                "deleteAllPortfolio": "Ștergeți toate datele din portofoliu?",
+                "deleteAllStock": "Ștergeți toate datele de urmărire a stocurilor?"
+            },
+            "common": {
+                "format": "Format",
+                "file": "Fișier",
+                "cancel": "Anula",
+                "import": "Import",
+                "export": "Export",
+                "add": "Adăuga",
+                "save": "Salva",
+                "summary": "Rezumat"
+            }
         }
     };
 
@@ -2113,7 +2453,7 @@ const I18n = (function() {
     }
 
     function pseudolocalize(str) {
-        const map = { a:'ā', e:'ē', i:'ī', o:'ō', u:'ū', A:'Ā', E:'Ē', I:'Ī', O:'Ō', U:'Ū' };
+        const map = { a:'ā', e:'ē', i:'ī', o:'ȍ', u:'ȫ', A:'Ā', E:'Ē', I:'Ī', O:'Ȍ', U:'Ȫ' };
         return str.split('').map(ch => map[ch] || ch).join('');
     }
 

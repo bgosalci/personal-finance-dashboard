@@ -71,6 +71,7 @@ const Settings = (function() {
                 fr: '🇫🇷',
                 de: '🇩🇪',
                 it: '🇮🇹',
+                ro: '🇷🇴',
                 sq: '🇦🇱'
             };
             I18n.availableLocales.forEach(l => {

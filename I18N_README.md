@@ -1,6 +1,6 @@
 # Internationalization
 
-The application supports multiple languages through built-in translations defined in `app/js/i18n.js`. Optional JSON files in `app/locales` can override these defaults. Currently English, Spanish, French, German, Italian and Albanian are available.
+The application supports multiple languages through built-in translations defined in `app/js/i18n.js`. Optional JSON files in `app/locales` can override these defaults. Currently English, Spanish, French, German, Italian, Albanian and Romanian are available.
 
 ## Adding a Language
 1. Add a new entry to the `DEFAULT_TRANSLATIONS` object in `app/js/i18n.js` using the English strings as a template.
