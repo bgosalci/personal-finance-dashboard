@@ -10,6 +10,7 @@ This file outlines basic rules and coding standards for the Personal Finance Das
 - Respect the `.gitignore` settings; do not commit dependencies or local build artifacts.
 - Use the built-in `DialogManager` for all alerts, prompts, and confirmation dialogs.
 - Customize portfolio table headers only through the `PortfolioColumns` module.
+- Add new language options (including pseudolocalisation) only when explicitly requested by a human developer.
 
 ## Community Standards
 - Be respectful and collaborative.

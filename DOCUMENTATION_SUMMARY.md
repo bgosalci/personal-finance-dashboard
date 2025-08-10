@@ -223,3 +223,4 @@ This comprehensive documentation package ensures the Personal Finance Dashboard 
 - Documentation updated for modularized codebase.
 - `.gitignore` improvements noted.
 - See [RULES.md](RULES.md) for contribution guidelines.
+- Pseudo locale removed from language selector; internationalization guide updated to add locales via `DEFAULT_TRANSLATIONS` only on developer request.
