@@ -294,6 +294,9 @@ const I18n = (function() {
                 "stockTracker": "Stock Performance Tracker",
                 "about": "About"
                 },
+                "quotesApi": "Quotes API",
+                "finnhubApiKey": "Finnhub API Key",
+                "realTimeQuotes": "Used for real-time quotes. Stored locally in your browser.",
                 "exportPensions": "Export Pensions",
                 "importPensions": "Import Pensions",
                 "deletePensions": "Delete Pensions",
@@ -626,6 +629,9 @@ const I18n = (function() {
                 "stockTracker": "Ndjekësi i Performancës së Aksioneve",
                 "about": "Rreth"
                 },
+                "quotesApi": "API e Kuotave",
+                "finnhubApiKey": "Çelësi API i Finnhub",
+                "realTimeQuotes": "Përdoret për kuota në kohë reale. Ruhet lokalisht në shfletuesin tuaj.",
                 "exportPensions": "Eksporto Pensionet",
                 "importPensions": "Importo Pensionet",
                 "deletePensions": "Fshi Pensionet",
@@ -958,6 +964,9 @@ const I18n = (function() {
                 "stockTracker": "Suivi de Performance des Actions",
                 "about": "À propos"
                 },
+                "quotesApi": "API de Cotations",
+                "finnhubApiKey": "Clé API Finnhub",
+                "realTimeQuotes": "Utilisé pour les cotations en temps réel. Stocké localement dans votre navigateur.",
                 "exportPensions": "Exporter les Pensions",
                 "importPensions": "Importer les Pensions",
                 "deletePensions": "Supprimer les Pensions",
@@ -1290,6 +1299,9 @@ const I18n = (function() {
                 "stockTracker": "Aktien-Performance-Tracker",
                 "about": "Über"
                 },
+                "quotesApi": "Kursdaten-API",
+                "finnhubApiKey": "Finnhub-API-Schlüssel",
+                "realTimeQuotes": "Wird für Echtzeitkurse verwendet. Lokal in Ihrem Browser gespeichert.",
                 "exportPensions": "Renten exportieren",
                 "importPensions": "Renten importieren",
                 "deletePensions": "Renten löschen",
@@ -1622,6 +1634,9 @@ const I18n = (function() {
                 "stockTracker": "Rastreador de Rendimiento de Acciones",
                 "about": "Acerca de"
                 },
+                "quotesApi": "API de Cotizaciones",
+                "finnhubApiKey": "Clave API de Finnhub",
+                "realTimeQuotes": "Se usa para cotizaciones en tiempo real. Se guarda localmente en tu navegador.",
                 "exportPensions": "Exportar Pensiones",
                 "importPensions": "Importar Pensiones",
                 "deletePensions": "Eliminar Pensiones",
@@ -1954,6 +1969,9 @@ const I18n = (function() {
                 "stockTracker": "Tracker delle Prestazioni Azionarie",
                 "about": "Informazioni"
                 },
+                "quotesApi": "API di Quotazioni",
+                "finnhubApiKey": "Chiave API Finnhub",
+                "realTimeQuotes": "Utilizzata per quotazioni in tempo reale. Salvata localmente nel tuo browser.",
                 "exportPensions": "Esporta Pensioni",
                 "importPensions": "Importa Pensioni",
                 "deletePensions": "Elimina Pensioni",
