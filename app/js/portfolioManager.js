@@ -247,16 +247,20 @@ const PortfolioManager = (function() {
         return parseFloat(String(str).replace(/,/g, '')) || 0;
     }
 
+    function formatQuantityInput(value) {
+        const clean = String(value).replace(/[^0-9]/g, '');
+        if (clean === '') return '';
+        return clean.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    }
+
     function attachQuantityFormatter(id) {
         const el = document.getElementById(id);
         if (!el) return;
-        el.addEventListener('focus', () => {
-            el.value = el.value.replace(/,/g, '');
-        });
-        el.addEventListener('blur', () => {
-            const num = parseQuantity(el.value);
-            el.value = num ? formatQuantity(num) : '';
-        });
+        const handler = (e) => {
+            e.target.value = formatQuantityInput(e.target.value);
+        };
+        el.addEventListener('input', handler);
+        el.addEventListener('blur', handler);
     }
 
     function convertCurrency(value, from, to, rates) {
