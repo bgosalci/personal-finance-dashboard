@@ -239,6 +239,26 @@ const PortfolioManager = (function() {
         return I18n.formatCurrency(value, currency);
     }
 
+    function formatQuantity(value) {
+        return I18n.formatNumber(value, { maximumFractionDigits: 0 });
+    }
+
+    function parseQuantity(str) {
+        return parseFloat(String(str).replace(/,/g, '')) || 0;
+    }
+
+    function attachQuantityFormatter(id) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.addEventListener('focus', () => {
+            el.value = el.value.replace(/,/g, '');
+        });
+        el.addEventListener('blur', () => {
+            const num = parseQuantity(el.value);
+            el.value = num ? formatQuantity(num) : '';
+        });
+    }
+
     function convertCurrency(value, from, to, rates) {
         if (!rates || from === to) return value;
         const fromRate = rates[from];
@@ -552,7 +572,7 @@ const PortfolioManager = (function() {
                 <td>${inv.name}</td>
                 <td class="number-cell">${formatCurrency(inv.purchasePrice, inv.currency)}</td>
                 <td class="number-cell principal-cell"></td>
-                <td class="number-cell">${inv.quantity}</td>
+                <td class="number-cell">${formatQuantity(inv.quantity)}</td>
                 <td class="number-cell">${formatCurrency(inv.lastPrice, inv.currency)}</td>
                 <td class="value-cell"></td>
                 <td class="pl-cell"></td>
@@ -645,7 +665,7 @@ const PortfolioManager = (function() {
     }
 
     function handleFormInput() {
-        const qty = parseFloat(document.getElementById('investment-quantity').value) || 0;
+        const qty = parseQuantity(document.getElementById('investment-quantity').value);
         const lastPrice = parseFloat(document.getElementById('investment-last-price').value) || 0;
         const currency = document.getElementById('investment-currency').value || 'USD';
         totalDisplay.textContent = formatCurrency(qty * lastPrice, currency);
@@ -695,7 +715,7 @@ const PortfolioManager = (function() {
         if (summaryMode) return;
         const ticker = document.getElementById('investment-ticker').value.trim().toUpperCase();
         const name = document.getElementById('investment-name').value.trim();
-        const quantity = parseFloat(document.getElementById('investment-quantity').value) || 0;
+        const quantity = parseQuantity(document.getElementById('investment-quantity').value);
         const purchasePrice = parseFloat(document.getElementById('investment-purchase-price').value) || 0;
         const purchaseDate = document.getElementById('investment-purchase-date').value;
         const lastPrice = parseFloat(document.getElementById('investment-last-price').value) || 0;
@@ -735,7 +755,7 @@ const PortfolioManager = (function() {
         editIndex = idx;
         const inv = investments[idx];
         document.getElementById('edit-name').value = inv.name || '';
-        document.getElementById('edit-quantity').value = inv.quantity;
+        document.getElementById('edit-quantity').value = formatQuantity(inv.quantity);
         document.getElementById('edit-purchase-price').value = inv.purchasePrice;
         const dateField = document.getElementById('edit-purchase-date');
         const today = new Date().toISOString().split('T')[0];
@@ -763,7 +783,7 @@ const PortfolioManager = (function() {
                 const inv = investments[i];
                 const opt = document.createElement('option');
                 opt.value = i;
-                opt.textContent = `${inv.quantity} @ ${formatCurrency(inv.purchasePrice, inv.currency)} on ${DateUtils.formatDate(inv.tradeDate)}`;
+                opt.textContent = `${formatQuantity(inv.quantity)} @ ${formatCurrency(inv.purchasePrice, inv.currency)} on ${DateUtils.formatDate(inv.tradeDate)}`;
                 editRecordSelect.appendChild(opt);
             });
             editRecordGroup.style.display = 'block';
@@ -803,7 +823,7 @@ const PortfolioManager = (function() {
                 <td>${inv.ticker}</td>
                 <td>${inv.currency || ''}</td>
                 <td>${inv.name || ''}</td>
-                <td class="number-cell">${inv.quantity}</td>
+                <td class="number-cell">${formatQuantity(inv.quantity)}</td>
                 <td class="number-cell">${formatCurrency(inv.purchasePrice, inv.currency)}</td>
                 <td class="number-cell">${formatCurrency(inv.lastPrice, inv.currency)}</td>
                 <td>${DateUtils.formatDate(inv.tradeDate)}</td>`;
@@ -821,7 +841,7 @@ const PortfolioManager = (function() {
     }
 
     function handleEditInput() {
-        const qty = parseFloat(document.getElementById('edit-quantity').value) || 0;
+        const qty = parseQuantity(document.getElementById('edit-quantity').value);
         const price = parseFloat(document.getElementById('edit-last-price').value) || 0;
         const currency = document.getElementById('edit-currency').value || 'USD';
         editTotal.textContent = formatCurrency(qty * price, currency);
@@ -875,7 +895,7 @@ const PortfolioManager = (function() {
         if (summaryMode) return;
         if (editIndex === null) return;
         const name = document.getElementById('edit-name').value || '';
-        const qty = parseFloat(document.getElementById('edit-quantity').value) || 0;
+        const qty = parseQuantity(document.getElementById('edit-quantity').value);
         const purchase = parseFloat(document.getElementById('edit-purchase-price').value) || 0;
         const date = document.getElementById('edit-purchase-date').value;
         const last = parseFloat(document.getElementById('edit-last-price').value) || 0;
@@ -942,6 +962,7 @@ const PortfolioManager = (function() {
         closeBtn.addEventListener('click', closeModal);
         cancelBtn.addEventListener('click', closeModal);
         form.addEventListener('input', handleFormInput);
+        attachQuantityFormatter('investment-quantity');
         form.addEventListener('submit', (e) => { e.preventDefault(); addFromForm(false); });
         saveAddBtn.addEventListener('click', () => addFromForm(true));
         modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
@@ -953,6 +974,7 @@ const PortfolioManager = (function() {
         editClose.addEventListener('click', closeEditModal);
         editCancel.addEventListener('click', closeEditModal);
         editForm.addEventListener('input', handleEditInput);
+        attachQuantityFormatter('edit-quantity');
         editForm.addEventListener('submit', saveEdit);
         editModal.addEventListener('click', (e) => { if (e.target === editModal) closeEditModal(); });
 
