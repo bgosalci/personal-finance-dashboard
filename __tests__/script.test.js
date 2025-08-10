@@ -97,6 +97,24 @@ test('Settings module saves currency to localStorage', () => {
   expect(window.document.getElementById('app-version').textContent).toBe('1.2.1');
 });
 
+test('Finnhub API key visibility toggle', () => {
+  const html = '<!DOCTYPE html><html><body>' +
+    '<input type="password" id="settings-finnhub-api-key">' +
+    '<input type="checkbox" id="settings-finnhub-api-key-toggle">' +
+    '</body></html>';
+  const dom = new JSDOM(html, {url: 'http://localhost'});
+  const { window } = dom;
+  const context = vm.createContext(window);
+  vm.runInContext(i18nCode, context);
+  const content = fs.readFileSync(path.resolve(__dirname, '../app/js/settings.js'), 'utf8');
+  vm.runInContext(content, context);
+  vm.runInContext('Settings.init()', context);
+  expect(window.document.getElementById('settings-finnhub-api-key').type).toBe('password');
+  window.document.getElementById('settings-finnhub-api-key-toggle').checked = true;
+  window.document.getElementById('settings-finnhub-api-key-toggle').dispatchEvent(new window.Event('change'));
+  expect(window.document.getElementById('settings-finnhub-api-key').type).toBe('text');
+});
+
 test('DateUtils.formatDate formats date correctly', () => {
   const context = vm.createContext({});
   vm.runInContext(i18nCode, context);
