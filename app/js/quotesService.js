@@ -1,6 +1,43 @@
 const QuotesService = (function() {
     const LS_KEY = 'pf_api_key_finnhub';
     const BASE_URL = 'https://finnhub.io/api/v1';
+    const EXCEPTION_KEY = 'finnhub_exceptions';
+    function getToday() {
+        return new Date().toISOString().split('T')[0];
+    }
+    function loadExceptions() {
+        try {
+            const data = localStorage.getItem(EXCEPTION_KEY);
+            if (data) return JSON.parse(data);
+        } catch (e) {}
+        return { date: '', tickers: [] };
+    }
+    function saveExceptions(obj) {
+        try { localStorage.setItem(EXCEPTION_KEY, JSON.stringify(obj)); } catch (e) {}
+    }
+    function isTickerExcluded(ticker) {
+        const list = loadExceptions();
+        return list.date === getToday() && list.tickers.includes(String(ticker || '').toUpperCase());
+    }
+    function addTickerException(ticker) {
+        const today = getToday();
+        const list = loadExceptions();
+        if (list.date !== today) {
+            list.date = today;
+            list.tickers = [];
+        }
+        const t = String(ticker || '').toUpperCase();
+        if (t && !list.tickers.includes(t)) {
+            list.tickers.push(t);
+            saveExceptions(list);
+        }
+    }
+
+
+
+
+
+
     function getApiKey() {
         try { return localStorage.getItem(LS_KEY) || ''; } catch (e) { return ''; }
     }
@@ -15,10 +52,24 @@ const QuotesService = (function() {
     async function fetchQuote(ticker) {
         const token = getApiKey();
         if (!ticker) throw new Error('Ticker required');
+        if (isTickerExcluded(ticker)) {
+            return { price: null, raw: null, excluded: true };
+        }
         const url = BASE_URL + '/quote?symbol=' + encodeURIComponent(ticker) + (token ? '&token=' + encodeURIComponent(token) : '');
-        const data = await fetchJson(url);
-        const price = typeof data?.c === 'number' ? parseFloat(data.c) : null;
-        return { price, raw: data };
+        try {
+            const data = await fetchJson(url);
+            const price = typeof data?.c === 'number' ? parseFloat(data.c) : null;
+            if (price === null && data && data.error && String(data.error).toLowerCase().includes('access')) {
+                addTickerException(ticker);
+            }
+            return { price, raw: data };
+        } catch (err) {
+            const msg = String((err && err.message) || '');
+            if (/\bHTTP (401|403|429)\b/.test(msg)) {
+                addTickerException(ticker);
+            }
+            return { price: null, raw: null };
+        }
     }
     async function searchSymbol(query) {
         const token = getApiKey();
