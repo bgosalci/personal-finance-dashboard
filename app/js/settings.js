@@ -46,6 +46,16 @@ const Settings = (function() {
             });
         }
 
+        const apiKeyInput = document.getElementById('settings-finnhub-api-key');
+        if (apiKeyInput && typeof QuotesService !== 'undefined') {
+            try { apiKeyInput.value = QuotesService.getApiKey(); } catch (e) {}
+            apiKeyInput.addEventListener('input', (e) => {
+                const val = (e.target.value || '').trim();
+                try { QuotesService.setApiKey(val); } catch (err) {}
+                document.dispatchEvent(new CustomEvent('settings:api-key-updated'));
+            });
+        }
+
         const langSelect = document.getElementById('language-select');
         if (langSelect) {
             const localeFlags = {

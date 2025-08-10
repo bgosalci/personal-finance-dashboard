@@ -7,7 +7,6 @@ let stockData = {
 const StockTracker = (function() {
     const STORAGE_KEY = 'stockTrackerData';
     let editMode = false;
-    const API_KEY = 'd1nf8h1r01qovv8iu2dgd1nf8h1r01qovv8iu2e0';
     const getPriceBtn = document.getElementById('get-stock-last-price-btn');
 
     function saveData() {
@@ -130,12 +129,9 @@ const StockTracker = (function() {
         if (stockData.tickers.length === 0) return;
         const currentYear = new Date().getFullYear();
         const updates = stockData.tickers.map(ticker => {
-            const url = `https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(ticker)}&token=${API_KEY}`;
-            return fetch(url)
-                .then(res => res.json())
-                .then(data => {
-                    if (data && typeof data.c === 'number') {
-                        const price = parseFloat(data.c);
+            return QuotesService.fetchQuote(ticker)
+                .then(({ price }) => {
+                    if (typeof price === 'number') {
                         stockData.prices[ticker][currentYear] = price;
                         const input = document.querySelector(`#table-body input.price-input[data-ticker="${ticker}"][data-year="${currentYear}"]`);
                         if (input) input.value = price;
@@ -439,7 +435,7 @@ const StockTracker = (function() {
             if (chartType === 'growth') {
                 years = years.filter((y,i,arr)=>arr.includes(y-1));
             }
-            const colors = selectedTickers.map((_, i) => `hsl(${(i * 360 / selectedTickers.length) % 360},70%,60%)`);
+            const colors = selectedTickers.map((t) => (typeof ColorService !== 'undefined' ? ColorService.getColorForKey(t) : `hsl(${(t.length * 47) % 360},70%,60%)`));
             const datasets = selectedTickers.map((t, idx) => {
                 const pricesObj = stockData.prices[t] || {};
                 const data = years.map(y => {

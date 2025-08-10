@@ -48,7 +48,6 @@ const PortfolioManager = (function() {
     const menuToggle = document.getElementById('portfolio-menu-toggle');
     const actionsMenu = document.getElementById('portfolio-actions-menu');
     const summaryToggle = document.getElementById('summary-toggle');
-    const API_KEY = 'd1nf8h1r01qovv8iu2dgd1nf8h1r01qovv8iu2e0';
     const EXCEPTION_KEY = 'finnhub_exceptions';
 
     function getToday() {
@@ -90,36 +89,49 @@ const PortfolioManager = (function() {
         if (isTickerExcluded(ticker)) {
             return { price: null, currency };
         }
-        const url = `https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(ticker)}&token=${API_KEY}&currency=${encodeURIComponent(currency)}`;
         try {
-            const res = await fetch(url);
-            const data = await res.json();
-            if (data && typeof data.c === 'number') {
-                return { price: parseFloat(data.c), currency: data.currency || currency };
-            }
-            if (data && data.error && data.error.toLowerCase().includes('access')) {
-                addTickerException(ticker);
+            if (typeof QuotesService !== 'undefined') {
+                const res = await QuotesService.fetchQuote(ticker);
+                const price = res && typeof res.price === 'number' ? res.price : null;
+                if (price === null && res && res.raw && res.raw.error && String(res.raw.error).toLowerCase().includes('access')) {
+                    addTickerException(ticker);
+                }
+                return { price, currency };
+            } else {
+                const url = `https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(ticker)}&currency=${encodeURIComponent(currency)}`;
+                const resp = await fetch(url);
+                const data = await resp.json();
+                if (data && typeof data.c === 'number') {
+                    return { price: parseFloat(data.c), currency: data.currency || currency };
+                }
+                if (data && data.error && String(data.error).toLowerCase().includes('access')) {
+                    addTickerException(ticker);
+                }
+                return { price: null, currency };
             }
         } catch (e) {
-            // ignore errors and return null
+            return { price: null, currency };
         }
-        return { price: null, currency };
     }
 
     async function lookupSymbol(ticker) {
-        const url = `https://finnhub.io/api/v1/search?q=${encodeURIComponent(ticker)}&token=${API_KEY}`;
         try {
-            const res = await fetch(url);
-            const data = await res.json();
-            if (data && Array.isArray(data.result)) {
-                const match = data.result.find(item => item.symbol && item.symbol.toUpperCase() === ticker.toUpperCase());
-                if (match) {
-                    return match.description || '';
+            if (typeof QuotesService !== 'undefined') {
+                const data = await QuotesService.searchSymbol(ticker);
+                if (data && Array.isArray(data.result)) {
+                    const match = data.result.find(item => item.symbol && item.symbol.toUpperCase() === ticker.toUpperCase());
+                    if (match) return match.description || '';
+                }
+            } else {
+                const url = `https://finnhub.io/api/v1/search?q=${encodeURIComponent(ticker)}`;
+                const resp = await fetch(url);
+                const data = await resp.json();
+                if (data && Array.isArray(data.result)) {
+                    const match = data.result.find(item => item.symbol && item.symbol.toUpperCase() === ticker.toUpperCase());
+                    if (match) return match.description || '';
                 }
             }
-        } catch (e) {
-            // ignore errors and return null
-        }
+        } catch (e) {}
         return null;
     }
 
@@ -419,7 +431,7 @@ const PortfolioManager = (function() {
             const value = inv.quantity * inv.lastPrice;
             return cost ? ((value - cost) / cost) * 100 : 0;
         });
-        const colors = labels.map(t => getColor(t));
+        const colors = labels.map(t => (typeof ColorService !== 'undefined' ? ColorService.getColorForKey(t) : getColor(t)));
 
         if (!pieChart) {
             const ctx = document.getElementById('investment-spread-chart').getContext('2d');
