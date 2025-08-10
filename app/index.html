@@ -423,7 +423,7 @@
                         <div class="form-grid">
                             <div class="form-group">
                                 <label for="loan-principal"><span data-i18n="calculators.loan.labels.principal">Principal Amount</span> (<span id="loan-base-currency-label">USD</span>)</label>
-                                <input type="number" id="loan-principal" min="0" step="1000">
+                                <input type="text" id="loan-principal" inputmode="decimal">
                             </div>
                             <div class="form-group">
                                 <label for="loan-rate" data-i18n="calculators.loan.labels.rate">Annual Interest Rate (%)</label>
@@ -458,7 +458,7 @@
                         <div class="form-grid">
                             <div class="form-group">
                                 <label for="invest-initial"><span data-i18n="calculators.investment.labels.initial">Initial Investment</span> (<span id="invest-base-currency-label">USD</span>)</label>
-                                <input type="number" id="invest-initial" min="0" step="1000">
+                                <input type="text" id="invest-initial" inputmode="decimal">
                             </div>
                             <div class="form-group">
                                 <label for="invest-rate" data-i18n="calculators.investment.labels.rate">Annual Return Rate (%)</label>
@@ -501,11 +501,11 @@
                         <div class="form-grid">
                             <div class="form-group">
                                 <label for="cagr-beginning" data-i18n="calculators.cagr.labels.beginning">Beginning Value ($)</label>
-                                <input type="number" id="cagr-beginning" min="0" step="1000">
+                                <input type="text" id="cagr-beginning" inputmode="decimal">
                             </div>
                             <div class="form-group">
                                 <label for="cagr-ending" data-i18n="calculators.cagr.labels.ending">Ending Value ($)</label>
-                                <input type="number" id="cagr-ending" min="0" step="1000">
+                                <input type="text" id="cagr-ending" inputmode="decimal">
                             </div>
                             <div class="form-group">
                                 <label for="cagr-years" data-i18n="calculators.cagr.labels.years">Number of Years</label>
