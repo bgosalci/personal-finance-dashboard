@@ -90,12 +90,25 @@ const PortfolioManager = (function() {
             return { price: null, currency };
         }
         try {
-            const res = await QuotesService.fetchQuote(ticker);
-            const price = res && typeof res.price === 'number' ? res.price : null;
-            if (price === null && res && res.raw && res.raw.error && String(res.raw.error).toLowerCase().includes('access')) {
-                addTickerException(ticker);
+            if (typeof QuotesService !== 'undefined') {
+                const res = await QuotesService.fetchQuote(ticker);
+                const price = res && typeof res.price === 'number' ? res.price : null;
+                if (price === null && res && res.raw && res.raw.error && String(res.raw.error).toLowerCase().includes('access')) {
+                    addTickerException(ticker);
+                }
+                return { price, currency };
+            } else {
+                const url = `https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(ticker)}&currency=${encodeURIComponent(currency)}`;
+                const resp = await fetch(url);
+                const data = await resp.json();
+                if (data && typeof data.c === 'number') {
+                    return { price: parseFloat(data.c), currency: data.currency || currency };
+                }
+                if (data && data.error && String(data.error).toLowerCase().includes('access')) {
+                    addTickerException(ticker);
+                }
+                return { price: null, currency };
             }
-            return { price, currency };
         } catch (e) {
             return { price: null, currency };
         }
@@ -103,10 +116,20 @@ const PortfolioManager = (function() {
 
     async function lookupSymbol(ticker) {
         try {
-            const data = await QuotesService.searchSymbol(ticker);
-            if (data && Array.isArray(data.result)) {
-                const match = data.result.find(item => item.symbol && item.symbol.toUpperCase() === ticker.toUpperCase());
-                if (match) return match.description || '';
+            if (typeof QuotesService !== 'undefined') {
+                const data = await QuotesService.searchSymbol(ticker);
+                if (data && Array.isArray(data.result)) {
+                    const match = data.result.find(item => item.symbol && item.symbol.toUpperCase() === ticker.toUpperCase());
+                    if (match) return match.description || '';
+                }
+            } else {
+                const url = `https://finnhub.io/api/v1/search?q=${encodeURIComponent(ticker)}`;
+                const resp = await fetch(url);
+                const data = await resp.json();
+                if (data && Array.isArray(data.result)) {
+                    const match = data.result.find(item => item.symbol && item.symbol.toUpperCase() === ticker.toUpperCase());
+                    if (match) return match.description || '';
+                }
             }
         } catch (e) {}
         return null;
