@@ -49,6 +49,25 @@ const PensionManager = (function() {
     const chartClose = document.getElementById('pension-chart-close');
     let pensionChart = null;
 
+    function formatInputValue(value) {
+        const clean = value.replace(/[^0-9.]/g, '');
+        if (clean === '') return '';
+        const [intPart, decPart] = clean.split('.');
+        const formattedInt = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        if (decPart !== undefined) {
+            const decimals = decPart.slice(0, 2).padEnd(2, '0');
+            return `${formattedInt}.${decimals}`;
+        }
+        return formattedInt;
+    }
+
+    function setupAmountInput(input) {
+        if (!input) return;
+        input.addEventListener('input', (e) => {
+            e.target.value = formatInputValue(e.target.value);
+        });
+    }
+
     function getStorageKey(id) {
         return STORAGE_PREFIX + id;
     }
@@ -235,7 +254,7 @@ const PensionManager = (function() {
         e.preventDefault();
         if (summaryMode) return;
         const date = entryDateInput.value;
-        const value = parseFloat(entryValueInput.value);
+        const value = parseFloat(entryValueInput.value.replace(/,/g, ''));
         const payment = parseFloat(entryPaymentInput.value) || 0;
         if (!date || isNaN(value)) return;
         entries.push({ date, value, payment });
@@ -251,7 +270,7 @@ const PensionManager = (function() {
         const entry = entries[idx];
         if (!entry) return;
         editDateInput.value = entry.date;
-        editValueInput.value = entry.value;
+        editValueInput.value = formatInputValue(String(entry.value));
         editPaymentInput.value = entry.payment || '';
         const current = pensions.find(p => p.id === currentPensionId);
         if (current && current.type === 'growth') {
@@ -273,7 +292,7 @@ const PensionManager = (function() {
         if (summaryMode) return;
         if (editIndex === null) return;
         const date = editDateInput.value;
-        const value = parseFloat(editValueInput.value);
+        const value = parseFloat(editValueInput.value.replace(/,/g, ''));
         const payment = parseFloat(editPaymentInput.value) || 0;
         if (!date || isNaN(value)) return;
         entries[editIndex] = { date, value, payment };
@@ -551,6 +570,8 @@ const PensionManager = (function() {
     }
 
     function init() {
+        setupAmountInput(entryValueInput);
+        setupAmountInput(editValueInput);
         loadPensionList();
         loadEntries();
         renderTabs();
