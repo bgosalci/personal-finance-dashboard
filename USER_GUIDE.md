@@ -329,7 +329,6 @@ A: Each browser stores its own data. Different users would need separate browser
 A: Update investment prices weekly or monthly for accurate tracking. More frequent updates provide better insights.
 
 ## Latest Changes
-- Portfolio column headers are now editable from the Settings tab.
 - Pension tracking with charts and summary view.
 - Portfolio export/import and deletion options.
 - Portfolio-wide price refresh capability.

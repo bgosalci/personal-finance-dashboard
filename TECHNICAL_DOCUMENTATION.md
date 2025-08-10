@@ -65,14 +65,6 @@ const investment = {
 };
 ```
 
-### PortfolioColumns
-**Purpose**: Manages customizable labels for portfolio table columns.
-
-**Key Methods**:
-- `init()`: Applies saved column labels on load.
-- `getLabels()`: Retrieves current label mapping.
-- `setLabels(obj)`: Persists new labels and updates the table header.
-
 ### 3. Calculator
 **Location**: Lines 1609-1977
 **Purpose**: Provides various financial calculation tools
@@ -378,7 +370,6 @@ No build process required - the application runs directly in the browser.
 5. Implement proper state management
 
 ## Latest Changes
-- Portfolio column labels are customizable with new PortfolioColumns module.
 - Pension tracking with charts and summary view.
 - Portfolio export/import and deletion options.
 - Portfolio-wide price refresh capability.

@@ -18,9 +18,8 @@ test('FinancialDashboard global object exists with init and removeTicker', () =>
     'pensionManager.js',
     'calculator.js',
     'stockTracker.js',
-    'stockFinance.js',
-    'portfolioColumns.js',
-    'settings.js',
+      'stockFinance.js',
+      'settings.js',
     'forexData.js',
     'financialDashboard.js',
     'marketStatus.js'
@@ -96,30 +95,6 @@ test('Settings module saves currency to localStorage', () => {
   vm.runInContext('document.getElementById("base-currency-select").value = "GBP"; document.getElementById("base-currency-select").dispatchEvent(new window.Event("change"));', context);
   expect(window.localStorage.getItem('pf_base_currency')).toBe('GBP');
   expect(window.document.getElementById('app-version').textContent).toBe('1.2.1');
-});
-
-test('Edit portfolio column labels inputs use standard form styling', () => {
-  const html = '<!DOCTYPE html><html><body>' +
-    '<select id="base-currency-select"></select>' +
-    '<span id="app-version"></span>' +
-    '<button id="edit-portfolio-labels-btn"></button>' +
-    '<div id="portfolio-labels-modal" style="display:none;">' +
-      '<form id="portfolio-labels-form"><table><tbody id="portfolio-labels-body"></tbody></table></form>' +
-      '<button id="cancel-portfolio-labels"></button>' +
-    '</div>' +
-    '</body></html>';
-  const dom = new JSDOM(html, {url: 'http://localhost'});
-  const { window } = dom;
-  const context = vm.createContext(window);
-  vm.runInContext(i18nCode, context);
-  const pcCode = fs.readFileSync(path.resolve(__dirname, '../app/js/portfolioColumns.js'), 'utf8');
-  vm.runInContext(pcCode, context);
-  const settingsCode = fs.readFileSync(path.resolve(__dirname, '../app/js/settings.js'), 'utf8');
-  vm.runInContext(settingsCode, context);
-  vm.runInContext('Settings.init()', context);
-  vm.runInContext('document.getElementById("edit-portfolio-labels-btn").click();', context);
-  const firstCell = dom.window.document.querySelector('#portfolio-labels-body tr td:nth-child(2)');
-  expect(firstCell.querySelector('.form-group input')).not.toBeNull();
 });
 
 test('DateUtils.formatDate formats date correctly', () => {

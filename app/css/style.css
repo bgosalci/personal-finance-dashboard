@@ -877,7 +877,8 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.2);
             position: relative;
             width: 900px;
-            height: 650;
+            max-height: 90vh;
+            overflow-y: auto;
         }
 
         .modal-content canvas {
@@ -895,6 +896,11 @@
         #import-pensions-modal .modal-content {
             width: 500px;
             height: auto;
+        }
+
+        #pension-chart-popup .modal-content,
+        #stock-chart-popup .modal-content {
+            height: 650px;
         }
 
         .modal-close {

@@ -102,11 +102,6 @@ const Settings = (function() {
         const impPortfolioFile = document.getElementById('import-portfolio-file');
         const impPortfolioCancel = document.getElementById('cancel-import-portfolio');
         const delPortfolioBtn = document.getElementById('delete-portfolio-btn');
-        const editLabelsBtn = document.getElementById('edit-portfolio-labels-btn');
-        const labelsModal = document.getElementById('portfolio-labels-modal');
-        const labelsForm = document.getElementById('portfolio-labels-form');
-        const labelsBody = document.getElementById('portfolio-labels-body');
-        const labelsCancel = document.getElementById('cancel-portfolio-labels');
         const expStockBtn = document.getElementById('export-stock-btn');
         const impStockBtn = document.getElementById('import-stock-btn');
         const delStockBtn = document.getElementById('delete-stock-btn');
@@ -258,47 +253,6 @@ const Settings = (function() {
             reader.readAsText(file);
         }
 
-        function openLabels() {
-            const labels = PortfolioColumns.getLabels();
-            const defaults = PortfolioColumns.getDefaultLabels();
-            labelsBody.innerHTML = '';
-            Object.keys(defaults).forEach(key => {
-                const tr = document.createElement('tr');
-                const tdCur = document.createElement('td');
-                tdCur.textContent = labels[key];
-                const tdNew = document.createElement('td');
-                const group = document.createElement('div');
-                group.className = 'form-group';
-                const input = document.createElement('input');
-                input.type = 'text';
-                input.id = 'label-input-' + key;
-                input.value = labels[key];
-                group.appendChild(input);
-                tdNew.appendChild(group);
-                tr.appendChild(tdCur);
-                tr.appendChild(tdNew);
-                labelsBody.appendChild(tr);
-            });
-            labelsModal.style.display = 'flex';
-            const firstInput = labelsBody.querySelector('input');
-            if (firstInput) firstInput.focus();
-        }
-
-        function closeLabels() {
-            labelsModal.style.display = 'none';
-        }
-
-        function saveLabels(e) {
-            e.preventDefault();
-            const defaults = PortfolioColumns.getDefaultLabels();
-            const newLabels = {};
-            Object.keys(defaults).forEach(key => {
-                const input = document.getElementById('label-input-' + key);
-                newLabels[key] = input.value.trim() || defaults[key];
-            });
-            PortfolioColumns.setLabels(newLabels);
-            closeLabels();
-        }
 
         if (expPortfolioBtn) expPortfolioBtn.addEventListener('click', openPortfolioExport);
         if (expPortfolioCancel) expPortfolioCancel.addEventListener('click', closePortfolioExport);
@@ -320,10 +274,6 @@ const Settings = (function() {
         if (impStockForm) impStockForm.addEventListener('submit', handleStockImport);
         if (impStockModal) impStockModal.addEventListener('click', e => { if (e.target === impStockModal) closeStockImport(); });
 
-        if (editLabelsBtn) editLabelsBtn.addEventListener('click', openLabels);
-        if (labelsCancel) labelsCancel.addEventListener('click', closeLabels);
-        if (labelsForm) labelsForm.addEventListener('submit', saveLabels);
-        if (labelsModal) labelsModal.addEventListener('click', e => { if (e.target === labelsModal) closeLabels(); });
 
         if (delPensionsBtn) {
             delPensionsBtn.addEventListener('click', async () => {

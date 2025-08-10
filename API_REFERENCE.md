@@ -309,22 +309,6 @@ Creates a performance comparison chart.
 
 ---
 
-### PortfolioColumns
-
-Handles customizable column labels for the portfolio table.
-
-#### Methods
-
-##### `init()`
-Applies stored column labels to the table header.
-
-##### `getLabels()`
-Returns current column label mappings.
-
-##### `setLabels(labels)`
-Saves new labels to localStorage and updates the table.
-
----
 
 ## Utility Functions
 
@@ -525,7 +509,6 @@ const CONFIG = {
 Users can customize various aspects of the application through the settings interface or by modifying the configuration object.
 
 ## Latest Changes
-- Added PortfolioColumns module for customizable portfolio headers.
 - Pension tracking with charts and summary view.
 - Portfolio export/import and deletion options.
 - Portfolio-wide price refresh capability.
