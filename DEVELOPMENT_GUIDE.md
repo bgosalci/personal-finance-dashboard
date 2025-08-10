@@ -622,3 +622,34 @@ This development guide should help you understand the codebase structure, develo
 - `.gitignore` updated to ignore Node modules and coverage files.
 - Additional rules available in [RULES.md](RULES.md).
 - Internationalization support with language switcher and locale files.
+## Addendum: Eventing, Testing Mocks, i18n, and API Key Setup
+
+### Eventing Pattern in Practice
+- Current code uses DOM CustomEvent:
+  - Emit: `document.dispatchEvent(new CustomEvent('event-name', { detail }))`
+  - Listen: `document.addEventListener('event-name', handler)`
+- Recommended naming: `domain:action` (e.g., `settings:currency-changed`, `portfolio:updated`).
+- If a small EventBus wrapper is introduced later, update this section with its API and examples.
+
+### Testing: Mocking fetch and DOM
+- Mock network:
+  ```js
+  beforeEach(() => { global.fetch = jest.fn(); });
+  afterEach(() => { jest.resetAllMocks(); });
+  test('quotes service returns price', async () => {
+    fetch.mockResolvedValueOnce(new Response(JSON.stringify({ c: 123.45 }), { status: 200 }));
+    // call service and assert
+  });
+  ```
+- JSDOM: render minimal DOM snippets and query/update them to verify module behavior.
+- For Chart.js-dependent code, guard creation behind feature flags or mock the Chart constructor.
+
+### i18n Coverage Checklist
+- All visible strings appear via i18n with `data-i18n`.
+- Add new keys to `i18n.js` and verify pluralization/number formatting where relevant.
+- Manually test at least one RTL locale to confirm layout/mirroring.
+
+### API Key in Settings (User-Configurable)
+- Add a Settings UI field for Finnhub API key (stored in localStorage key `pf_api_key_finnhub`).
+- Read the key in the shared QuotesService.
+- Never log or export the key; do not commit keys to the repo.

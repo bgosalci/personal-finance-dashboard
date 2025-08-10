@@ -1,3 +1,5 @@
+
+
 # API Reference
 
 ## Core Modules API
@@ -516,4 +518,30 @@ Users can customize various aspects of the application through the settings inte
 - Automatic input focus in dialog and edit modals.
 - Expanded to cover newly modularized functions.
 - Updated `.gitignore` prevents test artifacts from being committed.
+## Addendum: Planned Service Layer (Upcoming)
+
+These services are planned to reduce duplication and improve testability. They will be introduced incrementally and documented here for early reference.
+
+### QuotesService (planned)
+Centralizes Finnhub quote/search calls and API key handling from Settings (stored locally).
+
+- getApiKey(): string
+- setApiKey(key: string): void
+- fetchQuote(ticker: string): Promise<{ price: number|null, raw: any }>
+- searchSymbol(query: string): Promise<any>
+
+Notes:
+- Reads API key from localStorage (e.g., `pf_api_key_finnhub`).
+- Handles HTTP errors and rate limits consistently.
+- No API keys are committed to the repository.
+
+### ColorService (planned)
+Provides consistent, persistent color assignment for chart series across modules.
+
+- getColorForKey(key: string): string
+- reset(): void
+
+Notes:
+- Persists an internal map in localStorage so the same ticker/entity keeps the same color across sessions.
+- Uses a shared palette with deterministic HSL fallback.
 - For more details, see [RULES.md](RULES.md).

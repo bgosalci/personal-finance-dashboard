@@ -378,3 +378,50 @@ No build process required - the application runs directly in the browser.
 - Module structure clarified with separate files.
 - `.gitignore` updated for cleaner repos.
 - Refer to [RULES.md](RULES.md) for coding standards.
+## Addendum: Eventing, Storage, Dependencies, and API Key Plan
+
+### Eventing: Current State
+- The codebase currently uses DOM CustomEvent for decoupled communication, for example:
+  - Emit: `document.dispatchEvent(new CustomEvent('baseCurrencyChanged', { detail: { currency } }))`
+  - Listen: `document.addEventListener('baseCurrencyChanged', handler)`
+- Some documentation references a dedicated EventBus module, which is not present. If needed later, a tiny wrapper can be introduced to standardize APIs (emit/on/off) while still using CustomEvent under the hood.
+
+### Storage Architecture: Current Usage and Overlap
+- PortfolioManager, PensionManager, and StockTracker persist data directly in localStorage using per-feature keys (e.g., `portfolioData_{id}`, `pensionData_{id}`, `stockTrackerData`).
+- Two helper modules exist:
+  - `app/js/portfolioStorage.js`: Portfolio positions/snapshots with validation and migration utilities.
+  - `app/js/storageManager.js`: Versioned storage with encoding/decoding and quota management.
+- Recommendation: consolidate behind a single Storage facade to avoid divergence. Feature modules can consume that facade without changing their schemas immediately (read-through plus gradual migration).
+
+### Module Dependency Overview
+- `main.js` → initializes app and delegates to `financialDashboard.js`.
+- `financialDashboard.js` → orchestrates modules:
+  - UI infrastructure: `tabManager.js`, `dialogManager.js`
+  - Feature modules: `portfolioManager.js`, `pensionManager.js`, `calculator.js`, `stockTracker.js`, `stockFinance.js`, `settings.js`
+  - Utilities: `i18n.js`, `dateUtils.js`, `forexData.js`, `marketStatus.js`, `priceUpdater.js`, `appVersion.js`
+- Visualization: `chart.umd.js` (Chart.js)
+
+Textual flow:
+`main.js` → `financialDashboard.init()` → initialize utilities (i18n, market status, price updater) → initialize feature modules (Portfolio, Pension, Calculators, Stock).
+
+### Testing Notes (Targeted)
+- Unit-test small utilities and upcoming services (quotes/color/import-export) with Jest + JSDOM.
+- Mock network using:
+  ```js
+  beforeEach(() => { global.fetch = jest.fn(); });
+  afterEach(() => { jest.resetAllMocks(); });
+  ```
+- DOM interaction tests: render minimal HTML fragments and assert on changes.
+- For Chart.js, mock the constructor or guard creation behind a feature flag for test runs.
+
+### Internationalization Coverage
+- Ensure all user-facing strings are sourced via i18n and marked with `data-i18n`.
+- When adding new UI, include keys in `i18n.js` and verify RTL layout where applicable.
+
+### API Key Configuration Plan (Quotes)
+- The Finnhub API key will be user-configurable in Settings and stored locally (e.g., localStorage key `pf_api_key_finnhub`).
+- A shared QuotesService will:
+  - read the key from Settings/localStorage,
+  - centralize fetch/retry/rate-limit handling,
+  - provide `fetchQuote(ticker)`, `searchSymbol(query)`, and optional `batchQuote(tickers)`.
+- No secrets are committed to the repository; users provide their own key in-app.
