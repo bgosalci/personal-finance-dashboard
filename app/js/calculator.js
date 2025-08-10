@@ -18,6 +18,31 @@ const Calculator = (function() {
         return I18n.formatNumber(num, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     }
 
+    function formatInputValue(value) {
+        const clean = value.replace(/[^0-9.]/g, '');
+        if (clean === '') return '';
+        const [intPart, decPart] = clean.split('.');
+        const formattedInt = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        if (decPart !== undefined) {
+            const decimals = decPart.slice(0, 2).padEnd(2, '0');
+            return `${formattedInt}.${decimals}`;
+        }
+        return formattedInt;
+    }
+
+    function setupAmountInput(id) {
+        const input = document.getElementById(id);
+        if (!input) return;
+        input.addEventListener('input', (e) => {
+            e.target.value = formatInputValue(e.target.value);
+        });
+    }
+
+    function getNumberValue(id) {
+        const el = document.getElementById(id);
+        return parseFloat(el.value.replace(/,/g, '')) || 0;
+    }
+
     function updateCurrencyDisplays() {
         const currency = Settings && typeof Settings.getBaseCurrency === 'function'
             ? Settings.getBaseCurrency()
@@ -83,7 +108,7 @@ const Calculator = (function() {
     // Loan Calculator
     const LoanCalculator = (function() {
         function calculate() {
-            const principal = parseFloat(document.getElementById('loan-principal').value) || 0;
+            const principal = getNumberValue('loan-principal');
             const annualRate = parseFloat(document.getElementById('loan-rate').value) || 0;
             const years = parseFloat(document.getElementById('loan-term').value) || 0;
 
@@ -112,6 +137,7 @@ const Calculator = (function() {
             inputs.forEach(id => {
                 document.getElementById(id).addEventListener('input', calculate);
             });
+            setupAmountInput('loan-principal');
         }
 
         return { init };
@@ -120,7 +146,7 @@ const Calculator = (function() {
     // Investment Calculator
     const InvestmentCalculator = (function() {
         function calculate() {
-            const initial = parseFloat(document.getElementById('invest-initial').value) || 0;
+            const initial = getNumberValue('invest-initial');
             const annualRate = parseFloat(document.getElementById('invest-rate').value) || 0;
             const years = parseFloat(document.getElementById('invest-years').value) || 0;
 
@@ -162,6 +188,7 @@ const Calculator = (function() {
             inputs.forEach(id => {
                 document.getElementById(id).addEventListener('input', calculate);
             });
+            setupAmountInput('invest-initial');
         }
 
         return { init };
@@ -170,8 +197,8 @@ const Calculator = (function() {
     // CAGR Calculator
     const CAGRCalculator = (function() {
         function calculate() {
-            const beginning = parseFloat(document.getElementById('cagr-beginning').value) || 0;
-            const ending = parseFloat(document.getElementById('cagr-ending').value) || 0;
+            const beginning = getNumberValue('cagr-beginning');
+            const ending = getNumberValue('cagr-ending');
             const years = parseFloat(document.getElementById('cagr-years').value) || 0;
 
             if (beginning <= 0 || ending <= 0 || years <= 0) {
@@ -192,6 +219,8 @@ const Calculator = (function() {
             inputs.forEach(id => {
                 document.getElementById(id).addEventListener('input', calculate);
             });
+            setupAmountInput('cagr-beginning');
+            setupAmountInput('cagr-ending');
         }
 
         return { init };
