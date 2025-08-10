@@ -223,3 +223,17 @@ This comprehensive documentation package ensures the Personal Finance Dashboard 
 - `.gitignore` improvements noted.
 - See [RULES.md](RULES.md) for contribution guidelines.
 - Pseudo locale removed from language selector; internationalization guide updated to add locales via `DEFAULT_TRANSLATIONS` only on developer request.
+## Addendum: Alignment and Upcoming Refactors
+
+- Eventing: Current implementation uses DOM CustomEvent; references to a dedicated EventBus are conceptual. A tiny EventBus may be added later for a consistent API.
+- Storage: Both `portfolioStorage.js` and `storageManager.js` exist; feature modules also use direct localStorage keys. A unified Storage facade is recommended to reduce overlap.
+- Planned service layer (incremental):
+  - QuotesService: centralize Finnhub calls and API key handling from Settings.
+  - ColorService: consistent, persistent color assignment across charts.
+  - ImportExportService: unify import/export modal and file handling across modules.
+- Testing focus:
+  - Unit tests for the service layer and utilities.
+  - DOM tests for critical flows (add/edit/delete, charts presence).
+  - Simple check to detect untranslated strings.
+- API Key Plan:
+  - User-provided Finnhub key stored locally in Settings and consumed by QuotesService. No secrets in the repo.

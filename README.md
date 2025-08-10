@@ -315,3 +315,9 @@ This project is open source and available under the MIT License.
 - Settings page shows the current web app version.
 - Portfolio summary charts use unique colors for each ticker.
 - See [RULES.md](RULES.md) for contribution guidelines.
+## Roadmap and Configuration Notes
+
+- Quotes API Key (optional): The application will support user-provided Finnhub API keys via Settings (stored locally) for real-time quotes. This avoids bundling secrets and keeps the app client-only.
+- Service Layer: Introducing shared services for quotes, color assignment, and import/export to reduce duplication and improve testability.
+- Storage: A unified storage facade is planned to standardize persistence while preserving existing data.
+- Testing: Expanded unit tests for shared services and DOM tests for critical flows.
