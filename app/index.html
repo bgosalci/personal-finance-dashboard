@@ -808,6 +808,13 @@
                 <div class="form-group">
                     <label><input type="checkbox" id="rtl-toggle"> <span data-i18n="settings.rtlToggle">Enable RTL</span></label>
                 </div>
+                <h3 class="section-subtitle">Quotes API</h3>
+                <div class="form-group">
+                    <label for="settings-finnhub-api-key">Finnhub API Key</label>
+                    <input type="password" id="settings-finnhub-api-key" placeholder="Optional — stored locally">
+                    <p class="form-hint">Used for real-time quotes. Stored locally in your browser.</p>
+                </div>
+
                 <h3 class="section-subtitle" data-i18n="settings.sectionTitles.pension">Pension</h3>
                 <div class="form-group">
                     <div class="button-row">
@@ -992,6 +999,8 @@
     <script src="js/dateUtils.js"></script>
     <script src="js/tabManager.js"></script>
     <script src="js/portfolioStorage.js"></script>
+    <script src="js/colorService.js"></script>
+    <script src="js/quotesService.js"></script>
     <script src="js/portfolioManager.js"></script>
     <script src="js/pensionManager.js"></script>
     <script src="js/calculator.js"></script>
