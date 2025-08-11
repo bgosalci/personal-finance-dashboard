@@ -225,11 +225,6 @@
             gap: 0.5rem;
         }
 
-        .font-scale-options input[type="number"] {
-            width: 5rem;
-            padding: 0.25rem;
-        }
-
         .summary-toggle {
             display: flex;
             align-items: center;

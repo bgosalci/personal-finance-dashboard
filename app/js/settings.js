@@ -63,37 +63,38 @@ const Settings = (function() {
 
     function init() {
         const fontBtns = document.querySelectorAll('.font-scale-btn');
-        const fontCustom = document.getElementById('font-scale-custom');
         const fontReset = document.getElementById('font-scale-reset');
         const storedScale = loadFontScale();
         applyFontScale(storedScale);
-        if (fontCustom) fontCustom.value = Math.round(storedScale * 100);
 
         fontBtns.forEach(btn => {
+            const s = parseFloat(btn.dataset.scale);
+            if (s === storedScale) {
+                btn.classList.remove('btn-secondary');
+                btn.classList.add('btn-primary');
+            }
             btn.addEventListener('click', () => {
-                const s = parseFloat(btn.dataset.scale);
-                saveFontScale(s);
-                applyFontScale(s);
-                if (fontCustom) fontCustom.value = Math.round(s * 100);
-            });
-        });
-
-        if (fontCustom) {
-            fontCustom.addEventListener('input', () => {
-                let val = parseInt(fontCustom.value, 10);
-                if (isNaN(val)) return;
-                val = Math.min(150, Math.max(90, val));
-                const scale = val / 100;
+                const scale = parseFloat(btn.dataset.scale);
                 saveFontScale(scale);
                 applyFontScale(scale);
+                fontBtns.forEach(b => {
+                    b.classList.remove('btn-primary');
+                    b.classList.add('btn-secondary');
+                });
+                btn.classList.remove('btn-secondary');
+                btn.classList.add('btn-primary');
             });
-        }
+        });
 
         if (fontReset) {
             fontReset.addEventListener('click', () => {
                 saveFontScale(1);
                 applyFontScale(1);
-                if (fontCustom) fontCustom.value = 100;
+                fontBtns.forEach(b => {
+                    const s = parseFloat(b.dataset.scale);
+                    b.classList.toggle('btn-primary', s === 1);
+                    b.classList.toggle('btn-secondary', s !== 1);
+                });
             });
         }
 

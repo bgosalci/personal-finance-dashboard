@@ -97,11 +97,11 @@ test('Settings module saves currency to localStorage', () => {
   expect(window.document.getElementById('app-version').textContent).toBe('1.2.1');
 });
 
-test('Font scale setting persists and updates CSS variable', () => {
+test('Font scale setting persists, updates CSS variable, and highlights selection', () => {
   const html = '<!DOCTYPE html><html><body>' +
     '<div class="button-row font-scale-options">' +
-    '  <button type="button" class="font-scale-btn" data-scale="1.15">115%</button>' +
-    '  <input id="font-scale-custom" type="number" min="90" max="150">' +
+    '  <button type="button" class="btn btn-secondary font-scale-btn" data-scale="1.15">115%</button>' +
+    '  <button type="button" class="btn btn-secondary font-scale-btn" data-scale="1">100%</button>' +
     '  <button id="font-scale-reset" type="button"></button>' +
     '</div>' +
     '</body></html>';
@@ -112,11 +112,14 @@ test('Font scale setting persists and updates CSS variable', () => {
   const content = fs.readFileSync(path.resolve(__dirname, '../app/js/settings.js'), 'utf8');
   vm.runInContext(content, context);
   vm.runInContext('Settings.init()', context);
-  vm.runInContext('document.querySelector(".font-scale-btn").dispatchEvent(new window.Event("click"));', context);
+  vm.runInContext('document.querySelector("[data-scale=\'1.15\']").dispatchEvent(new window.Event("click"));', context);
   expect(window.localStorage.getItem('pf_font_scale')).toBe('1.15');
   expect(window.document.documentElement.style.getPropertyValue('--app-font-scale')).toBe('1.15');
+  expect(window.document.querySelector("[data-scale='1.15']").classList.contains('btn-primary')).toBe(true);
+  expect(window.document.querySelector("[data-scale='1']").classList.contains('btn-primary')).toBe(false);
   vm.runInContext('document.getElementById("font-scale-reset").dispatchEvent(new window.Event("click"));', context);
   expect(window.localStorage.getItem('pf_font_scale')).toBe('1');
+  expect(window.document.querySelector("[data-scale='1']").classList.contains('btn-primary')).toBe(true);
 });
 
 test('Finnhub API key visibility toggle', () => {
