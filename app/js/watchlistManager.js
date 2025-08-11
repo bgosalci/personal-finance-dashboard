@@ -46,10 +46,10 @@ const WatchlistManager = (function() {
             const changeClass = typeof item.change === 'number' ? (item.change < 0 ? 'growth-negative' : item.change > 0 ? 'growth-positive' : '') : '';
             const changePctClass = typeof item.changePct === 'number' ? (item.changePct < 0 ? 'growth-negative' : item.changePct > 0 ? 'growth-positive' : '') : '';
             tr.innerHTML = `
-                <td>${item.ticker}</td>
+                <td><strong>${item.ticker}</strong></td>
                 <td>${item.name || ''}</td>
                 <td>${item.currency || ''}</td>
-                <td class="number-cell">${formatNumber(item.price)}</td>
+                <td class="number-cell"><strong>${formatNumber(item.price)}</strong></td>
                 <td class="number-cell ${changeClass}">${formatNumber(item.change)}</td>
                 <td class="number-cell ${changePctClass}">${formatPercent(item.changePct)}</td>
                 <td class="number-cell">${formatNumber(item.high)}</td>
@@ -69,10 +69,13 @@ const WatchlistManager = (function() {
         });
     }
 
-    function deleteStock(index) {
-        watchlist.splice(index, 1);
-        save();
-        render();
+    async function deleteStock(index) {
+        const confirmed = await DialogManager.confirm(I18n.t('watchlist.dialogs.deleteStock'), I18n.t('dialog.delete'));
+        if (confirmed) {
+            watchlist.splice(index, 1);
+            save();
+            render();
+        }
     }
 
     function handleDragStart() {
@@ -150,7 +153,7 @@ const WatchlistManager = (function() {
         }
         const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000));
         try {
-            const [{ price, currency }, description] = await Promise.race([
+            const [{ price, currency }, searchData] = await Promise.race([
                 Promise.all([
                     QuotesService.fetchQuote(ticker),
                     QuotesService.searchSymbol(ticker)
@@ -158,6 +161,11 @@ const WatchlistManager = (function() {
                 timeout
             ]);
             if (currency) currencySelect.value = currency;
+            let description = '';
+            if (searchData && Array.isArray(searchData.result)) {
+                const match = searchData.result.find(item => (item.symbol || '').toUpperCase() === ticker);
+                if (match) description = match.description || '';
+            }
             if (description) {
                 nameInput.value = description;
                 tickerValid = true;

@@ -89,7 +89,8 @@ const I18n = (function() {
                     "actions": "Actions"
                 },
                 "dialogs": {
-                    "addStock": { "title": "Add Stock" }
+                    "addStock": { "title": "Add Stock" },
+                    "deleteStock": "Delete this stock?"
                 }
             },
         "pension": {
@@ -451,7 +452,8 @@ const I18n = (function() {
                     "actions": "Veprimet"
                 },
                 "dialogs": {
-                    "addStock": { "title": "Shto Aksion" }
+                    "addStock": { "title": "Shto Aksion" },
+                    "deleteStock": "Ta fshij këtë aksion?"
                 }
             },
             "pension": {
@@ -815,7 +817,8 @@ const I18n = (function() {
                     "actions": "Actions"
                 },
                 "dialogs": {
-                    "addStock": { "title": "Ajouter une action" }
+                    "addStock": { "title": "Ajouter une action" },
+                    "deleteStock": "Supprimer cette action ?",
                 }
             },
             "pension": {
@@ -1179,7 +1182,8 @@ const I18n = (function() {
                     "actions": "Aktionen"
                 },
                 "dialogs": {
-                    "addStock": { "title": "Aktie hinzufügen" }
+                    "addStock": { "title": "Aktie hinzufügen" },
+                    "deleteStock": "Diese Aktie löschen?",
                 }
             },
             "pension": {
@@ -1543,7 +1547,8 @@ const I18n = (function() {
                     "actions": "Acciones"
                 },
                 "dialogs": {
-                    "addStock": { "title": "Agregar acción" }
+                    "addStock": { "title": "Agregar acción" },
+                    "deleteStock": "¿Eliminar esta acción?",
                 }
             },
             "pension": {
@@ -1907,7 +1912,8 @@ const I18n = (function() {
                     "actions": "Azioni"
                 },
                 "dialogs": {
-                    "addStock": { "title": "Aggiungi titolo" }
+                    "addStock": { "title": "Aggiungi titolo" },
+                    "deleteStock": "Eliminare questa azione?",
                 }
             },
             "pension": {
@@ -2277,7 +2283,8 @@ const I18n = (function() {
                     "actions": "Acțiuni"
                 },
                 "dialogs": {
-                    "addStock": { "title": "Adaugă acțiune" }
+                    "addStock": { "title": "Adaugă acțiune" },
+                    "deleteStock": "Ștergeți această acțiune?",
                 }
             },
             "pension": {
