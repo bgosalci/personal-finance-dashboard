@@ -450,116 +450,6 @@ const I18n = (function() {
                     "addStock": { "title": "Shto Aksion" }
                 }
             },
-            "watchlist": {
-                "title": "Liste de surveillance",
-                "actions": {
-                    "addStock": "Ajouter une action",
-                    "getLastPrice": "Obtenir le dernier prix"
-                },
-                "table": {
-                    "ticker": "Symbole",
-                    "name": "Nom",
-                    "currency": "Devise",
-                    "currentPrice": "Prix actuel",
-                    "change": "Changement",
-                    "changePct": "Changement %",
-                    "high": "Haut",
-                    "low": "Bas",
-                    "open": "Prix d'ouverture",
-                    "prevClose": "Clôture précédente"
-                },
-                "dialogs": {
-                    "addStock": { "title": "Ajouter une action" }
-                }
-            },
-            "watchlist": {
-                "title": "Beobachtungsliste",
-                "actions": {
-                    "addStock": "Aktie hinzufügen",
-                    "getLastPrice": "Letzten Preis abrufen"
-                },
-                "table": {
-                    "ticker": "Ticker",
-                    "name": "Name",
-                    "currency": "Währung",
-                    "currentPrice": "Aktueller Preis",
-                    "change": "Veränderung",
-                    "changePct": "Veränderung %",
-                    "high": "Hoch",
-                    "low": "Tief",
-                    "open": "Eröffnungspreis",
-                    "prevClose": "Vorheriger Schluss"
-                },
-                "dialogs": {
-                    "addStock": { "title": "Aktie hinzufügen" }
-                }
-            },
-            "watchlist": {
-                "title": "Lista de seguimiento",
-                "actions": {
-                    "addStock": "Agregar acción",
-                    "getLastPrice": "Obtener el último precio"
-                },
-                "table": {
-                    "ticker": "Símbolo",
-                    "name": "Nombre",
-                    "currency": "Moneda",
-                    "currentPrice": "Precio actual",
-                    "change": "Cambio",
-                    "changePct": "Cambio %",
-                    "high": "Alto",
-                    "low": "Bajo",
-                    "open": "Precio de apertura",
-                    "prevClose": "Cierre previo"
-                },
-                "dialogs": {
-                    "addStock": { "title": "Agregar acción" }
-                }
-            },
-            "watchlist": {
-                "title": "Lista di osservazione",
-                "actions": {
-                    "addStock": "Aggiungi titolo",
-                    "getLastPrice": "Ottieni l'ultimo prezzo"
-                },
-                "table": {
-                    "ticker": "Ticker",
-                    "name": "Nome",
-                    "currency": "Valuta",
-                    "currentPrice": "Prezzo attuale",
-                    "change": "Variazione",
-                    "changePct": "Variazione %",
-                    "high": "Massimo",
-                    "low": "Minimo",
-                    "open": "Prezzo di apertura",
-                    "prevClose": "Chiusura precedente"
-                },
-                "dialogs": {
-                    "addStock": { "title": "Aggiungi titolo" }
-                }
-            },
-            "watchlist": {
-                "title": "Listă de urmărire",
-                "actions": {
-                    "addStock": "Adaugă acțiune",
-                    "getLastPrice": "Obține ultimul preț"
-                },
-                "table": {
-                    "ticker": "Simbol",
-                    "name": "Nume",
-                    "currency": "Monedă",
-                    "currentPrice": "Preț curent",
-                    "change": "Schimbare",
-                    "changePct": "Schimbare %",
-                    "high": "Maxim",
-                    "low": "Minim",
-                    "open": "Preț de deschidere",
-                    "prevClose": "Închidere anterioară"
-                },
-                "dialogs": {
-                    "addStock": { "title": "Adaugă acțiune" }
-                }
-            },
             "pension": {
                 "title": "Pensioni",
                 "actions": {
@@ -898,6 +788,28 @@ const I18n = (function() {
                 "editInvestment": { "title": "Modifier l'investissement", "selectRecord": "Sélectionner l'enregistrement" },
                 "totalValue": "Valeur Totale",
                 "saveAddAnother": "Enregistrer et Ajouter un Autre"
+                }
+            },
+            "watchlist": {
+                "title": "Liste de surveillance",
+                "actions": {
+                    "addStock": "Ajouter une action",
+                    "getLastPrice": "Obtenir le dernier prix"
+                },
+                "table": {
+                    "ticker": "Symbole",
+                    "name": "Nom",
+                    "currency": "Devise",
+                    "currentPrice": "Prix actuel",
+                    "change": "Changement",
+                    "changePct": "Changement %",
+                    "high": "Haut",
+                    "low": "Bas",
+                    "open": "Prix d'ouverture",
+                    "prevClose": "Clôture précédente"
+                },
+                "dialogs": {
+                    "addStock": { "title": "Ajouter une action" }
                 }
             },
             "pension": {
@@ -1240,6 +1152,28 @@ const I18n = (function() {
                 "saveAddAnother": "Speichern & Weiteres hinzufügen"
                 }
             },
+            "watchlist": {
+                "title": "Beobachtungsliste",
+                "actions": {
+                    "addStock": "Aktie hinzufügen",
+                    "getLastPrice": "Letzten Preis abrufen"
+                },
+                "table": {
+                    "ticker": "Ticker",
+                    "name": "Name",
+                    "currency": "Währung",
+                    "currentPrice": "Aktueller Preis",
+                    "change": "Veränderung",
+                    "changePct": "Veränderung %",
+                    "high": "Hoch",
+                    "low": "Tief",
+                    "open": "Eröffnungspreis",
+                    "prevClose": "Vorheriger Schluss"
+                },
+                "dialogs": {
+                    "addStock": { "title": "Aktie hinzufügen" }
+                }
+            },
             "pension": {
                 "title": "Rente",
                 "actions": {
@@ -1580,6 +1514,28 @@ const I18n = (function() {
                 "saveAddAnother": "Guardar y Añadir Otro"
                 }
             },
+            "watchlist": {
+                "title": "Lista de seguimiento",
+                "actions": {
+                    "addStock": "Agregar acción",
+                    "getLastPrice": "Obtener el último precio"
+                },
+                "table": {
+                    "ticker": "Símbolo",
+                    "name": "Nombre",
+                    "currency": "Moneda",
+                    "currentPrice": "Precio actual",
+                    "change": "Cambio",
+                    "changePct": "Cambio %",
+                    "high": "Alto",
+                    "low": "Bajo",
+                    "open": "Precio de apertura",
+                    "prevClose": "Cierre previo"
+                },
+                "dialogs": {
+                    "addStock": { "title": "Agregar acción" }
+                }
+            },
             "pension": {
                 "title": "Pensión",
                 "actions": {
@@ -1918,6 +1874,28 @@ const I18n = (function() {
                 "editInvestment": { "title": "Modifica Investimento", "selectRecord": "Seleziona record" },
                 "totalValue": "Valore Totale",
                 "saveAddAnother": "Salva e Aggiungi Un Altro"
+                }
+            },
+            "watchlist": {
+                "title": "Lista di osservazione",
+                "actions": {
+                    "addStock": "Aggiungi titolo",
+                    "getLastPrice": "Ottieni l'ultimo prezzo"
+                },
+                "table": {
+                    "ticker": "Ticker",
+                    "name": "Nome",
+                    "currency": "Valuta",
+                    "currentPrice": "Prezzo attuale",
+                    "change": "Variazione",
+                    "changePct": "Variazione %",
+                    "high": "Massimo",
+                    "low": "Minimo",
+                    "open": "Prezzo di apertura",
+                    "prevClose": "Chiusura precedente"
+                },
+                "dialogs": {
+                    "addStock": { "title": "Aggiungi titolo" }
                 }
             },
             "pension": {
@@ -2264,6 +2242,28 @@ const I18n = (function() {
                     },
                     "totalValue": "Valoare totală",
                     "saveAddAnother": "Salvați și adăugați altul"
+                }
+            },
+            "watchlist": {
+                "title": "Listă de urmărire",
+                "actions": {
+                    "addStock": "Adaugă acțiune",
+                    "getLastPrice": "Obține ultimul preț"
+                },
+                "table": {
+                    "ticker": "Simbol",
+                    "name": "Nume",
+                    "currency": "Monedă",
+                    "currentPrice": "Preț curent",
+                    "change": "Schimbare",
+                    "changePct": "Schimbare %",
+                    "high": "Maxim",
+                    "low": "Minim",
+                    "open": "Preț de deschidere",
+                    "prevClose": "Închidere anterioară"
+                },
+                "dialogs": {
+                    "addStock": { "title": "Adaugă acțiune" }
                 }
             },
             "pension": {
