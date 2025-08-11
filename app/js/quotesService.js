@@ -2,6 +2,8 @@ const QuotesService = (function() {
     const LS_KEY = 'pf_api_key_finnhub';
     const BASE_URL = 'https://finnhub.io/api/v1';
     const EXCEPTION_KEY = 'finnhub_exceptions';
+    const CACHE_TTL_MS = 60 * 1000; // 1 minute
+    const quoteCache = {};
     function getToday() {
         return new Date().toISOString().split('T')[0];
     }
@@ -52,6 +54,12 @@ const QuotesService = (function() {
     async function fetchQuote(ticker) {
         const token = getApiKey();
         if (!ticker) throw new Error('Ticker required');
+        const t = String(ticker).toUpperCase();
+        const now = Date.now();
+        const cached = quoteCache[t];
+        if (cached && (now - cached.time) < CACHE_TTL_MS) {
+            return { price: cached.price, raw: cached.raw };
+        }
         if (isTickerExcluded(ticker)) {
             return { price: null, raw: null, excluded: true };
         }
@@ -61,6 +69,9 @@ const QuotesService = (function() {
             const price = typeof data?.c === 'number' ? parseFloat(data.c) : null;
             if (price === null && data && data.error && String(data.error).toLowerCase().includes('access')) {
                 addTickerException(ticker);
+            }
+            if (price !== null) {
+                quoteCache[t] = { price, raw: data, time: now };
             }
             return { price, raw: data };
         } catch (err) {

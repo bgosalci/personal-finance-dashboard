@@ -60,6 +60,23 @@ test('fetchQuote returns price and currency', async () => {
   expect(result).toEqual({ price: 123.45, currency: 'EUR' });
 });
 
+test('fetchQuote reuses recent price without refetching', async () => {
+  const dom = new JSDOM('<!DOCTYPE html><html><body></body></html>', {url: 'http://localhost'});
+  const fetchMock = jest.fn().mockResolvedValue({
+    json: () => Promise.resolve({ c: 50, currency: 'USD' })
+  });
+  dom.window.fetch = fetchMock;
+  const context = vm.createContext(dom.window);
+  vm.runInContext(i18nCode, context);
+  const content = fs.readFileSync(path.resolve(__dirname, '../app/js/portfolioManager.js'), 'utf8');
+  vm.runInContext(content, context);
+  const first = await vm.runInContext('PortfolioManager.fetchQuote("CACHE")', context);
+  const second = await vm.runInContext('PortfolioManager.fetchQuote("CACHE")', context);
+  expect(first).toEqual({ price: 50, currency: 'USD' });
+  expect(second).toEqual({ price: 50, currency: 'USD' });
+  expect(fetchMock).toHaveBeenCalledTimes(1);
+});
+
 test('fetchQuote caches access error for one day', async () => {
   const dom = new JSDOM('<!DOCTYPE html><html><body></body></html>', {url: 'http://localhost'});
   const fetchMock = jest.fn()

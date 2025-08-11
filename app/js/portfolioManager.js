@@ -49,6 +49,8 @@ const PortfolioManager = (function() {
     const actionsMenu = document.getElementById('portfolio-actions-menu');
     const summaryToggle = document.getElementById('summary-toggle');
     const EXCEPTION_KEY = 'finnhub_exceptions';
+    const CACHE_TTL_MS = 60 * 1000; // 1 minute
+    const quoteCache = {};
 
     function getToday() {
         return new Date().toISOString().split('T')[0];
@@ -86,6 +88,12 @@ const PortfolioManager = (function() {
     }
 
     async function fetchQuote(ticker, currency = 'USD') {
+        const key = (String(ticker) + '|' + String(currency)).toUpperCase();
+        const now = Date.now();
+        const cached = quoteCache[key];
+        if (cached && (now - cached.time) < CACHE_TTL_MS) {
+            return { price: cached.price, currency: cached.currency };
+        }
         if (isTickerExcluded(ticker)) {
             return { price: null, currency };
         }
@@ -96,13 +104,19 @@ const PortfolioManager = (function() {
                 if (price === null && res && res.raw && res.raw.error && String(res.raw.error).toLowerCase().includes('access')) {
                     addTickerException(ticker);
                 }
+                if (price !== null) {
+                    quoteCache[key] = { price, currency, time: now };
+                }
                 return { price, currency };
             } else {
                 const url = `https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(ticker)}&currency=${encodeURIComponent(currency)}`;
                 const resp = await fetch(url);
                 const data = await resp.json();
                 if (data && typeof data.c === 'number') {
-                    return { price: parseFloat(data.c), currency: data.currency || currency };
+                    const p = parseFloat(data.c);
+                    const curr = data.currency || currency;
+                    quoteCache[key] = { price: p, currency: curr, time: now };
+                    return { price: p, currency: curr };
                 }
                 if (data && data.error && String(data.error).toLowerCase().includes('access')) {
                     addTickerException(ticker);
