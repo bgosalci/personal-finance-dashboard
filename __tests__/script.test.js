@@ -95,6 +95,38 @@ test('fetchQuote caches access error for one day', async () => {
   expect(fetchMock).toHaveBeenCalledTimes(1);
 });
 
+test('updatePortfolioPrices fetches tickers sequentially', async () => {
+  const dom = new JSDOM('<!DOCTYPE html><html><body></body></html>', { url: 'http://localhost' });
+  let active = 0;
+  let maxActive = 0;
+  dom.window.fetch = jest.fn(() => {
+    active++;
+    if (active > maxActive) maxActive = active;
+    return new Promise(resolve => {
+      setTimeout(() => {
+        active--;
+        resolve({ json: () => Promise.resolve({ c: 10, currency: 'USD' }) });
+      }, 0);
+    });
+  });
+  const context = vm.createContext(dom.window);
+  vm.runInContext(i18nCode, context);
+  const code = fs.readFileSync(path.resolve(__dirname, '../app/js/portfolioManager.js'), 'utf8');
+  vm.runInContext(code, context);
+  await vm.runInContext(`(async () => {
+    const id = 'pf_seq';
+    const key = 'portfolioData_' + id;
+    localStorage.setItem(key, JSON.stringify([
+      { ticker: 'AAA', quantity: 1, purchasePrice: 1, lastPrice: 0, tradeDate: '2020-01-01', currency: 'USD' },
+      { ticker: 'BBB', quantity: 1, purchasePrice: 1, lastPrice: 0, tradeDate: '2020-01-01', currency: 'USD' },
+      { ticker: 'CCC', quantity: 1, purchasePrice: 1, lastPrice: 0, tradeDate: '2020-01-01', currency: 'USD' }
+    ]));
+    await PortfolioManager.updatePortfolioPrices(id);
+  })()`, context);
+  expect(dom.window.fetch).toHaveBeenCalledTimes(3);
+  expect(maxActive).toBe(1);
+});
+
 test('Settings module saves currency to localStorage', () => {
   const html = '<!DOCTYPE html><html><body>' +
     '<select id="base-currency-select"></select>' +

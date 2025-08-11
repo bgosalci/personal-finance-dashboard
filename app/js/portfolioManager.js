@@ -877,18 +877,19 @@ const PortfolioManager = (function() {
         const currencyMap = {};
         const tickers = Array.from(new Set(list.map(inv => inv.ticker)));
 
-        const fetches = tickers.map(ticker => {
+        for (const ticker of tickers) {
             const inv = list.find(i => i.ticker === ticker);
             const curr = inv ? inv.currency || 'USD' : 'USD';
-            return fetchQuote(ticker, curr).then(res => {
+            try {
+                const res = await fetchQuote(ticker, curr);
                 if (res.price !== null) {
                     priceMap[ticker] = res.price;
                     currencyMap[ticker] = res.currency || curr;
                 }
-            }).catch(() => {});
-        });
-
-        await Promise.all(fetches);
+            } catch (e) {
+                // Ignore fetch errors and continue
+            }
+        }
 
         list.forEach(inv => {
             if (priceMap[inv.ticker] !== undefined) {
