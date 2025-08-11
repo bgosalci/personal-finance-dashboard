@@ -49,6 +49,8 @@ const PortfolioManager = (function() {
     const actionsMenu = document.getElementById('portfolio-actions-menu');
     const summaryToggle = document.getElementById('summary-toggle');
     const EXCEPTION_KEY = 'finnhub_exceptions';
+    const CACHE_TTL_MS = 60 * 1000; // 1 minute
+    const quoteCache = {};
 
     function getToday() {
         return new Date().toISOString().split('T')[0];
@@ -86,6 +88,12 @@ const PortfolioManager = (function() {
     }
 
     async function fetchQuote(ticker, currency = 'USD') {
+        const key = (String(ticker) + '|' + String(currency)).toUpperCase();
+        const now = Date.now();
+        const cached = quoteCache[key];
+        if (cached && (now - cached.time) < CACHE_TTL_MS) {
+            return { price: cached.price, currency: cached.currency };
+        }
         if (isTickerExcluded(ticker)) {
             return { price: null, currency };
         }
@@ -96,13 +104,19 @@ const PortfolioManager = (function() {
                 if (price === null && res && res.raw && res.raw.error && String(res.raw.error).toLowerCase().includes('access')) {
                     addTickerException(ticker);
                 }
+                if (price !== null) {
+                    quoteCache[key] = { price, currency, time: now };
+                }
                 return { price, currency };
             } else {
                 const url = `https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(ticker)}&currency=${encodeURIComponent(currency)}`;
                 const resp = await fetch(url);
                 const data = await resp.json();
                 if (data && typeof data.c === 'number') {
-                    return { price: parseFloat(data.c), currency: data.currency || currency };
+                    const p = parseFloat(data.c);
+                    const curr = data.currency || currency;
+                    quoteCache[key] = { price: p, currency: curr, time: now };
+                    return { price: p, currency: curr };
                 }
                 if (data && data.error && String(data.error).toLowerCase().includes('access')) {
                     addTickerException(ticker);
@@ -863,18 +877,19 @@ const PortfolioManager = (function() {
         const currencyMap = {};
         const tickers = Array.from(new Set(list.map(inv => inv.ticker)));
 
-        const fetches = tickers.map(ticker => {
+        for (const ticker of tickers) {
             const inv = list.find(i => i.ticker === ticker);
             const curr = inv ? inv.currency || 'USD' : 'USD';
-            return fetchQuote(ticker, curr).then(res => {
+            try {
+                const res = await fetchQuote(ticker, curr);
                 if (res.price !== null) {
                     priceMap[ticker] = res.price;
                     currencyMap[ticker] = res.currency || curr;
                 }
-            }).catch(() => {});
-        });
-
-        await Promise.all(fetches);
+            } catch (e) {
+                // Ignore fetch errors and continue
+            }
+        }
 
         list.forEach(inv => {
             if (priceMap[inv.ticker] !== undefined) {
