@@ -24,6 +24,18 @@
             --gosalci-candle-mid: #00d08a;       /* Gradient midpoint (soft teal) */
             --gosalci-candle-bottom: #00b48a;    /* Gradient base green */
             --gosalci-shadow: #1f1f1f;           /* UI accent (hover/shadow) */
+            --app-font-scale: 1;
+        }
+
+        html {
+            font-size: calc(100% * var(--app-font-scale));
+            transition: font-size 0.2s ease-in-out;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            html {
+                transition: none;
+            }
         }
 
         * {
@@ -204,6 +216,18 @@
         .button-row {
             display: flex;
             gap: 0.5rem;
+        }
+
+        .font-scale-options {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .font-scale-options input[type="number"] {
+            width: 5rem;
+            padding: 0.25rem;
         }
 
         .summary-toggle {
@@ -615,7 +639,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 12px;
+            font-size: 0.75rem;
         }
 
         .ticker-tag .remove-btn:hover {
@@ -633,7 +657,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 12px;
+            font-size: 0.75rem;
         }
 
         .chart-btn:hover {
@@ -974,7 +998,7 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            font-size: 16px;
+            font-size: 1rem;
             color: white;
         }
 

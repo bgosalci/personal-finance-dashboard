@@ -2,6 +2,7 @@ const Settings = (function() {
     'use strict';
 
     const STORAGE_KEY = 'pf_base_currency';
+    const FONT_SCALE_KEY = 'pf_font_scale';
 
     function load() {
         return localStorage.getItem(STORAGE_KEY) || 'USD';
@@ -17,6 +18,29 @@ const Settings = (function() {
 
     function setBaseCurrency(value) {
         save(value);
+    }
+
+    function loadFontScale() {
+        const v = parseFloat(localStorage.getItem(FONT_SCALE_KEY));
+        return isNaN(v) ? 1 : v;
+    }
+
+    function saveFontScale(v) {
+        localStorage.setItem(FONT_SCALE_KEY, String(v));
+    }
+
+    function applyFontScale(scale) {
+        document.documentElement.style.setProperty('--app-font-scale', scale);
+        if (window.Chart && Chart.defaults) {
+            Chart.defaults.font.size = 12 * scale;
+            if (Chart.instances) {
+                if (typeof Chart.instances.forEach === 'function') {
+                    Chart.instances.forEach(c => c.update());
+                } else {
+                    Object.values(Chart.instances).forEach(c => c.update());
+                }
+            }
+        }
     }
 
     function populateOptions(data) {
@@ -38,6 +62,41 @@ const Settings = (function() {
     }
 
     function init() {
+        const fontBtns = document.querySelectorAll('.font-scale-btn');
+        const fontCustom = document.getElementById('font-scale-custom');
+        const fontReset = document.getElementById('font-scale-reset');
+        const storedScale = loadFontScale();
+        applyFontScale(storedScale);
+        if (fontCustom) fontCustom.value = Math.round(storedScale * 100);
+
+        fontBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const s = parseFloat(btn.dataset.scale);
+                saveFontScale(s);
+                applyFontScale(s);
+                if (fontCustom) fontCustom.value = Math.round(s * 100);
+            });
+        });
+
+        if (fontCustom) {
+            fontCustom.addEventListener('input', () => {
+                let val = parseInt(fontCustom.value, 10);
+                if (isNaN(val)) return;
+                val = Math.min(150, Math.max(90, val));
+                const scale = val / 100;
+                saveFontScale(scale);
+                applyFontScale(scale);
+            });
+        }
+
+        if (fontReset) {
+            fontReset.addEventListener('click', () => {
+                saveFontScale(1);
+                applyFontScale(1);
+                if (fontCustom) fontCustom.value = 100;
+            });
+        }
+
         const select = document.getElementById('base-currency-select');
         if (select) {
             select.addEventListener('change', () => {

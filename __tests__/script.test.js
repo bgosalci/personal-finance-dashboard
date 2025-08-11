@@ -97,6 +97,28 @@ test('Settings module saves currency to localStorage', () => {
   expect(window.document.getElementById('app-version').textContent).toBe('1.2.1');
 });
 
+test('Font scale setting persists and updates CSS variable', () => {
+  const html = '<!DOCTYPE html><html><body>' +
+    '<div class="button-row font-scale-options">' +
+    '  <button type="button" class="font-scale-btn" data-scale="1.15">115%</button>' +
+    '  <input id="font-scale-custom" type="number" min="90" max="150">' +
+    '  <button id="font-scale-reset" type="button"></button>' +
+    '</div>' +
+    '</body></html>';
+  const dom = new JSDOM(html, { url: 'http://localhost' });
+  const { window } = dom;
+  const context = vm.createContext(window);
+  vm.runInContext(i18nCode, context);
+  const content = fs.readFileSync(path.resolve(__dirname, '../app/js/settings.js'), 'utf8');
+  vm.runInContext(content, context);
+  vm.runInContext('Settings.init()', context);
+  vm.runInContext('document.querySelector(".font-scale-btn").dispatchEvent(new window.Event("click"));', context);
+  expect(window.localStorage.getItem('pf_font_scale')).toBe('1.15');
+  expect(window.document.documentElement.style.getPropertyValue('--app-font-scale')).toBe('1.15');
+  vm.runInContext('document.getElementById("font-scale-reset").dispatchEvent(new window.Event("click"));', context);
+  expect(window.localStorage.getItem('pf_font_scale')).toBe('1');
+});
+
 test('Finnhub API key visibility toggle', () => {
   const html = '<!DOCTYPE html><html><body>' +
     '<input type="password" id="settings-finnhub-api-key">' +
