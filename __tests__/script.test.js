@@ -15,6 +15,7 @@ test('FinancialDashboard global object exists with init and removeTicker', () =>
     'tabManager.js',
     'portfolioStorage.js',
     'portfolioManager.js',
+    'watchlistManager.js',
     'pensionManager.js',
     'calculator.js',
     'stockTracker.js',
@@ -466,5 +467,15 @@ test('StockTracker exposes fetchLatestPrices', () => {
   const code = fs.readFileSync(path.resolve(__dirname, '../app/js/stockTracker.js'), 'utf8');
   vm.runInContext(code, context);
   const fnType = vm.runInContext('typeof StockTracker.fetchLatestPrices', context);
+  expect(fnType).toBe('function');
+});
+
+test('WatchlistManager exposes fetchLastPrices', () => {
+  const dom = new JSDOM('<!DOCTYPE html><html><body></body></html>', { url: 'http://localhost' });
+  const context = vm.createContext(dom.window);
+  vm.runInContext(i18nCode, context);
+  const code = fs.readFileSync(path.resolve(__dirname, '../app/js/watchlistManager.js'), 'utf8');
+  vm.runInContext(code, context);
+  const fnType = vm.runInContext('typeof WatchlistManager.fetchLastPrices', context);
   expect(fnType).toBe('function');
 });

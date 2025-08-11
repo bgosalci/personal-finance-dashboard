@@ -39,6 +39,7 @@
 
     <nav class="nav-tabs">
         <button class="nav-tab active" data-tab="portfolio" data-i18n="nav.portfolio">Portfolio</button>
+        <button class="nav-tab" data-tab="watchlist" data-i18n="nav.watchlist">Watchlist</button>
         <button class="nav-tab" data-tab="pension" data-i18n="nav.pension">Pension</button>
         <button class="nav-tab" data-tab="calculators" data-i18n="nav.calculators">Calculators</button>
         <button class="nav-tab" data-tab="stock-tracker" data-i18n="nav.stockTracker">Stock Performance Tracker</button>
@@ -251,6 +252,70 @@
                                 <tbody id="transaction-history-body"></tbody>
                             </table>
                         </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Watchlist Tab -->
+            <div id="watchlist" class="tab-content">
+                <div class="section-header">
+                    <h2 class="section-title" data-i18n="watchlist.title">Watchlist</h2>
+                    <div class="watchlist-actions">
+                        <div class="action-buttons">
+                            <button class="btn btn-primary" id="add-watchstock-btn" data-i18n="watchlist.actions.addStock">Add Stock</button>
+                            <button class="btn btn-secondary" id="watchlist-get-price-btn" data-i18n="watchlist.actions.getLastPrice">Get The Last Price</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="table-container" id="watchlist-table-container">
+                    <table class="data-table" id="watchlist-table">
+                        <thead>
+                            <tr>
+                                <th data-i18n="watchlist.table.ticker">Ticker</th>
+                                <th data-i18n="watchlist.table.name">Name</th>
+                                <th data-i18n="watchlist.table.currency">Currency</th>
+                                <th data-i18n="watchlist.table.currentPrice">Current Price</th>
+                                <th data-i18n="watchlist.table.change">Change</th>
+                                <th data-i18n="watchlist.table.changePct">Change %</th>
+                                <th data-i18n="watchlist.table.high">High</th>
+                                <th data-i18n="watchlist.table.low">Low</th>
+                                <th data-i18n="watchlist.table.open">Open Price</th>
+                                <th data-i18n="watchlist.table.prevClose">Previous Close</th>
+                                <th data-i18n="watchlist.table.actions">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="watchlist-body"></tbody>
+                    </table>
+                </div>
+
+                <!-- Add Stock Modal -->
+                <div id="watchlist-modal" class="modal">
+                    <div class="modal-content">
+                        <span class="modal-close" id="watchlist-close">&times;</span>
+                        <h3 data-i18n="watchlist.dialogs.addStock.title">Add Stock</h3>
+                        <form id="watchlist-form">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="watchlist-ticker" data-i18n="watchlist.table.ticker">Ticker</label>
+                                    <input type="text" id="watchlist-ticker" style="text-transform: uppercase;" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="watchlist-name" data-i18n="watchlist.table.name">Name</label>
+                                    <input type="text" id="watchlist-name">
+                                </div>
+                                <div class="form-group">
+                                    <label for="watchlist-currency" data-i18n="watchlist.table.currency">Currency</label>
+                                    <select id="watchlist-currency">
+                                        <option value="USD">USD</option>
+                                        <option value="GBP">GBP</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="modal-actions">
+                                <button type="button" class="btn btn-secondary" id="watchlist-cancel-btn" data-i18n="common.cancel">Cancel</button>
+                                <button type="submit" class="btn btn-primary" data-i18n="common.add">Add</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -1016,6 +1081,7 @@
     <script src="js/colorService.js"></script>
     <script src="js/quotesService.js"></script>
     <script src="js/portfolioManager.js"></script>
+    <script src="js/watchlistManager.js"></script>
     <script src="js/pensionManager.js"></script>
     <script src="js/calculator.js"></script>
     <script src="js/stockTracker.js"></script>

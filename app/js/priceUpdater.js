@@ -4,6 +4,7 @@ const PriceUpdater = (function() {
     function checkAndUpdate() {
         if (MarketStatus.isMarketOpen && MarketStatus.isMarketOpen()) {
             PortfolioManager.fetchLastPrices();
+            WatchlistManager.fetchLastPrices();
             StockTracker.fetchLatestPrices();
         }
     }

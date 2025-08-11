@@ -31,6 +31,19 @@ test('header contains market status indicator', () => {
   expect(doc.getElementById('after-led')).not.toBeNull();
 });
 
+test('watchlist tab and table headers exist', () => {
+  const htmlPath = path.resolve(__dirname, '../app/index.html');
+  const html = fs.readFileSync(htmlPath, 'utf8');
+  const dom = new JSDOM(html);
+  const doc = dom.window.document;
+  const tab = doc.querySelector('button.nav-tab[data-tab="watchlist"]');
+  expect(tab).not.toBeNull();
+  const headers = Array.from(doc.querySelectorAll('#watchlist-table thead th')).map(th => th.textContent.trim());
+  ['Ticker','Name','Currency','Current Price','Change','Change %','High','Low','Open Price','Previous Close','Actions'].forEach(h => {
+    expect(headers).toContain(h);
+  });
+});
+
 test('portfolio table includes currency column', () => {
   const htmlPath = path.resolve(__dirname, '../app/index.html');
   const html = fs.readFileSync(htmlPath, 'utf8');
