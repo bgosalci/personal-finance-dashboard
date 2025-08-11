@@ -19,6 +19,7 @@ const I18n = (function() {
             },
             "nav": {
                 "portfolio": "Portfolio",
+                "watchlist": "Watchlist",
                 "pension": "Pension",
                 "calculators": "Calculators",
                 "stockTracker": "Stock Performance Tracker",
@@ -65,6 +66,28 @@ const I18n = (function() {
                 "editInvestment": { "title": "Edit Investment", "selectRecord": "Select Record" },
                 "totalValue": "Total Value",
                 "saveAddAnother": "Save & Add Another"
+                }
+            },
+            "watchlist": {
+                "title": "Watchlist",
+                "actions": {
+                    "addStock": "Add Stock",
+                    "getLastPrice": "Get The Last Price"
+                },
+                "table": {
+                    "ticker": "Ticker",
+                    "name": "Name",
+                    "currency": "Currency",
+                    "currentPrice": "Current Price",
+                    "change": "Change",
+                    "changePct": "Change %",
+                    "high": "High",
+                    "low": "Low",
+                    "open": "Open Price",
+                    "prevClose": "Previous Close"
+                },
+                "dialogs": {
+                    "addStock": { "title": "Add Stock" }
                 }
             },
         "pension": {
@@ -354,8 +377,9 @@ const I18n = (function() {
                 "status": "Statusi i Tregut",
                 "after": "Pas Mbylljes së Tregut"
             },
-            "nav": {
+           "nav": {
                 "portfolio": "Portofoli",
+                "watchlist": "Lista e Vëzhgimit",
                 "pension": "Pensioni",
                 "calculators": "Kalkulatorë",
                 "stockTracker": "Ndjekësi i Performancës së Aksioneve",
@@ -402,6 +426,138 @@ const I18n = (function() {
                 "editInvestment": { "title": "Redakto Investimin", "selectRecord": "Zgjidh Regjistrimin" },
                 "totalValue": "Vlera Totale",
                 "saveAddAnother": "Ruaj & Shto Tjetër"
+                }
+            },
+            "watchlist": {
+                "title": "Lista e Vëzhgimit",
+                "actions": {
+                    "addStock": "Shto Aksion",
+                    "getLastPrice": "Merr Çmimin e Fundit"
+                },
+                "table": {
+                    "ticker": "Simboli",
+                    "name": "Emri",
+                    "currency": "Monedha",
+                    "currentPrice": "Çmimi Aktual",
+                    "change": "Ndryshimi",
+                    "changePct": "Ndryshimi %",
+                    "high": "Më i Larti",
+                    "low": "Më i Ulëti",
+                    "open": "Çmimi i Hapjes",
+                    "prevClose": "Mbyllja e Mëparshme"
+                },
+                "dialogs": {
+                    "addStock": { "title": "Shto Aksion" }
+                }
+            },
+            "watchlist": {
+                "title": "Liste de surveillance",
+                "actions": {
+                    "addStock": "Ajouter une action",
+                    "getLastPrice": "Obtenir le dernier prix"
+                },
+                "table": {
+                    "ticker": "Symbole",
+                    "name": "Nom",
+                    "currency": "Devise",
+                    "currentPrice": "Prix actuel",
+                    "change": "Changement",
+                    "changePct": "Changement %",
+                    "high": "Haut",
+                    "low": "Bas",
+                    "open": "Prix d'ouverture",
+                    "prevClose": "Clôture précédente"
+                },
+                "dialogs": {
+                    "addStock": { "title": "Ajouter une action" }
+                }
+            },
+            "watchlist": {
+                "title": "Beobachtungsliste",
+                "actions": {
+                    "addStock": "Aktie hinzufügen",
+                    "getLastPrice": "Letzten Preis abrufen"
+                },
+                "table": {
+                    "ticker": "Ticker",
+                    "name": "Name",
+                    "currency": "Währung",
+                    "currentPrice": "Aktueller Preis",
+                    "change": "Veränderung",
+                    "changePct": "Veränderung %",
+                    "high": "Hoch",
+                    "low": "Tief",
+                    "open": "Eröffnungspreis",
+                    "prevClose": "Vorheriger Schluss"
+                },
+                "dialogs": {
+                    "addStock": { "title": "Aktie hinzufügen" }
+                }
+            },
+            "watchlist": {
+                "title": "Lista de seguimiento",
+                "actions": {
+                    "addStock": "Agregar acción",
+                    "getLastPrice": "Obtener el último precio"
+                },
+                "table": {
+                    "ticker": "Símbolo",
+                    "name": "Nombre",
+                    "currency": "Moneda",
+                    "currentPrice": "Precio actual",
+                    "change": "Cambio",
+                    "changePct": "Cambio %",
+                    "high": "Alto",
+                    "low": "Bajo",
+                    "open": "Precio de apertura",
+                    "prevClose": "Cierre previo"
+                },
+                "dialogs": {
+                    "addStock": { "title": "Agregar acción" }
+                }
+            },
+            "watchlist": {
+                "title": "Lista di osservazione",
+                "actions": {
+                    "addStock": "Aggiungi titolo",
+                    "getLastPrice": "Ottieni l'ultimo prezzo"
+                },
+                "table": {
+                    "ticker": "Ticker",
+                    "name": "Nome",
+                    "currency": "Valuta",
+                    "currentPrice": "Prezzo attuale",
+                    "change": "Variazione",
+                    "changePct": "Variazione %",
+                    "high": "Massimo",
+                    "low": "Minimo",
+                    "open": "Prezzo di apertura",
+                    "prevClose": "Chiusura precedente"
+                },
+                "dialogs": {
+                    "addStock": { "title": "Aggiungi titolo" }
+                }
+            },
+            "watchlist": {
+                "title": "Listă de urmărire",
+                "actions": {
+                    "addStock": "Adaugă acțiune",
+                    "getLastPrice": "Obține ultimul preț"
+                },
+                "table": {
+                    "ticker": "Simbol",
+                    "name": "Nume",
+                    "currency": "Monedă",
+                    "currentPrice": "Preț curent",
+                    "change": "Schimbare",
+                    "changePct": "Schimbare %",
+                    "high": "Maxim",
+                    "low": "Minim",
+                    "open": "Preț de deschidere",
+                    "prevClose": "Închidere anterioară"
+                },
+                "dialogs": {
+                    "addStock": { "title": "Adaugă acțiune" }
                 }
             },
             "pension": {
@@ -695,6 +851,7 @@ const I18n = (function() {
             },
             "nav": {
                 "portfolio": "Portefeuille",
+                "watchlist": "Liste de surveillance",
                 "pension": "Pension",
                 "calculators": "Calculatrices",
                 "stockTracker": "Suivi de Performance des Actions",
@@ -1034,6 +1191,7 @@ const I18n = (function() {
             },
             "nav": {
                 "portfolio": "Portfolio",
+                "watchlist": "Beobachtungsliste",
                 "pension": "Rente",
                 "calculators": "Rechner",
                 "stockTracker": "Aktien-Performance-Tracker",
@@ -1373,6 +1531,7 @@ const I18n = (function() {
             },
             "nav": {
                 "portfolio": "Cartera",
+                "watchlist": "Lista de seguimiento",
                 "pension": "Pensión",
                 "calculators": "Calculadoras",
                 "stockTracker": "Rastreador de Rendimiento de Acciones",
@@ -1712,6 +1871,7 @@ const I18n = (function() {
             },
             "nav": {
                 "portfolio": "Portafoglio",
+                "watchlist": "Lista di osservazione",
                 "pension": "Pensione",
                 "calculators": "Calcolatrici",
                 "stockTracker": "Tracker delle Prestazioni Azionarie",
@@ -2052,6 +2212,7 @@ const I18n = (function() {
             },
             "nav": {
                 "portfolio": "Portofoliu",
+                "watchlist": "Listă de urmărire",
                 "pension": "Pensiune",
                 "calculators": "Calculatoare",
                 "stockTracker": "Monitorizare performanță acțiuni",
