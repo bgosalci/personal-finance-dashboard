@@ -72,7 +72,8 @@ const I18n = (function() {
                 "title": "Watchlist",
                 "actions": {
                     "addStock": "Add Stock",
-                    "getLastPrice": "Get The Last Price"
+                    "getLastPrice": "Get The Last Price",
+                    "delete": "Delete"
                 },
                 "table": {
                     "ticker": "Ticker",
@@ -84,7 +85,8 @@ const I18n = (function() {
                     "high": "High",
                     "low": "Low",
                     "open": "Open Price",
-                    "prevClose": "Previous Close"
+                    "prevClose": "Previous Close",
+                    "actions": "Actions"
                 },
                 "dialogs": {
                     "addStock": { "title": "Add Stock" }
@@ -432,7 +434,8 @@ const I18n = (function() {
                 "title": "Lista e Vëzhgimit",
                 "actions": {
                     "addStock": "Shto Aksion",
-                    "getLastPrice": "Merr Çmimin e Fundit"
+                    "getLastPrice": "Merr Çmimin e Fundit",
+                    "delete": "Fshi"
                 },
                 "table": {
                     "ticker": "Simboli",
@@ -444,7 +447,8 @@ const I18n = (function() {
                     "high": "Më i Larti",
                     "low": "Më i Ulëti",
                     "open": "Çmimi i Hapjes",
-                    "prevClose": "Mbyllja e Mëparshme"
+                    "prevClose": "Mbyllja e Mëparshme",
+                    "actions": "Veprimet"
                 },
                 "dialogs": {
                     "addStock": { "title": "Shto Aksion" }
@@ -794,7 +798,8 @@ const I18n = (function() {
                 "title": "Liste de surveillance",
                 "actions": {
                     "addStock": "Ajouter une action",
-                    "getLastPrice": "Obtenir le dernier prix"
+                    "getLastPrice": "Obtenir le dernier prix",
+                    "delete": "Supprimer"
                 },
                 "table": {
                     "ticker": "Symbole",
@@ -806,7 +811,8 @@ const I18n = (function() {
                     "high": "Haut",
                     "low": "Bas",
                     "open": "Prix d'ouverture",
-                    "prevClose": "Clôture précédente"
+                    "prevClose": "Clôture précédente",
+                    "actions": "Actions"
                 },
                 "dialogs": {
                     "addStock": { "title": "Ajouter une action" }
@@ -1156,7 +1162,8 @@ const I18n = (function() {
                 "title": "Beobachtungsliste",
                 "actions": {
                     "addStock": "Aktie hinzufügen",
-                    "getLastPrice": "Letzten Preis abrufen"
+                    "getLastPrice": "Letzten Preis abrufen",
+                    "delete": "Löschen"
                 },
                 "table": {
                     "ticker": "Ticker",
@@ -1168,7 +1175,8 @@ const I18n = (function() {
                     "high": "Hoch",
                     "low": "Tief",
                     "open": "Eröffnungspreis",
-                    "prevClose": "Vorheriger Schluss"
+                    "prevClose": "Vorheriger Schluss",
+                    "actions": "Aktionen"
                 },
                 "dialogs": {
                     "addStock": { "title": "Aktie hinzufügen" }
@@ -1518,7 +1526,8 @@ const I18n = (function() {
                 "title": "Lista de seguimiento",
                 "actions": {
                     "addStock": "Agregar acción",
-                    "getLastPrice": "Obtener el último precio"
+                    "getLastPrice": "Obtener el último precio",
+                    "delete": "Eliminar"
                 },
                 "table": {
                     "ticker": "Símbolo",
@@ -1530,7 +1539,8 @@ const I18n = (function() {
                     "high": "Alto",
                     "low": "Bajo",
                     "open": "Precio de apertura",
-                    "prevClose": "Cierre previo"
+                    "prevClose": "Cierre previo",
+                    "actions": "Acciones"
                 },
                 "dialogs": {
                     "addStock": { "title": "Agregar acción" }
@@ -1880,7 +1890,8 @@ const I18n = (function() {
                 "title": "Lista di osservazione",
                 "actions": {
                     "addStock": "Aggiungi titolo",
-                    "getLastPrice": "Ottieni l'ultimo prezzo"
+                    "getLastPrice": "Ottieni l'ultimo prezzo",
+                    "delete": "Elimina"
                 },
                 "table": {
                     "ticker": "Ticker",
@@ -1892,7 +1903,8 @@ const I18n = (function() {
                     "high": "Massimo",
                     "low": "Minimo",
                     "open": "Prezzo di apertura",
-                    "prevClose": "Chiusura precedente"
+                    "prevClose": "Chiusura precedente",
+                    "actions": "Azioni"
                 },
                 "dialogs": {
                     "addStock": { "title": "Aggiungi titolo" }
@@ -2248,7 +2260,8 @@ const I18n = (function() {
                 "title": "Listă de urmărire",
                 "actions": {
                     "addStock": "Adaugă acțiune",
-                    "getLastPrice": "Obține ultimul preț"
+                    "getLastPrice": "Obține ultimul preț",
+                    "delete": "Șterge"
                 },
                 "table": {
                     "ticker": "Simbol",
@@ -2260,7 +2273,8 @@ const I18n = (function() {
                     "high": "Maxim",
                     "low": "Minim",
                     "open": "Preț de deschidere",
-                    "prevClose": "Închidere anterioară"
+                    "prevClose": "Închidere anterioară",
+                    "actions": "Acțiuni"
                 },
                 "dialogs": {
                     "addStock": { "title": "Adaugă acțiune" }
