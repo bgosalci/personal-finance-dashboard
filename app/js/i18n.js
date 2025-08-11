@@ -288,6 +288,7 @@ const I18n = (function() {
                 "baseCurrency": "Base Currency",
                 "baseCurrencyHint": "Exchange rates refresh once a day to keep totals accurate.",
                 "sectionTitles": {
+                "display": "Display",
                 "language": "Language",
                 "pension": "Pension",
                 "portfolio": "Portfolio",
@@ -311,7 +312,8 @@ const I18n = (function() {
                 "languageLabel": "Language",
                 "exportLang": "Export Language",
                 "importLang": "Import Language",
-                "rtlToggle": "Enable RTL"
+                "rtlToggle": "Enable RTL",
+                "fontSize": "Font Size"
             },
             "dialog": {
                 "yes": "Yes",
@@ -338,7 +340,8 @@ const I18n = (function() {
                 "export": "Export",
                 "add": "Add",
                 "save": "Save",
-                "summary": "Summary"
+                "summary": "Summary",
+                "reset": "Reset"
             }
         },
         "sq": {
@@ -624,6 +627,7 @@ const I18n = (function() {
                 "baseCurrency": "Monedha Bazë",
                 "baseCurrencyHint": "Kursi i këmbimit rifreskohet një herë në ditë për të mbajtur totalet të sakta.",
                 "sectionTitles": {
+                "display": "Pamja",
                 "language": "Gjuha",
                 "pension": "Pensioni",
                 "portfolio": "Portofoli",
@@ -647,7 +651,8 @@ const I18n = (function() {
                 "languageLabel": "Gjuha",
                 "exportLang": "Eksporto Gjuhën",
                 "importLang": "Importo Gjuhën",
-                "rtlToggle": "Aktivizo RTL"
+                "rtlToggle": "Aktivizo RTL",
+                "fontSize": "Madhësia e shkronjave"
             },
             "dialog": {
                 "yes": "Po",
@@ -674,7 +679,8 @@ const I18n = (function() {
                 "export": "Eksporto",
                 "add": "Shto",
                 "save": "Ruaj",
-                "summary": "Përmbledhje"
+                "summary": "Përmbledhje",
+                "reset": "Rivendos"
             }
         },
         "fr": {
@@ -960,6 +966,7 @@ const I18n = (function() {
                 "baseCurrency": "Devise de Base",
                 "baseCurrencyHint": "Les taux de change sont mis à jour une fois par jour pour maintenir des totaux précis.",
                 "sectionTitles": {
+                "display": "Affichage",
                 "language": "Langue",
                 "pension": "Pension",
                 "portfolio": "Portefeuille",
@@ -983,7 +990,8 @@ const I18n = (function() {
                 "languageLabel": "Langue",
                 "exportLang": "Exporter la Langue",
                 "importLang": "Importer la Langue",
-                "rtlToggle": "Activer RTL"
+                "rtlToggle": "Activer RTL",
+                "fontSize": "Taille de police"
             },
             "dialog": {
                 "yes": "Oui",
@@ -1010,7 +1018,8 @@ const I18n = (function() {
                 "export": "Exporter",
                 "add": "Ajouter",
                 "save": "Enregistrer",
-                "summary": "Résumé"
+                "summary": "Résumé",
+                "reset": "Réinitialiser"
             }
         },
         "de": {
@@ -1296,6 +1305,7 @@ const I18n = (function() {
                 "baseCurrency": "Basiswährung",
                 "baseCurrencyHint": "Wechselkurse werden einmal täglich aktualisiert, um genaue Summen sicherzustellen.",
                 "sectionTitles": {
+                "display": "Anzeige",
                 "language": "Sprache",
                 "pension": "Rente",
                 "portfolio": "Portfolio",
@@ -1319,7 +1329,8 @@ const I18n = (function() {
                 "languageLabel": "Sprache",
                 "exportLang": "Sprache exportieren",
                 "importLang": "Sprache importieren",
-                "rtlToggle": "RTL aktivieren"
+                "rtlToggle": "RTL aktivieren",
+                "fontSize": "Schriftgröße"
             },
             "dialog": {
                 "yes": "Ja",
@@ -1346,7 +1357,8 @@ const I18n = (function() {
                 "export": "Exportieren",
                 "add": "Hinzufügen",
                 "save": "Speichern",
-                "summary": "Zusammenfassung"
+                "summary": "Zusammenfassung",
+                "reset": "Zurücksetzen"
             }
         },
         "es": {
@@ -1632,6 +1644,7 @@ const I18n = (function() {
                 "baseCurrency": "Moneda Base",
                 "baseCurrencyHint": "Los tipos de cambio se actualizan una vez al día para mantener totales precisos.",
                 "sectionTitles": {
+                "display": "Visualización",
                 "language": "Idioma",
                 "pension": "Pensión",
                 "portfolio": "Cartera",
@@ -1655,7 +1668,8 @@ const I18n = (function() {
                 "languageLabel": "Idioma",
                 "exportLang": "Exportar Idioma",
                 "importLang": "Importar Idioma",
-                "rtlToggle": "Habilitar RTL"
+                "rtlToggle": "Habilitar RTL",
+                "fontSize": "Tamaño de fuente"
             },
             "dialog": {
                 "yes": "Sí",
@@ -1682,7 +1696,8 @@ const I18n = (function() {
                 "export": "Exportar",
                 "add": "Añadir",
                 "save": "Guardar",
-                "summary": "Resumen"
+                "summary": "Resumen",
+                "reset": "Restablecer"
             }
         },
         "it": {
@@ -1968,6 +1983,7 @@ const I18n = (function() {
                 "baseCurrency": "Valuta Base",
                 "baseCurrencyHint": "I tassi di cambio si aggiornano una volta al giorno per mantenere totali accurati.",
                 "sectionTitles": {
+                "display": "Visualizzazione",
                 "language": "Lingua",
                 "pension": "Pensione",
                 "portfolio": "Portafoglio",
@@ -1991,7 +2007,8 @@ const I18n = (function() {
                 "languageLabel": "Lingua",
                 "exportLang": "Esporta Lingua",
                 "importLang": "Importa Lingua",
-                "rtlToggle": "Abilita RTL"
+                "rtlToggle": "Abilita RTL",
+                "fontSize": "Dimensione carattere"
             },
             "dialog": {
                 "yes": "Sì",
@@ -2018,7 +2035,8 @@ const I18n = (function() {
                 "export": "Esporta",
                 "add": "Aggiungi",
                 "save": "Salva",
-                "summary": "Riepilogo"
+                "summary": "Riepilogo",
+                "reset": "Reimposta"
             }
         },
 
@@ -2308,6 +2326,7 @@ const I18n = (function() {
                 "baseCurrency": "Moneda de bază",
                 "baseCurrencyHint": "Reîmprospătarea ratelor de schimb o dată pe zi pentru a menține totalul exact.",
                 "sectionTitles": {
+                    "display": "Afișare",
                     "language": "Limbă",
                     "pension": "Pensiune",
                     "portfolio": "Portofoliu",
@@ -2331,7 +2350,8 @@ const I18n = (function() {
                 "languageLabel": "Limbă",
                 "exportLang": "Limba de export",
                 "importLang": "Limba de import",
-                "rtlToggle": "Activați RTL"
+                "rtlToggle": "Activați RTL",
+                "fontSize": "Mărimea fontului"
             },
             "dialog": {
                 "yes": "Da",
@@ -2358,7 +2378,8 @@ const I18n = (function() {
                 "export": "Export",
                 "add": "Adăuga",
                 "save": "Salva",
-                "summary": "Rezumat"
+                "summary": "Rezumat",
+                "reset": "Resetează"
             }
         }
     };

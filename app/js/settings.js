@@ -2,6 +2,7 @@ const Settings = (function() {
     'use strict';
 
     const STORAGE_KEY = 'pf_base_currency';
+    const FONT_SCALE_KEY = 'pf_font_scale';
 
     function load() {
         return localStorage.getItem(STORAGE_KEY) || 'USD';
@@ -17,6 +18,29 @@ const Settings = (function() {
 
     function setBaseCurrency(value) {
         save(value);
+    }
+
+    function loadFontScale() {
+        const v = parseFloat(localStorage.getItem(FONT_SCALE_KEY));
+        return isNaN(v) ? 1 : v;
+    }
+
+    function saveFontScale(v) {
+        localStorage.setItem(FONT_SCALE_KEY, String(v));
+    }
+
+    function applyFontScale(scale) {
+        document.documentElement.style.setProperty('--app-font-scale', scale);
+        if (window.Chart && Chart.defaults) {
+            Chart.defaults.font.size = 12 * scale;
+            if (Chart.instances) {
+                if (typeof Chart.instances.forEach === 'function') {
+                    Chart.instances.forEach(c => c.update());
+                } else {
+                    Object.values(Chart.instances).forEach(c => c.update());
+                }
+            }
+        }
     }
 
     function populateOptions(data) {
@@ -38,6 +62,42 @@ const Settings = (function() {
     }
 
     function init() {
+        const fontBtns = document.querySelectorAll('.font-scale-btn');
+        const fontReset = document.getElementById('font-scale-reset');
+        const storedScale = loadFontScale();
+        applyFontScale(storedScale);
+
+        fontBtns.forEach(btn => {
+            const s = parseFloat(btn.dataset.scale);
+            if (s === storedScale) {
+                btn.classList.remove('btn-secondary');
+                btn.classList.add('btn-primary');
+            }
+            btn.addEventListener('click', () => {
+                const scale = parseFloat(btn.dataset.scale);
+                saveFontScale(scale);
+                applyFontScale(scale);
+                fontBtns.forEach(b => {
+                    b.classList.remove('btn-primary');
+                    b.classList.add('btn-secondary');
+                });
+                btn.classList.remove('btn-secondary');
+                btn.classList.add('btn-primary');
+            });
+        });
+
+        if (fontReset) {
+            fontReset.addEventListener('click', () => {
+                saveFontScale(1);
+                applyFontScale(1);
+                fontBtns.forEach(b => {
+                    const s = parseFloat(b.dataset.scale);
+                    b.classList.toggle('btn-primary', s === 1);
+                    b.classList.toggle('btn-secondary', s !== 1);
+                });
+            });
+        }
+
         const select = document.getElementById('base-currency-select');
         if (select) {
             select.addEventListener('change', () => {
