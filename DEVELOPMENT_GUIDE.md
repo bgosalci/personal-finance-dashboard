@@ -622,6 +622,7 @@ This development guide should help you understand the codebase structure, develo
 - `.gitignore` updated to ignore Node modules and coverage files.
 - Additional rules available in [RULES.md](RULES.md).
 - Internationalization support with language switcher and locale files.
+- Watchlist now supports real-time price updates via Finnhub WebSocket trades.
 ## Addendum: Eventing, Testing Mocks, i18n, and API Key Setup
 
 ### Eventing Pattern in Practice

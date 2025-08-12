@@ -1,6 +1,8 @@
 const WatchlistManager = (function() {
     const STORAGE_KEY = 'watchlistData';
     let watchlist = [];
+    let ws = null;
+    let reconnectTimer = null;
 
     const addBtn = document.getElementById('add-watchstock-btn');
     const getPriceBtn = document.getElementById('watchlist-get-price-btn');
@@ -25,6 +27,93 @@ const WatchlistManager = (function() {
             if (data) watchlist = JSON.parse(data) || [];
         } catch (e) {
             watchlist = [];
+        }
+    }
+
+    function connectWebSocket() {
+        if (typeof WebSocket === 'undefined' || typeof QuotesService === 'undefined') return;
+        const token = QuotesService.getApiKey ? QuotesService.getApiKey() : '';
+        if (!token || watchlist.length === 0 || ws) return;
+        try {
+            ws = new WebSocket('wss://ws.finnhub.io?token=' + encodeURIComponent(token));
+            ws.addEventListener('open', () => {
+                watchlist.forEach(item => subscribeTicker(item.ticker));
+            });
+            ws.addEventListener('message', handleWsMessage);
+            ws.addEventListener('close', scheduleReconnect);
+            ws.addEventListener('error', scheduleReconnect);
+        } catch (e) {
+            ws = null;
+        }
+    }
+
+    function scheduleReconnect() {
+        if (ws) {
+            try { ws.close(); } catch (e) {}
+            ws = null;
+        }
+        if (reconnectTimer) clearTimeout(reconnectTimer);
+        reconnectTimer = setTimeout(() => {
+            reconnectTimer = null;
+            connectWebSocket();
+        }, 5000);
+    }
+
+    function reconnectWebSocket() {
+        if (ws) {
+            try { ws.close(); } catch (e) {}
+            ws = null;
+        }
+        if (reconnectTimer) {
+            clearTimeout(reconnectTimer);
+            reconnectTimer = null;
+        }
+        connectWebSocket();
+    }
+
+    function subscribeTicker(ticker) {
+        if (ws && ws.readyState === WebSocket.OPEN) {
+            try { ws.send(JSON.stringify({ type: 'subscribe', symbol: ticker })); } catch (e) {}
+        }
+    }
+
+    function unsubscribeTicker(ticker) {
+        if (ws && ws.readyState === WebSocket.OPEN) {
+            try { ws.send(JSON.stringify({ type: 'unsubscribe', symbol: ticker })); } catch (e) {}
+        }
+    }
+
+    function handleWsMessage(ev) {
+        let updated = false;
+        try {
+            const msg = JSON.parse(ev.data);
+            if (msg.type === 'trade' && Array.isArray(msg.data)) {
+                msg.data.forEach(trade => {
+                    const t = String(trade.s || '').toUpperCase();
+                    const item = watchlist.find(w => w.ticker === t);
+                    if (item) {
+                        const price = typeof trade.p === 'number' ? trade.p : null;
+                        if (price !== null) {
+                            item.price = price;
+                            if (typeof item.prevClose === 'number') {
+                                item.change = price - item.prevClose;
+                                item.changePct = item.prevClose ? (item.change / item.prevClose) * 100 : null;
+                            }
+                            if (typeof item.high === 'number') {
+                                if (item.high === null || price > item.high) item.high = price;
+                            }
+                            if (typeof item.low === 'number') {
+                                if (item.low === null || price < item.low) item.low = price;
+                            }
+                            updated = true;
+                        }
+                    }
+                });
+            }
+        } catch (e) {}
+        if (updated) {
+            save();
+            render();
         }
     }
 
@@ -72,9 +161,14 @@ const WatchlistManager = (function() {
     async function deleteStock(index) {
         const confirmed = await DialogManager.confirm(I18n.t('watchlist.dialogs.deleteStock'), I18n.t('dialog.delete'));
         if (confirmed) {
-            watchlist.splice(index, 1);
+            const removed = watchlist.splice(index, 1)[0];
             save();
             render();
+            if (removed && removed.ticker) unsubscribeTicker(removed.ticker);
+            if (watchlist.length === 0) {
+                if (ws) { ws.close(); ws = null; }
+                if (reconnectTimer) { clearTimeout(reconnectTimer); reconnectTimer = null; }
+            }
         }
     }
 
@@ -143,6 +237,8 @@ const WatchlistManager = (function() {
         render();
         closeModal();
         form.reset();
+        subscribeTicker(ticker);
+        if (!ws) connectWebSocket();
     }
 
     async function handleTickerLookup() {
@@ -213,6 +309,8 @@ const WatchlistManager = (function() {
             tickerInput.addEventListener('blur', handleTickerLookup);
         }
         window.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+        document.addEventListener('settings:api-key-updated', reconnectWebSocket);
+        connectWebSocket();
     }
 
     return { init, fetchLastPrices };
