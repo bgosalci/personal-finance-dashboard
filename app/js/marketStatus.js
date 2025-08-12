@@ -1,6 +1,6 @@
 // Market Status Indicator
 const MarketStatus = (function() {
-    // Uses Polygon.io to check current US market status
+    // Uses Polygon.io to check current US market status including pre-market and after-hours sessions
     const API_KEY = 'hQmiS4FP5wJQrg8rX3gTMane2digQcLF';
     const ledEl = document.getElementById('market-led');
     const sessionEl = document.getElementById('market-session');
@@ -20,7 +20,7 @@ const MarketStatus = (function() {
             const isOpen = data && data.market === 'open';
             const earlyOpen = data && data.earlyHours === true;
             const afterOpen = data && data.afterHours === true;
-            marketOpen = !!isOpen;
+            marketOpen = !!(isOpen || earlyOpen || afterOpen);
             ledEl.classList.toggle('led-green', isOpen);
             ledEl.classList.toggle('led-red', !isOpen);
             if (earlyLedEl) {

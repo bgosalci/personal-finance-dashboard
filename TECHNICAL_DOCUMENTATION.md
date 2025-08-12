@@ -398,7 +398,7 @@ No build process required - the application runs directly in the browser.
 - `financialDashboard.js` → orchestrates modules:
   - UI infrastructure: `tabManager.js`, `dialogManager.js`
   - Feature modules: `portfolioManager.js`, `pensionManager.js`, `calculator.js`, `stockTracker.js`, `stockFinance.js`, `settings.js`
-  - Utilities: `i18n.js`, `dateUtils.js`, `forexData.js`, `marketStatus.js`, `priceUpdater.js`, `appVersion.js`
+  - Utilities: `i18n.js`, `dateUtils.js`, `forexData.js`, `marketStatus.js`, `priceUpdater.js` (pre-, regular, and after-market refresh), `appVersion.js`
 - Visualization: `chart.umd.js` (Chart.js)
 
 Textual flow:

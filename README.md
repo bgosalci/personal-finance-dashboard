@@ -144,7 +144,7 @@ personal-finance-dashboard/
 │       ├── stockTracker.js       # Stock performance tracker
 │       ├── stockFinance.js       # Financial statements
 │       ├── pensionManager.js     # Pension tracking
-│       ├── priceUpdater.js       # Portfolio-wide price refresh
+│       ├── priceUpdater.js       # Portfolio-wide price refresh during pre-, regular, and after-market sessions
 │       ├── forexData.js          # Foreign exchange data
 │       ├── dateUtils.js          # Date helper functions
 │       ├── settings.js           # Application settings
