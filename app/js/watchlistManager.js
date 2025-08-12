@@ -296,6 +296,58 @@ const WatchlistManager = (function() {
         render();
     }
 
+    function exportData(format = 'json') {
+        const data = watchlist.map(({ ticker, name, currency }) => ({ ticker, name, currency }));
+        if (format === 'csv') {
+            const lines = ['ticker,name,currency'];
+            function esc(v) {
+                if (v === undefined || v === null) return '';
+                const s = String(v).replace(/"/g, '""');
+                return /[",\n]/.test(s) ? '"' + s + '"' : s;
+            }
+            data.forEach(it => {
+                lines.push(`${esc(it.ticker)},${esc(it.name)},${esc(it.currency)}`);
+            });
+            return lines.join('\n');
+        }
+        return JSON.stringify(data, null, 2);
+    }
+
+    function importData(text, format = 'json') {
+        let arr = [];
+        if (format === 'csv') {
+            const lines = text.trim().split(/\r?\n/).filter(l => l.trim());
+            lines.shift();
+            arr = lines.map(line => {
+                const parts = line.split(',');
+                return {
+                    ticker: (parts[0] || '').trim().toUpperCase(),
+                    name: (parts[1] || '').trim(),
+                    currency: (parts[2] || '').trim() || 'USD'
+                };
+            });
+        } else {
+            try { arr = JSON.parse(text) || []; } catch (e) { arr = []; }
+        }
+        arr.forEach(item => {
+            const ticker = (item.ticker || '').toUpperCase();
+            if (!ticker || watchlist.some(w => w.ticker === ticker)) return;
+            watchlist.push({ ticker, name: item.name || '', currency: item.currency || 'USD' });
+            subscribeTicker(ticker);
+        });
+        save();
+        render();
+        if (!ws && watchlist.length) connectWebSocket();
+    }
+
+    function deleteAllData() {
+        try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+        watchlist = [];
+        if (ws) { try { ws.close(); } catch (e) {} ws = null; }
+        if (reconnectTimer) { clearTimeout(reconnectTimer); reconnectTimer = null; }
+        render();
+    }
+
     function init() {
         load();
         render();
@@ -313,5 +365,5 @@ const WatchlistManager = (function() {
         connectWebSocket();
     }
 
-    return { init, fetchLastPrices };
+    return { init, fetchLastPrices, exportData, importData, deleteAllData };
 })();

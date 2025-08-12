@@ -295,6 +295,10 @@
             align-self: flex-start;
         }
 
+        #settings-finnhub-api-key + label {
+            margin-top: 0.5rem;
+        }
+
         .form-group input:focus, .form-group select:focus {
             outline: none;
             border-color: var(--primary-blue);

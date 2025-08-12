@@ -180,6 +180,18 @@ const Settings = (function() {
         const impPortfolioFile = document.getElementById('import-portfolio-file');
         const impPortfolioCancel = document.getElementById('cancel-import-portfolio');
         const delPortfolioBtn = document.getElementById('delete-portfolio-btn');
+        const expWatchlistBtn = document.getElementById('export-watchlist-btn');
+        const impWatchlistBtn = document.getElementById('import-watchlist-btn');
+        const delWatchlistBtn = document.getElementById('delete-watchlist-btn');
+        const expWatchlistModal = document.getElementById('export-watchlist-modal');
+        const expWatchlistFormat = document.getElementById('export-watchlist-format');
+        const expWatchlistCancel = document.getElementById('cancel-export-watchlist');
+        const expWatchlistDownload = document.getElementById('download-export-watchlist');
+        const impWatchlistModal = document.getElementById('import-watchlist-modal');
+        const impWatchlistForm = document.getElementById('import-watchlist-form');
+        const impWatchlistFormat = document.getElementById('import-watchlist-format');
+        const impWatchlistFile = document.getElementById('import-watchlist-file');
+        const impWatchlistCancel = document.getElementById('cancel-import-watchlist');
         const expStockBtn = document.getElementById('export-stock-btn');
         const impStockBtn = document.getElementById('import-stock-btn');
         const delStockBtn = document.getElementById('delete-stock-btn');
@@ -285,6 +297,52 @@ const Settings = (function() {
             reader.readAsText(file);
         }
 
+        function openWatchlistExport() {
+            expWatchlistFormat.value = 'json';
+            expWatchlistModal.style.display = 'flex';
+        }
+
+        function closeWatchlistExport() {
+            expWatchlistModal.style.display = 'none';
+        }
+
+        function downloadWatchlistExport() {
+            const fmt = expWatchlistFormat.value;
+            const data = WatchlistManager.exportData(fmt);
+            const blob = new Blob([data], { type: fmt === 'json' ? 'application/json' : 'text/csv' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'watchlist.' + (fmt === 'json' ? 'json' : 'csv');
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(a.href);
+            closeWatchlistExport();
+        }
+
+        function openWatchlistImport() {
+            impWatchlistFormat.value = 'json';
+            if (impWatchlistFile) impWatchlistFile.value = '';
+            if (impWatchlistFile) impWatchlistFile.focus();
+            impWatchlistModal.style.display = 'flex';
+        }
+
+        function closeWatchlistImport() {
+            impWatchlistModal.style.display = 'none';
+        }
+
+        function handleWatchlistImport(e) {
+            e.preventDefault();
+            const file = impWatchlistFile.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function() {
+                WatchlistManager.importData(reader.result, impWatchlistFormat.value);
+                closeWatchlistImport();
+            };
+            reader.readAsText(file);
+        }
+
         function openStockExport() {
             expStockFormat.value = 'json';
             expStockModal.style.display = 'flex';
@@ -337,6 +395,11 @@ const Settings = (function() {
         if (expPortfolioDownload) expPortfolioDownload.addEventListener('click', downloadPortfolioExport);
         if (expPortfolioModal) expPortfolioModal.addEventListener('click', e => { if (e.target === expPortfolioModal) closePortfolioExport(); });
 
+        if (expWatchlistBtn) expWatchlistBtn.addEventListener('click', openWatchlistExport);
+        if (expWatchlistCancel) expWatchlistCancel.addEventListener('click', closeWatchlistExport);
+        if (expWatchlistDownload) expWatchlistDownload.addEventListener('click', downloadWatchlistExport);
+        if (expWatchlistModal) expWatchlistModal.addEventListener('click', e => { if (e.target === expWatchlistModal) closeWatchlistExport(); });
+
         if (expStockBtn) expStockBtn.addEventListener('click', openStockExport);
         if (expStockCancel) expStockCancel.addEventListener('click', closeStockExport);
         if (expStockDownload) expStockDownload.addEventListener('click', downloadStockExport);
@@ -346,6 +409,11 @@ const Settings = (function() {
         if (impPortfolioCancel) impPortfolioCancel.addEventListener('click', closePortfolioImport);
         if (impPortfolioForm) impPortfolioForm.addEventListener('submit', handlePortfolioImport);
         if (impPortfolioModal) impPortfolioModal.addEventListener('click', e => { if (e.target === impPortfolioModal) closePortfolioImport(); });
+
+        if (impWatchlistBtn) impWatchlistBtn.addEventListener('click', openWatchlistImport);
+        if (impWatchlistCancel) impWatchlistCancel.addEventListener('click', closeWatchlistImport);
+        if (impWatchlistForm) impWatchlistForm.addEventListener('submit', handleWatchlistImport);
+        if (impWatchlistModal) impWatchlistModal.addEventListener('click', e => { if (e.target === impWatchlistModal) closeWatchlistImport(); });
 
         if (impStockBtn) impStockBtn.addEventListener('click', openStockImport);
         if (impStockCancel) impStockCancel.addEventListener('click', closeStockImport);
@@ -364,6 +432,13 @@ const Settings = (function() {
             delPortfolioBtn.addEventListener('click', async () => {
                 const c = await DialogManager.confirm(I18n.t('dialog.deleteAllPortfolio'), I18n.t('dialog.delete'));
                 if (c) PortfolioManager.deleteAllData();
+            });
+        }
+
+        if (delWatchlistBtn) {
+            delWatchlistBtn.addEventListener('click', async () => {
+                const c = await DialogManager.confirm(I18n.t('dialog.deleteAllWatchlist'), I18n.t('dialog.delete'));
+                if (c) WatchlistManager.deleteAllData();
             });
         }
 

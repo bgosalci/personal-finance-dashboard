@@ -318,6 +318,7 @@ const I18n = (function() {
                 "language": "Language",
                 "pension": "Pension",
                 "portfolio": "Portfolio",
+                "watchlist": "Watchlist",
                 "stockTracker": "Stock Performance Tracker",
                 "about": "About"
                 },
@@ -332,6 +333,9 @@ const I18n = (function() {
                 "exportPortfolio": "Export Portfolio",
                   "importPortfolio": "Import Portfolio",
                   "deletePortfolio": "Delete Portfolio",
+                "exportWatchlist": "Export Watchlist",
+                "importWatchlist": "Import Watchlist",
+                "deleteWatchlist": "Delete Watchlist",
                 "exportStock": "Export Stock Data",
                 "importStock": "Import Stock Data",
                 "deleteStock": "Delete Data",
@@ -357,6 +361,7 @@ const I18n = (function() {
                 "deleteEntry": "Delete this entry?",
                 "deleteAllPension": "Delete all pension data?",
                 "deleteAllPortfolio": "Delete all portfolio data?",
+                "deleteAllWatchlist": "Delete all watchlist data?",
                 "deleteAllStock": "Delete all stock tracker data?"
             },
             "common": {
@@ -684,6 +689,7 @@ const I18n = (function() {
                 "language": "Gjuha",
                 "pension": "Pensioni",
                 "portfolio": "Portofoli",
+                "watchlist": "Lista e Vëzhgimit",
                 "stockTracker": "Ndjekësi i Performancës së Aksioneve",
                 "about": "Rreth"
                 },
@@ -698,6 +704,9 @@ const I18n = (function() {
                 "exportPortfolio": "Eksporto Portofolin",
                   "importPortfolio": "Importo Portofolin",
                   "deletePortfolio": "Fshi Portofolin",
+                "exportWatchlist": "Eksporto Listën e Vëzhgimit",
+                "importWatchlist": "Importo Listën e Vëzhgimit",
+                "deleteWatchlist": "Fshi Listën e Vëzhgimit",
                 "exportStock": "Eksporto të Dhënat e Aksioneve",
                 "importStock": "Importo të Dhënat e Aksioneve",
                 "deleteStock": "Fshi të Dhënat",
@@ -723,6 +732,7 @@ const I18n = (function() {
                 "deleteEntry": "Ta fshij këtë shënim?",
                 "deleteAllPension": "Të fshij të gjithë të dhënat e pensionit?",
                 "deleteAllPortfolio": "Të fshij të gjitha të dhënat e portofolit?",
+                "deleteAllWatchlist": "Të fshij të gjitha të dhënat e listës së vëzhgimit?",
                 "deleteAllStock": "Të fshij të gjitha të dhënat e gjurmuesit të aksioneve?"
             },
             "common": {
@@ -1050,6 +1060,7 @@ const I18n = (function() {
                 "language": "Langue",
                 "pension": "Pension",
                 "portfolio": "Portefeuille",
+                "watchlist": "Liste de surveillance",
                 "stockTracker": "Suivi de Performance des Actions",
                 "about": "À propos"
                 },
@@ -1064,6 +1075,9 @@ const I18n = (function() {
                   "exportPortfolio": "Exporter le Portefeuille",
                   "importPortfolio": "Importer le Portefeuille",
                   "deletePortfolio": "Supprimer le Portefeuille",
+                "exportWatchlist": "Exporter la liste de surveillance",
+                "importWatchlist": "Importer la liste de surveillance",
+                "deleteWatchlist": "Supprimer la liste de surveillance",
                 "exportStock": "Exporter les Données d'Actions",
                 "importStock": "Importer les Données d'Actions",
                 "deleteStock": "Supprimer les Données",
@@ -1089,6 +1103,7 @@ const I18n = (function() {
                 "deleteEntry": "Supprimer cette entrée ?",
                 "deleteAllPension": "Supprimer toutes les données de retraite ?",
                 "deleteAllPortfolio": "Supprimer toutes les données de portefeuille ?",
+                "deleteAllWatchlist": "Supprimer toutes les données de la liste de surveillance ?",
                 "deleteAllStock": "Supprimer toutes les données du suivi des actions ?"
             },
             "common": {
@@ -1416,6 +1431,7 @@ const I18n = (function() {
                 "language": "Sprache",
                 "pension": "Rente",
                 "portfolio": "Portfolio",
+                "watchlist": "Beobachtungsliste",
                 "stockTracker": "Aktien-Performance-Tracker",
                 "about": "Über"
                 },
@@ -1430,6 +1446,9 @@ const I18n = (function() {
                   "exportPortfolio": "Portfolio exportieren",
                   "importPortfolio": "Portfolio importieren",
                   "deletePortfolio": "Portfolio löschen",
+                "exportWatchlist": "Beobachtungsliste exportieren",
+                "importWatchlist": "Beobachtungsliste importieren",
+                "deleteWatchlist": "Beobachtungsliste löschen",
                 "exportStock": "Aktien-Daten exportieren",
                 "importStock": "Aktien-Daten importieren",
                 "deleteStock": "Daten löschen",
@@ -1455,6 +1474,7 @@ const I18n = (function() {
                 "deleteEntry": "Diesen Eintrag löschen?",
                 "deleteAllPension": "Alle Rentendaten löschen?",
                 "deleteAllPortfolio": "Alle Portfoliodaten löschen?",
+                "deleteAllWatchlist": "Alle Beobachtungsliste-Daten löschen?",
                 "deleteAllStock": "Alle Daten des Aktien-Trackers löschen?"
             },
             "common": {
@@ -1782,6 +1802,7 @@ const I18n = (function() {
                 "language": "Idioma",
                 "pension": "Pensión",
                 "portfolio": "Cartera",
+                "watchlist": "Lista de seguimiento",
                 "stockTracker": "Rastreador de Rendimiento de Acciones",
                 "about": "Acerca de"
                 },
@@ -1796,6 +1817,9 @@ const I18n = (function() {
                   "exportPortfolio": "Exportar Cartera",
                   "importPortfolio": "Importar Cartera",
                   "deletePortfolio": "Eliminar Cartera",
+                "exportWatchlist": "Exportar lista de seguimiento",
+                "importWatchlist": "Importar lista de seguimiento",
+                "deleteWatchlist": "Eliminar lista de seguimiento",
                 "exportStock": "Exportar Datos de Acciones",
                 "importStock": "Importar Datos de Acciones",
                 "deleteStock": "Eliminar Datos",
@@ -1821,6 +1845,7 @@ const I18n = (function() {
                 "deleteEntry": "¿Eliminar esta entrada?",
                 "deleteAllPension": "¿Eliminar todos los datos de pensión?",
                 "deleteAllPortfolio": "¿Eliminar todos los datos de portafolio?",
+                "deleteAllWatchlist": "¿Eliminar todos los datos de la lista de seguimiento?",
                 "deleteAllStock": "¿Eliminar todos los datos del rastreador de acciones?"
             },
             "common": {
@@ -2148,6 +2173,7 @@ const I18n = (function() {
                 "language": "Lingua",
                 "pension": "Pensione",
                 "portfolio": "Portafoglio",
+                "watchlist": "Lista di controllo",
                 "stockTracker": "Tracker delle Prestazioni Azionarie",
                 "about": "Informazioni"
                 },
@@ -2162,6 +2188,9 @@ const I18n = (function() {
                   "exportPortfolio": "Esporta Portafoglio",
                   "importPortfolio": "Importa Portafoglio",
                   "deletePortfolio": "Elimina Portafoglio",
+                "exportWatchlist": "Esporta lista di controllo",
+                "importWatchlist": "Importa lista di controllo",
+                "deleteWatchlist": "Elimina lista di controllo",
                 "exportStock": "Esporta Dati Azionari",
                 "importStock": "Importa Dati Azionari",
                 "deleteStock": "Elimina Dati",
@@ -2187,6 +2216,7 @@ const I18n = (function() {
                 "deleteEntry": "Eliminare questa voce?",
                 "deleteAllPension": "Eliminare tutti i dati della pensione?",
                 "deleteAllPortfolio": "Eliminare tutti i dati del portafoglio?",
+                "deleteAllWatchlist": "Eliminare tutti i dati della lista di controllo?",
                 "deleteAllStock": "Eliminare tutti i dati del tracker azionario?"
             },
             "common": {
@@ -2518,6 +2548,7 @@ const I18n = (function() {
                     "language": "Limbă",
                     "pension": "Pensiune",
                     "portfolio": "Portofoliu",
+                    "watchlist": "Lista de urmărire",
                     "stockTracker": "Monitorizare performanță acțiuni",
                     "about": "Despre"
                 },
@@ -2532,6 +2563,9 @@ const I18n = (function() {
                 "exportPortfolio": "Portofoliu de export",
                 "importPortfolio": "Portofoliu de import",
                 "deletePortfolio": "Ștergeți portofoliul",
+                "exportWatchlist": "Exportă lista de urmărire",
+                "importWatchlist": "Importă lista de urmărire",
+                "deleteWatchlist": "Șterge lista de urmărire",
                 "exportStock": "Date de stoc de export",
                 "importStock": "Importați datele stocului",
                 "deleteStock": "Ștergeți datele",
@@ -2557,6 +2591,7 @@ const I18n = (function() {
                 "deleteEntry": "Ștergeți această intrare?",
                 "deleteAllPension": "Ștergeți toate datele de pensii?",
                 "deleteAllPortfolio": "Ștergeți toate datele din portofoliu?",
+                "deleteAllWatchlist": "Ștergeți toate datele listei de urmărire?",
                 "deleteAllStock": "Ștergeți toate datele de urmărire a stocurilor?"
             },
             "common": {
