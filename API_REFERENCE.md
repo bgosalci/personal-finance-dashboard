@@ -533,7 +533,7 @@ Users can customize various aspects of the application through the settings inte
 ## Latest Changes
 - Pension tracking with charts and summary view.
 - Portfolio export/import and deletion options.
-- Portfolio-wide price refresh capability.
+- Portfolio and stock tracker price refresh during pre-, regular, and after-market sessions.
 - Base-currency calculations and sticky table improvements.
 - Automatic input focus in dialog and edit modals.
 - Expanded to cover newly modularized functions.

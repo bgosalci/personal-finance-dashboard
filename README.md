@@ -144,7 +144,7 @@ personal-finance-dashboard/
 │       ├── stockTracker.js       # Stock performance tracker
 │       ├── stockFinance.js       # Financial statements
 │       ├── pensionManager.js     # Pension tracking
-│       ├── priceUpdater.js       # Portfolio-wide price refresh
+│       ├── priceUpdater.js       # Portfolio and stock tracker price refresh during pre-, regular, and after-market sessions
 │       ├── forexData.js          # Foreign exchange data
 │       ├── dateUtils.js          # Date helper functions
 │       ├── settings.js           # Application settings
@@ -306,7 +306,7 @@ This project is open source and available under the MIT License.
 ## Latest Changes
 - Pension tracking with charts and summary view.
 - Portfolio export/import and deletion options.
-- Portfolio-wide price refresh capability.
+- Portfolio and stock tracker price refresh during pre-, regular, and after-market sessions.
 - Base-currency calculations and sticky table improvements.
 - Automatic input focus in dialog and edit modals.
 - JavaScript modules refactored for maintainability.
