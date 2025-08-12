@@ -372,7 +372,7 @@ No build process required - the application runs directly in the browser.
 ## Latest Changes
 - Pension tracking with charts and summary view.
 - Portfolio export/import and deletion options.
-- Portfolio-wide price refresh capability.
+- Portfolio and stock tracker price refresh during pre-, regular, and after-market sessions.
 - Base-currency calculations and sticky table improvements.
 - Automatic input focus in dialog and edit modals.
 - Module structure clarified with separate files.
