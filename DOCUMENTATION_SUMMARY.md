@@ -219,6 +219,7 @@ This comprehensive documentation package ensures the Personal Finance Dashboard 
 - Portfolio and stock tracker price refresh during pre-, regular, and after-market sessions.
 - Base-currency calculations and sticky table improvements.
 - Automatic input focus in dialog and edit modals.
+- Watchlist now displays last price update timestamps.
 - Documentation updated for modularized codebase.
 - `.gitignore` improvements noted.
 - See [RULES.md](RULES.md) for contribution guidelines.
