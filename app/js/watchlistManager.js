@@ -1,6 +1,5 @@
 const WatchlistManager = (function() {
     const STORAGE_KEY = 'watchlistData';
-    const PRICE_STORAGE_KEY = 'latestPrices';
     let watchlist = [];
     let ws = null;
     let reconnectTimer = null;
@@ -31,13 +30,6 @@ const WatchlistManager = (function() {
         }
     }
 
-    function savePriceUpdate(ticker, price) {
-        if (!ticker) return;
-        let map = {};
-        try { map = JSON.parse(localStorage.getItem(PRICE_STORAGE_KEY)) || {}; } catch (e) {}
-        map[ticker] = { price, time: Date.now() };
-        try { localStorage.setItem(PRICE_STORAGE_KEY, JSON.stringify(map)); } catch (e) {}
-    }
 
     function connectWebSocket() {
         if (typeof WebSocket === 'undefined' || typeof QuotesService === 'undefined') return;
@@ -104,7 +96,7 @@ const WatchlistManager = (function() {
                         const price = typeof trade.p === 'number' ? trade.p : null;
                         if (price !== null) {
                             item.price = price;
-                            savePriceUpdate(t, price);
+                            PriceStorage.save(t, price);
                             if (typeof item.prevClose === 'number') {
                                 item.change = price - item.prevClose;
                                 item.changePct = item.prevClose ? (item.change / item.prevClose) * 100 : null;
@@ -292,7 +284,7 @@ const WatchlistManager = (function() {
                 const { raw } = await QuotesService.fetchQuote(item.ticker);
                 if (raw) {
                     item.price = typeof raw.c === 'number' ? raw.c : null;
-                    if (item.price !== null) savePriceUpdate(item.ticker, item.price);
+                    if (item.price !== null) PriceStorage.save(item.ticker, item.price);
                     item.change = typeof raw.d === 'number' ? raw.d : null;
                     item.changePct = typeof raw.dp === 'number' ? raw.dp : null;
                     item.high = typeof raw.h === 'number' ? raw.h : null;

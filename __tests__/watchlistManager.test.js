@@ -22,8 +22,10 @@ function loadWatchlist() {
   window.WebSocket = FakeWebSocket;
   window.localStorage.setItem('watchlistData', JSON.stringify([{ ticker: 'AAPL' }]));
   const context = vm.createContext(window);
-  const code = fs.readFileSync(path.resolve(__dirname, '../app/js/watchlistManager.js'), 'utf8');
-  vm.runInContext(code, context);
+  const priceStorageCode = fs.readFileSync(path.resolve(__dirname, '../app/js/priceStorage.js'), 'utf8');
+  const watchlistCode = fs.readFileSync(path.resolve(__dirname, '../app/js/watchlistManager.js'), 'utf8');
+  vm.runInContext(priceStorageCode, context);
+  vm.runInContext(watchlistCode, context);
   return { context, FakeWebSocket };
 }
 
@@ -32,6 +34,6 @@ test('stores websocket price updates in localStorage', () => {
   vm.runInContext('WatchlistManager.init();', context);
   const ws = FakeWebSocket.instances[0];
   ws.listeners.message({ data: JSON.stringify({ type: 'trade', data: [{ s: 'AAPL', p: 123.45 }] }) });
-  const stored = JSON.parse(context.localStorage.getItem('latestPrices'));
+  const stored = vm.runInContext('PriceStorage.getAll()', context);
   expect(stored.AAPL.price).toBe(123.45);
 });
