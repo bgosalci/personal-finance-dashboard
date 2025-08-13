@@ -30,6 +30,7 @@ const WatchlistManager = (function() {
         }
     }
 
+
     function connectWebSocket() {
         if (typeof WebSocket === 'undefined' || typeof QuotesService === 'undefined') return;
         const token = QuotesService.getApiKey ? QuotesService.getApiKey() : '';
@@ -95,6 +96,7 @@ const WatchlistManager = (function() {
                         const price = typeof trade.p === 'number' ? trade.p : null;
                         if (price !== null) {
                             item.price = price;
+                            PriceStorage.save(t, price);
                             if (typeof item.prevClose === 'number') {
                                 item.change = price - item.prevClose;
                                 item.changePct = item.prevClose ? (item.change / item.prevClose) * 100 : null;
@@ -282,6 +284,7 @@ const WatchlistManager = (function() {
                 const { raw } = await QuotesService.fetchQuote(item.ticker);
                 if (raw) {
                     item.price = typeof raw.c === 'number' ? raw.c : null;
+                    if (item.price !== null) PriceStorage.save(item.ticker, item.price);
                     item.change = typeof raw.d === 'number' ? raw.d : null;
                     item.changePct = typeof raw.dp === 'number' ? raw.dp : null;
                     item.high = typeof raw.h === 'number' ? raw.h : null;

@@ -572,6 +572,21 @@ const StockTracker = (function() {
         });
 
         applyEditMode();
+
+        if (typeof PriceStorage !== 'undefined' && PriceStorage.onChange) {
+            PriceStorage.onChange((ticker, data) => {
+                const price = data && typeof data.price === 'number' ? data.price : null;
+                if (price === null || !stockData.tickers.includes(ticker)) return;
+                const year = new Date().getFullYear();
+                if (!stockData.prices[ticker]) stockData.prices[ticker] = {};
+                stockData.prices[ticker][year] = price;
+                saveData();
+                const input = document.querySelector(`#table-body input.price-input[data-ticker="${ticker}"][data-year="${year}"]`);
+                if (input) input.value = price;
+                updateGrowthCalculations(ticker);
+                updateSummaryCards();
+            });
+        }
     }
 
 
