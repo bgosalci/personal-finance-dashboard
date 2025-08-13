@@ -122,6 +122,21 @@ test('fetchQuote ignores all-zero response', async () => {
   expect(result).toEqual({ price: null, currency: 'USD' });
 });
 
+test('StockTracker ignores zero-price quotes', async () => {
+  const dom = new JSDOM('<!DOCTYPE html><html><body><div id="table-body"></div></body></html>', { url: 'http://localhost' });
+  const fetchQuoteMock = jest.fn().mockResolvedValue({ price: 0 });
+  dom.window.QuotesService = { fetchQuote: fetchQuoteMock };
+  const context = vm.createContext(dom.window);
+  const stCode = fs.readFileSync(path.resolve(__dirname, '../app/js/stockTracker.js'), 'utf8');
+  vm.runInContext(stCode, context);
+  const year = new Date().getFullYear();
+  vm.runInContext('stockData.tickers = ["ZERO"]; stockData.prices["ZERO"] = {};', context);
+  await vm.runInContext('StockTracker.fetchLatestPrices()', context);
+  const stored = vm.runInContext(`stockData.prices["ZERO"][${year}]`, context);
+  expect(stored).toBeUndefined();
+  expect(fetchQuoteMock).toHaveBeenCalled();
+});
+
 test('updatePortfolioPrices fetches tickers sequentially', async () => {
   const dom = new JSDOM('<!DOCTYPE html><html><body></body></html>', { url: 'http://localhost' });
   let active = 0;
