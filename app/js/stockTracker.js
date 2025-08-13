@@ -131,7 +131,7 @@ const StockTracker = (function() {
         const updates = stockData.tickers.map(ticker => {
             return QuotesService.fetchQuote(ticker)
                 .then(({ price }) => {
-                    if (typeof price === 'number') {
+                    if (typeof price === 'number' && price > 0) {
                         stockData.prices[ticker][currentYear] = price;
                         const input = document.querySelector(`#table-body input.price-input[data-ticker="${ticker}"][data-year="${currentYear}"]`);
                         if (input) input.value = price;

@@ -112,13 +112,15 @@ const PortfolioManager = (function() {
                 const url = `https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(ticker)}&currency=${encodeURIComponent(currency)}`;
                 const resp = await fetch(url);
                 const data = await resp.json();
-                if (data && typeof data.c === 'number') {
+                const allZero = data && ['c', 'h', 'l', 'o', 'pc', 't', 'd', 'dp']
+                    .every(k => typeof data[k] === 'number' && data[k] === 0);
+                if (data && typeof data.c === 'number' && !allZero) {
                     const p = parseFloat(data.c);
                     const curr = data.currency || currency;
                     quoteCache[key] = { price: p, currency: curr, time: now };
                     return { price: p, currency: curr };
                 }
-                if (data && data.error && String(data.error).toLowerCase().includes('access')) {
+                if (!allZero && data && data.error && String(data.error).toLowerCase().includes('access')) {
                     addTickerException(ticker);
                 }
                 return { price: null, currency };

@@ -96,6 +96,47 @@ test('fetchQuote caches access error for one day', async () => {
   expect(fetchMock).toHaveBeenCalledTimes(1);
 });
 
+test('QuotesService.fetchQuote ignores all-zero responses', async () => {
+  const dom = new JSDOM('<!DOCTYPE html><html><body></body></html>', { url: 'http://localhost' });
+  dom.window.fetch = jest.fn().mockResolvedValue({
+    ok: true,
+    json: () => Promise.resolve({ c: 0, h: 0, l: 0, o: 0, pc: 0, t: 0, d: 0, dp: 0 })
+  });
+  const context = vm.createContext(dom.window);
+  const qsCode = fs.readFileSync(path.resolve(__dirname, '../app/js/quotesService.js'), 'utf8');
+  vm.runInContext(qsCode, context);
+  const res = await vm.runInContext('QuotesService.fetchQuote("ZERO")', context);
+  expect(res).toEqual({ price: null, raw: null });
+});
+
+test('fetchQuote ignores all-zero response', async () => {
+  const dom = new JSDOM('<!DOCTYPE html><html><body></body></html>', { url: 'http://localhost' });
+  dom.window.fetch = jest.fn().mockResolvedValue({
+    json: () => Promise.resolve({ c: 0, h: 0, l: 0, o: 0, pc: 0, t: 0, d: 0, dp: 0, currency: 'USD' })
+  });
+  const context = vm.createContext(dom.window);
+  vm.runInContext(i18nCode, context);
+  const pmCode = fs.readFileSync(path.resolve(__dirname, '../app/js/portfolioManager.js'), 'utf8');
+  vm.runInContext(pmCode, context);
+  const result = await vm.runInContext('PortfolioManager.fetchQuote("ZERO")', context);
+  expect(result).toEqual({ price: null, currency: 'USD' });
+});
+
+test('StockTracker ignores zero-price quotes', async () => {
+  const dom = new JSDOM('<!DOCTYPE html><html><body><div id="table-body"></div></body></html>', { url: 'http://localhost' });
+  const fetchQuoteMock = jest.fn().mockResolvedValue({ price: 0 });
+  dom.window.QuotesService = { fetchQuote: fetchQuoteMock };
+  const context = vm.createContext(dom.window);
+  const stCode = fs.readFileSync(path.resolve(__dirname, '../app/js/stockTracker.js'), 'utf8');
+  vm.runInContext(stCode, context);
+  const year = new Date().getFullYear();
+  vm.runInContext('stockData.tickers = ["ZERO"]; stockData.prices["ZERO"] = {};', context);
+  await vm.runInContext('StockTracker.fetchLatestPrices()', context);
+  const stored = vm.runInContext(`stockData.prices["ZERO"][${year}]`, context);
+  expect(stored).toBeUndefined();
+  expect(fetchQuoteMock).toHaveBeenCalled();
+});
+
 test('updatePortfolioPrices fetches tickers sequentially', async () => {
   const dom = new JSDOM('<!DOCTYPE html><html><body></body></html>', { url: 'http://localhost' });
   let active = 0;

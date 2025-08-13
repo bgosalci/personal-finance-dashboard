@@ -66,14 +66,16 @@ const QuotesService = (function() {
         const url = BASE_URL + '/quote?symbol=' + encodeURIComponent(ticker) + (token ? '&token=' + encodeURIComponent(token) : '');
         try {
             const data = await fetchJson(url);
-            const price = typeof data?.c === 'number' ? parseFloat(data.c) : null;
-            if (price === null && data && data.error && String(data.error).toLowerCase().includes('access')) {
+            const allZero = data && ['c', 'h', 'l', 'o', 'pc', 't', 'd', 'dp']
+                .every(k => typeof data[k] === 'number' && data[k] === 0);
+            const price = (!allZero && typeof data?.c === 'number') ? parseFloat(data.c) : null;
+            if (price === null && !allZero && data && data.error && String(data.error).toLowerCase().includes('access')) {
                 addTickerException(ticker);
             }
             if (price !== null) {
                 quoteCache[t] = { price, raw: data, time: now };
             }
-            return { price, raw: data };
+            return { price, raw: allZero ? null : data };
         } catch (err) {
             const msg = String((err && err.message) || '');
             if (/\bHTTP (401|403|429)\b/.test(msg)) {
