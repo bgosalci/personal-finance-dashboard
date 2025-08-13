@@ -107,6 +107,7 @@ const WatchlistManager = (function() {
                             if (typeof item.low === 'number') {
                                 if (item.low === null || price < item.low) item.low = price;
                             }
+                            item.lastUpdate = Date.now();
                             updated = true;
                         }
                     }
@@ -125,6 +126,15 @@ const WatchlistManager = (function() {
 
     function formatPercent(val) {
         return typeof val === 'number' ? val.toFixed(2) + '%' : '--';
+    }
+
+    function formatDateTime(ts) {
+        if (!ts) return '--';
+        const d = new Date(ts);
+        const pad = n => String(n).padStart(2, '0');
+        const date = `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`;
+        const time = `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+        return `${date} ${time}`;
     }
 
     function render() {
@@ -147,6 +157,7 @@ const WatchlistManager = (function() {
                 <td class="number-cell">${formatNumber(item.low)}</td>
                 <td class="number-cell">${formatNumber(item.open)}</td>
                 <td class="number-cell">${formatNumber(item.prevClose)}</td>
+                <td>${formatDateTime(item.lastUpdate)}</td>
                 <td class="actions-cell">
                     <button class="icon-btn delete-btn" data-index="${index}" title="${I18n.t('watchlist.actions.delete')}">
                         <svg width="16" height="16" viewBox="0 0 512 512"><path d="M112,112l20,320c.95,18.49,14.4,32,32,32H348c17.67,0,30.87-13.51,32-32l20-320" style="fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"/><line x1="80" y1="112" x2="432" y2="112" style="stroke:currentColor;stroke-linecap:round;stroke-miterlimit:10;stroke-width:32px"/><path d="M192,112V72h0a23.93,23.93,0,0,1,24-24h80a23.93,23.93,0,0,1,24,24h0v40" style="fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"/><line x1="256" y1="176" x2="256" y2="400" style="fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"/><line x1="184" y1="176" x2="192" y2="400" style="fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"/><line x1="328" y1="176" x2="320" y2="400" style="fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"/></svg>
@@ -291,6 +302,7 @@ const WatchlistManager = (function() {
                     item.low = typeof raw.l === 'number' ? raw.l : null;
                     item.open = typeof raw.o === 'number' ? raw.o : null;
                     item.prevClose = typeof raw.pc === 'number' ? raw.pc : null;
+                    item.lastUpdate = Date.now();
                 }
             } catch (e) {}
         });

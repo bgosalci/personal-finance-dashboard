@@ -36,4 +36,6 @@ test('stores websocket price updates in localStorage', () => {
   ws.listeners.message({ data: JSON.stringify({ type: 'trade', data: [{ s: 'AAPL', p: 123.45 }] }) });
   const stored = vm.runInContext('PriceStorage.getAll()', context);
   expect(stored.AAPL.price).toBe(123.45);
+  const lastUpdate = vm.runInContext('JSON.parse(localStorage.getItem("watchlistData"))[0].lastUpdate', context);
+  expect(typeof lastUpdate).toBe('number');
 });

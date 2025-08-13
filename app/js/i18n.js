@@ -86,6 +86,7 @@ const I18n = (function() {
                     "low": "Low",
                     "open": "Open Price",
                     "prevClose": "Previous Close",
+                    "lastUpdate": "Last Update",
                     "actions": "Actions"
                 },
                 "dialogs": {
@@ -455,6 +456,7 @@ const I18n = (function() {
                     "low": "Më i Ulëti",
                     "open": "Çmimi i Hapjes",
                     "prevClose": "Mbyllja e Mëparshme",
+                    "lastUpdate": "Përditësimi i Fundit",
                     "actions": "Veprimet"
                 },
                 "dialogs": {
@@ -826,6 +828,7 @@ const I18n = (function() {
                     "low": "Bas",
                     "open": "Prix d'ouverture",
                     "prevClose": "Clôture précédente",
+                    "lastUpdate": "Dernière mise à jour",
                     "actions": "Actions"
                 },
                 "dialogs": {
@@ -1197,6 +1200,7 @@ const I18n = (function() {
                     "low": "Tief",
                     "open": "Eröffnungspreis",
                     "prevClose": "Vorheriger Schluss",
+                    "lastUpdate": "Letzte Aktualisierung",
                     "actions": "Aktionen"
                 },
                 "dialogs": {
@@ -1568,6 +1572,7 @@ const I18n = (function() {
                     "low": "Bajo",
                     "open": "Precio de apertura",
                     "prevClose": "Cierre previo",
+                    "lastUpdate": "Última actualización",
                     "actions": "Acciones"
                 },
                 "dialogs": {
@@ -1939,6 +1944,7 @@ const I18n = (function() {
                     "low": "Minimo",
                     "open": "Prezzo di apertura",
                     "prevClose": "Chiusura precedente",
+                    "lastUpdate": "Ultimo aggiornamento",
                     "actions": "Azioni"
                 },
                 "dialogs": {
@@ -2316,6 +2322,7 @@ const I18n = (function() {
                     "low": "Minim",
                     "open": "Preț de deschidere",
                     "prevClose": "Închidere anterioară",
+                    "lastUpdate": "Ultima actualizare",
                     "actions": "Acțiuni"
                 },
                 "dialogs": {
