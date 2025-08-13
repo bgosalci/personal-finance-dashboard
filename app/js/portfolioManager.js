@@ -1035,6 +1035,34 @@ const PortfolioManager = (function() {
             }
         });
 
+        if (typeof PriceStorage !== 'undefined' && PriceStorage.onChange) {
+            PriceStorage.onChange((ticker, data) => {
+                const price = data && typeof data.price === 'number' ? data.price : null;
+                if (price === null) return;
+                portfolios.forEach(pf => {
+                    const key = getStorageKey(pf.id);
+                    const raw = localStorage.getItem(key);
+                    if (!raw) return;
+                    let list;
+                    try { list = JSON.parse(raw) || []; } catch (e) { list = []; }
+                    let changed = false;
+                    list.forEach(inv => {
+                        if (inv.ticker === ticker) {
+                            inv.lastPrice = price;
+                            changed = true;
+                        }
+                    });
+                    if (changed) {
+                        try { localStorage.setItem(key, JSON.stringify(list)); } catch (e) {}
+                        if (pf.id === currentPortfolioId) {
+                            investments = list;
+                            renderTable();
+                        }
+                    }
+                });
+            });
+        }
+
         switchPortfolio(currentPortfolioId);
     }
 
