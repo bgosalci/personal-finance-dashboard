@@ -3,7 +3,7 @@ const path = require('path');
 const { JSDOM } = require('jsdom');
 const vm = require('vm');
 
-function loadWatchlist() {
+function loadWatchlist(initialData = [{ ticker: 'AAPL' }]) {
   const dom = new JSDOM('<!DOCTYPE html><body><table><tbody id="watchlist-body"></tbody></table></body>', { url: 'http://localhost' });
   const { window } = dom;
   window.QuotesService = { getApiKey: () => 'TOKEN', fetchQuote: jest.fn() };
@@ -20,7 +20,7 @@ function loadWatchlist() {
   }
   FakeWebSocket.instances = [];
   window.WebSocket = FakeWebSocket;
-  window.localStorage.setItem('watchlistData', JSON.stringify([{ ticker: 'AAPL' }]));
+  window.localStorage.setItem('watchlistData', JSON.stringify(initialData));
   const context = vm.createContext(window);
   const utilCode = fs.readFileSync(path.resolve(__dirname, '../app/js/storageUtils.js'), 'utf8');
   const priceStorageCode = fs.readFileSync(path.resolve(__dirname, '../app/js/priceStorage.js'), 'utf8');
@@ -73,4 +73,17 @@ test('beforeunload clears reconnect timer', () => {
   ws.listeners.close();
   context.dispatchEvent(new context.Event('beforeunload'));
   expect(clearTimeoutSpy).toHaveBeenCalledWith(1);
+});
+
+test('flashes and persists background colour on price updates', async () => {
+  const initData = [{ ticker: 'AAPL', price: 110, prevClose: 100, change: 10 }];
+  const { context, FakeWebSocket } = loadWatchlist(initData);
+  vm.runInContext('WatchlistManager.init();', context);
+  const ws = FakeWebSocket.instances[0];
+  ws.listeners.message({ data: JSON.stringify({ type: 'trade', data: [{ s: 'AAPL', p: 108 }] }) });
+  const during = vm.runInContext("document.querySelector('#watchlist-body tr td:nth-child(4)').style.backgroundColor", context);
+  expect(during).toBe('rgb(254, 242, 242)');
+  await new Promise(res => setTimeout(res, 1100));
+  const after = vm.runInContext("document.querySelector('#watchlist-body tr td:nth-child(4)').style.backgroundColor", context);
+  expect(after).toBe('rgb(232, 245, 233)');
 });
