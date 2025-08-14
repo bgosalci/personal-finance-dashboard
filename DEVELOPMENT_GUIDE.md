@@ -267,6 +267,10 @@ function calculateCAGR(beginValue, endValue, years) {
 - Validate HTML structure
 - Keep markup clean and organized
 
+#### Accessibility Guidelines
+- Provide `aria-label` attributes for icon-only buttons so screen readers can announce their purpose.
+- Verify new UI components using a screen reader or automated accessibility checker.
+
 ### Error Handling
 
 #### Input Validation
