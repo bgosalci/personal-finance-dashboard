@@ -39,7 +39,7 @@ test('watchlist tab and table headers exist', () => {
   const tab = doc.querySelector('button.nav-tab[data-tab="watchlist"]');
   expect(tab).not.toBeNull();
   const headers = Array.from(doc.querySelectorAll('#watchlist-table thead th')).map(th => th.textContent.trim());
-  ['Ticker','Name','Currency','Current Price','Change','Change %','High','Low','Open Price','Previous Close','Last Update','Actions'].forEach(h => {
+  ['Ticker','Name','Currency','Current Price','Change','Change %','High','Low','Range','Open Price','Previous Close','Last Update','Actions'].forEach(h => {
     expect(headers).toContain(h);
   });
 });

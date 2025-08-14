@@ -87,3 +87,23 @@ test('flashes and persists background colour on price updates', async () => {
   const after = vm.runInContext("document.querySelector('#watchlist-body tr td:nth-child(4)').style.backgroundColor", context);
   expect(after).toBe('rgb(232, 245, 233)');
 });
+
+test('renders range when high and low are available', () => {
+  const initData = [{ ticker: 'AAPL', high: 150, low: 140 }];
+  const { context } = loadWatchlist(initData);
+  vm.runInContext('WatchlistManager.init();', context);
+  const text = vm.runInContext("document.querySelector('#watchlist-body tr td:nth-child(9)').textContent", context);
+  expect(text).toBe('10.00');
+  const sortVal = vm.runInContext("document.querySelector('#watchlist-body tr td:nth-child(9)').getAttribute('data-sort-value')", context);
+  expect(sortVal).toBe('10');
+});
+
+test('uses em dash and disables sorting when range unavailable', () => {
+  const initData = [{ ticker: 'AAPL', high: 150 }];
+  const { context } = loadWatchlist(initData);
+  vm.runInContext('WatchlistManager.init();', context);
+  const text = vm.runInContext("document.querySelector('#watchlist-body tr td:nth-child(9)').textContent", context);
+  expect(text).toBe('—');
+  const hasAttr = vm.runInContext("document.querySelector('#watchlist-body tr td:nth-child(9)').hasAttribute('data-sort-value')", context);
+  expect(hasAttr).toBe(false);
+});
