@@ -12,17 +12,21 @@
   let saveTimer = null;
 
   function rleEncode(str){
-    return str.replace(/(.)\1{1,}/g, (m, c) => c + m.length);
+    return str.replace(/(.)\1+/g, (m, c) => c + '~' + m.length + '~');
   }
   function rleDecode(str){
     let result = '';
-    for(let i=0;i<str.length;i++){
+    for(let i = 0; i < str.length; i++){
       const ch = str[i];
-      let j = i+1;
-      let digits='';
-      while(j < str.length && /\d/.test(str[j])){ digits += str[j]; j++; }
-      if(digits){ result += ch.repeat(parseInt(digits,10)); i = j-1; }
-      else result += ch;
+      if(str[i + 1] === '~'){
+        let j = i + 2;
+        let digits = '';
+        while(j < str.length && str[j] !== '~'){ digits += str[j]; j++; }
+        result += ch.repeat(parseInt(digits, 10));
+        i = j;
+      } else {
+        result += ch;
+      }
     }
     return result;
   }
