@@ -37,17 +37,19 @@
     return JSON.parse(json);
   }
 
+  const storage = StorageUtils.getStorage();
+
   function ensureLoaded(){
     if(positions && snapshots) return;
     positions = [];
     snapshots = [];
     try{
-      const ver = parseInt(localStorage.getItem(STORAGE_VERSION_KEY),10);
+      const ver = parseInt(storage.getItem(STORAGE_VERSION_KEY),10);
       if(ver && ver !== VERSION){
         migrate(ver);
       }
-      const posStr = localStorage.getItem(POSITIONS_KEY);
-      const snapStr = localStorage.getItem(SNAPSHOTS_KEY);
+      const posStr = storage.getItem(POSITIONS_KEY);
+      const snapStr = storage.getItem(SNAPSHOTS_KEY);
       if(posStr){
         try{ positions = decompress(posStr); }
         catch(e){ positions = []; }
@@ -66,9 +68,9 @@
     // simple migration placeholder
     positions = [];
     snapshots = [];
-    localStorage.removeItem(POSITIONS_KEY);
-    localStorage.removeItem(SNAPSHOTS_KEY);
-    localStorage.setItem(STORAGE_VERSION_KEY, VERSION);
+    storage.removeItem(POSITIONS_KEY);
+    storage.removeItem(SNAPSHOTS_KEY);
+    storage.setItem(STORAGE_VERSION_KEY, VERSION);
   }
 
   function queueSave(){
@@ -78,14 +80,14 @@
 
   function save(){
     try{
-      localStorage.setItem(STORAGE_VERSION_KEY, VERSION);
-      localStorage.setItem(POSITIONS_KEY, compress(positions));
-      localStorage.setItem(SNAPSHOTS_KEY, compress(snapshots));
+      storage.setItem(STORAGE_VERSION_KEY, VERSION);
+      storage.setItem(POSITIONS_KEY, compress(positions));
+      storage.setItem(SNAPSHOTS_KEY, compress(snapshots));
     }catch(e){
       if(e && e.name === 'QuotaExceededError'){
         // try removing oldest snapshot
         snapshots.shift();
-        try{ localStorage.setItem(SNAPSHOTS_KEY, compress(snapshots)); }
+        try{ storage.setItem(SNAPSHOTS_KEY, compress(snapshots)); }
         catch(err){}
       }
     }
