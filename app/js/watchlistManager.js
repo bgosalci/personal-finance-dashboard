@@ -1,5 +1,7 @@
 const WatchlistManager = (function() {
     const STORAGE_KEY = 'watchlistData';
+    const POS_BG = '#E8F5E9';
+    const NEG_BG = '#FEF2F2';
     let watchlist = [];
     let ws = null;
     let reconnectTimer = null;
@@ -22,7 +24,10 @@ const WatchlistManager = (function() {
     let dragStartIndex = null;
 
     function save() {
-        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(watchlist)); } catch (e) {}
+        try {
+            const data = JSON.stringify(watchlist, (k, v) => k === 'delta' ? undefined : v);
+            localStorage.setItem(STORAGE_KEY, data);
+        } catch (e) {}
     }
 
     function load() {
@@ -102,7 +107,9 @@ const WatchlistManager = (function() {
                     if (item) {
                         const price = typeof trade.p === 'number' ? trade.p : null;
                         if (price !== null) {
+                            const prev = item.price;
                             item.price = price;
+                            item.delta = typeof prev === 'number' ? price - prev : 0;
                             PriceStorage.save(t, price);
                             if (typeof item.prevClose === 'number') {
                                 item.change = price - item.prevClose;
@@ -144,6 +151,19 @@ const WatchlistManager = (function() {
         return `${date} ${time}`;
     }
 
+    function flashCell(cell, delta, baseColor) {
+        if (!cell) return;
+        const flashColor = delta > 0 ? POS_BG : delta < 0 ? NEG_BG : baseColor;
+        cell.style.backgroundColor = flashColor;
+        if (cell._flashTimer) clearTimeout(cell._flashTimer);
+        if (delta !== 0) {
+            cell._flashTimer = setTimeout(() => {
+                cell.style.backgroundColor = baseColor;
+                cell._flashTimer = null;
+            }, 1000);
+        }
+    }
+
     function render() {
         if (!tbody) return;
         tbody.innerHTML = '';
@@ -171,10 +191,16 @@ const WatchlistManager = (function() {
                     </button>
                 </td>
             `;
+            const cells = tr.querySelectorAll('td');
+            const baseColor = typeof item.change === 'number' ? (item.change > 0 ? POS_BG : item.change < 0 ? NEG_BG : '#FFFFFF') : '#FFFFFF';
+            flashCell(cells[3], item.delta || 0, baseColor);
+            flashCell(cells[4], item.delta || 0, baseColor);
+            flashCell(cells[5], item.delta || 0, baseColor);
             const delBtn = tr.querySelector('.delete-btn');
             delBtn.addEventListener('click', () => deleteStock(index));
             addDragHandlers(tr);
             tbody.appendChild(tr);
+            item.delta = 0;
         });
     }
 
@@ -301,8 +327,12 @@ const WatchlistManager = (function() {
             try {
                 const { raw } = await QuotesService.fetchQuote(item.ticker);
                 if (raw) {
+                    const prev = item.price;
                     item.price = typeof raw.c === 'number' ? raw.c : null;
-                    if (item.price !== null) PriceStorage.save(item.ticker, item.price);
+                    if (item.price !== null) {
+                        item.delta = typeof prev === 'number' ? item.price - prev : 0;
+                        PriceStorage.save(item.ticker, item.price);
+                    }
                     item.change = typeof raw.d === 'number' ? raw.d : null;
                     item.changePct = typeof raw.dp === 'number' ? raw.dp : null;
                     item.high = typeof raw.h === 'number' ? raw.h : null;
