@@ -39,3 +39,36 @@ test('stores websocket price updates in localStorage', () => {
   const lastUpdate = vm.runInContext('JSON.parse(localStorage.getItem("watchlistData"))[0].lastUpdate', context);
   expect(typeof lastUpdate).toBe('number');
 });
+
+test('uses exponential backoff for reconnect attempts', () => {
+  const { context, FakeWebSocket } = loadWatchlist();
+  const delays = [];
+  context.setTimeout = jest.fn((fn, delay) => { delays.push(delay); return 1; });
+  context.clearTimeout = jest.fn();
+  vm.runInContext('WatchlistManager.init();', context);
+  const ws = FakeWebSocket.instances[0];
+  ws.listeners.close();
+  ws.listeners.close();
+  expect(delays[0]).toBe(5000);
+  expect(delays[1]).toBe(10000);
+});
+
+test('beforeunload closes socket', () => {
+  const { context, FakeWebSocket } = loadWatchlist();
+  const closeSpy = jest.spyOn(FakeWebSocket.prototype, 'close');
+  vm.runInContext('WatchlistManager.init();', context);
+  context.dispatchEvent(new context.Event('beforeunload'));
+  expect(closeSpy).toHaveBeenCalled();
+});
+
+test('beforeunload clears reconnect timer', () => {
+  const { context, FakeWebSocket } = loadWatchlist();
+  context.setTimeout = jest.fn(() => 1);
+  const clearTimeoutSpy = jest.fn();
+  context.clearTimeout = clearTimeoutSpy;
+  vm.runInContext('WatchlistManager.init();', context);
+  const ws = FakeWebSocket.instances[0];
+  ws.listeners.close();
+  context.dispatchEvent(new context.Event('beforeunload'));
+  expect(clearTimeoutSpy).toHaveBeenCalledWith(1);
+});

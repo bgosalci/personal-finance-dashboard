@@ -3,6 +3,10 @@ const WatchlistManager = (function() {
     let watchlist = [];
     let ws = null;
     let reconnectTimer = null;
+    // Reconnect attempts use exponential backoff up to one minute
+    const RECONNECT_BASE_DELAY = 5000;
+    const RECONNECT_MAX_DELAY = 60000;
+    let reconnectDelay = RECONNECT_BASE_DELAY;
 
     const addBtn = document.getElementById('add-watchstock-btn');
     const getPriceBtn = document.getElementById('watchlist-get-price-btn');
@@ -38,6 +42,7 @@ const WatchlistManager = (function() {
         try {
             ws = new WebSocket('wss://ws.finnhub.io?token=' + encodeURIComponent(token));
             ws.addEventListener('open', () => {
+                reconnectDelay = RECONNECT_BASE_DELAY;
                 watchlist.forEach(item => subscribeTicker(item.ticker));
             });
             ws.addEventListener('message', handleWsMessage);
@@ -57,7 +62,8 @@ const WatchlistManager = (function() {
         reconnectTimer = setTimeout(() => {
             reconnectTimer = null;
             connectWebSocket();
-        }, 5000);
+        }, reconnectDelay);
+        reconnectDelay = Math.min(reconnectDelay * 2, RECONNECT_MAX_DELAY); // exponential backoff
     }
 
     function reconnectWebSocket() {
@@ -69,6 +75,7 @@ const WatchlistManager = (function() {
             clearTimeout(reconnectTimer);
             reconnectTimer = null;
         }
+        reconnectDelay = RECONNECT_BASE_DELAY;
         connectWebSocket();
     }
 
@@ -376,6 +383,17 @@ const WatchlistManager = (function() {
             tickerInput.addEventListener('blur', handleTickerLookup);
         }
         window.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+        window.addEventListener('beforeunload', () => {
+            // Close socket and clear pending reconnects before leaving
+            if (ws) {
+                try { ws.close(); } catch (e) {}
+                ws = null;
+            }
+            if (reconnectTimer) {
+                clearTimeout(reconnectTimer);
+                reconnectTimer = null;
+            }
+        });
         document.addEventListener('settings:api-key-updated', reconnectWebSocket);
         connectWebSocket();
     }
