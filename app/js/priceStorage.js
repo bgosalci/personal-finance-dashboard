@@ -1,17 +1,18 @@
 const PriceStorage = (function() {
     const PRICE_STORAGE_KEY = 'latestPrices';
     const handlers = new Set();
+    const storage = StorageUtils.getStorage();
 
     function save(ticker, price) {
         if (!ticker) return;
         let map = {};
         try {
-            map = JSON.parse(localStorage.getItem(PRICE_STORAGE_KEY)) || {};
+            map = JSON.parse(storage.getItem(PRICE_STORAGE_KEY)) || {};
         } catch (e) {}
         const entry = { price, time: Date.now() };
         map[ticker] = entry;
         try {
-            localStorage.setItem(PRICE_STORAGE_KEY, JSON.stringify(map));
+            storage.setItem(PRICE_STORAGE_KEY, JSON.stringify(map));
         } catch (e) {}
         handlers.forEach(fn => {
             try { fn(ticker, entry); } catch (e) {}
@@ -25,7 +26,7 @@ const PriceStorage = (function() {
 
     function getAll() {
         try {
-            return JSON.parse(localStorage.getItem(PRICE_STORAGE_KEY)) || {};
+            return JSON.parse(storage.getItem(PRICE_STORAGE_KEY)) || {};
         } catch (e) {
             return {};
         }
