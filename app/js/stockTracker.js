@@ -239,7 +239,7 @@ const StockTracker = (function() {
             const chartCell = document.createElement('td');
             const chartBtn = document.createElement('button');
             chartBtn.className = 'chart-btn';
-            chartBtn.innerHTML = '<ion-icon name="stats-chart"></ion-icon>';
+            chartBtn.innerHTML = '<ion-icon src="js/vendor/ionicons/svg/stats-chart.svg"></ion-icon>';
             chartBtn.addEventListener('click', () => showChart(ticker));
             chartCell.appendChild(chartBtn);
             chartRow.appendChild(chartCell);
