@@ -173,6 +173,9 @@ const WatchlistManager = (function() {
             tr.draggable = true;
             const changeClass = typeof item.change === 'number' ? (item.change < 0 ? 'growth-negative' : item.change > 0 ? 'growth-positive' : '') : '';
             const changePctClass = typeof item.changePct === 'number' ? (item.changePct < 0 ? 'growth-negative' : item.changePct > 0 ? 'growth-positive' : '') : '';
+            const range = (typeof item.high === 'number' && typeof item.low === 'number')
+                ? Math.max(0, item.high - item.low)
+                : null;
             tr.innerHTML = `
                 <td><strong>${item.ticker}</strong></td>
                 <td>${item.name || ''}</td>
@@ -182,6 +185,7 @@ const WatchlistManager = (function() {
                 <td class="number-cell ${changePctClass}">${formatPercent(item.changePct)}</td>
                 <td class="number-cell">${formatNumber(item.high)}</td>
                 <td class="number-cell">${formatNumber(item.low)}</td>
+                <td class="number-cell"${range !== null ? ` data-sort-value="${range}"` : ''}>${range !== null ? formatNumber(range) : '—'}</td>
                 <td class="number-cell">${formatNumber(item.open)}</td>
                 <td class="number-cell">${formatNumber(item.prevClose)}</td>
                 <td>${formatDateTime(item.lastUpdate)}</td>
