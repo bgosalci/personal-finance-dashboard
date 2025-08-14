@@ -22,6 +22,16 @@
   - Prettier for code formatting
   - Live Server for auto-refresh during development
 
+### Running Tests
+
+This project uses Jest for unit tests. To execute the test suite, run:
+
+```
+npm --prefix app/js test
+```
+
+from the repository root, or navigate to `app/js` and run `npm test`.
+
 ## Code Structure and Organization
 
 ### File Organization
