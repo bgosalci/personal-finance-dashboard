@@ -531,6 +531,7 @@ Notes:
 Users can customize various aspects of the application through the settings interface or by modifying the configuration object.
 
 ## Latest Changes
+- Pension summary cards now show current total value.
 - Pension tracking with charts and summary view.
 - Portfolio export/import and deletion options.
 - Portfolio and stock tracker price refresh during pre-, regular, and after-market sessions.

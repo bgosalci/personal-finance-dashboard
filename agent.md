@@ -800,6 +800,7 @@ window.addEventListener('error', (event) => {
 This guide should be used alongside the comprehensive [DEVELOPMENT_GUIDE.md](DEVELOPMENT_GUIDE.md) for complete development information. For technical implementation details, refer to [TECHNICAL_DOCUMENTATION.md](TECHNICAL_DOCUMENTATION.md).
 
 ## Latest Changes
+- Pension summary cards now show current total value.
 - Pension tracking with charts and summary view.
 - Portfolio export/import and deletion options.
 - Portfolio and stock tracker price refresh during pre-, regular, and after-market sessions.

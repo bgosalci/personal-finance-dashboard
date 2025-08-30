@@ -445,20 +445,34 @@ const PensionManager = (function() {
     function updateSummaryCards(stats) {
         const container = document.getElementById('pension-summary-cards');
         if (!container) return;
-        if (!stats || stats.length === 0) {
-            container.style.display = 'none';
-            return;
-        }
-        const analysis = computeAnalysis(stats);
-        if (!analysis) {
-            container.style.display = 'none';
-            return;
-        }
+
         const cagrEl = document.getElementById('pension-current-cagr');
         const bestMonthEl = document.getElementById('pension-best-month');
         const worstMonthEl = document.getElementById('pension-worst-month');
         const bestYearEl = document.getElementById('pension-best-year');
         const worstYearEl = document.getElementById('pension-worst-year');
+        const totalValueEl = document.getElementById('pension-total-value');
+
+        const baseCurrency = Settings.getBaseCurrency ? Settings.getBaseCurrency() : 'USD';
+        const current = summaryMode ? summaryInfo : pensions.find(p => p.id === currentPensionId);
+        const startVal = current ? parseFloat(current.start) || 0 : 0;
+        const latestVal = stats && stats.length ? stats[stats.length - 1].value : startVal;
+        if (totalValueEl) totalValueEl.textContent = formatCurrency(latestVal, baseCurrency);
+
+        if (!stats || stats.length === 0) {
+            cagrEl.textContent = bestMonthEl.textContent = worstMonthEl.textContent =
+                bestYearEl.textContent = worstYearEl.textContent = '---';
+            container.style.display = 'flex';
+            return;
+        }
+
+        const analysis = computeAnalysis(stats);
+        if (!analysis) {
+            cagrEl.textContent = bestMonthEl.textContent = worstMonthEl.textContent =
+                bestYearEl.textContent = worstYearEl.textContent = '---';
+            container.style.display = 'flex';
+            return;
+        }
 
         cagrEl.textContent = analysis.cagr ? analysis.cagr.toFixed(2) + '%' : '---';
         bestMonthEl.textContent = analysis.bestMonth ? `${formatDisplayDate(analysis.bestMonth.date)} (${analysis.bestMonth.pct.toFixed(2)}%)` : '---';

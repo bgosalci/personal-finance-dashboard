@@ -118,6 +118,7 @@ const I18n = (function() {
                     "actions": "Actions"
                 },
                 "summaryCards": {
+                    "totalValue": "Total Value",
                     "currentCAGR": "Current CAGR",
                     "bestMonth": "Best Month",
                     "worstMonth": "Worst Month",
@@ -489,6 +490,7 @@ const I18n = (function() {
                     "actions": "Veprimet"
                 },
                 "summaryCards": {
+                    "totalValue": "Vlera Totale",
                     "currentCAGR": "CAGR Aktual",
                     "bestMonth": "Muaji Më i Mirë",
                     "worstMonth": "Muaji Më i Keq",
@@ -862,6 +864,7 @@ const I18n = (function() {
                     "actions": "Actions"
                 },
                 "summaryCards": {
+                    "totalValue": "Valeur Totale",
                     "currentCAGR": "CAGR Actuel",
                     "bestMonth": "Meilleur Mois",
                     "worstMonth": "Pire Mois",
@@ -1235,6 +1238,7 @@ const I18n = (function() {
                     "actions": "Aktionen"
                 },
                 "summaryCards": {
+                    "totalValue": "Gesamtwert",
                     "currentCAGR": "Aktueller CAGR",
                     "bestMonth": "Bester Monat",
                     "worstMonth": "Schlechtester Monat",
@@ -1608,6 +1612,7 @@ const I18n = (function() {
                     "actions": "Acciones"
                 },
                 "summaryCards": {
+                    "totalValue": "Valor Total",
                     "currentCAGR": "CAGR Actual",
                     "bestMonth": "Mejor Mes",
                     "worstMonth": "Peor Mes",
@@ -1981,6 +1986,7 @@ const I18n = (function() {
                     "actions": "Azioni"
                 },
                 "summaryCards": {
+                    "totalValue": "Valore Totale",
                     "currentCAGR": "CAGR Attuale",
                     "bestMonth": "Mese Migliore",
                     "worstMonth": "Mese Peggiore",
@@ -2360,6 +2366,7 @@ const I18n = (function() {
                     "actions": "Acțiuni"
                 },
                 "summaryCards": {
+                    "totalValue": "Valoare totală",
                     "currentCAGR": "CAGR curent",
                     "bestMonth": "Cea mai bună lună",
                     "worstMonth": "Cea mai slabă lună",

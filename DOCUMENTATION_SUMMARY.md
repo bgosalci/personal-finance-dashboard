@@ -214,6 +214,7 @@ This documentation package provides everything needed to understand, use, mainta
 This comprehensive documentation package ensures the Personal Finance Dashboard codebase is well-documented, maintainable, and accessible to users and developers at all levels.
 
 ## Latest Changes
+- Pension summary cards now show current total value.
 - Pension tracking with charts and summary view.
 - Portfolio export/import and deletion options.
 - Portfolio and stock tracker price refresh during pre-, regular, and after-market sessions.
