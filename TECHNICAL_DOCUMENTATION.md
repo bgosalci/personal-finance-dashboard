@@ -370,6 +370,7 @@ No build process required - the application runs directly in the browser.
 5. Implement proper state management
 
 ## Latest Changes
+- Pension summary cards now show current total value.
 - Pension tracking with charts and summary view.
 - Portfolio export/import and deletion options.
 - Portfolio and stock tracker price refresh during pre-, regular, and after-market sessions.

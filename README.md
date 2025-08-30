@@ -304,6 +304,7 @@ This project is open source and available under the MIT License.
 - **Jest & JSDOM** - For reliable testing infrastructure
 
 ## Latest Changes
+- Pension summary cards now show current total value.
 - Pension tracking with charts and summary view.
 - Portfolio export/import and deletion options.
 - Portfolio and stock tracker price refresh during pre-, regular, and after-market sessions.

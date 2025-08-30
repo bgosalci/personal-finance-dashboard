@@ -329,6 +329,7 @@ A: Each browser stores its own data. Different users would need separate browser
 A: Update investment prices weekly or monthly for accurate tracking. More frequent updates provide better insights.
 
 ## Latest Changes
+- Pension summary cards now show current total value.
 - Pension tracking with charts and summary view.
 - Portfolio export/import and deletion options.
 - Portfolio and stock tracker price refresh during pre-, regular, and after-market sessions.
