@@ -98,6 +98,14 @@ const Settings = (function() {
             });
         }
 
+        const themeSelect = document.getElementById('theme-select');
+        if (themeSelect && typeof ThemeManager !== 'undefined') {
+            themeSelect.value = ThemeManager.getPreference();
+            themeSelect.addEventListener('change', () => {
+                ThemeManager.setPreference(themeSelect.value);
+            });
+        }
+
         const select = document.getElementById('base-currency-select');
         if (select) {
             select.addEventListener('change', () => {

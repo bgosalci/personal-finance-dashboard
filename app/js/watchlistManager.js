@@ -1,7 +1,7 @@
 const WatchlistManager = (function() {
     const STORAGE_KEY = 'watchlistData';
-    const POS_BG = '#E8F5E9';
-    const NEG_BG = '#FEF2F2';
+    const POS_BG = 'rgba(16, 185, 129, 0.35)';
+    const NEG_BG = 'rgba(239, 68, 68, 0.35)';
     let watchlist = [];
     let ws = null;
     let reconnectTimer = null;
@@ -151,8 +151,9 @@ const WatchlistManager = (function() {
         return `${date} ${time}`;
     }
 
-    function flashCell(cell, delta, baseColor) {
+    function flashCell(cell, delta) {
         if (!cell) return;
+        const baseColor = window.getComputedStyle(cell).backgroundColor;
         const flashColor = delta > 0 ? POS_BG : delta < 0 ? NEG_BG : baseColor;
         cell.style.backgroundColor = flashColor;
         if (cell._flashTimer) clearTimeout(cell._flashTimer);
@@ -173,6 +174,7 @@ const WatchlistManager = (function() {
             tr.draggable = true;
             const changeClass = typeof item.change === 'number' ? (item.change < 0 ? 'growth-negative' : item.change > 0 ? 'growth-positive' : '') : '';
             const changePctClass = typeof item.changePct === 'number' ? (item.changePct < 0 ? 'growth-negative' : item.changePct > 0 ? 'growth-positive' : '') : '';
+            const overlayClass = typeof item.change === 'number' ? (item.change < 0 ? 'price-overlay-negative' : item.change > 0 ? 'price-overlay-positive' : '') : '';
             const range = (typeof item.high === 'number' && typeof item.low === 'number')
                 ? Math.max(0, item.high - item.low)
                 : null;
@@ -180,9 +182,9 @@ const WatchlistManager = (function() {
                 <td><strong>${item.ticker}</strong></td>
                 <td>${item.name || ''}</td>
                 <td>${item.currency || ''}</td>
-                <td class="number-cell"><strong>${formatNumber(item.price)}</strong></td>
-                <td class="number-cell ${changeClass}">${formatNumber(item.change)}</td>
-                <td class="number-cell ${changePctClass}">${formatPercent(item.changePct)}</td>
+                <td class="number-cell watchlist-price-cell ${overlayClass}"><strong>${formatNumber(item.price)}</strong></td>
+                <td class="number-cell watchlist-price-cell ${changeClass} ${overlayClass}">${formatNumber(item.change)}</td>
+                <td class="number-cell watchlist-price-cell ${changePctClass} ${overlayClass}">${formatPercent(item.changePct)}</td>
                 <td class="number-cell">${formatNumber(item.high)}</td>
                 <td class="number-cell">${formatNumber(item.low)}</td>
                 <td class="number-cell"${range !== null ? ` data-sort-value="${range}"` : ''}>${range !== null ? formatNumber(range) : '—'}</td>
@@ -196,14 +198,17 @@ const WatchlistManager = (function() {
                 </td>
             `;
             const cells = tr.querySelectorAll('td');
-            const baseColor = typeof item.change === 'number' ? (item.change > 0 ? POS_BG : item.change < 0 ? NEG_BG : '#FFFFFF') : '#FFFFFF';
-            flashCell(cells[3], item.delta || 0, baseColor);
-            flashCell(cells[4], item.delta || 0, baseColor);
-            flashCell(cells[5], item.delta || 0, baseColor);
             const delBtn = tr.querySelector('.delete-btn');
             delBtn.addEventListener('click', () => deleteStock(index));
             addDragHandlers(tr);
             tbody.appendChild(tr);
+            const baseBg = getComputedStyle(document.documentElement).getPropertyValue('--background-tertiary') || '#374151';
+            cells[3].style.backgroundColor = baseBg;
+            cells[4].style.backgroundColor = baseBg;
+            cells[5].style.backgroundColor = baseBg;
+            flashCell(cells[3], item.delta || 0);
+            flashCell(cells[4], item.delta || 0);
+            flashCell(cells[5], item.delta || 0);
             item.delta = 0;
         });
     }

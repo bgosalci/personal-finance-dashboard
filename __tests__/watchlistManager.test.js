@@ -82,10 +82,10 @@ test('flashes and persists background colour on price updates', async () => {
   const ws = FakeWebSocket.instances[0];
   ws.listeners.message({ data: JSON.stringify({ type: 'trade', data: [{ s: 'AAPL', p: 108 }] }) });
   const during = vm.runInContext("document.querySelector('#watchlist-body tr td:nth-child(4)').style.backgroundColor", context);
-  expect(during).toBe('rgb(254, 242, 242)');
+  expect(during).toBe('rgba(239, 68, 68, 0.35)');
   await new Promise(res => setTimeout(res, 1100));
   const after = vm.runInContext("document.querySelector('#watchlist-body tr td:nth-child(4)').style.backgroundColor", context);
-  expect(after).toBe('rgb(232, 245, 233)');
+  expect(after).toBe('rgb(55, 65, 81)');
 });
 
 test('renders range when high and low are available', () => {
