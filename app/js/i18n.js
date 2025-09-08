@@ -347,7 +347,11 @@ const I18n = (function() {
                 "exportLang": "Export Language",
                 "importLang": "Import Language",
                 "rtlToggle": "Enable RTL",
-                "fontSize": "Font Size"
+                "fontSize": "Font Size",
+                "theme": "Theme",
+                "themeSystem": "System",
+                "themeLight": "Light",
+                "themeDark": "Dark"
             },
             "dialog": {
                 "yes": "Yes",
@@ -721,7 +725,11 @@ const I18n = (function() {
                 "exportLang": "Eksporto Gjuhën",
                 "importLang": "Importo Gjuhën",
                 "rtlToggle": "Aktivizo RTL",
-                "fontSize": "Madhësia e shkronjave"
+                "fontSize": "Madhësia e shkronjave",
+                "theme": "Tema",
+                "themeSystem": "Sistemi",
+                "themeLight": "E çelët",
+                "themeDark": "E errët"
             },
             "dialog": {
                 "yes": "Po",
@@ -1095,7 +1103,11 @@ const I18n = (function() {
                 "exportLang": "Exporter la Langue",
                 "importLang": "Importer la Langue",
                 "rtlToggle": "Activer RTL",
-                "fontSize": "Taille de police"
+                "fontSize": "Taille de police",
+                "theme": "Thème",
+                "themeSystem": "Système",
+                "themeLight": "Clair",
+                "themeDark": "Sombre"
             },
             "dialog": {
                 "yes": "Oui",
@@ -1469,7 +1481,11 @@ const I18n = (function() {
                 "exportLang": "Sprache exportieren",
                 "importLang": "Sprache importieren",
                 "rtlToggle": "RTL aktivieren",
-                "fontSize": "Schriftgröße"
+                "fontSize": "Schriftgröße",
+                "theme": "Design",
+                "themeSystem": "System",
+                "themeLight": "Hell",
+                "themeDark": "Dunkel"
             },
             "dialog": {
                 "yes": "Ja",
@@ -1843,7 +1859,11 @@ const I18n = (function() {
                 "exportLang": "Exportar Idioma",
                 "importLang": "Importar Idioma",
                 "rtlToggle": "Habilitar RTL",
-                "fontSize": "Tamaño de fuente"
+                "fontSize": "Tamaño de fuente",
+                "theme": "Tema",
+                "themeSystem": "Sistema",
+                "themeLight": "Claro",
+                "themeDark": "Oscuro"
             },
             "dialog": {
                 "yes": "Sí",
@@ -2217,7 +2237,11 @@ const I18n = (function() {
                 "exportLang": "Esporta Lingua",
                 "importLang": "Importa Lingua",
                 "rtlToggle": "Abilita RTL",
-                "fontSize": "Dimensione carattere"
+                "fontSize": "Dimensione carattere",
+                "theme": "Tema",
+                "themeSystem": "Sistema",
+                "themeLight": "Chiaro",
+                "themeDark": "Scuro"
             },
             "dialog": {
                 "yes": "Sì",
@@ -2595,7 +2619,11 @@ const I18n = (function() {
                 "exportLang": "Limba de export",
                 "importLang": "Limba de import",
                 "rtlToggle": "Activați RTL",
-                "fontSize": "Mărimea fontului"
+                "fontSize": "Mărimea fontului",
+                "theme": "Temă",
+                "themeSystem": "Sistem",
+                "themeLight": "Luminos",
+                "themeDark": "Întunecat"
             },
             "dialog": {
                 "yes": "Da",
