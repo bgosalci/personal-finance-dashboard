@@ -291,6 +291,8 @@
             border-radius: 8px;
             font-size: 1rem;
             transition: border-color 0.3s ease;
+            background: var(--background-tertiary);
+            color: var(--text-primary);
         }
 
         .form-group textarea {
@@ -301,6 +303,15 @@
             transition: border-color 0.3s ease;
             width: 100%;
             resize: vertical;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="date"],
+        select,
+        .price-input {
+            background: var(--background-tertiary);
+            color: var(--text-primary);
         }
 
         #base-currency-select {
@@ -512,15 +523,8 @@
             border: 1px solid var(--border-color);
             border-radius: 6px;
             text-align: right;
-        }
-
-        .price-input {
-            width: 100%;
-            display: block;
-            padding: 0.5rem;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            text-align: right;
+            background: var(--background-tertiary);
+            color: var(--text-primary);
         }
 
         .growth-positive {
@@ -538,6 +542,18 @@
         .growth-neutral {
             color: var(--text-secondary);
             text-align: right;
+        }
+
+        .watchlist-price-cell {
+            background: var(--background-tertiary);
+        }
+
+        .watchlist-price-cell.price-overlay-positive {
+            box-shadow: inset 0 0 0 9999px rgba(16, 185, 129, 0.15);
+        }
+
+        .watchlist-price-cell.price-overlay-negative {
+            box-shadow: inset 0 0 0 9999px rgba(239, 68, 68, 0.15);
         }
 
         .summary-row {
