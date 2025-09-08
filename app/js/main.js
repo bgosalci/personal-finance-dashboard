@@ -1,5 +1,6 @@
 // Initialize the application when DOM is ready
 document.addEventListener('DOMContentLoaded', async function() {
+    ThemeManager.init();
     await I18n.init();
     I18n.initDir();
     FinancialDashboard.init();
