@@ -24,6 +24,8 @@
             --gosalci-candle-mid: #00d08a;       /* Gradient midpoint (soft teal) */
             --gosalci-candle-bottom: #00b48a;    /* Gradient base green */
             --gosalci-shadow: #1f1f1f;           /* UI accent (hover/shadow) */
+            --header-gradient-start: #131014;    /* Keep header black across themes */
+            --header-gradient-end: #475569;      /* Subtle gradient accent */
             --app-font-scale: 1;
         }
 
@@ -43,6 +45,8 @@
             --gosalci-bg: #1f2937;
             --gosalci-text: #f9fafb;
             --gosalci-shadow: #000000;
+            --header-gradient-start: #131014;
+            --header-gradient-end: #475569;
         }
 
         html {
@@ -70,7 +74,7 @@
         }
 
         .header {
-            background: linear-gradient(135deg, var(--gosalci-bg), var(--secondary-gray-dark));
+            background: linear-gradient(135deg, var(--header-gradient-start), var(--header-gradient-end));
             color: white;
             padding: 1.5rem 1rem;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
