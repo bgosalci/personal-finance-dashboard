@@ -533,6 +533,10 @@
                                 <input type="text" id="invest-initial" inputmode="decimal">
                             </div>
                             <div class="form-group">
+                                <label for="invest-monthly"><span data-i18n="calculators.investment.labels.monthlyContribution">Monthly Contribution</span> (<span id="invest-monthly-currency-label">USD</span>)</label>
+                                <input type="text" id="invest-monthly" inputmode="decimal">
+                            </div>
+                            <div class="form-group">
                                 <label for="invest-rate" data-i18n="calculators.investment.labels.rate">Annual Return Rate (%)</label>
                                 <input type="number" id="invest-rate" min="0" max="50" step="0.1">
                             </div>
@@ -543,8 +547,12 @@
                         </div>
                         <div id="investment-results" class="result-display" style="display: none;">
                             <div class="result-item">
-                                <span data-i18n="calculators.investment.results.totalReturn">Total Return (Interest):</span>
-                                <span id="invest-total-return">0</span>
+                                <span data-i18n="calculators.investment.results.investedValue">Invested Value:</span>
+                                <span id="invest-invested-value">0</span>
+                            </div>
+                            <div class="result-item">
+                                <span data-i18n="calculators.investment.results.growthValue">Growth Value:</span>
+                                <span id="invest-growth-value">0</span>
                             </div>
                             <div class="result-item">
                                 <span data-i18n="calculators.investment.results.finalValue">Final Value:</span>
