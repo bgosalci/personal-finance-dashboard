@@ -149,6 +149,7 @@ const I18n = (function() {
                     "loan": "Loan Calculator",
                     "investment": "Investment Calculator",
                     "cagr": "CAGR Calculator",
+                    "mortgage": "Mortgage Calculator",
                     "fairValue": "Fair Value Calculator"
                 },
                 "loan": {
@@ -189,6 +190,23 @@ const I18n = (function() {
                     "results": {
                         "totalReturn": "Total Return:",
                         "cagr": "Compound Annual Growth Rate (CAGR):"
+                    }
+                },
+                "mortgage": {
+                    "labels": {
+                        "propertyPrice": "Property Price",
+                        "deposit": "Deposit",
+                        "amount": "Mortgage Amount",
+                        "rate": "Mortgage Interest Rate (%)",
+                        "term": "Mortgage Term (Years)"
+                    },
+                    "results": {
+                        "monthlyPayment": "Monthly Payment:",
+                        "firstMonthInterest": "First Month Interest Portion:",
+                        "firstMonthPrincipal": "First Month Principal Portion:",
+                        "totalAmount": "Total Amount Repaid:",
+                        "totalInterest": "Total Interest Paid:",
+                        "totalPrincipal": "Total Principal Repaid:"
                     }
                 },
                 "fairValue": {
@@ -525,6 +543,7 @@ const I18n = (function() {
                     "loan": "Kalkulator i huasë",
                     "investment": "Kalkulator investimesh",
                     "cagr": "Kalkulator CAGR",
+                    "mortgage": "Kalkulator hipotekor",
                     "fairValue": "Kalkulator i vlerës së drejtë"
                 },
 
@@ -566,6 +585,23 @@ const I18n = (function() {
                     "results": {
                         "totalReturn": "Kthimi total:",
                         "cagr": "Norma vjetore e rritjes së përbërë (CAGR):",
+                    }
+                },
+                "mortgage": {
+                    "labels": {
+                        "propertyPrice": "Çmimi i pronës",
+                        "deposit": "Depozita",
+                        "amount": "Shuma e hipotekës",
+                        "rate": "Norma e interesit të hipotekës (%)",
+                        "term": "Afati i hipotekës (Vite)"
+                    },
+                    "results": {
+                        "monthlyPayment": "Pagesa mujore:",
+                        "firstMonthInterest": "Pjesa e interesit në muajin e parë:",
+                        "firstMonthPrincipal": "Pjesa e principalit në muajin e parë:",
+                        "totalAmount": "Shuma totale e shlyer:",
+                        "totalInterest": "Interesi total i paguar:",
+                        "totalPrincipal": "Principali total i shlyer:"
                     }
                 },
                 "fairValue": {
@@ -903,6 +939,7 @@ const I18n = (function() {
                     "loan": "Calculateur de prêt",
                     "investment": "Calculateur d'investissement",
                     "cagr": "Calculateur de TCAC",
+                    "mortgage": "Calculateur hypothécaire",
                     "fairValue": "Calculateur de juste valeur"
                 },
 
@@ -944,6 +981,23 @@ const I18n = (function() {
                     "results": {
                         "totalReturn": "Rendement total:",
                         "cagr": "Taux de croissance annuel composé (TCAC):",
+                    }
+                },
+                "mortgage": {
+                    "labels": {
+                        "propertyPrice": "Prix du bien",
+                        "deposit": "Apport",
+                        "amount": "Montant de l'hypothèque",
+                        "rate": "Taux d'intérêt hypothécaire (%)",
+                        "term": "Durée de l'hypothèque (années)"
+                    },
+                    "results": {
+                        "monthlyPayment": "Paiement mensuel:",
+                        "firstMonthInterest": "Part d'intérêt du premier mois:",
+                        "firstMonthPrincipal": "Part de capital du premier mois:",
+                        "totalAmount": "Montant total remboursé:",
+                        "totalInterest": "Intérêts totaux payés:",
+                        "totalPrincipal": "Capital total remboursé:"
                     }
                 },
                 "fairValue": {
@@ -1281,6 +1335,7 @@ const I18n = (function() {
                     "loan": "Kreditrechner",
                     "investment": "Investmentrechner",
                     "cagr": "CAGR-Rechner",
+                    "mortgage": "Hypothekenrechner",
                     "fairValue": "Fair-Value-Rechner"
                 },
 
@@ -1322,6 +1377,23 @@ const I18n = (function() {
                     "results": {
                         "totalReturn": "Gesamtrendite:",
                         "cagr": "Jährliche Wachstumsrate (CAGR):",
+                    }
+                },
+                "mortgage": {
+                    "labels": {
+                        "propertyPrice": "Immobilienpreis",
+                        "deposit": "Anzahlung",
+                        "amount": "Hypothekenbetrag",
+                        "rate": "Hypothekenzinssatz (%)",
+                        "term": "Hypothekenlaufzeit (Jahre)"
+                    },
+                    "results": {
+                        "monthlyPayment": "Monatliche Zahlung:",
+                        "firstMonthInterest": "Zinsanteil im ersten Monat:",
+                        "firstMonthPrincipal": "Tilgungsanteil im ersten Monat:",
+                        "totalAmount": "Gesamtsumme zurückgezahlt:",
+                        "totalInterest": "Gesamtzins gezahlt:",
+                        "totalPrincipal": "Gesamter getilgter Betrag:"
                     }
                 },
                 "fairValue": {
@@ -1659,6 +1731,7 @@ const I18n = (function() {
                     "loan": "Calculadora de préstamos",
                     "investment": "Calculadora de inversiones",
                     "cagr": "Calculadora CAGR",
+                    "mortgage": "Calculadora hipotecaria",
                     "fairValue": "Calculadora de valor razonable"
                 },
 
@@ -1700,6 +1773,23 @@ const I18n = (function() {
                     "results": {
                         "totalReturn": "Retorno total:",
                         "cagr": "Tasa de crecimiento anual compuesta (CAGR):",
+                    }
+                },
+                "mortgage": {
+                    "labels": {
+                        "propertyPrice": "Precio de la propiedad",
+                        "deposit": "Depósito",
+                        "amount": "Monto de la hipoteca",
+                        "rate": "Tasa de interés hipotecario (%)",
+                        "term": "Plazo de la hipoteca (años)"
+                    },
+                    "results": {
+                        "monthlyPayment": "Pago mensual:",
+                        "firstMonthInterest": "Porción de interés del primer mes:",
+                        "firstMonthPrincipal": "Porción de capital del primer mes:",
+                        "totalAmount": "Monto total pagado:",
+                        "totalInterest": "Interés total pagado:",
+                        "totalPrincipal": "Capital total pagado:"
                     }
                 },
                 "fairValue": {
@@ -2037,6 +2127,7 @@ const I18n = (function() {
                     "loan": "Calcolatore del prestito",
                     "investment": "Calcolatore di investimento",
                     "cagr": "Calcolatore CAGR",
+                    "mortgage": "Calcolatrice mutuo",
                     "fairValue": "Calcolatore del valore equo"
                 },
 
@@ -2078,6 +2169,23 @@ const I18n = (function() {
                     "results": {
                         "totalReturn": "Rendimento totale:",
                         "cagr": "Tasso di crescita annuale composto (CAGR):",
+                    }
+                },
+                "mortgage": {
+                    "labels": {
+                        "propertyPrice": "Prezzo dell'immobile",
+                        "deposit": "Acconto",
+                        "amount": "Importo del mutuo",
+                        "rate": "Tasso di interesse del mutuo (%)",
+                        "term": "Durata del mutuo (anni)"
+                    },
+                    "results": {
+                        "monthlyPayment": "Rata mensile:",
+                        "firstMonthInterest": "Quota interessi del primo mese:",
+                        "firstMonthPrincipal": "Quota capitale del primo mese:",
+                        "totalAmount": "Importo totale rimborsato:",
+                        "totalInterest": "Interessi totali pagati:",
+                        "totalPrincipal": "Capitale totale rimborsato:"
                     }
                 },
                 "fairValue": {
@@ -2421,6 +2529,7 @@ const I18n = (function() {
                     "loan": "Calculator de împrumut",
                     "investment": "Calculator de investiții",
                     "cagr": "Calculator CAGR",
+                    "mortgage": "Calculator ipotecar",
                     "fairValue": "Calculator de valoare justă"
                 },
                 "loan": {
@@ -2461,6 +2570,23 @@ const I18n = (function() {
                     "results": {
                         "totalReturn": "Returnare totală:",
                         "cagr": "Rata anuală de creștere compusă (CAGR):"
+                    }
+                },
+                "mortgage": {
+                    "labels": {
+                        "propertyPrice": "Prețul proprietății",
+                        "deposit": "Avans",
+                        "amount": "Valoarea ipotecii",
+                        "rate": "Rata dobânzii ipotecare (%)",
+                        "term": "Durata ipotecii (ani)"
+                    },
+                    "results": {
+                        "monthlyPayment": "Plată lunară:",
+                        "firstMonthInterest": "Partea de dobândă din prima lună:",
+                        "firstMonthPrincipal": "Partea de principal din prima lună:",
+                        "totalAmount": "Suma totală rambursată:",
+                        "totalInterest": "Dobândă totală plătită:",
+                        "totalPrincipal": "Principal total rambursat:"
                     }
                 },
                 "fairValue": {

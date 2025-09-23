@@ -55,13 +55,24 @@ const Calculator = (function() {
             : 'USD';
         const loanLabel = document.getElementById('loan-base-currency-label');
         const investLabel = document.getElementById('invest-base-currency-label');
+        const mortgagePropertyLabel = document.getElementById('mortgage-property-currency-label');
+        const mortgageDepositLabel = document.getElementById('mortgage-deposit-currency-label');
+        const mortgageAmountLabel = document.getElementById('mortgage-amount-currency-label');
         if (loanLabel) loanLabel.textContent = currency;
         if (investLabel) investLabel.textContent = currency;
+        if (mortgagePropertyLabel) mortgagePropertyLabel.textContent = currency;
+        if (mortgageDepositLabel) mortgageDepositLabel.textContent = currency;
+        if (mortgageAmountLabel) mortgageAmountLabel.textContent = currency;
         ['loan-monthly-payment', 'loan-total-interest', 'loan-total-amount'].forEach(id => {
             const el = document.getElementById(id);
             if (el) el.textContent = formatCurrency(0);
         });
         ['invest-total-return', 'invest-final-value'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.textContent = formatCurrency(0);
+        });
+        ['mortgage-monthly-payment', 'mortgage-first-month-interest', 'mortgage-first-month-principal',
+            'mortgage-total-amount', 'mortgage-total-interest', 'mortgage-total-principal'].forEach(id => {
             const el = document.getElementById(id);
             if (el) el.textContent = formatCurrency(0);
         });
@@ -227,6 +238,66 @@ const Calculator = (function() {
             });
             setupAmountInput('cagr-beginning');
             setupAmountInput('cagr-ending');
+        }
+
+        return { init };
+    })();
+
+    // Mortgage Calculator
+    const MortgageCalculator = (function() {
+        function calculate() {
+            const propertyPrice = getNumberValue('mortgage-property-price');
+            const deposit = getNumberValue('mortgage-deposit');
+            let principal = getNumberValue('mortgage-amount');
+            const rate = parseFloat(document.getElementById('mortgage-rate').value) || 0;
+            const years = parseFloat(document.getElementById('mortgage-term').value) || 0;
+
+            if (principal <= 0 && propertyPrice > 0) {
+                const computedPrincipal = propertyPrice - deposit;
+                if (computedPrincipal > 0) {
+                    principal = computedPrincipal;
+                }
+            }
+
+            if (propertyPrice <= 0 || principal <= 0 || rate < 0 || years <= 0) {
+                document.getElementById('mortgage-results').style.display = 'none';
+                return;
+            }
+
+            const monthlyRate = rate / 100 / 12;
+            const totalPayments = Math.max(Math.round(years * 12), 1);
+
+            let monthlyPayment;
+            if (monthlyRate === 0) {
+                monthlyPayment = principal / totalPayments;
+            } else {
+                const factor = Math.pow(1 + monthlyRate, totalPayments);
+                monthlyPayment = principal * (monthlyRate * factor) / (factor - 1);
+            }
+
+            const totalAmount = monthlyPayment * totalPayments;
+            const totalInterest = totalAmount - principal;
+            const firstMonthInterest = monthlyRate > 0 ? principal * monthlyRate : 0;
+            const firstMonthPrincipal = Math.max(monthlyPayment - firstMonthInterest, 0);
+
+            document.getElementById('mortgage-monthly-payment').textContent = formatCurrency(monthlyPayment);
+            document.getElementById('mortgage-first-month-interest').textContent = formatCurrency(firstMonthInterest);
+            document.getElementById('mortgage-first-month-principal').textContent = formatCurrency(firstMonthPrincipal);
+            document.getElementById('mortgage-total-amount').textContent = formatCurrency(totalAmount);
+            document.getElementById('mortgage-total-interest').textContent = formatCurrency(totalInterest);
+            document.getElementById('mortgage-total-principal').textContent = formatCurrency(principal);
+            document.getElementById('mortgage-results').style.display = 'block';
+        }
+
+        function init() {
+            ['mortgage-property-price', 'mortgage-deposit', 'mortgage-amount'].forEach(setupAmountInput);
+            const inputs = ['mortgage-property-price', 'mortgage-deposit', 'mortgage-amount', 'mortgage-rate', 'mortgage-term'];
+            inputs.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.addEventListener('input', calculate);
+                }
+            });
         }
 
         return { init };
@@ -417,6 +488,7 @@ const Calculator = (function() {
         LoanCalculator.init();
         InvestmentCalculator.init();
         CAGRCalculator.init();
+        MortgageCalculator.init();
         FairValueCalculator.init();
     }
 
