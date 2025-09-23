@@ -186,40 +186,58 @@ const Calculator = (function() {
             }
 
             const annualRateDecimal = annualRate / 100;
-            const monthlyRate = annualRateDecimal / 12;
             const totalMonths = Math.max(1, Math.round(years * 12));
+            const monthlyRate = Math.pow(1 + annualRateDecimal, 1 / 12) - 1;
+            const effectiveMonthlyRate = Math.abs(monthlyRate) < 1e-10 ? 0 : monthlyRate;
+
+            const futureValueForMonths = (months) => {
+                if (months <= 0) {
+                    return initial;
+                }
+
+                if (effectiveMonthlyRate === 0) {
+                    return initial + (monthlyContribution * months);
+                }
+
+                const growthFactor = Math.pow(1 + effectiveMonthlyRate, months);
+                const initialFutureValue = initial * growthFactor;
+                const contributionsFutureValue = monthlyContribution > 0
+                    ? monthlyContribution * ((growthFactor - 1) / effectiveMonthlyRate)
+                    : 0;
+
+                return initialFutureValue + contributionsFutureValue;
+            };
+
+            const finalValue = futureValueForMonths(totalMonths);
+            const investedValue = initial + (monthlyContribution * totalMonths);
+            const growthValue = finalValue - investedValue;
+            const normalizedGrowthValue = Math.abs(growthValue) < 1e-8 ? 0 : growthValue;
 
             const tbody = document.getElementById('investment-growth-body');
             tbody.innerHTML = '';
-            let value = initial;
-            let investedValue = initial;
-            let yearGrowth = 0;
-            const row0 = document.createElement('tr');
-            row0.innerHTML = `<td>${I18n.t('calculators.investment.table.start')}</td><td>-</td><td>${formatCurrency(value)}</td>`;
-            tbody.appendChild(row0);
+            const startRow = document.createElement('tr');
+            startRow.innerHTML = `<td>${I18n.t('calculators.investment.table.start')}</td><td>-</td><td>${formatCurrency(initial)}</td>`;
+            tbody.appendChild(startRow);
 
-            for (let month = 1; month <= totalMonths; month++) {
-                const interest = monthlyRate > 0 ? value * monthlyRate : 0;
-                value += interest;
-                yearGrowth += interest;
+            const totalYears = Math.ceil(totalMonths / 12);
+            let previousMonths = 0;
+            let previousValue = futureValueForMonths(previousMonths);
 
-                if (monthlyContribution > 0) {
-                    value += monthlyContribution;
-                    investedValue += monthlyContribution;
-                }
+            for (let year = 1; year <= totalYears; year++) {
+                const monthsElapsed = Math.min(year * 12, totalMonths);
+                const currentValue = futureValueForMonths(monthsElapsed);
+                const monthsInPeriod = monthsElapsed - previousMonths;
+                const contributionsThisPeriod = monthlyContribution * monthsInPeriod;
+                const growthThisPeriod = currentValue - previousValue - contributionsThisPeriod;
+                const normalizedGrowthThisPeriod = Math.abs(growthThisPeriod) < 1e-8 ? 0 : growthThisPeriod;
 
-                if (month % 12 === 0 || month === totalMonths) {
-                    const yearNumber = Math.ceil(month / 12);
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `<td>${I18n.t('calculators.investment.table.year')} ${yearNumber}</td><td>${formatCurrency(yearGrowth)}</td><td>${formatCurrency(value)}</td>`;
-                    tbody.appendChild(tr);
-                    yearGrowth = 0;
-                }
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td>${I18n.t('calculators.investment.table.year')} ${year}</td><td>${formatCurrency(normalizedGrowthThisPeriod)}</td><td>${formatCurrency(currentValue)}</td>`;
+                tbody.appendChild(tr);
+
+                previousMonths = monthsElapsed;
+                previousValue = currentValue;
             }
-
-            const finalValue = value;
-            const growthValue = finalValue - investedValue;
-            const normalizedGrowthValue = Math.abs(growthValue) < 1e-8 ? 0 : growthValue;
 
             document.getElementById('invest-invested-value').textContent = formatCurrency(investedValue);
             document.getElementById('invest-growth-value').textContent = formatCurrency(normalizedGrowthValue);
