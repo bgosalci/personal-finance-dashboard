@@ -63,6 +63,10 @@ const Calculator = (function() {
         if (mortgagePropertyLabel) mortgagePropertyLabel.textContent = currency;
         if (mortgageDepositLabel) mortgageDepositLabel.textContent = currency;
         if (mortgageAmountLabel) mortgageAmountLabel.textContent = currency;
+        const mortgageAmountInput = document.getElementById('mortgage-amount');
+        if (mortgageAmountInput) {
+            mortgageAmountInput.value = formatInputValue('0.00', true);
+        }
         ['loan-monthly-payment', 'loan-total-interest', 'loan-total-amount'].forEach(id => {
             const el = document.getElementById(id);
             if (el) el.textContent = formatCurrency(0);
@@ -248,15 +252,16 @@ const Calculator = (function() {
         function calculate() {
             const propertyPrice = getNumberValue('mortgage-property-price');
             const deposit = getNumberValue('mortgage-deposit');
-            let principal = getNumberValue('mortgage-amount');
+            const rawPrincipal = propertyPrice - deposit;
+            const principal = rawPrincipal > 0 ? rawPrincipal : 0;
             const rate = parseFloat(document.getElementById('mortgage-rate').value) || 0;
             const years = parseFloat(document.getElementById('mortgage-term').value) || 0;
 
-            if (principal <= 0 && propertyPrice > 0) {
-                const computedPrincipal = propertyPrice - deposit;
-                if (computedPrincipal > 0) {
-                    principal = computedPrincipal;
-                }
+            const mortgageAmountInput = document.getElementById('mortgage-amount');
+            if (mortgageAmountInput) {
+                mortgageAmountInput.value = principal > 0
+                    ? formatInputValue(principal.toFixed(2), true)
+                    : formatInputValue('0.00', true);
             }
 
             if (propertyPrice <= 0 || principal <= 0 || rate < 0 || years <= 0) {
@@ -290,8 +295,12 @@ const Calculator = (function() {
         }
 
         function init() {
-            ['mortgage-property-price', 'mortgage-deposit', 'mortgage-amount'].forEach(setupAmountInput);
-            const inputs = ['mortgage-property-price', 'mortgage-deposit', 'mortgage-amount', 'mortgage-rate', 'mortgage-term'];
+            ['mortgage-property-price', 'mortgage-deposit'].forEach(setupAmountInput);
+            const amountInput = document.getElementById('mortgage-amount');
+            if (amountInput) {
+                amountInput.value = formatInputValue('0.00', true);
+            }
+            const inputs = ['mortgage-property-price', 'mortgage-deposit', 'mortgage-rate', 'mortgage-term'];
             inputs.forEach(id => {
                 const el = document.getElementById(id);
                 if (el) {
