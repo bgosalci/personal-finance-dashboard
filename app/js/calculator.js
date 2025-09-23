@@ -55,6 +55,12 @@ const Calculator = (function() {
             : 'USD';
         const loanLabel = document.getElementById('loan-base-currency-label');
         const investLabel = document.getElementById('invest-base-currency-label');
+
+        const investMonthlyLabel = document.getElementById('invest-monthly-currency-label');
+        if (loanLabel) loanLabel.textContent = currency;
+        if (investLabel) investLabel.textContent = currency;
+        if (investMonthlyLabel) investMonthlyLabel.textContent = currency;
+
         const mortgagePropertyLabel = document.getElementById('mortgage-property-currency-label');
         const mortgageDepositLabel = document.getElementById('mortgage-deposit-currency-label');
         const mortgageAmountLabel = document.getElementById('mortgage-amount-currency-label');
@@ -67,11 +73,12 @@ const Calculator = (function() {
         if (mortgageAmountInput) {
             mortgageAmountInput.value = formatInputValue('0.00', true);
         }
+
         ['loan-monthly-payment', 'loan-total-interest', 'loan-total-amount'].forEach(id => {
             const el = document.getElementById(id);
             if (el) el.textContent = formatCurrency(0);
         });
-        ['invest-total-return', 'invest-final-value'].forEach(id => {
+        ['invest-invested-value', 'invest-growth-value', 'invest-final-value'].forEach(id => {
             const el = document.getElementById(id);
             if (el) el.textContent = formatCurrency(0);
         });
@@ -168,48 +175,66 @@ const Calculator = (function() {
     const InvestmentCalculator = (function() {
         function calculate() {
             const initial = getNumberValue('invest-initial');
+            const monthlyContribution = getNumberValue('invest-monthly');
             const annualRate = parseFloat(document.getElementById('invest-rate').value) || 0;
             const years = parseFloat(document.getElementById('invest-years').value) || 0;
 
-            if (initial <= 0 || annualRate < 0 || years <= 0) {
+            if ((initial <= 0 && monthlyContribution <= 0) || annualRate < 0 || years <= 0) {
                 document.getElementById('investment-results').style.display = 'none';
                 document.getElementById('investment-growth-container').style.display = 'none';
                 return;
             }
 
-            // Simple annual compounding: Final Value = Principal × (1 + rate)^years
             const annualRateDecimal = annualRate / 100;
-            const finalValue = initial * Math.pow(1 + annualRateDecimal, years);
-            const totalReturn = finalValue - initial;
+            const monthlyRate = annualRateDecimal / 12;
+            const totalMonths = Math.max(1, Math.round(years * 12));
 
-            document.getElementById('invest-total-return').textContent = formatCurrency(totalReturn);
-            document.getElementById('invest-final-value').textContent = formatCurrency(finalValue);
-            document.getElementById('investment-results').style.display = 'block';
-
-            // Build yearly growth table
             const tbody = document.getElementById('investment-growth-body');
             tbody.innerHTML = '';
             let value = initial;
+            let investedValue = initial;
+            let yearGrowth = 0;
             const row0 = document.createElement('tr');
             row0.innerHTML = `<td>${I18n.t('calculators.investment.table.start')}</td><td>-</td><td>${formatCurrency(value)}</td>`;
             tbody.appendChild(row0);
-            for (let i = 1; i <= years; i++) {
-                const newValue = value * (1 + annualRateDecimal);
-                const growth = newValue - value;
-                const tr = document.createElement('tr');
-                tr.innerHTML = `<td>${I18n.t('calculators.investment.table.year')} ${i}</td><td>${formatCurrency(growth)}</td><td>${formatCurrency(newValue)}</td>`;
-                tbody.appendChild(tr);
-                value = newValue;
+
+            for (let month = 1; month <= totalMonths; month++) {
+                const interest = monthlyRate > 0 ? value * monthlyRate : 0;
+                value += interest;
+                yearGrowth += interest;
+
+                if (monthlyContribution > 0) {
+                    value += monthlyContribution;
+                    investedValue += monthlyContribution;
+                }
+
+                if (month % 12 === 0 || month === totalMonths) {
+                    const yearNumber = Math.ceil(month / 12);
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `<td>${I18n.t('calculators.investment.table.year')} ${yearNumber}</td><td>${formatCurrency(yearGrowth)}</td><td>${formatCurrency(value)}</td>`;
+                    tbody.appendChild(tr);
+                    yearGrowth = 0;
+                }
             }
+
+            const finalValue = value;
+            const growthValue = finalValue - investedValue;
+            const normalizedGrowthValue = Math.abs(growthValue) < 1e-8 ? 0 : growthValue;
+
+            document.getElementById('invest-invested-value').textContent = formatCurrency(investedValue);
+            document.getElementById('invest-growth-value').textContent = formatCurrency(normalizedGrowthValue);
+            document.getElementById('invest-final-value').textContent = formatCurrency(finalValue);
+            document.getElementById('investment-results').style.display = 'block';
             document.getElementById('investment-growth-container').style.display = 'block';
         }
 
         function init() {
-            const inputs = ['invest-initial', 'invest-rate', 'invest-years'];
+            const inputs = ['invest-initial', 'invest-monthly', 'invest-rate', 'invest-years'];
             inputs.forEach(id => {
                 document.getElementById(id).addEventListener('input', calculate);
             });
             setupAmountInput('invest-initial');
+            setupAmountInput('invest-monthly');
         }
 
         return { init };

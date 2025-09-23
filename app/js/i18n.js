@@ -167,11 +167,13 @@ const I18n = (function() {
                 "investment": {
                     "labels": {
                         "initial": "Initial Investment",
+                        "monthlyContribution": "Monthly Contribution",
                         "rate": "Annual Return Rate (%)",
                         "years": "Investment Period (Years)"
                     },
                     "results": {
-                        "totalReturn": "Total Return (Interest):",
+                        "investedValue": "Invested Value:",
+                        "growthValue": "Growth Value:",
                         "finalValue": "Final Value:"
                     },
                     "table": {
@@ -562,11 +564,13 @@ const I18n = (function() {
                 "investment": {
                     "labels": {
                         "initial": "Investimi fillestar",
+                        "monthlyContribution": "Kontributi Mujor",
                         "rate": "Norma e kthimit vjetor (%)",
                         "years": "Periudha e investimit (Vite)",
                     },
                     "results": {
-                        "totalReturn": "Kthimi total (Interesi):",
+                        "investedValue": "Vlera e Investuar:",
+                        "growthValue": "Vlera e Rritjes:",
                         "finalValue": "Vlera përfundimtare:",
                     },
                     "table": {
@@ -958,11 +962,13 @@ const I18n = (function() {
                 "investment": {
                     "labels": {
                         "initial": "Investissement initial",
+                        "monthlyContribution": "Contribution mensuelle",
                         "rate": "Taux de rendement annuel (%)",
                         "years": "Période d'investissement (années)",
                     },
                     "results": {
-                        "totalReturn": "Rendement total (Intérêt):",
+                        "investedValue": "Valeur investie:",
+                        "growthValue": "Valeur de croissance:",
                         "finalValue": "Valeur finale:",
                     },
                     "table": {
@@ -1354,11 +1360,13 @@ const I18n = (function() {
                 "investment": {
                     "labels": {
                         "initial": "Anfangsinvestition",
+                        "monthlyContribution": "Monatlicher Beitrag",
                         "rate": "Jährliche Rendite (%)",
                         "years": "Anlagezeitraum (Jahre)",
                     },
                     "results": {
-                        "totalReturn": "Gesamtrendite (Zinsen):",
+                        "investedValue": "Investierter Betrag:",
+                        "growthValue": "Wertzuwachs:",
                         "finalValue": "Endwert:",
                     },
                     "table": {
@@ -1750,11 +1758,13 @@ const I18n = (function() {
                 "investment": {
                     "labels": {
                         "initial": "Inversión inicial",
+                        "monthlyContribution": "Contribución mensual",
                         "rate": "Tasa de retorno anual (%)",
                         "years": "Periodo de inversión (años)",
                     },
                     "results": {
-                        "totalReturn": "Retorno total (interés):",
+                        "investedValue": "Valor invertido:",
+                        "growthValue": "Valor de crecimiento:",
                         "finalValue": "Valor final:",
                     },
                     "table": {
@@ -2146,11 +2156,13 @@ const I18n = (function() {
                 "investment": {
                     "labels": {
                         "initial": "Investimento iniziale",
+                        "monthlyContribution": "Contributo mensile",
                         "rate": "Tasso di rendimento annuale (%)",
                         "years": "Periodo di investimento (anni)",
                     },
                     "results": {
-                        "totalReturn": "Rendimento totale (interessi):",
+                        "investedValue": "Valore investito:",
+                        "growthValue": "Valore di crescita:",
                         "finalValue": "Valore finale:",
                     },
                     "table": {
@@ -2547,11 +2559,13 @@ const I18n = (function() {
                 "investment": {
                     "labels": {
                         "initial": "Investiție inițială",
+                        "monthlyContribution": "Contribuție lunară",
                         "rate": "Rata anuală de rentabilitate (%)",
                         "years": "Perioada de investiții (ani)"
                     },
                     "results": {
-                        "totalReturn": "Returnare totală (dobÚndă):",
+                        "investedValue": "Valoare investită:",
+                        "growthValue": "Valoare de creștere:",
                         "finalValue": "Valoarea finală:"
                     },
                     "table": {
