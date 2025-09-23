@@ -202,8 +202,8 @@ const I18n = (function() {
                     },
                     "results": {
                         "monthlyPayment": "Monthly Payment:",
-                        "firstMonthInterest": "First Month Interest Portion:",
-                        "firstMonthPrincipal": "First Month Principal Portion:",
+                        "averageInterestPortion": "Average Interest Portion per Payment:",
+                        "averagePrincipalPortion": "Average Principal Portion per Payment:",
                         "totalAmount": "Total Amount Repaid:",
                         "totalInterest": "Total Interest Paid:",
                         "totalPrincipal": "Total Principal Repaid:"
@@ -597,8 +597,8 @@ const I18n = (function() {
                     },
                     "results": {
                         "monthlyPayment": "Pagesa mujore:",
-                        "firstMonthInterest": "Pjesa e interesit në muajin e parë:",
-                        "firstMonthPrincipal": "Pjesa e principalit në muajin e parë:",
+                        "averageInterestPortion": "Pjesa mesatare e interesit për pagesë:",
+                        "averagePrincipalPortion": "Pjesa mesatare e principalit për pagesë:",
                         "totalAmount": "Shuma totale e shlyer:",
                         "totalInterest": "Interesi total i paguar:",
                         "totalPrincipal": "Principali total i shlyer:"
@@ -993,8 +993,8 @@ const I18n = (function() {
                     },
                     "results": {
                         "monthlyPayment": "Paiement mensuel:",
-                        "firstMonthInterest": "Part d'intérêt du premier mois:",
-                        "firstMonthPrincipal": "Part de capital du premier mois:",
+                        "averageInterestPortion": "Part moyenne d'intérêt par paiement:",
+                        "averagePrincipalPortion": "Part moyenne de capital par paiement:",
                         "totalAmount": "Montant total remboursé:",
                         "totalInterest": "Intérêts totaux payés:",
                         "totalPrincipal": "Capital total remboursé:"
@@ -1389,8 +1389,8 @@ const I18n = (function() {
                     },
                     "results": {
                         "monthlyPayment": "Monatliche Zahlung:",
-                        "firstMonthInterest": "Zinsanteil im ersten Monat:",
-                        "firstMonthPrincipal": "Tilgungsanteil im ersten Monat:",
+                        "averageInterestPortion": "Durchschnittlicher Zinsanteil pro Zahlung:",
+                        "averagePrincipalPortion": "Durchschnittlicher Tilgungsanteil pro Zahlung:",
                         "totalAmount": "Gesamtsumme zurückgezahlt:",
                         "totalInterest": "Gesamtzins gezahlt:",
                         "totalPrincipal": "Gesamter getilgter Betrag:"
@@ -1785,8 +1785,8 @@ const I18n = (function() {
                     },
                     "results": {
                         "monthlyPayment": "Pago mensual:",
-                        "firstMonthInterest": "Porción de interés del primer mes:",
-                        "firstMonthPrincipal": "Porción de capital del primer mes:",
+                        "averageInterestPortion": "Porción promedio de interés por pago:",
+                        "averagePrincipalPortion": "Porción promedio de capital por pago:",
                         "totalAmount": "Monto total pagado:",
                         "totalInterest": "Interés total pagado:",
                         "totalPrincipal": "Capital total pagado:"
@@ -2181,8 +2181,8 @@ const I18n = (function() {
                     },
                     "results": {
                         "monthlyPayment": "Rata mensile:",
-                        "firstMonthInterest": "Quota interessi del primo mese:",
-                        "firstMonthPrincipal": "Quota capitale del primo mese:",
+                        "averageInterestPortion": "Quota media di interessi per rata:",
+                        "averagePrincipalPortion": "Quota media di capitale per rata:",
                         "totalAmount": "Importo totale rimborsato:",
                         "totalInterest": "Interessi totali pagati:",
                         "totalPrincipal": "Capitale totale rimborsato:"
@@ -2582,8 +2582,8 @@ const I18n = (function() {
                     },
                     "results": {
                         "monthlyPayment": "Plată lunară:",
-                        "firstMonthInterest": "Partea de dobândă din prima lună:",
-                        "firstMonthPrincipal": "Partea de principal din prima lună:",
+                        "averageInterestPortion": "Partea medie de dobândă per plată:",
+                        "averagePrincipalPortion": "Partea medie de principal per plată:",
                         "totalAmount": "Suma totală rambursată:",
                         "totalInterest": "Dobândă totală plătită:",
                         "totalPrincipal": "Principal total rambursat:"

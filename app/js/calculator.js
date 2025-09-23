@@ -71,7 +71,7 @@ const Calculator = (function() {
             const el = document.getElementById(id);
             if (el) el.textContent = formatCurrency(0);
         });
-        ['mortgage-monthly-payment', 'mortgage-first-month-interest', 'mortgage-first-month-principal',
+        ['mortgage-monthly-payment', 'mortgage-average-interest', 'mortgage-average-principal',
             'mortgage-total-amount', 'mortgage-total-interest', 'mortgage-total-principal'].forEach(id => {
             const el = document.getElementById(id);
             if (el) el.textContent = formatCurrency(0);
@@ -277,12 +277,12 @@ const Calculator = (function() {
 
             const totalAmount = monthlyPayment * totalPayments;
             const totalInterest = totalAmount - principal;
-            const firstMonthInterest = monthlyRate > 0 ? principal * monthlyRate : 0;
-            const firstMonthPrincipal = Math.max(monthlyPayment - firstMonthInterest, 0);
+            const averageInterestPortion = totalPayments > 0 ? totalInterest / totalPayments : 0;
+            const averagePrincipalPortion = totalPayments > 0 ? principal / totalPayments : 0;
 
             document.getElementById('mortgage-monthly-payment').textContent = formatCurrency(monthlyPayment);
-            document.getElementById('mortgage-first-month-interest').textContent = formatCurrency(firstMonthInterest);
-            document.getElementById('mortgage-first-month-principal').textContent = formatCurrency(firstMonthPrincipal);
+            document.getElementById('mortgage-average-interest').textContent = formatCurrency(averageInterestPortion);
+            document.getElementById('mortgage-average-principal').textContent = formatCurrency(averagePrincipalPortion);
             document.getElementById('mortgage-total-amount').textContent = formatCurrency(totalAmount);
             document.getElementById('mortgage-total-interest').textContent = formatCurrency(totalInterest);
             document.getElementById('mortgage-total-principal').textContent = formatCurrency(principal);
