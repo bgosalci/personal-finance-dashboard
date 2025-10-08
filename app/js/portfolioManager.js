@@ -1039,6 +1039,7 @@ const PortfolioManager = (function() {
             PriceStorage.onChange((ticker, data) => {
                 const price = data && typeof data.price === 'number' ? data.price : null;
                 if (price === null) return;
+                let summaryUpdated = false;
                 portfolios.forEach(pf => {
                     const key = getStorageKey(pf.id);
                     const raw = localStorage.getItem(key);
@@ -1054,12 +1055,19 @@ const PortfolioManager = (function() {
                     });
                     if (changed) {
                         try { localStorage.setItem(key, JSON.stringify(list)); } catch (e) {}
-                        if (pf.id === currentPortfolioId) {
+                        if (summaryMode) {
+                            summaryUpdated = true;
+                        } else if (pf.id === currentPortfolioId) {
                             investments = list;
                             renderTable();
                         }
                     }
                 });
+                if (summaryMode && summaryUpdated) {
+                    loadData();
+                    renderPortfolioTabs();
+                    renderTable();
+                }
             });
         }
 
