@@ -225,6 +225,7 @@ const I18n = (function() {
                         "name": "Salary name",
                         "basicSalary": "Annual basic salary (£)",
                         "frequency": "Payment frequency",
+                        "hoursPerWeek": "Hours per week",
                         "pension": "Pension contribution (%)",
                         "studentLoan": "Student loan plan",
                         "age": "Age",
@@ -237,7 +238,8 @@ const I18n = (function() {
                         "annual": "Annual",
                         "monthly": "Monthly",
                         "fortnightly": "Fortnightly",
-                        "weekly": "Weekly"
+                        "weekly": "Weekly",
+                        "hourly": "Hourly"
                     },
                     "studentLoan": {
                         "none": "None",

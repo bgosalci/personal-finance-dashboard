@@ -346,6 +346,7 @@ const Calculator = (function() {
         const nameInput = document.getElementById('salary-name');
         const annualInput = document.getElementById('salary-annual');
         const frequencySelect = document.getElementById('salary-frequency');
+        const hoursInput = document.getElementById('salary-hours');
         const pensionInput = document.getElementById('salary-pension');
         const studentLoanSelect = document.getElementById('salary-student-loan');
         const ageInput = document.getElementById('salary-age');
@@ -419,6 +420,7 @@ const Calculator = (function() {
                 age: 30,
                 taxCode: '1257L',
                 benefits: 0,
+                hoursPerWeek: 37.5,
                 frequency: 'monthly',
                 showInSummary: true,
                 allowances: [],
@@ -441,6 +443,9 @@ const Calculator = (function() {
             entries.forEach(entry => {
                 if (entry.showInSummary === undefined) {
                     entry.showInSummary = true;
+                }
+                if (entry.hoursPerWeek === undefined) {
+                    entry.hoursPerWeek = 37.5;
                 }
             });
         }
@@ -592,7 +597,10 @@ const Calculator = (function() {
         function updateFormResults(entry) {
             const results = calculateEntry(entry);
             const frequencyValue = entry.frequency || 'monthly';
-            const divisor = frequencies[frequencyValue] || 12;
+            const hoursPerWeek = Math.max(0, parseFloat(entry.hoursPerWeek) || 0);
+            const divisor = frequencyValue === 'hourly'
+                ? Math.max(1, hoursPerWeek * 52)
+                : (frequencies[frequencyValue] || 12);
             if (annualGrossEl) annualGrossEl.textContent = formatSalaryCurrency(results.grossAnnual);
             if (annualTaxableEl) annualTaxableEl.textContent = formatSalaryCurrency(results.taxableIncome);
             if (annualAllowancesEl) annualAllowancesEl.textContent = formatSalaryCurrency(results.allowancesTotal);
@@ -684,6 +692,7 @@ const Calculator = (function() {
                 annualInput.value = entry.annualSalary ? formatInputValue(entry.annualSalary.toFixed(2), true) : '';
             }
             if (frequencySelect) frequencySelect.value = entry.frequency || 'monthly';
+            if (hoursInput) hoursInput.value = entry.hoursPerWeek ?? '';
             if (pensionInput) pensionInput.value = entry.pensionPercent || '';
             if (studentLoanSelect) studentLoanSelect.value = entry.studentLoanPlan || 'none';
             if (ageInput) ageInput.value = entry.age || '';
@@ -722,6 +731,9 @@ const Calculator = (function() {
             entry.name = nameInput ? nameInput.value.trim() : entry.name;
             entry.annualSalary = annualInput && annualInput.value !== '' ? parseFormattedNumber(annualInput.value) : 0;
             entry.frequency = frequencySelect ? frequencySelect.value : entry.frequency;
+            entry.hoursPerWeek = hoursInput && hoursInput.value !== ''
+                ? parseFloat(hoursInput.value) || 0
+                : 0;
             entry.pensionPercent = pensionInput && pensionInput.value !== '' ? parseFloat(pensionInput.value) || 0 : 0;
             entry.studentLoanPlan = studentLoanSelect ? studentLoanSelect.value : entry.studentLoanPlan;
             entry.age = ageInput && ageInput.value !== '' ? parseInt(ageInput.value, 10) || 0 : 0;
@@ -818,7 +830,7 @@ const Calculator = (function() {
                     renderAllowances(entry);
                 });
             }
-            [nameInput, annualInput, pensionInput, ageInput, taxCodeInput, benefitsInput, otherDeductionsInput].forEach(input => {
+            [nameInput, annualInput, hoursInput, pensionInput, ageInput, taxCodeInput, benefitsInput, otherDeductionsInput].forEach(input => {
                 if (input) input.addEventListener('input', handleFieldUpdate);
             });
             [frequencySelect, studentLoanSelect].forEach(select => {
@@ -828,7 +840,7 @@ const Calculator = (function() {
 
         function exportData(format) {
             if (format === 'csv') {
-                const headers = ['id', 'name', 'annualSalary', 'pensionPercent', 'studentLoanPlan', 'age', 'taxCode', 'benefits', 'frequency', 'showInSummary', 'allowances', 'otherDeductions'];
+                const headers = ['id', 'name', 'annualSalary', 'pensionPercent', 'studentLoanPlan', 'age', 'taxCode', 'benefits', 'hoursPerWeek', 'frequency', 'showInSummary', 'allowances', 'otherDeductions'];
                 const rows = entries.map(entry => headers.map(key => {
                     if (key === 'allowances') {
                         return `"${JSON.stringify(entry.allowances || []).replace(/"/g, '""')}"`;
@@ -869,6 +881,7 @@ const Calculator = (function() {
                 age: parseInt(item.age, 10) || 30,
                 taxCode: item.taxCode || '1257L',
                 benefits: parseFloat(item.benefits) || 0,
+                hoursPerWeek: parseFloat(item.hoursPerWeek) || 0,
                 frequency: item.frequency || 'monthly',
                 showInSummary: item.showInSummary === undefined ? true : String(item.showInSummary) !== 'false',
                 allowances: Array.isArray(item.allowances)
