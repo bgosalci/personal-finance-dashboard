@@ -536,8 +536,8 @@ const Calculator = (function() {
             const tax = calculateIncomeTax(taxableIncome);
             const nationalInsurance = calculateNationalInsurance(grossAnnual, parseInt(entry.age, 10) || 0);
             const studentLoan = calculateStudentLoan(adjustedIncome, entry.studentLoanPlan);
-            const otherTotal = pensionContribution + nationalInsurance + studentLoan + otherDeductions;
-            const takeHome = Math.max(0, grossAnnual - tax - otherTotal);
+            const deductionTotal = pensionContribution + studentLoan + otherDeductions;
+            const takeHome = Math.max(0, grossAnnual - tax - deductionTotal - nationalInsurance);
             return {
                 grossAnnual,
                 allowancesTotal,
@@ -549,7 +549,7 @@ const Calculator = (function() {
                 tax,
                 nationalInsurance,
                 studentLoan,
-                otherTotal,
+                otherTotal: deductionTotal,
                 takeHome
             };
         }
