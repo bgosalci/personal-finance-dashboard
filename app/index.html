@@ -486,7 +486,7 @@
                     <button class="sub-nav-tab" data-subtab="investment" data-i18n="calculators.tabs.investment">Investment Calculator</button>
                     <button class="sub-nav-tab" data-subtab="cagr" data-i18n="calculators.tabs.cagr">CAGR Calculator</button>
                     <button class="sub-nav-tab" data-subtab="mortgage" data-i18n="calculators.tabs.mortgage">Mortgage Calculator</button>
-                    <button class="sub-nav-tab" data-subtab="fair-value" data-i18n="calculators.tabs.fairValue">Fair Value Calculator</button>
+                    <button class="sub-nav-tab" data-subtab="salary" data-i18n="calculators.tabs.salary">Salary Calculator</button>
                 </div>
 
                 <!-- Loan Calculator Sub-Tab -->
@@ -661,158 +661,29 @@
                     </div>
                 </div>
 
-                <!-- Fair Value Calculator Sub-Tab -->
-                <div id="fair-value" class="sub-tab-content">
+                <!-- Salary Calculator Sub-Tab -->
+                <div id="salary" class="sub-tab-content">
                     <div class="calculator-section">
-                        <h3 class="calculator-title" data-i18n="calculators.tabs.fairValue">Fair Value Calculator</h3>
-                        
-                        <!-- Fair Value Sub-Sections -->
-                        <div class="fair-value-sections">
-                            <div class="fair-value-nav">
-                                <button class="fair-value-btn active" data-section="dcf" data-i18n="calculators.fairValue.tabs.dcf">DCF Analysis</button>
-                                <button class="fair-value-btn" data-section="pe" data-i18n="calculators.fairValue.tabs.pe">P/E Ratio Analysis</button>
-                                <button class="fair-value-btn" data-section="intrinsic" data-i18n="calculators.fairValue.tabs.intrinsic">Intrinsic Value</button>
+                        <div class="section-header">
+                            <h3 class="calculator-title" data-i18n="calculators.tabs.salary">Salary Calculator</h3>
+                            <button type="button" class="btn btn-secondary" id="add-salary-btn" data-i18n="calculators.salary.actions.addSalary">Add Salary</button>
+                        </div>
+                        <p class="form-hint" data-i18n="calculators.salary.hint">UK tax estimates based on current income tax and National Insurance thresholds.</p>
+                        <div id="salary-summary" class="result-display">
+                            <div class="result-item">
+                                <span data-i18n="calculators.salary.summary.totalTakeHome">Total take-home:</span>
+                                <span id="salary-total-take-home">£0.00</span>
                             </div>
-
-                            <!-- DCF Calculator -->
-                            <div id="dcf" class="fair-value-section active">
-                                <h4 class="section-subtitle" data-i18n="calculators.fairValue.dcf.title">Discounted Cash Flow (DCF) Analysis</h4>
-                                <div class="form-grid">
-                                    <div class="form-group">
-                                        <label for="dcf-current-fcf"><span data-i18n="calculators.fairValue.dcf.labels.currentFCF">Current Annual Free Cash Flow</span> ($M)</label>
-                                        <input type="text" id="dcf-current-fcf" inputmode="decimal">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="dcf-growth-rate" data-i18n="calculators.fairValue.dcf.labels.growthRate">Growth Rate (%)</label>
-                                        <input type="number" id="dcf-growth-rate" min="0" max="50" step="0.1">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="dcf-terminal-rate" data-i18n="calculators.fairValue.dcf.labels.terminalRate">Terminal Growth Rate (%)</label>
-                                        <input type="number" id="dcf-terminal-rate" min="0" max="10" step="0.1">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="dcf-discount-rate" data-i18n="calculators.fairValue.dcf.labels.discountRate">Discount Rate (WACC) (%)</label>
-                                        <input type="number" id="dcf-discount-rate" min="0" max="30" step="0.1">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="dcf-years" data-i18n="calculators.fairValue.dcf.labels.years">Projection Years</label>
-                                        <input type="number" id="dcf-years" min="5" max="20" step="1">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="dcf-shares" data-i18n="calculators.fairValue.dcf.labels.shares">Shares Outstanding (M)</label>
-                                        <input type="text" id="dcf-shares" inputmode="decimal">
-                                    </div>
-                                </div>
-                                <div id="dcf-results" class="result-display" style="display: none;">
-                                    <div class="result-item">
-                                        <span data-i18n="calculators.fairValue.dcf.results.enterpriseValue">Enterprise Value:</span>
-                                        <span id="dcf-enterprise-value">$0.00</span>
-                                    </div>
-                                    <div class="result-item">
-                                        <span data-i18n="calculators.fairValue.dcf.results.pvCashflows">Present Value of Cash Flows:</span>
-                                        <span id="dcf-pv-cashflows">$0.00</span>
-                                    </div>
-                                    <div class="result-item">
-                                        <span data-i18n="calculators.fairValue.dcf.results.terminalValue">Terminal Value:</span>
-                                        <span id="dcf-terminal-value">$0.00</span>
-                                    </div>
-                                    <div class="result-item">
-                                        <span data-i18n="calculators.fairValue.dcf.results.perShare">Intrinsic Value Per Share:</span>
-                                        <span id="dcf-per-share">$0.00</span>
-                                    </div>
-                                </div>
+                            <div class="result-item">
+                                <span data-i18n="calculators.salary.summary.totalTax">Total tax:</span>
+                                <span id="salary-total-tax">£0.00</span>
                             </div>
-
-                            <!-- P/E Ratio Analysis -->
-                            <div id="pe" class="fair-value-section">
-                                <h4 class="section-subtitle" data-i18n="calculators.fairValue.pe.title">P/E Ratio Analysis</h4>
-                                <div class="form-grid">
-                                    <div class="form-group">
-                                        <label for="pe-current-price" data-i18n="calculators.fairValue.pe.labels.currentPrice">Current Stock Price ($)</label>
-                                        <input type="text" id="pe-current-price" inputmode="decimal">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="pe-eps" data-i18n="calculators.fairValue.pe.labels.eps">Earnings Per Share (EPS) ($)</label>
-                                        <input type="number" id="pe-eps" min="0" step="0.01">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="pe-industry-avg" data-i18n="calculators.fairValue.pe.labels.industryPE">Industry Average P/E</label>
-                                        <input type="number" id="pe-industry-avg" min="0" step="0.1">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="pe-growth-rate" data-i18n="calculators.fairValue.pe.labels.growthRate">Expected EPS Growth Rate (%)</label>
-                                        <input type="number" id="pe-growth-rate" min="0" max="100" step="0.1">
-                                    </div>
-                                </div>
-                                <div id="pe-results" class="result-display" style="display: none;">
-                                    <div class="result-item">
-                                        <span data-i18n="calculators.fairValue.pe.results.currentPE">Current P/E Ratio:</span>
-                                        <span id="pe-current-ratio">0.00</span>
-                                    </div>
-                                    <div class="result-item">
-                                        <span data-i18n="calculators.fairValue.pe.results.fairValue">Fair Value (Industry P/E):</span>
-                                        <span id="pe-fair-value">$0.00</span>
-                                    </div>
-                                    <div class="result-item">
-                                        <span data-i18n="calculators.fairValue.pe.results.pegRatio">PEG Ratio:</span>
-                                        <span id="pe-peg-ratio">0.00</span>
-                                    </div>
-                                    <div class="result-item">
-                                        <span data-i18n="calculators.fairValue.pe.results.valuation">Valuation Status:</span>
-                                        <span id="pe-valuation-status">--</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Intrinsic Value Calculator -->
-                            <div id="intrinsic" class="fair-value-section">
-                                <h4 class="section-subtitle" data-i18n="calculators.fairValue.intrinsic.title">Intrinsic Value Analysis</h4>
-                                <div class="form-grid">
-                                    <div class="form-group">
-                                        <label for="intrinsic-book-value" data-i18n="calculators.fairValue.intrinsic.labels.bookValue">Book Value Per Share ($)</label>
-                                        <input type="number" id="intrinsic-book-value" min="0" step="0.01">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="intrinsic-roe" data-i18n="calculators.fairValue.intrinsic.labels.roe">Return on Equity (ROE) (%)</label>
-                                        <input type="number" id="intrinsic-roe" min="0" max="100" step="0.1">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="intrinsic-dividend-yield" data-i18n="calculators.fairValue.intrinsic.labels.dividendYield">Dividend Yield (%)</label>
-                                        <input type="number" id="intrinsic-dividend-yield" min="0" max="20" step="0.1">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="intrinsic-required-return" data-i18n="calculators.fairValue.intrinsic.labels.requiredReturn">Required Rate of Return (%)</label>
-                                        <input type="number" id="intrinsic-required-return" min="0" max="30" step="0.1">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="intrinsic-growth-rate" data-i18n="calculators.fairValue.intrinsic.labels.growthRate">Sustainable Growth Rate (%)</label>
-                                        <input type="number" id="intrinsic-growth-rate" min="0" max="50" step="0.1">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="intrinsic-eps" data-i18n="calculators.fairValue.intrinsic.labels.eps">Current EPS ($)</label>
-                                        <input type="number" id="intrinsic-eps" min="0" step="0.01">
-                                    </div>
-                                </div>
-                                <div id="intrinsic-results" class="result-display" style="display: none;">
-                                    <div class="result-item">
-                                        <span data-i18n="calculators.fairValue.intrinsic.results.graham">Graham Number:</span>
-                                        <span id="intrinsic-graham">$0.00</span>
-                                    </div>
-                                    <div class="result-item">
-                                        <span data-i18n="calculators.fairValue.intrinsic.results.ddm">Dividend Discount Model:</span>
-                                        <span id="intrinsic-ddm">$0.00</span>
-                                    </div>
-                                    <div class="result-item">
-                                        <span data-i18n="calculators.fairValue.intrinsic.results.bookMultiple">Book Value Multiple:</span>
-                                        <span id="intrinsic-book-multiple">$0.00</span>
-                                    </div>
-                                    <div class="result-item">
-                                        <span data-i18n="calculators.fairValue.intrinsic.results.average">Average Intrinsic Value:</span>
-                                        <span id="intrinsic-average">$0.00</span>
-                                    </div>
-                                </div>
+                            <div class="result-item">
+                                <span data-i18n="calculators.salary.summary.totalDeductions">Total other deductions:</span>
+                                <span id="salary-total-deductions">£0.00</span>
                             </div>
                         </div>
+                        <div id="salary-entries" class="salary-entries"></div>
                     </div>
                 </div>
             </div>
@@ -983,6 +854,15 @@
                     </div>
                 </div>
 
+                <h3 class="section-subtitle" data-i18n="settings.sectionTitles.salary">Salary</h3>
+                <div class="form-group">
+                    <div class="button-row">
+                        <button type="button" class="btn btn-secondary" id="export-salaries-btn" data-i18n="settings.exportSalaries">Export Salaries</button>
+                        <button type="button" class="btn btn-secondary" id="import-salaries-btn" data-i18n="settings.importSalaries">Import Salaries</button>
+                        <button type="button" class="btn btn-danger" id="delete-salaries-btn" data-i18n="settings.deleteSalaries">Delete Salaries</button>
+                    </div>
+                </div>
+
                 <h3 class="section-subtitle" data-i18n="settings.sectionTitles.portfolio">Portfolio</h3>
                 <div class="form-group">
                     <div class="button-row">
@@ -1055,6 +935,48 @@
                 </div>
                 <div class="modal-actions">
                     <button type="button" class="btn btn-secondary" id="cancel-import-pensions" data-i18n="common.cancel">Cancel</button>
+                    <button type="submit" class="btn btn-primary" data-i18n="common.import">Import</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Export Salaries Modal -->
+    <div id="export-salaries-modal" class="modal">
+        <div class="modal-content">
+            <h3 data-i18n="settings.exportSalaries">Export Salaries</h3>
+            <div class="form-group">
+                <label for="export-salaries-format" data-i18n="common.format">Format</label>
+                <select id="export-salaries-format">
+                    <option value="json">JSON</option>
+                    <option value="csv">CSV</option>
+                </select>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn btn-secondary" id="cancel-export-salaries" data-i18n="common.cancel">Cancel</button>
+                <button type="button" class="btn btn-primary" id="download-export-salaries" data-i18n="common.export">Export</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Import Salaries Modal -->
+    <div id="import-salaries-modal" class="modal">
+        <div class="modal-content">
+            <h3 data-i18n="settings.importSalaries">Import Salaries</h3>
+            <form id="import-salaries-form">
+                <div class="form-group">
+                    <label for="import-salaries-format" data-i18n="common.format">Format</label>
+                    <select id="import-salaries-format">
+                        <option value="json">JSON</option>
+                        <option value="csv">CSV</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="import-salaries-file" data-i18n="common.file">File</label>
+                    <input type="file" id="import-salaries-file" accept=".json,.csv" required>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" id="cancel-import-salaries" data-i18n="common.cancel">Cancel</button>
                     <button type="submit" class="btn btn-primary" data-i18n="common.import">Import</button>
                 </div>
             </form>

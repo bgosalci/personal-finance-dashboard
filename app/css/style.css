@@ -764,47 +764,44 @@
             display: block;
         }
 
-        /* Fair Value Calculator Styles */
-        .fair-value-sections {
-            margin-top: 1rem;
-        }
-
-        .fair-value-nav {
+        /* Salary Calculator Styles */
+        .salary-entries {
             display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .salary-card {
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            background: var(--background-secondary);
+        }
+
+        .salary-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+
+        .salary-card-title {
+            margin-bottom: 0;
+        }
+
+        .salary-breakdown {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
             gap: 0.5rem;
-            margin-bottom: 2rem;
+            margin-top: 0.5rem;
+        }
+
+        .salary-per-period-row {
+            display: flex;
+            align-items: baseline;
+            gap: 0.5rem;
             flex-wrap: wrap;
-        }
-
-        .fair-value-btn {
-            padding: 0.75rem 1.25rem;
-            background: var(--background-tertiary);
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            font-weight: 500;
-            color: var(--text-secondary);
-            transition: all 0.3s ease;
-        }
-
-        .fair-value-btn:hover {
-            color: var(--primary-blue);
-            border-color: var(--primary-blue);
-        }
-
-        .fair-value-btn.active {
-            background: var(--primary-blue);
-            color: white;
-            border-color: var(--primary-blue);
-        }
-
-        .fair-value-section {
-            display: none;
-        }
-
-        .fair-value-section.active {
-            display: block;
         }
 
         .section-subtitle {
@@ -874,9 +871,10 @@
                 border-radius: 0;
             }
 
-            .fair-value-nav {
+            .salary-card-header {
                 flex-direction: column;
-        }
+                align-items: flex-start;
+            }
         
         .calculator-section {
             padding: 1rem;
@@ -954,7 +952,9 @@
         }
 
         #export-pensions-modal .modal-content,
-        #import-pensions-modal .modal-content {
+        #import-pensions-modal .modal-content,
+        #export-salaries-modal .modal-content,
+        #import-salaries-modal .modal-content {
             width: 500px;
             height: auto;
         }

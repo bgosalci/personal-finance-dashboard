@@ -175,6 +175,18 @@ const Settings = (function() {
         const importCancel = document.getElementById('cancel-import-pensions');
 
         const delPensionsBtn = document.getElementById('delete-pensions-btn');
+        const exportSalariesBtn = document.getElementById('export-salaries-btn');
+        const importSalariesBtn = document.getElementById('import-salaries-btn');
+        const deleteSalariesBtn = document.getElementById('delete-salaries-btn');
+        const exportSalariesModal = document.getElementById('export-salaries-modal');
+        const exportSalariesFormat = document.getElementById('export-salaries-format');
+        const exportSalariesCancel = document.getElementById('cancel-export-salaries');
+        const exportSalariesDownload = document.getElementById('download-export-salaries');
+        const importSalariesModal = document.getElementById('import-salaries-modal');
+        const importSalariesForm = document.getElementById('import-salaries-form');
+        const importSalariesFormat = document.getElementById('import-salaries-format');
+        const importSalariesFile = document.getElementById('import-salaries-file');
+        const importSalariesCancel = document.getElementById('cancel-import-salaries');
 
         const expPortfolioBtn = document.getElementById('export-portfolio-btn');
         const impPortfolioBtn = document.getElementById('import-portfolio-btn');
@@ -351,6 +363,56 @@ const Settings = (function() {
             reader.readAsText(file);
         }
 
+        function openSalaryExport() {
+            if (!exportSalariesFormat || !exportSalariesModal) return;
+            exportSalariesFormat.value = 'json';
+            exportSalariesModal.style.display = 'flex';
+        }
+
+        function closeSalaryExport() {
+            if (exportSalariesModal) exportSalariesModal.style.display = 'none';
+        }
+
+        function downloadSalaryExport() {
+            if (typeof SalaryCalculator === 'undefined') return;
+            const fmt = exportSalariesFormat.value;
+            const data = SalaryCalculator.exportData(fmt);
+            const blob = new Blob([data], { type: fmt === 'json' ? 'application/json' : 'text/csv' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'salaries.' + (fmt === 'json' ? 'json' : 'csv');
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(a.href);
+            closeSalaryExport();
+        }
+
+        function openSalaryImport() {
+            if (!importSalariesModal || !importSalariesFormat) return;
+            importSalariesFormat.value = 'json';
+            if (importSalariesFile) importSalariesFile.value = '';
+            if (importSalariesFile) importSalariesFile.focus();
+            importSalariesModal.style.display = 'flex';
+        }
+
+        function closeSalaryImport() {
+            if (importSalariesModal) importSalariesModal.style.display = 'none';
+        }
+
+        function handleSalaryImport(e) {
+            e.preventDefault();
+            if (typeof SalaryCalculator === 'undefined') return;
+            const file = importSalariesFile.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function() {
+                SalaryCalculator.importData(reader.result, importSalariesFormat.value);
+                closeSalaryImport();
+            };
+            reader.readAsText(file);
+        }
+
         function openStockExport() {
             expStockFormat.value = 'json';
             expStockModal.style.display = 'flex';
@@ -413,6 +475,11 @@ const Settings = (function() {
         if (expStockDownload) expStockDownload.addEventListener('click', downloadStockExport);
         if (expStockModal) expStockModal.addEventListener('click', e => { if (e.target === expStockModal) closeStockExport(); });
 
+        if (exportSalariesBtn) exportSalariesBtn.addEventListener('click', openSalaryExport);
+        if (exportSalariesCancel) exportSalariesCancel.addEventListener('click', closeSalaryExport);
+        if (exportSalariesDownload) exportSalariesDownload.addEventListener('click', downloadSalaryExport);
+        if (exportSalariesModal) exportSalariesModal.addEventListener('click', e => { if (e.target === exportSalariesModal) closeSalaryExport(); });
+
         if (impPortfolioBtn) impPortfolioBtn.addEventListener('click', openPortfolioImport);
         if (impPortfolioCancel) impPortfolioCancel.addEventListener('click', closePortfolioImport);
         if (impPortfolioForm) impPortfolioForm.addEventListener('submit', handlePortfolioImport);
@@ -428,11 +495,23 @@ const Settings = (function() {
         if (impStockForm) impStockForm.addEventListener('submit', handleStockImport);
         if (impStockModal) impStockModal.addEventListener('click', e => { if (e.target === impStockModal) closeStockImport(); });
 
+        if (importSalariesBtn) importSalariesBtn.addEventListener('click', openSalaryImport);
+        if (importSalariesCancel) importSalariesCancel.addEventListener('click', closeSalaryImport);
+        if (importSalariesForm) importSalariesForm.addEventListener('submit', handleSalaryImport);
+        if (importSalariesModal) importSalariesModal.addEventListener('click', e => { if (e.target === importSalariesModal) closeSalaryImport(); });
+
 
         if (delPensionsBtn) {
             delPensionsBtn.addEventListener('click', async () => {
                 const c = await DialogManager.confirm(I18n.t('dialog.deleteAllPension'), I18n.t('dialog.delete'));
                 if (c) PensionManager.deleteAllData();
+            });
+        }
+
+        if (deleteSalariesBtn) {
+            deleteSalariesBtn.addEventListener('click', async () => {
+                const c = await DialogManager.confirm(I18n.t('dialog.deleteAllSalary'), I18n.t('dialog.delete'));
+                if (c && typeof SalaryCalculator !== 'undefined') SalaryCalculator.deleteAllData();
             });
         }
 
