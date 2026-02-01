@@ -335,8 +335,31 @@ const Calculator = (function() {
     // Salary Calculator
     const SalaryCalculator = (function() {
         const STORAGE_KEY = 'pf_salary_entries';
-        const entriesContainer = document.getElementById('salary-entries');
+        const salaryTabs = document.getElementById('salary-tabs');
+        const summaryPanel = document.getElementById('salary-summary-panel');
+        const summaryList = document.getElementById('salary-summary-list');
+        const formPanel = document.getElementById('salary-form-panel');
         const addSalaryBtn = document.getElementById('add-salary-btn');
+        const removeSalaryBtn = document.getElementById('remove-salary-btn');
+        const summaryToggle = document.getElementById('salary-summary-toggle');
+        const formTitle = document.getElementById('salary-form-title');
+        const nameInput = document.getElementById('salary-name');
+        const annualInput = document.getElementById('salary-annual');
+        const frequencySelect = document.getElementById('salary-frequency');
+        const pensionInput = document.getElementById('salary-pension');
+        const studentLoanSelect = document.getElementById('salary-student-loan');
+        const ageInput = document.getElementById('salary-age');
+        const taxCodeInput = document.getElementById('salary-tax-code');
+        const otherDeductionsInput = document.getElementById('salary-other-deductions');
+        const takeHomeEl = document.getElementById('salary-take-home');
+        const taxEl = document.getElementById('salary-tax');
+        const deductionsEl = document.getElementById('salary-deductions');
+        const pensionEl = document.getElementById('salary-pension-value');
+        const niEl = document.getElementById('salary-ni');
+        const studentLoanEl = document.getElementById('salary-student-loan-value');
+        const otherEl = document.getElementById('salary-other-value');
+        const perPeriodEl = document.getElementById('salary-per-period');
+        const frequencyLabelEl = document.getElementById('salary-frequency-label');
         const totalTakeHomeEl = document.getElementById('salary-total-take-home');
         const totalTaxEl = document.getElementById('salary-total-tax');
         const totalDeductionsEl = document.getElementById('salary-total-deductions');
@@ -348,6 +371,7 @@ const Calculator = (function() {
             weekly: 52
         };
         let entries = [];
+        let currentSalaryId = 'summary';
 
         function formatSalaryCurrency(amount) {
             return I18n.formatCurrency(amount, 'GBP');
@@ -364,6 +388,7 @@ const Calculator = (function() {
                 age: 30,
                 taxCode: '1257L',
                 frequency: 'monthly',
+                showInSummary: true,
                 otherDeductions: 0
             };
         }
@@ -380,6 +405,11 @@ const Calculator = (function() {
             } catch (e) {
                 entries = [createEntry()];
             }
+            entries.forEach(entry => {
+                if (entry.showInSummary === undefined) {
+                    entry.showInSummary = true;
+                }
+            });
         }
 
         function saveEntries() {
@@ -477,7 +507,8 @@ const Calculator = (function() {
         }
 
         function updateSummary() {
-            const totals = entries.reduce((acc, entry) => {
+            const included = entries.filter(entry => entry.showInSummary !== false);
+            const totals = included.reduce((acc, entry) => {
                 const calc = calculateEntry(entry);
                 acc.takeHome += calc.takeHome;
                 acc.tax += calc.tax;
@@ -487,23 +518,31 @@ const Calculator = (function() {
             if (totalTakeHomeEl) totalTakeHomeEl.textContent = formatSalaryCurrency(totals.takeHome);
             if (totalTaxEl) totalTaxEl.textContent = formatSalaryCurrency(totals.tax);
             if (totalDeductionsEl) totalDeductionsEl.textContent = formatSalaryCurrency(totals.other);
+            renderSummaryList(included);
         }
 
-        function updateCardResults(card, entry, index) {
-            const results = calculateEntry(entry);
-            const titleEl = card.querySelector('.salary-card-title');
-            if (titleEl) {
-                titleEl.textContent = entry.name || `${I18n.t('calculators.salary.labels.salary')} ${index + 1}`;
+        function renderSummaryList(included) {
+            if (!summaryList) return;
+            summaryList.innerHTML = '';
+            if (included.length === 0) {
+                const empty = document.createElement('div');
+                empty.className = 'form-hint';
+                empty.textContent = I18n.t('calculators.salary.summary.noneSelected');
+                summaryList.appendChild(empty);
+                return;
             }
-            const takeHomeEl = card.querySelector('.salary-take-home');
-            const taxEl = card.querySelector('.salary-tax');
-            const deductionsEl = card.querySelector('.salary-deductions');
-            const pensionEl = card.querySelector('.salary-pension');
-            const niEl = card.querySelector('.salary-ni');
-            const studentLoanEl = card.querySelector('.salary-student-loan');
-            const otherEl = card.querySelector('.salary-other');
-            const perPeriodEl = card.querySelector('.salary-per-period');
-            const frequencyLabelEl = card.querySelector('.salary-frequency-label');
+            included.forEach(entry => {
+                const results = calculateEntry(entry);
+                const item = document.createElement('div');
+                item.className = 'salary-summary-item';
+                const name = entry.name || I18n.t('calculators.salary.labels.salary');
+                item.innerHTML = `<span>${name}</span><span>${formatSalaryCurrency(results.takeHome)}</span>`;
+                summaryList.appendChild(item);
+            });
+        }
+
+        function updateFormResults(entry) {
+            const results = calculateEntry(entry);
             const frequencyValue = entry.frequency || 'monthly';
             const divisor = frequencies[frequencyValue] || 12;
             if (takeHomeEl) takeHomeEl.textContent = formatSalaryCurrency(results.takeHome);
@@ -517,119 +556,65 @@ const Calculator = (function() {
             if (frequencyLabelEl) frequencyLabelEl.textContent = I18n.t(`calculators.salary.frequency.${frequencyValue}`);
         }
 
-        function renderEntries() {
-            if (!entriesContainer) return;
-            entriesContainer.innerHTML = '';
+        function renderTabs() {
+            if (!salaryTabs) return;
+            salaryTabs.innerHTML = '';
+            const summaryBtn = document.createElement('button');
+            summaryBtn.className = 'sub-nav-tab';
+            summaryBtn.dataset.salaryId = 'summary';
+            summaryBtn.textContent = I18n.t('common.summary');
+            salaryTabs.appendChild(summaryBtn);
             entries.forEach((entry, index) => {
-                const safeName = String(entry.name || '').replace(/"/g, '&quot;');
-                const safeTaxCode = String(entry.taxCode || '').replace(/"/g, '&quot;');
-                const card = document.createElement('div');
-                card.className = 'salary-card';
-                card.dataset.id = entry.id;
-                card.innerHTML = `
-                    <div class="salary-card-header">
-                        <h4 class="section-subtitle salary-card-title">${I18n.t('calculators.salary.labels.salary')} ${index + 1}</h4>
-                        <button type="button" class="btn btn-link salary-remove-btn" data-i18n="calculators.salary.actions.removeSalary">Remove</button>
-                    </div>
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label data-i18n="calculators.salary.labels.name">Salary name</label>
-                            <input type="text" data-field="name" value="${safeName}">
-                        </div>
-                        <div class="form-group">
-                            <label data-i18n="calculators.salary.labels.annualSalary">Annual gross salary (£)</label>
-                            <input type="number" min="0" step="0.01" data-field="annualSalary" value="${entry.annualSalary || ''}">
-                        </div>
-                        <div class="form-group">
-                            <label data-i18n="calculators.salary.labels.frequency">Payment frequency</label>
-                            <select data-field="frequency">
-                                <option value="annual" ${entry.frequency === 'annual' ? 'selected' : ''} data-i18n="calculators.salary.frequency.annual">Annual</option>
-                                <option value="monthly" ${entry.frequency === 'monthly' ? 'selected' : ''} data-i18n="calculators.salary.frequency.monthly">Monthly</option>
-                                <option value="fortnightly" ${entry.frequency === 'fortnightly' ? 'selected' : ''} data-i18n="calculators.salary.frequency.fortnightly">Fortnightly</option>
-                                <option value="weekly" ${entry.frequency === 'weekly' ? 'selected' : ''} data-i18n="calculators.salary.frequency.weekly">Weekly</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label data-i18n="calculators.salary.labels.pension">Pension contribution (%)</label>
-                            <input type="number" min="0" max="100" step="0.1" data-field="pensionPercent" value="${entry.pensionPercent || ''}">
-                        </div>
-                        <div class="form-group">
-                            <label data-i18n="calculators.salary.labels.studentLoan">Student loan plan</label>
-                            <select data-field="studentLoanPlan">
-                                <option value="none" ${entry.studentLoanPlan === 'none' ? 'selected' : ''} data-i18n="calculators.salary.studentLoan.none">None</option>
-                                <option value="plan1" ${entry.studentLoanPlan === 'plan1' ? 'selected' : ''} data-i18n="calculators.salary.studentLoan.plan1">Plan 1</option>
-                                <option value="plan2" ${entry.studentLoanPlan === 'plan2' ? 'selected' : ''} data-i18n="calculators.salary.studentLoan.plan2">Plan 2</option>
-                                <option value="plan4" ${entry.studentLoanPlan === 'plan4' ? 'selected' : ''} data-i18n="calculators.salary.studentLoan.plan4">Plan 4</option>
-                                <option value="plan5" ${entry.studentLoanPlan === 'plan5' ? 'selected' : ''} data-i18n="calculators.salary.studentLoan.plan5">Plan 5</option>
-                                <option value="postgraduate" ${entry.studentLoanPlan === 'postgraduate' ? 'selected' : ''} data-i18n="calculators.salary.studentLoan.postgraduate">Postgraduate</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label data-i18n="calculators.salary.labels.age">Age</label>
-                            <input type="number" min="16" max="100" step="1" data-field="age" value="${entry.age || ''}">
-                        </div>
-                        <div class="form-group">
-                            <label data-i18n="calculators.salary.labels.taxCode">Tax code</label>
-                            <input type="text" data-field="taxCode" value="${safeTaxCode}">
-                        </div>
-                        <div class="form-group">
-                            <label data-i18n="calculators.salary.labels.otherDeductions">Other deductions (annual £)</label>
-                            <input type="number" min="0" step="0.01" data-field="otherDeductions" value="${entry.otherDeductions || ''}">
-                        </div>
-                    </div>
-                    <div class="result-display salary-results">
-                        <div class="result-item">
-                            <span data-i18n="calculators.salary.results.takeHome">Take-home:</span>
-                            <span class="salary-take-home">£0.00</span>
-                        </div>
-                        <div class="result-item">
-                            <span data-i18n="calculators.salary.results.tax">Tax to pay:</span>
-                            <span class="salary-tax">£0.00</span>
-                        </div>
-                        <div class="result-item">
-                            <span data-i18n="calculators.salary.results.otherDeductions">Other deductions:</span>
-                            <span class="salary-deductions">£0.00</span>
-                        </div>
-                        <div class="salary-breakdown">
-                            <div class="result-item">
-                                <span data-i18n="calculators.salary.results.pension">Pension:</span>
-                                <span class="salary-pension">£0.00</span>
-                            </div>
-                            <div class="result-item">
-                                <span data-i18n="calculators.salary.results.nationalInsurance">National Insurance:</span>
-                                <span class="salary-ni">£0.00</span>
-                            </div>
-                            <div class="result-item">
-                                <span data-i18n="calculators.salary.results.studentLoan">Student loan:</span>
-                                <span class="salary-student-loan">£0.00</span>
-                            </div>
-                            <div class="result-item">
-                                <span data-i18n="calculators.salary.results.other">Other:</span>
-                                <span class="salary-other">£0.00</span>
-                            </div>
-                        </div>
-                        <div class="result-item salary-per-period-row">
-                            <span data-i18n="calculators.salary.results.perPeriod">Take-home per</span>
-                            <span class="salary-frequency-label">Monthly</span>
-                            <span class="salary-per-period">£0.00</span>
-                        </div>
-                    </div>
-                `;
-                entriesContainer.appendChild(card);
-                updateCardResults(card, entry, index);
+                const btn = document.createElement('button');
+                btn.className = 'sub-nav-tab';
+                btn.dataset.salaryId = entry.id;
+                btn.textContent = entry.name || `${I18n.t('calculators.salary.labels.salary')} ${index + 1}`;
+                salaryTabs.appendChild(btn);
             });
-            const removeBtns = entriesContainer.querySelectorAll('.salary-remove-btn');
-            removeBtns.forEach(btn => {
-                btn.style.display = entries.length > 1 ? 'inline-flex' : 'none';
+            salaryTabs.querySelectorAll('.sub-nav-tab').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.salaryId === currentSalaryId);
             });
-            I18n.apply();
-            updateSummary();
+        }
+
+        function setActiveTab(id) {
+            currentSalaryId = id;
+            renderTabs();
+            if (currentSalaryId === 'summary') {
+                if (summaryPanel) summaryPanel.style.display = 'block';
+                if (formPanel) formPanel.style.display = 'none';
+            } else {
+                if (summaryPanel) summaryPanel.style.display = 'none';
+                if (formPanel) formPanel.style.display = 'block';
+                const entry = getEntryById(currentSalaryId);
+                if (entry) {
+                    syncFormToEntry(entry);
+                    updateFormResults(entry);
+                }
+            }
+        }
+
+        function syncFormToEntry(entry) {
+            if (formTitle) {
+                formTitle.textContent = entry.name || I18n.t('calculators.salary.labels.salary');
+            }
+            if (nameInput) nameInput.value = entry.name || '';
+            if (annualInput) annualInput.value = entry.annualSalary || '';
+            if (frequencySelect) frequencySelect.value = entry.frequency || 'monthly';
+            if (pensionInput) pensionInput.value = entry.pensionPercent || '';
+            if (studentLoanSelect) studentLoanSelect.value = entry.studentLoanPlan || 'none';
+            if (ageInput) ageInput.value = entry.age || '';
+            if (taxCodeInput) taxCodeInput.value = entry.taxCode || '';
+            if (otherDeductionsInput) otherDeductionsInput.value = entry.otherDeductions || '';
+            if (summaryToggle) summaryToggle.checked = entry.showInSummary !== false;
+            if (removeSalaryBtn) removeSalaryBtn.style.display = entries.length > 1 ? 'inline-flex' : 'none';
         }
 
         function addEntry() {
-            entries.push(createEntry());
+            const newEntry = createEntry();
+            entries.push(newEntry);
             saveEntries();
-            renderEntries();
+            setActiveTab(newEntry.id);
+            updateSummary();
         }
 
         function removeEntry(id) {
@@ -638,52 +623,77 @@ const Calculator = (function() {
                 entries.push(createEntry());
             }
             saveEntries();
-            renderEntries();
-        }
-
-        function handleFieldUpdate(target) {
-            const card = target.closest('.salary-card');
-            if (!card) return;
-            const entry = getEntryById(card.dataset.id);
-            if (!entry) return;
-            const field = target.dataset.field;
-            if (!field) return;
-            let value = target.value;
-            if (['annualSalary', 'pensionPercent', 'age', 'otherDeductions'].includes(field)) {
-                value = value === '' ? '' : parseFloat(value) || 0;
+            if (!entries.find(entry => entry.id === currentSalaryId)) {
+                currentSalaryId = entries[0].id;
             }
-            entry[field] = value;
-            saveEntries();
-            const index = entries.findIndex(item => item.id === entry.id);
-            updateCardResults(card, entry, index);
+            setActiveTab(currentSalaryId);
             updateSummary();
         }
 
-        function handleClick(e) {
-            const removeBtn = e.target.closest('.salary-remove-btn');
-            if (removeBtn) {
-                const card = removeBtn.closest('.salary-card');
-                if (card) {
-                    removeEntry(card.dataset.id);
-                }
-            }
+        function handleFieldUpdate() {
+            const entry = getEntryById(currentSalaryId);
+            if (!entry) return;
+            entry.name = nameInput ? nameInput.value.trim() : entry.name;
+            entry.annualSalary = annualInput && annualInput.value !== '' ? parseFloat(annualInput.value) || 0 : 0;
+            entry.frequency = frequencySelect ? frequencySelect.value : entry.frequency;
+            entry.pensionPercent = pensionInput && pensionInput.value !== '' ? parseFloat(pensionInput.value) || 0 : 0;
+            entry.studentLoanPlan = studentLoanSelect ? studentLoanSelect.value : entry.studentLoanPlan;
+            entry.age = ageInput && ageInput.value !== '' ? parseInt(ageInput.value, 10) || 0 : 0;
+            entry.taxCode = taxCodeInput ? taxCodeInput.value.trim() : entry.taxCode;
+            entry.otherDeductions = otherDeductionsInput && otherDeductionsInput.value !== ''
+                ? parseFloat(otherDeductionsInput.value) || 0
+                : 0;
+            saveEntries();
+            syncFormToEntry(entry);
+            updateFormResults(entry);
+            updateSummary();
+            renderTabs();
+        }
+
+        function handleSummaryToggle() {
+            const entry = getEntryById(currentSalaryId);
+            if (!entry) return;
+            entry.showInSummary = summaryToggle ? summaryToggle.checked : true;
+            saveEntries();
+            updateSummary();
+        }
+
+        function handleTabClick(e) {
+            const btn = e.target.closest('.sub-nav-tab');
+            if (!btn || !btn.dataset.salaryId) return;
+            setActiveTab(btn.dataset.salaryId);
         }
 
         function init() {
-            if (!entriesContainer) return;
+            if (!salaryTabs) return;
             loadEntries();
-            renderEntries();
+            currentSalaryId = 'summary';
+            renderTabs();
+            updateSummary();
+            setActiveTab(currentSalaryId);
             if (addSalaryBtn) {
                 addSalaryBtn.addEventListener('click', addEntry);
             }
-            entriesContainer.addEventListener('input', e => handleFieldUpdate(e.target));
-            entriesContainer.addEventListener('change', e => handleFieldUpdate(e.target));
-            entriesContainer.addEventListener('click', handleClick);
+            if (removeSalaryBtn) {
+                removeSalaryBtn.addEventListener('click', () => {
+                    if (currentSalaryId !== 'summary') {
+                        removeEntry(currentSalaryId);
+                    }
+                });
+            }
+            if (summaryToggle) summaryToggle.addEventListener('change', handleSummaryToggle);
+            if (salaryTabs) salaryTabs.addEventListener('click', handleTabClick);
+            [nameInput, annualInput, pensionInput, ageInput, taxCodeInput, otherDeductionsInput].forEach(input => {
+                if (input) input.addEventListener('input', handleFieldUpdate);
+            });
+            [frequencySelect, studentLoanSelect].forEach(select => {
+                if (select) select.addEventListener('change', handleFieldUpdate);
+            });
         }
 
         function exportData(format) {
             if (format === 'csv') {
-                const headers = ['id', 'name', 'annualSalary', 'pensionPercent', 'studentLoanPlan', 'age', 'taxCode', 'frequency', 'otherDeductions'];
+                const headers = ['id', 'name', 'annualSalary', 'pensionPercent', 'studentLoanPlan', 'age', 'taxCode', 'frequency', 'showInSummary', 'otherDeductions'];
                 const rows = entries.map(entry => headers.map(key => `"${String(entry[key] ?? '').replace(/"/g, '""')}"`).join(','));
                 return `${headers.join(',')}\n${rows.join('\n')}`;
             }
@@ -719,17 +729,20 @@ const Calculator = (function() {
                 age: parseInt(item.age, 10) || 30,
                 taxCode: item.taxCode || '1257L',
                 frequency: item.frequency || 'monthly',
+                showInSummary: item.showInSummary === undefined ? true : String(item.showInSummary) !== 'false',
                 otherDeductions: parseFloat(item.otherDeductions) || 0
             }));
             if (entries.length === 0) entries = [createEntry()];
             saveEntries();
-            renderEntries();
+            setActiveTab('summary');
+            updateSummary();
         }
 
         function deleteAllData() {
             entries = [createEntry()];
             storage.removeItem(STORAGE_KEY);
-            renderEntries();
+            setActiveTab('summary');
+            updateSummary();
         }
 
         return { init, exportData, importData, deleteAllData };

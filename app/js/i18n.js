@@ -215,7 +215,8 @@ const I18n = (function() {
                 "salary": {
                     "actions": {
                         "addSalary": "Add Salary",
-                        "removeSalary": "Remove"
+                        "removeSalary": "Remove",
+                        "showInSummary": "Show in Summary"
                     },
                     "hint": "UK tax estimates based on current income tax and National Insurance thresholds.",
                     "labels": {
@@ -256,7 +257,8 @@ const I18n = (function() {
                     "summary": {
                         "totalTakeHome": "Total take-home:",
                         "totalTax": "Total tax:",
-                        "totalDeductions": "Total other deductions:"
+                        "totalDeductions": "Total other deductions:",
+                        "noneSelected": "Select salaries to include in the summary."
                     }
                 },
                 "fairValue": {
