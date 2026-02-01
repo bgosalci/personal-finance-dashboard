@@ -350,6 +350,7 @@ const Calculator = (function() {
         const studentLoanSelect = document.getElementById('salary-student-loan');
         const ageInput = document.getElementById('salary-age');
         const taxCodeInput = document.getElementById('salary-tax-code');
+        const benefitsInput = document.getElementById('salary-benefits');
         const otherDeductionsInput = document.getElementById('salary-other-deductions');
         const allowancesContainer = document.getElementById('salary-allowances');
         const addAllowanceBtn = document.getElementById('add-salary-allowance');
@@ -365,9 +366,11 @@ const Calculator = (function() {
         const annualGrossEl = document.getElementById('salary-annual-gross');
         const annualTaxableEl = document.getElementById('salary-annual-taxable');
         const annualAllowancesEl = document.getElementById('salary-annual-allowances');
+        const annualBenefitsEl = document.getElementById('salary-annual-benefits');
         const periodGrossEl = document.getElementById('salary-period-gross');
         const periodTaxableEl = document.getElementById('salary-period-taxable');
         const periodAllowancesEl = document.getElementById('salary-period-allowances');
+        const periodBenefitsEl = document.getElementById('salary-period-benefits');
         const periodTaxEl = document.getElementById('salary-period-tax');
         const periodPensionEl = document.getElementById('salary-period-pension');
         const periodNiEl = document.getElementById('salary-period-ni');
@@ -415,6 +418,7 @@ const Calculator = (function() {
                 studentLoanPlan: 'none',
                 age: 30,
                 taxCode: '1257L',
+                benefits: 0,
                 frequency: 'monthly',
                 showInSummary: true,
                 allowances: [],
@@ -449,7 +453,7 @@ const Calculator = (function() {
             return entries.find(entry => entry.id === id);
         }
 
-        function getPersonalAllowance(taxCode, grossAnnual) {
+        function getPersonalAllowance(taxCode, grossAnnual, benefits) {
             const code = (taxCode || '').trim().toUpperCase();
             const match = code.match(/\d+/);
             let allowance = match ? parseInt(match[0], 10) * 10 : 12570;
@@ -459,6 +463,12 @@ const Calculator = (function() {
             if (allowance > 0 && grossAnnual > 100000) {
                 const reduction = (grossAnnual - 100000) / 2;
                 allowance = Math.max(0, allowance - reduction);
+            }
+            const benefitsTotal = Math.max(0, parseFloat(benefits) || 0);
+            if (allowance > 0) {
+                allowance = Math.max(0, allowance - benefitsTotal);
+            } else if (benefitsTotal > 0) {
+                allowance -= benefitsTotal;
             }
             return allowance;
         }
@@ -517,10 +527,11 @@ const Calculator = (function() {
             const allowancesTotal = (entry.allowances || []).reduce((sum, allowance) => {
                 return sum + Math.max(0, parseFloat(allowance.amount) || 0);
             }, 0);
+            const benefits = Math.max(0, parseFloat(entry.benefits) || 0);
             const grossAnnual = basicSalary + allowancesTotal;
             const otherDeductions = Math.max(0, parseFloat(entry.otherDeductions) || 0);
             const adjustedIncome = Math.max(0, grossAnnual - pensionContribution);
-            const allowance = getPersonalAllowance(entry.taxCode, grossAnnual);
+            const allowance = getPersonalAllowance(entry.taxCode, grossAnnual, benefits);
             const taxableIncome = Math.max(0, adjustedIncome - allowance);
             const tax = calculateIncomeTax(taxableIncome);
             const nationalInsurance = calculateNationalInsurance(grossAnnual, parseInt(entry.age, 10) || 0);
@@ -530,6 +541,7 @@ const Calculator = (function() {
             return {
                 grossAnnual,
                 allowancesTotal,
+                benefits,
                 pensionContribution,
                 otherDeductions,
                 adjustedIncome,
@@ -584,6 +596,7 @@ const Calculator = (function() {
             if (annualGrossEl) annualGrossEl.textContent = formatSalaryCurrency(results.grossAnnual);
             if (annualTaxableEl) annualTaxableEl.textContent = formatSalaryCurrency(results.taxableIncome);
             if (annualAllowancesEl) annualAllowancesEl.textContent = formatSalaryCurrency(results.allowancesTotal);
+            if (annualBenefitsEl) annualBenefitsEl.textContent = formatSalaryCurrency(results.benefits);
             if (takeHomeEl) takeHomeEl.textContent = formatSalaryCurrency(results.takeHome);
             if (taxEl) taxEl.textContent = formatSalaryCurrency(results.tax);
             if (deductionsEl) deductionsEl.textContent = formatSalaryCurrency(results.otherTotal);
@@ -596,6 +609,7 @@ const Calculator = (function() {
             if (periodGrossEl) periodGrossEl.textContent = formatSalaryCurrency(results.grossAnnual / divisor);
             if (periodTaxableEl) periodTaxableEl.textContent = formatSalaryCurrency(results.taxableIncome / divisor);
             if (periodAllowancesEl) periodAllowancesEl.textContent = formatSalaryCurrency(results.allowancesTotal / divisor);
+            if (periodBenefitsEl) periodBenefitsEl.textContent = formatSalaryCurrency(results.benefits / divisor);
             if (periodTaxEl) periodTaxEl.textContent = formatSalaryCurrency(results.tax / divisor);
             if (periodPensionEl) periodPensionEl.textContent = formatSalaryCurrency(results.pensionContribution / divisor);
             if (periodNiEl) periodNiEl.textContent = formatSalaryCurrency(results.nationalInsurance / divisor);
@@ -674,6 +688,7 @@ const Calculator = (function() {
             if (studentLoanSelect) studentLoanSelect.value = entry.studentLoanPlan || 'none';
             if (ageInput) ageInput.value = entry.age || '';
             if (taxCodeInput) taxCodeInput.value = entry.taxCode || '';
+            if (benefitsInput) benefitsInput.value = entry.benefits || '';
             if (otherDeductionsInput) otherDeductionsInput.value = entry.otherDeductions || '';
             renderAllowances(entry);
             if (summaryToggle) summaryToggle.checked = entry.showInSummary !== false;
@@ -711,6 +726,9 @@ const Calculator = (function() {
             entry.studentLoanPlan = studentLoanSelect ? studentLoanSelect.value : entry.studentLoanPlan;
             entry.age = ageInput && ageInput.value !== '' ? parseInt(ageInput.value, 10) || 0 : 0;
             entry.taxCode = taxCodeInput ? taxCodeInput.value.trim() : entry.taxCode;
+            entry.benefits = benefitsInput && benefitsInput.value !== ''
+                ? parseFloat(benefitsInput.value) || 0
+                : 0;
             entry.otherDeductions = otherDeductionsInput && otherDeductionsInput.value !== ''
                 ? parseFloat(otherDeductionsInput.value) || 0
                 : 0;
@@ -800,7 +818,7 @@ const Calculator = (function() {
                     renderAllowances(entry);
                 });
             }
-            [nameInput, annualInput, pensionInput, ageInput, taxCodeInput, otherDeductionsInput].forEach(input => {
+            [nameInput, annualInput, pensionInput, ageInput, taxCodeInput, benefitsInput, otherDeductionsInput].forEach(input => {
                 if (input) input.addEventListener('input', handleFieldUpdate);
             });
             [frequencySelect, studentLoanSelect].forEach(select => {
@@ -810,7 +828,7 @@ const Calculator = (function() {
 
         function exportData(format) {
             if (format === 'csv') {
-                const headers = ['id', 'name', 'annualSalary', 'pensionPercent', 'studentLoanPlan', 'age', 'taxCode', 'frequency', 'showInSummary', 'allowances', 'otherDeductions'];
+                const headers = ['id', 'name', 'annualSalary', 'pensionPercent', 'studentLoanPlan', 'age', 'taxCode', 'benefits', 'frequency', 'showInSummary', 'allowances', 'otherDeductions'];
                 const rows = entries.map(entry => headers.map(key => {
                     if (key === 'allowances') {
                         return `"${JSON.stringify(entry.allowances || []).replace(/"/g, '""')}"`;
@@ -850,6 +868,7 @@ const Calculator = (function() {
                 studentLoanPlan: item.studentLoanPlan || 'none',
                 age: parseInt(item.age, 10) || 30,
                 taxCode: item.taxCode || '1257L',
+                benefits: parseFloat(item.benefits) || 0,
                 frequency: item.frequency || 'monthly',
                 showInSummary: item.showInSummary === undefined ? true : String(item.showInSummary) !== 'false',
                 allowances: Array.isArray(item.allowances)

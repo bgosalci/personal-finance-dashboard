@@ -745,6 +745,10 @@
                                     <input type="text" id="salary-tax-code">
                                 </div>
                                 <div class="form-group">
+                                    <label for="salary-benefits" data-i18n="calculators.salary.labels.benefits">Paid benefits (annual £)</label>
+                                    <input type="number" min="0" step="0.01" id="salary-benefits">
+                                </div>
+                                <div class="form-group">
                                     <label for="salary-other-deductions" data-i18n="calculators.salary.labels.otherDeductions">Other deductions (annual £)</label>
                                     <input type="number" min="0" step="0.01" id="salary-other-deductions">
                                 </div>
@@ -762,6 +766,10 @@
                                         <div class="result-item">
                                             <span data-i18n="calculators.salary.breakdown.allowances">Allowances:</span>
                                             <span id="salary-annual-allowances">£0.00</span>
+                                        </div>
+                                        <div class="result-item">
+                                            <span data-i18n="calculators.salary.breakdown.benefits">Paid benefits:</span>
+                                            <span id="salary-annual-benefits">£0.00</span>
                                         </div>
                                         <div class="result-item">
                                             <span data-i18n="calculators.salary.breakdown.taxable">Taxable income:</span>
@@ -810,6 +818,10 @@
                                         <div class="result-item">
                                             <span data-i18n="calculators.salary.breakdown.allowances">Allowances:</span>
                                             <span id="salary-period-allowances">£0.00</span>
+                                        </div>
+                                        <div class="result-item">
+                                            <span data-i18n="calculators.salary.breakdown.benefits">Paid benefits:</span>
+                                            <span id="salary-period-benefits">£0.00</span>
                                         </div>
                                         <div class="result-item">
                                             <span data-i18n="calculators.salary.breakdown.taxable">Taxable income:</span>

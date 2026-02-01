@@ -229,6 +229,7 @@ const I18n = (function() {
                         "studentLoan": "Student loan plan",
                         "age": "Age",
                         "taxCode": "Tax code",
+                        "benefits": "Paid benefits (annual £)",
                         "allowances": "Allowances (annual)",
                         "otherDeductions": "Other deductions (annual £)"
                     },
@@ -267,6 +268,7 @@ const I18n = (function() {
                         "frequencyTitle": "Per pay period",
                         "gross": "Gross salary:",
                         "allowances": "Allowances:",
+                        "benefits": "Paid benefits:",
                         "taxable": "Taxable income:",
                         "totalDeductions": "Total deductions:"
                     }
