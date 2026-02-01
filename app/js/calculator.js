@@ -377,6 +377,20 @@ const Calculator = (function() {
             return I18n.formatCurrency(amount, 'GBP');
         }
 
+        function parseFormattedNumber(value) {
+            return parseFloat(String(value || '').replace(/,/g, '')) || 0;
+        }
+
+        function setupFormattedInput(input) {
+            if (!input) return;
+            input.addEventListener('input', (e) => {
+                e.target.value = formatInputValue(e.target.value);
+            });
+            input.addEventListener('blur', (e) => {
+                e.target.value = formatInputValue(e.target.value, true);
+            });
+        }
+
         function createEntry() {
             const id = `salary-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
             return {
@@ -598,7 +612,9 @@ const Calculator = (function() {
                 formTitle.textContent = entry.name || I18n.t('calculators.salary.labels.salary');
             }
             if (nameInput) nameInput.value = entry.name || '';
-            if (annualInput) annualInput.value = entry.annualSalary || '';
+            if (annualInput) {
+                annualInput.value = entry.annualSalary ? formatInputValue(entry.annualSalary.toFixed(2), true) : '';
+            }
             if (frequencySelect) frequencySelect.value = entry.frequency || 'monthly';
             if (pensionInput) pensionInput.value = entry.pensionPercent || '';
             if (studentLoanSelect) studentLoanSelect.value = entry.studentLoanPlan || 'none';
@@ -634,7 +650,7 @@ const Calculator = (function() {
             const entry = getEntryById(currentSalaryId);
             if (!entry) return;
             entry.name = nameInput ? nameInput.value.trim() : entry.name;
-            entry.annualSalary = annualInput && annualInput.value !== '' ? parseFloat(annualInput.value) || 0 : 0;
+            entry.annualSalary = annualInput && annualInput.value !== '' ? parseFormattedNumber(annualInput.value) : 0;
             entry.frequency = frequencySelect ? frequencySelect.value : entry.frequency;
             entry.pensionPercent = pensionInput && pensionInput.value !== '' ? parseFloat(pensionInput.value) || 0 : 0;
             entry.studentLoanPlan = studentLoanSelect ? studentLoanSelect.value : entry.studentLoanPlan;
@@ -683,6 +699,7 @@ const Calculator = (function() {
             }
             if (summaryToggle) summaryToggle.addEventListener('change', handleSummaryToggle);
             if (salaryTabs) salaryTabs.addEventListener('click', handleTabClick);
+            setupFormattedInput(annualInput);
             [nameInput, annualInput, pensionInput, ageInput, taxCodeInput, otherDeductionsInput].forEach(input => {
                 if (input) input.addEventListener('input', handleFieldUpdate);
             });
