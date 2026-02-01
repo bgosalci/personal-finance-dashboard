@@ -753,7 +753,9 @@ const Calculator = (function() {
                 ? parseFormattedNumber(otherDeductionsInput.value)
                 : 0;
             saveEntries();
-            syncFormToEntry(entry);
+            if (formTitle) {
+                formTitle.textContent = entry.name || I18n.t('calculators.salary.labels.salary');
+            }
             updateFormResults(entry);
             updateSummary();
             renderTabs();
