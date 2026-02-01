@@ -7,7 +7,7 @@ This document summarizes the Personal Finance Dashboard codebase and the support
 - **Repository**: bgosalci/personal-finance-dashboard
 - **Entry Point**: `app/index.html`
 - **Architecture**: Vanilla JavaScript + IIFE modules
-- **Key Modules**: Portfolio, Watchlist, Pension, Calculators, Stock Tracker, Stock Finance, Settings, i18n
+- **Key Modules**: Portfolio, Watchlist, Pension, Calculators, Stock Tracker, Settings, i18n
 
 ## Feature Coverage
 
@@ -24,15 +24,12 @@ This document summarizes the Personal Finance Dashboard codebase and the support
    - Export/import for long-term history.
 
 4. **Financial Calculators**
-   - Loan, investment, CAGR, mortgage, salary, and fair value calculators.
+   - Loan, investment, CAGR, mortgage, and salary calculators.
 
 5. **Stock Performance Tracker**
    - Multi-year price tracking with growth analysis.
 
-6. **Stock Finance Performance**
-   - Income, balance sheet, and cash flow statements from Finnhub.
-
-7. **Settings & Customization**
+6. **Settings & Customization**
    - Base currency, theme, font size, language, RTL toggle.
    - Data export/import/delete tools.
    - Finnhub API key storage for live quotes.
@@ -45,7 +42,7 @@ This document summarizes the Personal Finance Dashboard codebase and the support
 - **Testing**: Jest + JSDOM
 
 ## External Integrations
-- **Finnhub**: Quotes, symbol search, and financial statements
+- **Finnhub**: Quotes and symbol search
 - **Polygon.io**: Market status (pre/regular/after hours)
 - **ExchangeRate-API**: FX conversion rates
 
