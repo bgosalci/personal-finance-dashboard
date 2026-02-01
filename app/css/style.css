@@ -413,55 +413,6 @@
             position: relative;
         }
 
-        /* Dedicated scroll container for the Stock Finance table */
-        #financials-table-container {
-            max-height: 60vh;
-            overflow-y: auto;
-            position: relative;
-        }
-
-        #finance-zero-info {
-            margin: 0.5rem 0;
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-        }
-
-        /* Make first column sticky for finance table */
-        #financials-table th:first-child {
-            position: sticky;
-            left: 0;
-            width: 150px;
-            z-index: 3;
-        }
-
-        #financials-table td:first-child {
-            position: sticky;
-            left: 0;
-            width: 150px;
-            background: var(--background-primary);
-            z-index: 2;
-        }
-
-
-        /* Shorten label column for finance table */
-        #financials-table td:first-child {
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            font-weight: 600;
-        }
-
-        /* Header style for finance table only */
-        #financials-table th {
-            background: var(--primary-blue-dark);
-            color: #fff;
-        }
-
-        /* Negative value styling */
-        #financials-table .negative-num {
-            color: var(--danger-red);
-        }
-
         /* Dedicated scroll container for the Investment Calculator table */
         #investment-growth-container {
             max-height: 40vh;

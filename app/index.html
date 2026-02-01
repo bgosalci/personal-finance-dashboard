@@ -44,7 +44,6 @@
         <button class="nav-tab" data-tab="pension" data-i18n="nav.pension">Pension</button>
         <button class="nav-tab" data-tab="calculators" data-i18n="nav.calculators">Calculators</button>
         <button class="nav-tab" data-tab="stock-tracker" data-i18n="nav.stockTracker">Stock Performance Tracker</button>
-        <button class="nav-tab" data-tab="stock-finance" data-i18n="nav.stockFinance">Stock Finance Performance</button>
         <button class="nav-tab" data-tab="settings" data-i18n="nav.settings">Settings</button>
     </nav>
 
@@ -946,48 +945,6 @@
                 </div>
             </div>
             
-            <!-- Stock Finance Performance Tab -->
-            <div id="stock-finance" class="tab-content">
-                <div class="section-header">
-                    <h2 class="section-title" data-i18n="stockFinance.title">Stock Finance Performance</h2>
-                </div>
-
-                <div class="ticker-management">
-                    <div class="form-group">
-                        <label for="finance-ticker" data-i18n="stockFinance.labels.ticker">Ticker</label>
-                        <input type="text" id="finance-ticker" style="text-transform: uppercase;">
-                    </div>
-                    <div class="form-group">
-                        <label for="finance-date" data-i18n="stockFinance.labels.reportsFrom">Reports starting from</label>
-                        <input type="date" id="finance-date" min="2011-01-01">
-                    </div>
-                    <div class="form-group">
-                        <label for="finance-timeframe" data-i18n="stockFinance.labels.timeframe">Timeframe</label>
-                        <select id="finance-timeframe">
-                            <option value="quarterly" data-i18n="stockFinance.labels.timeframes.quarterly">Quarterly</option>
-                            <option value="annual" data-i18n="stockFinance.labels.timeframes.annual">Annual</option>
-                            <option value="ttm" data-i18n="stockFinance.labels.timeframes.ttm">TTM</option>
-                        </select>
-                    </div>
-                    <button class="btn btn-primary" id="fetch-financials-btn" data-i18n="stockFinance.labels.getReports">Get Reports</button>
-                </div>
-
-                <div class="sub-nav-tabs" id="finance-subtabs">
-                    <button class="sub-nav-tab active" data-fin-subtab="income" data-i18n="stockFinance.tabs.income">Income Statement</button>
-                    <button class="sub-nav-tab" data-fin-subtab="balance" data-i18n="stockFinance.tabs.balance">Balance Sheet</button>
-                    <button class="sub-nav-tab" data-fin-subtab="cash" data-i18n="stockFinance.tabs.cash">Cash Flow</button>
-                    <button class="sub-nav-tab" data-fin-subtab="stats" data-i18n="stockFinance.tabs.stats">Statistics</button>
-                </div>
-
-                <div id="finance-zero-info" class="zero-info" style="display:none;"></div>
-
-                <div class="table-container" id="financials-table-container" style="display:none;">
-                    <table class="data-table" id="financials-table">
-                        <thead id="financials-header"></thead>
-                        <tbody id="financials-body"></tbody>
-                    </table>
-                </div>
-            </div>
             <!-- Settings Tab -->
             <div id="settings" class="tab-content">
                 <div class="section-header">
@@ -1331,7 +1288,6 @@
     <script src="js/features/pensionManager.js"></script>
     <script src="js/features/calculator.js"></script>
     <script src="js/features/stockTracker.js"></script>
-    <script src="js/features/stockFinance.js"></script>
     <script src="js/core/appVersion.js"></script>
     <script src="js/core/settings.js"></script>
     <script src="js/features/financialDashboard.js"></script>
