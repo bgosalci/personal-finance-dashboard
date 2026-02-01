@@ -16,7 +16,7 @@ function loadMarketStatus(response) {
   const context = vm.createContext(dom.window);
   dom.window.fetch = jest.fn().mockResolvedValue({ json: () => Promise.resolve(response) });
   dom.window.setInterval = () => {};
-  const code = fs.readFileSync(path.resolve(__dirname, '../app/js/marketStatus.js'), 'utf8');
+  const code = fs.readFileSync(path.resolve(__dirname, '../app/js/services/marketStatus.js'), 'utf8');
   vm.runInContext(code, context);
   return context;
 }

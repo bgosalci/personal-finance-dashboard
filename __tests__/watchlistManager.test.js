@@ -22,9 +22,9 @@ function loadWatchlist(initialData = [{ ticker: 'AAPL' }]) {
   window.WebSocket = FakeWebSocket;
   window.localStorage.setItem('watchlistData', JSON.stringify(initialData));
   const context = vm.createContext(window);
-  const utilCode = fs.readFileSync(path.resolve(__dirname, '../app/js/storageUtils.js'), 'utf8');
-  const priceStorageCode = fs.readFileSync(path.resolve(__dirname, '../app/js/priceStorage.js'), 'utf8');
-  const watchlistCode = fs.readFileSync(path.resolve(__dirname, '../app/js/watchlistManager.js'), 'utf8');
+  const utilCode = fs.readFileSync(path.resolve(__dirname, '../app/js/core/storageUtils.js'), 'utf8');
+  const priceStorageCode = fs.readFileSync(path.resolve(__dirname, '../app/js/data/priceStorage.js'), 'utf8');
+  const watchlistCode = fs.readFileSync(path.resolve(__dirname, '../app/js/features/watchlistManager.js'), 'utf8');
   vm.runInContext(utilCode, context);
   vm.runInContext(priceStorageCode, context);
   vm.runInContext(watchlistCode, context);

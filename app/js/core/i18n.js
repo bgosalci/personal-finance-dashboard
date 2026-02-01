@@ -23,7 +23,6 @@ const I18n = (function() {
                 "pension": "Pension",
                 "calculators": "Calculators",
                 "stockTracker": "Stock Performance Tracker",
-                "stockFinance": "Stock Finance Performance",
                 "settings": "Settings"
             },
             "portfolio": {
@@ -365,39 +364,6 @@ const I18n = (function() {
                     "growth": "Growth"
                 }
             },
-            "stockFinance": {
-                "title": "Stock Finance Performance",
-                "labels": {
-                    "ticker": "Ticker",
-                    "reportsFrom": "Reports starting from",
-                    "timeframe": "Timeframe",
-                    "getReports": "Get Reports",
-                    "timeframes": {
-                        "quarterly": "Quarterly",
-                        "annual": "Annual",
-                        "ttm": "TTM"
-                    }
-                },
-                "tabs": {
-                    "income": "Income Statement",
-                    "balance": "Balance Sheet",
-                    "cash": "Cash Flow",
-                    "stats": "Statistics"
-                },
-                "table": {
-                    "label": "Label"
-                },
-                "messages": {
-                    "noData": "No data available",
-                    "loadFailed": "Failed to load data"
-                },
-                "zeroInfo": "Values trimmed by removing 6 trailing zeros (\"000,000\")",
-                "stats": {
-                    "peRatio": "PE Ratio",
-                    "grossMargin": "Gross Margin",
-                    "netMargin": "Net Margin"
-                }
-            },
             "settings": {
                 "title": "Settings",
                 "baseCurrency": "Base Currency",
@@ -490,7 +456,6 @@ const I18n = (function() {
                 "pension": "Pensioni",
                 "calculators": "Kalkulatorë",
                 "stockTracker": "Ndjekësi i Performancës së Aksioneve",
-                "stockFinance": "Performanca Financiare e Aksioneve",
                 "settings": "Cilësimet"
             },
             "portfolio": {
@@ -768,39 +733,6 @@ const I18n = (function() {
                     "growth": "Rritje"
                 }
             },
-            "stockFinance": {
-                "title": "Performanca e financave të aksioneve",
-                "labels": {
-                    "ticker": "Ticker",
-                    "reportsFrom": "Raportet duke filluar nga",
-                    "timeframe": "Afat kohor",
-                    "getReports": "Merr Raporte",
-                    "timeframes": {
-                        "quarterly": "Tremujor",
-                        "annual": "Vjetor",
-                        "ttm": "TTM"
-                    }
-                },
-                "tabs": {
-                    "income": "Pasqyrë e të ardhurave",
-                    "balance": "Bilanc",
-                    "cash": "Fluksi i parave",
-                    "stats": "Statistika"
-                },
-                "table": {
-                    "label": "Etiketë"
-                },
-                "messages": {
-                    "noData": "Asnjë të dhënë në dispozicion",
-                    "loadFailed": "Dështoi të ngarkojë të dhënat"
-                },
-                "zeroInfo": "Vlerat u shkurtohen duke hequr 6 zero në fund (\"000,000\")",
-                "stats": {
-                    "peRatio": "Raporti P/E",
-                    "grossMargin": "Marzha bruto",
-                    "netMargin": "Marzha neto"
-                }
-            },
             "settings": {
                 "title": "Cilësimet",
                 "baseCurrency": "Monedha Bazë",
@@ -888,7 +820,6 @@ const I18n = (function() {
                 "pension": "Pension",
                 "calculators": "Calculatrices",
                 "stockTracker": "Suivi de Performance des Actions",
-                "stockFinance": "Performance Financière des Actions",
                 "settings": "Paramètres"
             },
             "portfolio": {
@@ -1166,39 +1097,6 @@ const I18n = (function() {
                     "growth": "Croissance"
                 }
             },
-            "stockFinance": {
-                "title": "Performance financière des actions",
-                "labels": {
-                    "ticker": "Ticker",
-                    "reportsFrom": "Rapports à partir de",
-                    "timeframe": "Période",
-                    "getReports": "Obtenir des rapports",
-                    "timeframes": {
-                        "quarterly": "Trimestriel",
-                        "annual": "Annuel",
-                        "ttm": "TTM"
-                    }
-                },
-                "tabs": {
-                    "income": "Compte de résultat",
-                    "balance": "Bilan",
-                    "cash": "Flux de trésorerie",
-                    "stats": "Statistiques"
-                },
-                "table": {
-                    "label": "Étiquette"
-                },
-                "messages": {
-                    "noData": "Aucune donnée disponible",
-                    "loadFailed": "Échec du chargement des données"
-                },
-                "zeroInfo": "Valeurs raccourcies en supprimant 6 zéros finaux (\"000 000\")",
-                "stats": {
-                    "peRatio": "Ratio P/E",
-                    "grossMargin": "Marge brute",
-                    "netMargin": "Marge nette"
-                }
-            },
             "settings": {
                 "title": "Paramètres",
                 "baseCurrency": "Devise de Base",
@@ -1286,7 +1184,6 @@ const I18n = (function() {
                 "pension": "Rente",
                 "calculators": "Rechner",
                 "stockTracker": "Aktien-Performance-Tracker",
-                "stockFinance": "Finanzielle Aktienperformance",
                 "settings": "Einstellungen"
             },
             "portfolio": {
@@ -1564,39 +1461,6 @@ const I18n = (function() {
                     "growth": "Wachstum"
                 }
             },
-            "stockFinance": {
-                "title": "Finanzielle Aktienperformance",
-                "labels": {
-                    "ticker": "Ticker",
-                    "reportsFrom": "Berichte ab",
-                    "timeframe": "Zeitrahmen",
-                    "getReports": "Berichte abrufen",
-                    "timeframes": {
-                        "quarterly": "Vierteljährlich",
-                        "annual": "Jährlich",
-                        "ttm": "TTM"
-                    }
-                },
-                "tabs": {
-                    "income": "Gewinn- und Verlustrechnung",
-                    "balance": "Bilanz",
-                    "cash": "Cashflow",
-                    "stats": "Statistiken"
-                },
-                "table": {
-                    "label": "Etikett"
-                },
-                "messages": {
-                    "noData": "Keine Daten verfügbar",
-                    "loadFailed": "Daten konnten nicht geladen werden"
-                },
-                "zeroInfo": "Werte gekürzt, indem 6 nachgestellte Nullen (\"000.000\") entfernt wurden",
-                "stats": {
-                    "peRatio": "P/E-Verhältnis",
-                    "grossMargin": "Bruttomarge",
-                    "netMargin": "Nettomarge"
-                }
-            },
             "settings": {
                 "title": "Einstellungen",
                 "baseCurrency": "Basiswährung",
@@ -1684,7 +1548,6 @@ const I18n = (function() {
                 "pension": "Pensión",
                 "calculators": "Calculadoras",
                 "stockTracker": "Rastreador de Rendimiento de Acciones",
-                "stockFinance": "Rendimiento Financiero de Acciones",
                 "settings": "Configuración"
             },
             "portfolio": {
@@ -1962,39 +1825,6 @@ const I18n = (function() {
                     "growth": "Crecimiento"
                 }
             },
-            "stockFinance": {
-                "title": "Rendimiento financiero de acciones",
-                "labels": {
-                    "ticker": "Ticker",
-                    "reportsFrom": "Informes que comienzan desde",
-                    "timeframe": "Período de tiempo",
-                    "getReports": "Obtener informes",
-                    "timeframes": {
-                        "quarterly": "Trimestral",
-                        "annual": "Anual",
-                        "ttm": "TTM"
-                    }
-                },
-                "tabs": {
-                    "income": "Estado de resultados",
-                    "balance": "Balance",
-                    "cash": "Flujo de efectivo",
-                    "stats": "Estadísticas"
-                },
-                "table": {
-                    "label": "Etiqueta"
-                },
-                "messages": {
-                    "noData": "No hay datos disponibles",
-                    "loadFailed": "Error al cargar los datos"
-                },
-                "zeroInfo": "Valores recortados eliminando 6 ceros finales (\"000,000\")",
-                "stats": {
-                    "peRatio": "Relación P/E",
-                    "grossMargin": "Margen bruto",
-                    "netMargin": "Margen neto"
-                }
-            },
             "settings": {
                 "title": "Configuración",
                 "baseCurrency": "Moneda Base",
@@ -2082,7 +1912,6 @@ const I18n = (function() {
                 "pension": "Pensione",
                 "calculators": "Calcolatrici",
                 "stockTracker": "Tracker delle Prestazioni Azionarie",
-                "stockFinance": "Prestazioni Finanziarie delle Azioni",
                 "settings": "Impostazioni"
             },
             "portfolio": {
@@ -2360,39 +2189,6 @@ const I18n = (function() {
                     "growth": "Crescita"
                 }
             },
-            "stockFinance": {
-                "title": "Prestazioni finanziarie delle azioni",
-                "labels": {
-                    "ticker": "Ticker",
-                    "reportsFrom": "Report a partire da",
-                    "timeframe": "Periodo di riferimento",
-                    "getReports": "Ottieni rapporti",
-                    "timeframes": {
-                        "quarterly": "Trimestrale",
-                        "annual": "Annuale",
-                        "ttm": "TTM"
-                    }
-                },
-                "tabs": {
-                    "income": "Conto economico",
-                    "balance": "Bilancio",
-                    "cash": "Flusso di cassa",
-                    "stats": "Statistiche"
-                },
-                "table": {
-                    "label": "Etichetta"
-                },
-                "messages": {
-                    "noData": "Nessun dato disponibile",
-                    "loadFailed": "Impossibile caricare i dati"
-                },
-                "zeroInfo": "Valori ridotti rimuovendo 6 zeri finali (\"000,000\")",
-                "stats": {
-                    "peRatio": "Rapporto P/E",
-                    "grossMargin": "Margine lordo",
-                    "netMargin": "Margine netto"
-                }
-            },
             "settings": {
                 "title": "Impostazioni",
                 "baseCurrency": "Valuta Base",
@@ -2481,7 +2277,6 @@ const I18n = (function() {
                 "pension": "Pensiune",
                 "calculators": "Calculatoare",
                 "stockTracker": "Monitorizare performanță acțiuni",
-                "stockFinance": "Performanță financiară a acțiunilor",
                 "settings": "Setări"
             },
             "portfolio": {
@@ -2760,39 +2555,6 @@ const I18n = (function() {
                     "title": "Grafic de stocuri",
                     "price": "Preț",
                     "growth": "Creștere"
-                }
-            },
-            "stockFinance": {
-                "title": "Performanță financiară a acțiunilor",
-                "labels": {
-                    "ticker": "Ticker",
-                    "reportsFrom": "Rapoarte care încep de la",
-                    "timeframe": "Ora de timp",
-                    "getReports": "Obține rapoarte",
-                    "timeframes": {
-                        "quarterly": "Trimestrial",
-                        "annual": "Anual",
-                        "ttm": "TTM"
-                    }
-                },
-                "tabs": {
-                    "income": "Situație de venit",
-                    "balance": "Bilanț",
-                    "cash": "Fluxul de numerar",
-                    "stats": "Statistici"
-                },
-                "table": {
-                    "label": "Eticheta"
-                },
-                "messages": {
-                    "noData": "Nu există date disponibile",
-                    "loadFailed": "Nu a reușit să încarce date"
-                },
-                "zeroInfo": "Valorile tăiate prin eliminarea a 6 zerouri de tracțiune (000.000)",
-                "stats": {
-                    "peRatio": "Raport PE",
-                    "grossMargin": "Marja brută",
-                    "netMargin": "Marja netă"
                 }
             },
             "settings": {

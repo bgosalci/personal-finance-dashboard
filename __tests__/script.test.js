@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const {JSDOM} = require('jsdom');
 const vm = require('vm');
-const i18nCode = fs.readFileSync(path.resolve(__dirname, '../app/js/i18n.js'), 'utf8');
+const i18nCode = fs.readFileSync(path.resolve(__dirname, '../app/js/core/i18n.js'), 'utf8');
 
 test('FinancialDashboard global object exists with init and removeTicker', () => {
   const dom = new JSDOM('<!DOCTYPE html><html><body></body></html>', {url: 'http://localhost'});
@@ -10,20 +10,19 @@ test('FinancialDashboard global object exists with init and removeTicker', () =>
   const context = vm.createContext(dom.window);
   vm.runInContext(i18nCode, context);
   [
-    'dialogManager.js',
-    'dateUtils.js',
-    'tabManager.js',
-    'portfolioStorage.js',
-    'portfolioManager.js',
-    'watchlistManager.js',
-    'pensionManager.js',
-    'calculator.js',
-    'stockTracker.js',
-      'stockFinance.js',
-      'settings.js',
-    'forexData.js',
-    'financialDashboard.js',
-    'marketStatus.js'
+    'core/dialogManager.js',
+    'core/dateUtils.js',
+    'core/tabManager.js',
+    'data/portfolioStorage.js',
+    'features/portfolioManager.js',
+    'features/watchlistManager.js',
+    'features/pensionManager.js',
+    'features/calculator.js',
+    'features/stockTracker.js',
+    'core/settings.js',
+    'services/forexData.js',
+    'features/financialDashboard.js',
+    'services/marketStatus.js'
   ].forEach(file => {
     const content = fs.readFileSync(path.resolve(__dirname, `../app/js/${file}`), 'utf8');
     vm.runInContext(content, context);
@@ -55,7 +54,7 @@ test('fetchQuote returns price and currency', async () => {
   dom.window.fetch = jest.fn().mockResolvedValue({
     json: () => Promise.resolve({ c: 123.45, currency: 'EUR' })
   });
-  const content = fs.readFileSync(path.resolve(__dirname, '../app/js/portfolioManager.js'), 'utf8');
+  const content = fs.readFileSync(path.resolve(__dirname, '../app/js/features/portfolioManager.js'), 'utf8');
   vm.runInContext(content, context);
   const result = await vm.runInContext('PortfolioManager.fetchQuote("TEST")', context);
   expect(result).toEqual({ price: 123.45, currency: 'EUR' });
@@ -69,7 +68,7 @@ test('fetchQuote reuses recent price without refetching', async () => {
   dom.window.fetch = fetchMock;
   const context = vm.createContext(dom.window);
   vm.runInContext(i18nCode, context);
-  const content = fs.readFileSync(path.resolve(__dirname, '../app/js/portfolioManager.js'), 'utf8');
+  const content = fs.readFileSync(path.resolve(__dirname, '../app/js/features/portfolioManager.js'), 'utf8');
   vm.runInContext(content, context);
   const first = await vm.runInContext('PortfolioManager.fetchQuote("CACHE")', context);
   const second = await vm.runInContext('PortfolioManager.fetchQuote("CACHE")', context);
@@ -86,7 +85,7 @@ test('fetchQuote caches access error for one day', async () => {
   dom.window.fetch = fetchMock;
   const context = vm.createContext(dom.window);
   vm.runInContext(i18nCode, context);
-  const content = fs.readFileSync(path.resolve(__dirname, '../app/js/portfolioManager.js'), 'utf8');
+  const content = fs.readFileSync(path.resolve(__dirname, '../app/js/features/portfolioManager.js'), 'utf8');
   vm.runInContext(content, context);
   const first = await vm.runInContext('PortfolioManager.fetchQuote("VUSA.L")', context);
   expect(first).toEqual({ price: null, currency: 'USD' });
@@ -103,7 +102,7 @@ test('QuotesService.fetchQuote ignores all-zero responses', async () => {
     json: () => Promise.resolve({ c: 0, h: 0, l: 0, o: 0, pc: 0, t: 0, d: 0, dp: 0 })
   });
   const context = vm.createContext(dom.window);
-  const qsCode = fs.readFileSync(path.resolve(__dirname, '../app/js/quotesService.js'), 'utf8');
+  const qsCode = fs.readFileSync(path.resolve(__dirname, '../app/js/services/quotesService.js'), 'utf8');
   vm.runInContext(qsCode, context);
   const res = await vm.runInContext('QuotesService.fetchQuote("ZERO")', context);
   expect(res).toEqual({ price: null, raw: null });
@@ -116,7 +115,7 @@ test('fetchQuote ignores all-zero response', async () => {
   });
   const context = vm.createContext(dom.window);
   vm.runInContext(i18nCode, context);
-  const pmCode = fs.readFileSync(path.resolve(__dirname, '../app/js/portfolioManager.js'), 'utf8');
+  const pmCode = fs.readFileSync(path.resolve(__dirname, '../app/js/features/portfolioManager.js'), 'utf8');
   vm.runInContext(pmCode, context);
   const result = await vm.runInContext('PortfolioManager.fetchQuote("ZERO")', context);
   expect(result).toEqual({ price: null, currency: 'USD' });
@@ -127,7 +126,7 @@ test('StockTracker ignores zero-price quotes', async () => {
   const fetchQuoteMock = jest.fn().mockResolvedValue({ price: 0 });
   dom.window.QuotesService = { fetchQuote: fetchQuoteMock };
   const context = vm.createContext(dom.window);
-  const stCode = fs.readFileSync(path.resolve(__dirname, '../app/js/stockTracker.js'), 'utf8');
+  const stCode = fs.readFileSync(path.resolve(__dirname, '../app/js/features/stockTracker.js'), 'utf8');
   vm.runInContext(stCode, context);
   const year = new Date().getFullYear();
   vm.runInContext('stockData.tickers = ["ZERO"]; stockData.prices["ZERO"] = {};', context);
@@ -153,7 +152,7 @@ test('updatePortfolioPrices fetches tickers sequentially', async () => {
   });
   const context = vm.createContext(dom.window);
   vm.runInContext(i18nCode, context);
-  const code = fs.readFileSync(path.resolve(__dirname, '../app/js/portfolioManager.js'), 'utf8');
+  const code = fs.readFileSync(path.resolve(__dirname, '../app/js/features/portfolioManager.js'), 'utf8');
   vm.runInContext(code, context);
   await vm.runInContext(`(async () => {
     const id = 'pf_seq';
@@ -178,9 +177,9 @@ test('Settings module saves currency to localStorage', () => {
   const { window } = dom;
   const context = vm.createContext(window);
   vm.runInContext(i18nCode, context);
-  const verCode = fs.readFileSync(path.resolve(__dirname, '../app/js/appVersion.js'), 'utf8');
+  const verCode = fs.readFileSync(path.resolve(__dirname, '../app/js/core/appVersion.js'), 'utf8');
   vm.runInContext(verCode, context);
-  const content = fs.readFileSync(path.resolve(__dirname, '../app/js/settings.js'), 'utf8');
+  const content = fs.readFileSync(path.resolve(__dirname, '../app/js/core/settings.js'), 'utf8');
   vm.runInContext(content, context);
   vm.runInContext('Settings.init()', context);
   vm.runInContext('document.getElementById("base-currency-select").value = "GBP"; document.getElementById("base-currency-select").dispatchEvent(new window.Event("change"));', context);
@@ -200,7 +199,7 @@ test('Font scale setting persists, updates CSS variable, and highlights selectio
   const { window } = dom;
   const context = vm.createContext(window);
   vm.runInContext(i18nCode, context);
-  const content = fs.readFileSync(path.resolve(__dirname, '../app/js/settings.js'), 'utf8');
+  const content = fs.readFileSync(path.resolve(__dirname, '../app/js/core/settings.js'), 'utf8');
   vm.runInContext(content, context);
   vm.runInContext('Settings.init()', context);
   vm.runInContext('document.querySelector("[data-scale=\'1.15\']").dispatchEvent(new window.Event("click"));', context);
@@ -222,7 +221,7 @@ test('Finnhub API key visibility toggle', () => {
   const { window } = dom;
   const context = vm.createContext(window);
   vm.runInContext(i18nCode, context);
-  const content = fs.readFileSync(path.resolve(__dirname, '../app/js/settings.js'), 'utf8');
+  const content = fs.readFileSync(path.resolve(__dirname, '../app/js/core/settings.js'), 'utf8');
   vm.runInContext(content, context);
   vm.runInContext('Settings.init()', context);
   expect(window.document.getElementById('settings-finnhub-api-key').type).toBe('password');
@@ -234,7 +233,7 @@ test('Finnhub API key visibility toggle', () => {
 test('DateUtils.formatDate formats date correctly', () => {
   const context = vm.createContext({});
   vm.runInContext(i18nCode, context);
-  const content = fs.readFileSync(path.resolve(__dirname, '../app/js/dateUtils.js'), 'utf8');
+  const content = fs.readFileSync(path.resolve(__dirname, '../app/js/core/dateUtils.js'), 'utf8');
   vm.runInContext(content, context);
   const result = vm.runInContext('DateUtils.formatDate("2024-05-01")', context);
   const expected = new Intl.DateTimeFormat('en', { year: 'numeric', month: 'numeric', day: 'numeric' }).format(new Date('2024-05-01'));
@@ -253,7 +252,7 @@ test('pension summary tab updates translation on locale change', async () => {
   const dom = new JSDOM(html, { url: 'http://localhost' });
   const context = vm.createContext(dom.window);
   vm.runInContext(i18nCode, context);
-  let penCode = fs.readFileSync(path.resolve(__dirname, '../app/js/pensionManager.js'), 'utf8');
+  let penCode = fs.readFileSync(path.resolve(__dirname, '../app/js/features/pensionManager.js'), 'utf8');
   penCode = penCode.replace(
     'return { init, exportData, importData, deleteAllData };',
     'window.__renderTabs=renderTabs; return { init, exportData, importData, deleteAllData };'
@@ -287,7 +286,7 @@ test('Edit modal focuses name input when opened', () => {
   dom.window.fetch = jest.fn().mockResolvedValue({ json: () => Promise.resolve({ c: 1, currency: 'USD' }) });
   const context = vm.createContext(dom.window);
   vm.runInContext(i18nCode, context);
-  let pm = fs.readFileSync(path.resolve(__dirname, '../app/js/portfolioManager.js'), 'utf8');
+  let pm = fs.readFileSync(path.resolve(__dirname, '../app/js/features/portfolioManager.js'), 'utf8');
   pm = pm.replace(
     'return { init, fetchQuote, fetchLastPrices, exportData, importData, deleteAllData, updatePortfolioPrices };',
     'window.__setInvestments = arr => { investments = arr; }; window.__openEditModal = openEditModal; return { init, fetchQuote, fetchLastPrices, exportData, importData, deleteAllData, updatePortfolioPrices };'
@@ -314,7 +313,7 @@ test('Add Portfolio prompt focuses text input when opened', () => {
   const dom = new JSDOM(html, {url: 'http://localhost'});
   const context = vm.createContext(dom.window);
   vm.runInContext(i18nCode, context);
-  const dm = fs.readFileSync(path.resolve(__dirname, '../app/js/dialogManager.js'), 'utf8');
+  const dm = fs.readFileSync(path.resolve(__dirname, '../app/js/core/dialogManager.js'), 'utf8');
   vm.runInContext(dm, context);
   vm.runInContext('DialogManager.prompt(I18n.t("dialog.enterPortfolioName"))', context);
   expect(dom.window.document.activeElement.id).toBe('dialog-input');
@@ -357,7 +356,7 @@ test('fetchLastPrices updates multiple portfolios', async () => {
   window.localStorage.setItem('portfolioData_pf1', JSON.stringify([{ ticker: 'AAA', quantity: 1, purchasePrice: 1, lastPrice: 1, tradeDate: '2024-05-01', currency: 'USD' }]));
   window.localStorage.setItem('portfolioData_pf2', JSON.stringify([{ ticker: 'BBB', quantity: 1, purchasePrice: 1, lastPrice: 1, tradeDate: '2024-05-01', currency: 'USD' }]));
 
-  const pmCode = fs.readFileSync(path.resolve(__dirname, '../app/js/portfolioManager.js'), 'utf8');
+  const pmCode = fs.readFileSync(path.resolve(__dirname, '../app/js/features/portfolioManager.js'), 'utf8');
   vm.runInContext(pmCode, context);
   vm.runInContext('PortfolioManager.init()', context);
   await vm.runInContext('PortfolioManager.fetchLastPrices()', context);
@@ -372,7 +371,7 @@ test('computeStats includes payments in total percent', () => {
   const dom = new JSDOM('<!DOCTYPE html><html><body></body></html>', { url: 'http://localhost' });
   const context = vm.createContext(dom.window);
   vm.runInContext(i18nCode, context);
-  let pmCode = fs.readFileSync(path.resolve(__dirname, '../app/js/pensionManager.js'), 'utf8');
+  let pmCode = fs.readFileSync(path.resolve(__dirname, '../app/js/features/pensionManager.js'), 'utf8');
   pmCode = pmCode.replace(
     'return { init, exportData, importData, deleteAllData };',
     'window.__setData = (p, e, id) => { pensions = p; entries = e; currentPensionId = id; summaryMode = false; }; window.__computeStats = computeStats; return { init, exportData, importData, deleteAllData };'
@@ -392,7 +391,7 @@ test('computeStats returns cumulative payments', () => {
   const dom = new JSDOM('<!DOCTYPE html><html><body></body></html>', { url: 'http://localhost' });
   const context = vm.createContext(dom.window);
   vm.runInContext(i18nCode, context);
-  let pmCode = fs.readFileSync(path.resolve(__dirname, '../app/js/pensionManager.js'), 'utf8');
+  let pmCode = fs.readFileSync(path.resolve(__dirname, '../app/js/features/pensionManager.js'), 'utf8');
   pmCode = pmCode.replace(
     'return { init, exportData, importData, deleteAllData };',
     'window.__setData = (p, e, id) => { pensions = p; entries = e; currentPensionId = id; summaryMode = false; }; window.__computeStats = computeStats; return { init, exportData, importData, deleteAllData };'
@@ -418,14 +417,14 @@ test('initial tabs highlight only selected portfolio and pension', () => {
   const context = vm.createContext(dom.window);
   vm.runInContext(i18nCode, context);
 
-  let pmCode = fs.readFileSync(path.resolve(__dirname, '../app/js/portfolioManager.js'), 'utf8');
+  let pmCode = fs.readFileSync(path.resolve(__dirname, '../app/js/features/portfolioManager.js'), 'utf8');
   pmCode = pmCode.replace(
     'return { init, fetchQuote, fetchLastPrices, exportData, importData, deleteAllData, updatePortfolioPrices };',
     'window.__setPortfolios=(p,id,s)=>{ portfolios=p; currentPortfolioId=id; summaryMode=s; }; window.__renderPortfolioTabs=renderPortfolioTabs; return { init, fetchQuote, fetchLastPrices, exportData, importData, deleteAllData, updatePortfolioPrices };'
   );
   vm.runInContext(pmCode, context);
 
-  let penCode = fs.readFileSync(path.resolve(__dirname, '../app/js/pensionManager.js'), 'utf8');
+  let penCode = fs.readFileSync(path.resolve(__dirname, '../app/js/features/pensionManager.js'), 'utf8');
   penCode = penCode.replace(
     'return { init, exportData, importData, deleteAllData };',
     'window.__setPensions=(p,id,s)=>{ pensions=p; currentPensionId=id; summaryMode=s; }; window.__renderPensionTabs=renderTabs; return { init, exportData, importData, deleteAllData };'
@@ -454,14 +453,14 @@ test('selecting portfolio summary does not change active pension tab', () => {
   const context = vm.createContext(dom.window);
   vm.runInContext(i18nCode, context);
 
-  let pmCode = fs.readFileSync(path.resolve(__dirname, '../app/js/portfolioManager.js'), 'utf8');
+  let pmCode = fs.readFileSync(path.resolve(__dirname, '../app/js/features/portfolioManager.js'), 'utf8');
   pmCode = pmCode.replace(
     'return { init, fetchQuote, fetchLastPrices, exportData, importData, deleteAllData, updatePortfolioPrices };',
     'window.__setPortfolios=(p,id,s)=>{ portfolios=p; currentPortfolioId=id; summaryMode=s; }; window.__renderPortfolioTabs=renderPortfolioTabs; return { init, fetchQuote, fetchLastPrices, exportData, importData, deleteAllData, updatePortfolioPrices };'
   );
   vm.runInContext(pmCode, context);
 
-  let penCode = fs.readFileSync(path.resolve(__dirname, '../app/js/pensionManager.js'), 'utf8');
+  let penCode = fs.readFileSync(path.resolve(__dirname, '../app/js/features/pensionManager.js'), 'utf8');
   penCode = penCode.replace(
     'return { init, exportData, importData, deleteAllData };',
     'window.__setPensions=(p,id,s)=>{ pensions=p; currentPensionId=id; summaryMode=s; }; window.__renderPensionTabs=renderTabs; return { init, exportData, importData, deleteAllData };'
@@ -491,7 +490,7 @@ test('StockTracker export and import cycle', () => {
   const dom = new JSDOM(html, { url: 'http://localhost' });
   const context = vm.createContext(dom.window);
   vm.runInContext(i18nCode, context);
-  const code = fs.readFileSync(path.resolve(__dirname, '../app/js/stockTracker.js'), 'utf8');
+  const code = fs.readFileSync(path.resolve(__dirname, '../app/js/features/stockTracker.js'), 'utf8');
   vm.runInContext(code, context);
   vm.runInContext('stockData = { tickers:["AAA"], startYear:2020, prices:{AAA:{2020:10}} }; localStorage.setItem("stockTrackerData", JSON.stringify(stockData));', context);
   const csv = vm.runInContext('StockTracker.exportData("csv")', context);
@@ -505,7 +504,7 @@ test('StockTracker exposes fetchLatestPrices', () => {
   const dom = new JSDOM('<!DOCTYPE html><html><body></body></html>', { url: 'http://localhost' });
   const context = vm.createContext(dom.window);
   vm.runInContext(i18nCode, context);
-  const code = fs.readFileSync(path.resolve(__dirname, '../app/js/stockTracker.js'), 'utf8');
+  const code = fs.readFileSync(path.resolve(__dirname, '../app/js/features/stockTracker.js'), 'utf8');
   vm.runInContext(code, context);
   const fnType = vm.runInContext('typeof StockTracker.fetchLatestPrices', context);
   expect(fnType).toBe('function');
@@ -515,7 +514,7 @@ test('WatchlistManager exposes fetchLastPrices', () => {
   const dom = new JSDOM('<!DOCTYPE html><html><body></body></html>', { url: 'http://localhost' });
   const context = vm.createContext(dom.window);
   vm.runInContext(i18nCode, context);
-  const code = fs.readFileSync(path.resolve(__dirname, '../app/js/watchlistManager.js'), 'utf8');
+  const code = fs.readFileSync(path.resolve(__dirname, '../app/js/features/watchlistManager.js'), 'utf8');
   vm.runInContext(code, context);
   const fnType = vm.runInContext('typeof WatchlistManager.fetchLastPrices', context);
   expect(fnType).toBe('function');

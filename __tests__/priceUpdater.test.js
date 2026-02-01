@@ -11,7 +11,7 @@ function loadPriceUpdater(isOpen) {
   dom.window.WatchlistManager = { fetchLastPrices: jest.fn() };
   dom.window.StockTracker = { fetchLatestPrices: jest.fn() };
   dom.window.setInterval = () => {};
-  const code = fs.readFileSync(path.resolve(__dirname, '../app/js/priceUpdater.js'), 'utf8');
+  const code = fs.readFileSync(path.resolve(__dirname, '../app/js/services/priceUpdater.js'), 'utf8');
   vm.runInContext(code, context);
   return context;
 }
