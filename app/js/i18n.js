@@ -261,8 +261,8 @@ const I18n = (function() {
                     },
                     "summary": {
                         "totalTakeHome": "Total take-home:",
-                        "totalTax": "Total tax:",
-                        "totalDeductions": "Total other deductions:",
+                        "totalTax": "Total tax (incl. NI):",
+                        "totalDeductions": "Total deductions:",
                         "noneSelected": "Select salaries to include in the summary."
                     },
                     "breakdown": {
@@ -272,6 +272,7 @@ const I18n = (function() {
                         "allowances": "Allowances:",
                         "benefits": "Paid benefits:",
                         "taxable": "Taxable income:",
+                        "totalTax": "Total tax (incl. NI):",
                         "totalDeductions": "Total deductions:"
                     }
                 },

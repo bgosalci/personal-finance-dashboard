@@ -377,6 +377,8 @@ const Calculator = (function() {
         const periodNiEl = document.getElementById('salary-period-ni');
         const periodStudentLoanEl = document.getElementById('salary-period-student-loan');
         const periodOtherEl = document.getElementById('salary-period-other');
+        const annualTotalTaxEl = document.getElementById('salary-total-tax-annual');
+        const periodTotalTaxEl = document.getElementById('salary-period-total-tax');
         const periodDeductionsEl = document.getElementById('salary-period-deductions');
         const totalTakeHomeEl = document.getElementById('salary-total-take-home');
         const totalTaxEl = document.getElementById('salary-total-tax');
@@ -541,8 +543,10 @@ const Calculator = (function() {
             const tax = calculateIncomeTax(taxableIncome);
             const nationalInsurance = calculateNationalInsurance(grossAnnual, parseInt(entry.age, 10) || 0);
             const studentLoan = calculateStudentLoan(adjustedIncome, entry.studentLoanPlan);
-            const deductionTotal = pensionContribution + studentLoan + otherDeductions;
-            const takeHome = Math.max(0, grossAnnual - tax - deductionTotal - nationalInsurance);
+            const totalTax = tax + nationalInsurance;
+            const deductionSubtotal = pensionContribution + studentLoan + otherDeductions;
+            const totalDeductions = totalTax + deductionSubtotal;
+            const takeHome = Math.max(0, grossAnnual - totalDeductions);
             return {
                 grossAnnual,
                 allowancesTotal,
@@ -554,7 +558,8 @@ const Calculator = (function() {
                 tax,
                 nationalInsurance,
                 studentLoan,
-                otherTotal: deductionTotal,
+                totalTax,
+                totalDeductions,
                 takeHome
             };
         }
@@ -564,8 +569,8 @@ const Calculator = (function() {
             const totals = included.reduce((acc, entry) => {
                 const calc = calculateEntry(entry);
                 acc.takeHome += calc.takeHome;
-                acc.tax += calc.tax;
-                acc.other += calc.otherTotal;
+                acc.tax += calc.totalTax;
+                acc.other += calc.totalDeductions;
                 return acc;
             }, { takeHome: 0, tax: 0, other: 0 });
             if (totalTakeHomeEl) totalTakeHomeEl.textContent = formatSalaryCurrency(totals.takeHome);
@@ -607,7 +612,8 @@ const Calculator = (function() {
             if (annualBenefitsEl) annualBenefitsEl.textContent = formatSalaryCurrency(results.benefits);
             if (takeHomeEl) takeHomeEl.textContent = formatSalaryCurrency(results.takeHome);
             if (taxEl) taxEl.textContent = formatSalaryCurrency(results.tax);
-            if (deductionsEl) deductionsEl.textContent = formatSalaryCurrency(results.otherTotal);
+            if (annualTotalTaxEl) annualTotalTaxEl.textContent = formatSalaryCurrency(results.totalTax);
+            if (deductionsEl) deductionsEl.textContent = formatSalaryCurrency(results.totalDeductions);
             if (pensionEl) pensionEl.textContent = formatSalaryCurrency(results.pensionContribution);
             if (niEl) niEl.textContent = formatSalaryCurrency(results.nationalInsurance);
             if (studentLoanEl) studentLoanEl.textContent = formatSalaryCurrency(results.studentLoan);
@@ -623,7 +629,8 @@ const Calculator = (function() {
             if (periodNiEl) periodNiEl.textContent = formatSalaryCurrency(results.nationalInsurance / divisor);
             if (periodStudentLoanEl) periodStudentLoanEl.textContent = formatSalaryCurrency(results.studentLoan / divisor);
             if (periodOtherEl) periodOtherEl.textContent = formatSalaryCurrency(results.otherDeductions / divisor);
-            if (periodDeductionsEl) periodDeductionsEl.textContent = formatSalaryCurrency(results.otherTotal / divisor);
+            if (periodTotalTaxEl) periodTotalTaxEl.textContent = formatSalaryCurrency(results.totalTax / divisor);
+            if (periodDeductionsEl) periodDeductionsEl.textContent = formatSalaryCurrency(results.totalDeductions / divisor);
         }
 
         function renderAllowances(entry) {
