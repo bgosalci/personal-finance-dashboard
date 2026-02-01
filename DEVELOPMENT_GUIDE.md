@@ -48,14 +48,18 @@ personal-finance-dashboard/
 │   ├── index.html            # Application shell
 │   ├── css/style.css         # Styles
 │   └── js/                   # Modular JavaScript files
+│       ├── core/             # App bootstrap + shared utilities
+│       ├── data/             # Data persistence helpers
+│       ├── features/         # Feature-specific modules
+│       └── services/         # External API integrations
 ├── __tests__/                # Jest tests
 └── *.md                      # Documentation
 ```
 
 ### Core Entry Points
 - `app/index.html`: HTML structure and modal templates.
-- `app/js/main.js`: Bootstraps theme, i18n, and feature modules.
-- `app/js/financialDashboard.js`: Initializes major modules.
+- `app/js/core/main.js`: Bootstraps theme, i18n, and feature modules.
+- `app/js/features/financialDashboard.js`: Initializes major modules.
 
 ### Module Pattern
 Modules use the IIFE pattern to keep public APIs explicit and scoped:
@@ -78,9 +82,8 @@ const ModuleName = (function() {
 - **PortfolioManager**: Portfolio CRUD, charts, and summary metrics.
 - **WatchlistManager**: Watchlist CRUD with optional real-time quotes.
 - **PensionManager**: Pension tracking, charts, and summaries.
-- **Calculator**: Loan, investment, CAGR, mortgage, salary, and fair value calculators.
+- **Calculator**: Loan, investment, CAGR, mortgage, and salary calculators.
 - **StockTracker**: Historical price tracking and growth calculations.
-- **StockFinance**: Fetches and renders financial statements.
 - **Settings**: Base currency, theme, language, API key, and data import/export.
 - **I18n**: Translation utilities and locale management.
 - **ThemeManager**: Light/dark/system theme support.
@@ -94,7 +97,7 @@ const ModuleName = (function() {
 ## External Services
 
 Some features require network access:
-- **Finnhub**: Quotes, search, and financial statements (Stock Finance).
+- **Finnhub**: Quotes and symbol search.
 - **Polygon.io**: Market status indicator.
 - **ExchangeRate-API**: Base currency conversion rates.
 
@@ -109,10 +112,10 @@ When no network is available, the dashboard still functions for manual data entr
 
 ## Adding Features
 
-1. Create or update a module under `app/js/`.
+1. Create or update a module under `app/js/features` (or `app/js/core` for shared utilities).
 2. Wire new UI elements in `app/index.html`.
 3. Add styles in `app/css/style.css`.
-4. Register the module in `financialDashboard.js` and `main.js` if needed.
+4. Register the module in `features/financialDashboard.js` and `core/main.js` if needed.
 5. Add tests in `__tests__/`.
 6. Update documentation and translations.
 

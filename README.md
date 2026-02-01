@@ -40,17 +40,11 @@ The Personal Finance Dashboard is a client-side HTML application that loads modu
 - **CAGR Calculator**
 - **Mortgage Calculator**
 - **Salary Calculator**
-- **Fair Value Calculator**
 
 ### 📈 Stock Performance Tracker
 - Track multi-year prices and compute growth metrics.
 - Compare tickers across time horizons.
 - Export/import support for historical data.
-
-### 🧾 Stock Finance Performance
-- Fetch income, balance sheet, and cash flow statements.
-- View derived financial ratios.
-- Requires network access to Finnhub.
 
 ### ⚙️ Settings & Customization
 - Base currency selector with daily FX rate updates.
@@ -95,7 +89,7 @@ The Personal Finance Dashboard is a client-side HTML application that loads modu
    ```
 
 3. Start using the application:
-   - Navigate between tabs (Portfolio, Watchlist, Pension, Calculators, Stock Tracker, Stock Finance, Settings).
+   - Navigate between tabs (Portfolio, Watchlist, Pension, Calculators, Stock Tracker, Settings).
    - Add your first investment or watchlist entry.
    - Configure base currency, theme, and language in Settings.
 
@@ -125,22 +119,28 @@ personal-finance-dashboard/
 │   ├── css/
 │   │   └── style.css            # Application styles
 │   └── js/
-│       ├── main.js              # App bootstrap
-│       ├── financialDashboard.js# Module orchestration
-│       ├── portfolioManager.js  # Portfolio workflows
-│       ├── watchlistManager.js  # Watchlist workflows
-│       ├── pensionManager.js    # Pension workflows
-│       ├── stockTracker.js      # Performance tracking
-│       ├── stockFinance.js      # Financial statements
-│       ├── calculator.js        # Financial calculators
-│       ├── settings.js          # Settings UI logic
-│       ├── i18n.js              # Internationalization
-│       ├── themeManager.js      # Theme preference handling
-│       ├── quotesService.js     # Finnhub API wrapper
-│       ├── forexData.js         # FX rate service
-│       ├── marketStatus.js      # Market status service
-│       ├── priceUpdater.js      # Automated refresh
-│       └── ...                  # Supporting modules
+│       ├── core/
+│       │   ├── main.js           # App bootstrap
+│       │   ├── settings.js       # Settings UI logic
+│       │   ├── i18n.js           # Internationalization
+│       │   ├── themeManager.js   # Theme preference handling
+│       │   ├── tabManager.js     # Tab navigation
+│       │   └── ...               # Supporting core utilities
+│       ├── data/
+│       │   ├── portfolioStorage.js # Portfolio storage helpers
+│       │   └── priceStorage.js     # Quote cache
+│       ├── features/
+│       │   ├── financialDashboard.js # Module orchestration
+│       │   ├── portfolioManager.js   # Portfolio workflows
+│       │   ├── watchlistManager.js   # Watchlist workflows
+│       │   ├── pensionManager.js     # Pension workflows
+│       │   ├── stockTracker.js       # Performance tracking
+│       │   └── calculator.js         # Financial calculators
+│       └── services/
+│           ├── quotesService.js  # Finnhub API wrapper
+│           ├── forexData.js      # FX rate service
+│           ├── marketStatus.js   # Market status service
+│           └── priceUpdater.js   # Automated refresh
 ├── __tests__/                   # Jest tests
 ├── README.md                    # Project overview
 ├── DEVELOPMENT_GUIDE.md         # Contributor workflow

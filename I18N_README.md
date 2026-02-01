@@ -1,6 +1,6 @@
 # Internationalization
 
-The application supports multiple languages via `app/js/i18n.js`. Translations are embedded in the `DEFAULT_TRANSLATIONS` object and applied to elements with `data-i18n` attributes.
+The application supports multiple languages via `app/js/core/i18n.js`. Translations are embedded in the `DEFAULT_TRANSLATIONS` object and applied to elements with `data-i18n` attributes.
 
 ## Available Locales
 
@@ -19,7 +19,7 @@ The Settings tab builds the language selector from the available locale list. Lo
 
 ## Adding or Updating a Language
 
-1. Add or update the locale entry inside `DEFAULT_TRANSLATIONS` in `app/js/i18n.js` using the English strings as a template.
+1. Add or update the locale entry inside `DEFAULT_TRANSLATIONS` in `app/js/core/i18n.js` using the English strings as a template.
 2. Ensure all keys are present and consistent across locales.
 3. Test by selecting the locale in Settings.
 

@@ -18,9 +18,8 @@ The dashboard is organized into these tabs:
 - **Portfolio** - Track investments and portfolio summaries.
 - **Watchlist** - Monitor tickers with optional real-time updates.
 - **Pension** - Record pension contributions and growth.
-- **Calculators** - Loan, investment, CAGR, mortgage, salary, and fair value tools.
+- **Calculators** - Loan, investment, CAGR, mortgage, and salary tools.
 - **Stock Performance Tracker** - Track multi-year prices and growth.
-- **Stock Finance Performance** - View financial statements and ratios.
 - **Settings** - Configure base currency, theme, language, data import/export, and API keys.
 
 ## Portfolio Management
@@ -86,9 +85,6 @@ Estimate monthly payments and interest portions based on property price and depo
 ### Salary Calculator
 Model take-home pay with allowances, pension, student loan, and deductions. You can save multiple salary profiles.
 
-### Fair Value Calculator
-Estimate intrinsic value using earnings, growth, and market multipliers.
-
 ## Stock Performance Tracker
 
 ### Add and Update Data
@@ -99,12 +95,6 @@ Estimate intrinsic value using earnings, growth, and market multipliers.
 ### Analyze Performance
 - View growth metrics by year.
 - Compare tickers side-by-side.
-
-## Stock Finance Performance
-
-- Enter a ticker and time frame.
-- Fetch income statements, balance sheets, and cash flow data.
-- Review financial ratios shown alongside tables.
 
 ## Settings
 
