@@ -486,7 +486,7 @@
                     <button class="sub-nav-tab" data-subtab="investment" data-i18n="calculators.tabs.investment">Investment Calculator</button>
                     <button class="sub-nav-tab" data-subtab="cagr" data-i18n="calculators.tabs.cagr">CAGR Calculator</button>
                     <button class="sub-nav-tab" data-subtab="mortgage" data-i18n="calculators.tabs.mortgage">Mortgage Calculator</button>
-                    <button class="sub-nav-tab" data-subtab="fair-value" data-i18n="calculators.tabs.fairValue">Fair Value Calculator</button>
+                    <button class="sub-nav-tab" data-subtab="salary" data-i18n="calculators.tabs.salary">Salary Calculator</button>
                 </div>
 
                 <!-- Loan Calculator Sub-Tab -->
@@ -661,154 +661,215 @@
                     </div>
                 </div>
 
-                <!-- Fair Value Calculator Sub-Tab -->
-                <div id="fair-value" class="sub-tab-content">
+                <!-- Salary Calculator Sub-Tab -->
+                <div id="salary" class="sub-tab-content">
                     <div class="calculator-section">
-                        <h3 class="calculator-title" data-i18n="calculators.tabs.fairValue">Fair Value Calculator</h3>
-                        
-                        <!-- Fair Value Sub-Sections -->
-                        <div class="fair-value-sections">
-                            <div class="fair-value-nav">
-                                <button class="fair-value-btn active" data-section="dcf" data-i18n="calculators.fairValue.tabs.dcf">DCF Analysis</button>
-                                <button class="fair-value-btn" data-section="pe" data-i18n="calculators.fairValue.tabs.pe">P/E Ratio Analysis</button>
-                                <button class="fair-value-btn" data-section="intrinsic" data-i18n="calculators.fairValue.tabs.intrinsic">Intrinsic Value</button>
-                            </div>
-
-                            <!-- DCF Calculator -->
-                            <div id="dcf" class="fair-value-section active">
-                                <h4 class="section-subtitle" data-i18n="calculators.fairValue.dcf.title">Discounted Cash Flow (DCF) Analysis</h4>
-                                <div class="form-grid">
-                                    <div class="form-group">
-                                        <label for="dcf-current-fcf"><span data-i18n="calculators.fairValue.dcf.labels.currentFCF">Current Annual Free Cash Flow</span> ($M)</label>
-                                        <input type="text" id="dcf-current-fcf" inputmode="decimal">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="dcf-growth-rate" data-i18n="calculators.fairValue.dcf.labels.growthRate">Growth Rate (%)</label>
-                                        <input type="number" id="dcf-growth-rate" min="0" max="50" step="0.1">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="dcf-terminal-rate" data-i18n="calculators.fairValue.dcf.labels.terminalRate">Terminal Growth Rate (%)</label>
-                                        <input type="number" id="dcf-terminal-rate" min="0" max="10" step="0.1">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="dcf-discount-rate" data-i18n="calculators.fairValue.dcf.labels.discountRate">Discount Rate (WACC) (%)</label>
-                                        <input type="number" id="dcf-discount-rate" min="0" max="30" step="0.1">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="dcf-years" data-i18n="calculators.fairValue.dcf.labels.years">Projection Years</label>
-                                        <input type="number" id="dcf-years" min="5" max="20" step="1">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="dcf-shares" data-i18n="calculators.fairValue.dcf.labels.shares">Shares Outstanding (M)</label>
-                                        <input type="text" id="dcf-shares" inputmode="decimal">
-                                    </div>
+                        <div class="section-header">
+                            <h3 class="calculator-title" data-i18n="calculators.tabs.salary">Salary Calculator</h3>
+                            <button type="button" class="btn btn-secondary" id="add-salary-btn" data-i18n="calculators.salary.actions.addSalary">Add Salary</button>
+                        </div>
+                        <p class="form-hint" data-i18n="calculators.salary.hint">UK tax estimates based on current income tax and National Insurance thresholds.</p>
+                        <div id="salary-tabs" class="sub-nav-tabs"></div>
+                        <div id="salary-summary-panel" class="salary-panel">
+                            <div id="salary-summary" class="result-display">
+                                <div class="result-item">
+                                    <span data-i18n="calculators.salary.summary.totalTakeHome">Total take-home:</span>
+                                    <span id="salary-total-take-home">£0.00</span>
                                 </div>
-                                <div id="dcf-results" class="result-display" style="display: none;">
-                                    <div class="result-item">
-                                        <span data-i18n="calculators.fairValue.dcf.results.enterpriseValue">Enterprise Value:</span>
-                                        <span id="dcf-enterprise-value">$0.00</span>
-                                    </div>
-                                    <div class="result-item">
-                                        <span data-i18n="calculators.fairValue.dcf.results.pvCashflows">Present Value of Cash Flows:</span>
-                                        <span id="dcf-pv-cashflows">$0.00</span>
-                                    </div>
-                                    <div class="result-item">
-                                        <span data-i18n="calculators.fairValue.dcf.results.terminalValue">Terminal Value:</span>
-                                        <span id="dcf-terminal-value">$0.00</span>
-                                    </div>
-                                    <div class="result-item">
-                                        <span data-i18n="calculators.fairValue.dcf.results.perShare">Intrinsic Value Per Share:</span>
-                                        <span id="dcf-per-share">$0.00</span>
-                                    </div>
+                                <div class="result-item">
+                                    <span data-i18n="calculators.salary.summary.totalTax">Total tax:</span>
+                                    <span id="salary-total-tax">£0.00</span>
+                                </div>
+                                <div class="result-item">
+                                    <span data-i18n="calculators.salary.summary.totalDeductions">Total other deductions:</span>
+                                    <span id="salary-total-deductions">£0.00</span>
                                 </div>
                             </div>
-
-                            <!-- P/E Ratio Analysis -->
-                            <div id="pe" class="fair-value-section">
-                                <h4 class="section-subtitle" data-i18n="calculators.fairValue.pe.title">P/E Ratio Analysis</h4>
-                                <div class="form-grid">
-                                    <div class="form-group">
-                                        <label for="pe-current-price" data-i18n="calculators.fairValue.pe.labels.currentPrice">Current Stock Price ($)</label>
-                                        <input type="text" id="pe-current-price" inputmode="decimal">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="pe-eps" data-i18n="calculators.fairValue.pe.labels.eps">Earnings Per Share (EPS) ($)</label>
-                                        <input type="number" id="pe-eps" min="0" step="0.01">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="pe-industry-avg" data-i18n="calculators.fairValue.pe.labels.industryPE">Industry Average P/E</label>
-                                        <input type="number" id="pe-industry-avg" min="0" step="0.1">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="pe-growth-rate" data-i18n="calculators.fairValue.pe.labels.growthRate">Expected EPS Growth Rate (%)</label>
-                                        <input type="number" id="pe-growth-rate" min="0" max="100" step="0.1">
-                                    </div>
-                                </div>
-                                <div id="pe-results" class="result-display" style="display: none;">
-                                    <div class="result-item">
-                                        <span data-i18n="calculators.fairValue.pe.results.currentPE">Current P/E Ratio:</span>
-                                        <span id="pe-current-ratio">0.00</span>
-                                    </div>
-                                    <div class="result-item">
-                                        <span data-i18n="calculators.fairValue.pe.results.fairValue">Fair Value (Industry P/E):</span>
-                                        <span id="pe-fair-value">$0.00</span>
-                                    </div>
-                                    <div class="result-item">
-                                        <span data-i18n="calculators.fairValue.pe.results.pegRatio">PEG Ratio:</span>
-                                        <span id="pe-peg-ratio">0.00</span>
-                                    </div>
-                                    <div class="result-item">
-                                        <span data-i18n="calculators.fairValue.pe.results.valuation">Valuation Status:</span>
-                                        <span id="pe-valuation-status">--</span>
-                                    </div>
+                            <div id="salary-summary-list" class="salary-summary-list"></div>
+                        </div>
+                        <div id="salary-form-panel" class="salary-panel" style="display: none;">
+                            <div class="salary-form-header">
+                                <h4 class="section-subtitle" id="salary-form-title" data-i18n="calculators.salary.labels.salary">Salary</h4>
+                                <div class="salary-form-actions">
+                                    <button type="button" class="btn btn-secondary" id="remove-salary-btn" data-i18n="calculators.salary.actions.removeSalary">Remove</button>
+                                    <label class="summary-toggle">
+                                        <input type="checkbox" id="salary-summary-toggle" checked>
+                                        <span data-i18n="calculators.salary.actions.showInSummary">Show in Summary</span>
+                                    </label>
                                 </div>
                             </div>
-
-                            <!-- Intrinsic Value Calculator -->
-                            <div id="intrinsic" class="fair-value-section">
-                                <h4 class="section-subtitle" data-i18n="calculators.fairValue.intrinsic.title">Intrinsic Value Analysis</h4>
-                                <div class="form-grid">
-                                    <div class="form-group">
-                                        <label for="intrinsic-book-value" data-i18n="calculators.fairValue.intrinsic.labels.bookValue">Book Value Per Share ($)</label>
-                                        <input type="number" id="intrinsic-book-value" min="0" step="0.01">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="intrinsic-roe" data-i18n="calculators.fairValue.intrinsic.labels.roe">Return on Equity (ROE) (%)</label>
-                                        <input type="number" id="intrinsic-roe" min="0" max="100" step="0.1">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="intrinsic-dividend-yield" data-i18n="calculators.fairValue.intrinsic.labels.dividendYield">Dividend Yield (%)</label>
-                                        <input type="number" id="intrinsic-dividend-yield" min="0" max="20" step="0.1">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="intrinsic-required-return" data-i18n="calculators.fairValue.intrinsic.labels.requiredReturn">Required Rate of Return (%)</label>
-                                        <input type="number" id="intrinsic-required-return" min="0" max="30" step="0.1">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="intrinsic-growth-rate" data-i18n="calculators.fairValue.intrinsic.labels.growthRate">Sustainable Growth Rate (%)</label>
-                                        <input type="number" id="intrinsic-growth-rate" min="0" max="50" step="0.1">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="intrinsic-eps" data-i18n="calculators.fairValue.intrinsic.labels.eps">Current EPS ($)</label>
-                                        <input type="number" id="intrinsic-eps" min="0" step="0.01">
-                                    </div>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="salary-name" data-i18n="calculators.salary.labels.name">Salary name</label>
+                                    <input type="text" id="salary-name">
                                 </div>
-                                <div id="intrinsic-results" class="result-display" style="display: none;">
-                                    <div class="result-item">
-                                        <span data-i18n="calculators.fairValue.intrinsic.results.graham">Graham Number:</span>
-                                        <span id="intrinsic-graham">$0.00</span>
+                                <div class="form-group">
+                                    <label for="salary-annual" data-i18n="calculators.salary.labels.basicSalary">Annual basic salary (£)</label>
+                                    <input type="text" inputmode="decimal" id="salary-annual">
+                                </div>
+                                <div class="form-group">
+                                    <label for="salary-frequency" data-i18n="calculators.salary.labels.frequency">Payment frequency</label>
+                                    <select id="salary-frequency">
+                                        <option value="annual" data-i18n="calculators.salary.frequency.annual">Annual</option>
+                                        <option value="monthly" data-i18n="calculators.salary.frequency.monthly">Monthly</option>
+                                        <option value="fortnightly" data-i18n="calculators.salary.frequency.fortnightly">Fortnightly</option>
+                                        <option value="weekly" data-i18n="calculators.salary.frequency.weekly">Weekly</option>
+                                        <option value="hourly" data-i18n="calculators.salary.frequency.hourly">Hourly</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="salary-hours" data-i18n="calculators.salary.labels.hoursPerWeek">Hours per week</label>
+                                    <input type="number" min="0" step="0.1" id="salary-hours">
+                                </div>
+                                <div class="form-group">
+                                    <label for="salary-pension" data-i18n="calculators.salary.labels.pension">Pension contribution (%)</label>
+                                    <input type="number" min="0" max="100" step="0.1" id="salary-pension">
+                                </div>
+                                <div class="form-group full-width">
+                                    <label data-i18n="calculators.salary.labels.allowances">Allowances (annual)</label>
+                                    <div id="salary-allowances" class="salary-allowances"></div>
+                                    <button type="button" class="btn btn-secondary" id="add-salary-allowance" data-i18n="calculators.salary.actions.addAllowance">Add Allowance</button>
+                                </div>
+                                <div class="form-group">
+                                    <label for="salary-student-loan" data-i18n="calculators.salary.labels.studentLoan">Student loan plan</label>
+                                    <select id="salary-student-loan">
+                                        <option value="none" data-i18n="calculators.salary.studentLoan.none">None</option>
+                                        <option value="plan1" data-i18n="calculators.salary.studentLoan.plan1">Plan 1</option>
+                                        <option value="plan2" data-i18n="calculators.salary.studentLoan.plan2">Plan 2</option>
+                                        <option value="plan4" data-i18n="calculators.salary.studentLoan.plan4">Plan 4</option>
+                                        <option value="plan5" data-i18n="calculators.salary.studentLoan.plan5">Plan 5</option>
+                                        <option value="postgraduate" data-i18n="calculators.salary.studentLoan.postgraduate">Postgraduate</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="salary-age" data-i18n="calculators.salary.labels.age">Age</label>
+                                    <input type="number" min="16" max="100" step="1" id="salary-age">
+                                </div>
+                                <div class="form-group">
+                                    <label for="salary-tax-code" data-i18n="calculators.salary.labels.taxCode">Tax code</label>
+                                    <input type="text" id="salary-tax-code">
+                                </div>
+                                <div class="form-group">
+                                    <label for="salary-benefits" data-i18n="calculators.salary.labels.benefits">Paid benefits (annual £)</label>
+                                    <input type="number" min="0" step="0.01" id="salary-benefits">
+                                </div>
+                                <div class="form-group">
+                                    <label for="salary-other-deductions" data-i18n="calculators.salary.labels.otherDeductions">Other deductions (annual £)</label>
+                                    <input type="number" min="0" step="0.01" id="salary-other-deductions">
+                                </div>
+                            </div>
+                            <div class="result-display salary-results">
+                                <div class="salary-breakdown-grid">
+                                    <div class="salary-breakdown-panel">
+                                        <div class="salary-breakdown-header">
+                                            <h4 class="section-subtitle" data-i18n="calculators.salary.breakdown.annualTitle">Annual Breakdown</h4>
+                                        </div>
+                                        <div class="result-item">
+                                            <span data-i18n="calculators.salary.breakdown.gross">Gross salary:</span>
+                                            <span id="salary-annual-gross">£0.00</span>
+                                        </div>
+                                        <div class="result-item">
+                                            <span data-i18n="calculators.salary.breakdown.allowances">Allowances:</span>
+                                            <span id="salary-annual-allowances">£0.00</span>
+                                        </div>
+                                        <div class="result-item">
+                                            <span data-i18n="calculators.salary.breakdown.benefits">Paid benefits:</span>
+                                            <span id="salary-annual-benefits">£0.00</span>
+                                        </div>
+                                        <div class="result-item">
+                                            <span data-i18n="calculators.salary.breakdown.taxable">Taxable income:</span>
+                                            <span id="salary-annual-taxable">£0.00</span>
+                                        </div>
+                                        <div class="salary-deduction-grid">
+                                            <div class="salary-deduction-item">
+                                                <span data-i18n="calculators.salary.results.tax">Tax to pay:</span>
+                                                <span id="salary-tax">£0.00</span>
+                                            </div>
+                                            <div class="salary-deduction-item">
+                                                <span data-i18n="calculators.salary.results.pension">Pension:</span>
+                                                <span id="salary-pension-value">£0.00</span>
+                                            </div>
+                                            <div class="salary-deduction-item">
+                                                <span data-i18n="calculators.salary.results.nationalInsurance">National Insurance:</span>
+                                                <span id="salary-ni">£0.00</span>
+                                            </div>
+                                            <div class="salary-deduction-item">
+                                                <span data-i18n="calculators.salary.results.studentLoan">Student loan:</span>
+                                                <span id="salary-student-loan-value">£0.00</span>
+                                            </div>
+                                            <div class="salary-deduction-item">
+                                                <span data-i18n="calculators.salary.results.other">Other:</span>
+                                                <span id="salary-other-value">£0.00</span>
+                                            </div>
+                                            <div class="salary-deduction-item">
+                                                <span data-i18n="calculators.salary.breakdown.totalTax">Total tax (incl. NI):</span>
+                                                <span id="salary-total-tax-annual">£0.00</span>
+                                            </div>
+                                            <div class="salary-deduction-item total">
+                                                <span data-i18n="calculators.salary.breakdown.totalDeductions">Total deductions:</span>
+                                                <span id="salary-deductions">£0.00</span>
+                                            </div>
+                                        </div>
+                                        <div class="result-item total">
+                                            <span data-i18n="calculators.salary.results.takeHome">Take-home:</span>
+                                            <span id="salary-take-home">£0.00</span>
+                                        </div>
                                     </div>
-                                    <div class="result-item">
-                                        <span data-i18n="calculators.fairValue.intrinsic.results.ddm">Dividend Discount Model:</span>
-                                        <span id="intrinsic-ddm">$0.00</span>
-                                    </div>
-                                    <div class="result-item">
-                                        <span data-i18n="calculators.fairValue.intrinsic.results.bookMultiple">Book Value Multiple:</span>
-                                        <span id="intrinsic-book-multiple">$0.00</span>
-                                    </div>
-                                    <div class="result-item">
-                                        <span data-i18n="calculators.fairValue.intrinsic.results.average">Average Intrinsic Value:</span>
-                                        <span id="intrinsic-average">$0.00</span>
+                                    <div class="salary-breakdown-panel">
+                                        <div class="salary-breakdown-header">
+                                            <h4 class="section-subtitle" data-i18n="calculators.salary.breakdown.frequencyTitle">Per pay period</h4>
+                                            <span class="salary-frequency-chip" id="salary-frequency-label">Monthly</span>
+                                        </div>
+                                        <div class="result-item">
+                                            <span data-i18n="calculators.salary.breakdown.gross">Gross salary:</span>
+                                            <span id="salary-period-gross">£0.00</span>
+                                        </div>
+                                        <div class="result-item">
+                                            <span data-i18n="calculators.salary.breakdown.allowances">Allowances:</span>
+                                            <span id="salary-period-allowances">£0.00</span>
+                                        </div>
+                                        <div class="result-item">
+                                            <span data-i18n="calculators.salary.breakdown.benefits">Paid benefits:</span>
+                                            <span id="salary-period-benefits">£0.00</span>
+                                        </div>
+                                        <div class="result-item">
+                                            <span data-i18n="calculators.salary.breakdown.taxable">Taxable income:</span>
+                                            <span id="salary-period-taxable">£0.00</span>
+                                        </div>
+                                        <div class="salary-deduction-grid">
+                                            <div class="salary-deduction-item">
+                                                <span data-i18n="calculators.salary.results.tax">Tax to pay:</span>
+                                                <span id="salary-period-tax">£0.00</span>
+                                            </div>
+                                            <div class="salary-deduction-item">
+                                                <span data-i18n="calculators.salary.results.pension">Pension:</span>
+                                                <span id="salary-period-pension">£0.00</span>
+                                            </div>
+                                            <div class="salary-deduction-item">
+                                                <span data-i18n="calculators.salary.results.nationalInsurance">National Insurance:</span>
+                                                <span id="salary-period-ni">£0.00</span>
+                                            </div>
+                                            <div class="salary-deduction-item">
+                                                <span data-i18n="calculators.salary.results.studentLoan">Student loan:</span>
+                                                <span id="salary-period-student-loan">£0.00</span>
+                                            </div>
+                                            <div class="salary-deduction-item">
+                                                <span data-i18n="calculators.salary.results.other">Other:</span>
+                                                <span id="salary-period-other">£0.00</span>
+                                            </div>
+                                            <div class="salary-deduction-item">
+                                                <span data-i18n="calculators.salary.breakdown.totalTax">Total tax (incl. NI):</span>
+                                                <span id="salary-period-total-tax">£0.00</span>
+                                            </div>
+                                            <div class="salary-deduction-item total">
+                                                <span data-i18n="calculators.salary.breakdown.totalDeductions">Total deductions:</span>
+                                                <span id="salary-period-deductions">£0.00</span>
+                                            </div>
+                                        </div>
+                                        <div class="result-item total">
+                                            <span data-i18n="calculators.salary.results.takeHome">Take-home:</span>
+                                            <span id="salary-per-period">£0.00</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -983,6 +1044,15 @@
                     </div>
                 </div>
 
+                <h3 class="section-subtitle" data-i18n="settings.sectionTitles.salary">Salary</h3>
+                <div class="form-group">
+                    <div class="button-row">
+                        <button type="button" class="btn btn-secondary" id="export-salaries-btn" data-i18n="settings.exportSalaries">Export Salaries</button>
+                        <button type="button" class="btn btn-secondary" id="import-salaries-btn" data-i18n="settings.importSalaries">Import Salaries</button>
+                        <button type="button" class="btn btn-danger" id="delete-salaries-btn" data-i18n="settings.deleteSalaries">Delete Salaries</button>
+                    </div>
+                </div>
+
                 <h3 class="section-subtitle" data-i18n="settings.sectionTitles.portfolio">Portfolio</h3>
                 <div class="form-group">
                     <div class="button-row">
@@ -1055,6 +1125,48 @@
                 </div>
                 <div class="modal-actions">
                     <button type="button" class="btn btn-secondary" id="cancel-import-pensions" data-i18n="common.cancel">Cancel</button>
+                    <button type="submit" class="btn btn-primary" data-i18n="common.import">Import</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Export Salaries Modal -->
+    <div id="export-salaries-modal" class="modal">
+        <div class="modal-content">
+            <h3 data-i18n="settings.exportSalaries">Export Salaries</h3>
+            <div class="form-group">
+                <label for="export-salaries-format" data-i18n="common.format">Format</label>
+                <select id="export-salaries-format">
+                    <option value="json">JSON</option>
+                    <option value="csv">CSV</option>
+                </select>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn btn-secondary" id="cancel-export-salaries" data-i18n="common.cancel">Cancel</button>
+                <button type="button" class="btn btn-primary" id="download-export-salaries" data-i18n="common.export">Export</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Import Salaries Modal -->
+    <div id="import-salaries-modal" class="modal">
+        <div class="modal-content">
+            <h3 data-i18n="settings.importSalaries">Import Salaries</h3>
+            <form id="import-salaries-form">
+                <div class="form-group">
+                    <label for="import-salaries-format" data-i18n="common.format">Format</label>
+                    <select id="import-salaries-format">
+                        <option value="json">JSON</option>
+                        <option value="csv">CSV</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="import-salaries-file" data-i18n="common.file">File</label>
+                    <input type="file" id="import-salaries-file" accept=".json,.csv" required>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" id="cancel-import-salaries" data-i18n="common.cancel">Cancel</button>
                     <button type="submit" class="btn btn-primary" data-i18n="common.import">Import</button>
                 </div>
             </form>

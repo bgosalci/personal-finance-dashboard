@@ -764,47 +764,139 @@
             display: block;
         }
 
-        /* Fair Value Calculator Styles */
-        .fair-value-sections {
-            margin-top: 1rem;
+        /* Salary Calculator Styles */
+        .salary-panel {
+            margin-top: 1.5rem;
         }
 
-        .fair-value-nav {
+        .salary-form-header {
             display: flex;
-            gap: 0.5rem;
-            margin-bottom: 2rem;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
             flex-wrap: wrap;
         }
 
-        .fair-value-btn {
-            padding: 0.75rem 1.25rem;
-            background: var(--background-tertiary);
-            border: 2px solid var(--border-color);
+        .salary-form-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .salary-summary-list {
+            margin-top: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .salary-summary-item {
+            padding: 0.75rem 1rem;
             border-radius: 8px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            font-weight: 500;
+            background: var(--background-secondary);
+            border: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .salary-allowances {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .salary-allowance-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr auto;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .salary-allowance-row input {
+            width: 100%;
+        }
+
+        .salary-allowance-remove {
             color: var(--text-secondary);
-            transition: all 0.3s ease;
         }
 
-        .fair-value-btn:hover {
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .salary-breakdown {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .salary-breakdown-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .salary-breakdown-panel {
+            background: var(--background-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.25rem;
+        }
+
+        .salary-breakdown-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .salary-frequency-chip {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: 999px;
+            background: rgba(51, 102, 255, 0.12);
             color: var(--primary-blue);
-            border-color: var(--primary-blue);
+            font-weight: 600;
+            font-size: 0.85rem;
         }
 
-        .fair-value-btn.active {
-            background: var(--primary-blue);
-            color: white;
-            border-color: var(--primary-blue);
+        .salary-deduction-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 0.75rem;
+            margin: 1rem 0;
         }
 
-        .fair-value-section {
-            display: none;
+        .salary-deduction-item {
+            display: flex;
+            justify-content: space-between;
+            gap: 0.5rem;
+            padding: 0.75rem;
+            border-radius: 10px;
+            background: var(--background-primary);
+            border: 1px solid var(--border-color);
+            font-weight: 500;
         }
 
-        .fair-value-section.active {
-            display: block;
+        .salary-deduction-item.total,
+        .salary-results .result-item.total {
+            background: rgba(51, 102, 255, 0.1);
+            border-color: rgba(51, 102, 255, 0.2);
+            font-weight: 600;
+        }
+
+        .salary-per-period-row {
+            display: flex;
+            align-items: baseline;
+            gap: 0.5rem;
+            flex-wrap: wrap;
         }
 
         .section-subtitle {
@@ -874,9 +966,9 @@
                 border-radius: 0;
             }
 
-            .fair-value-nav {
-                flex-direction: column;
-        }
+            .salary-form-header {
+                align-items: flex-start;
+            }
         
         .calculator-section {
             padding: 1rem;
@@ -954,7 +1046,9 @@
         }
 
         #export-pensions-modal .modal-content,
-        #import-pensions-modal .modal-content {
+        #import-pensions-modal .modal-content,
+        #export-salaries-modal .modal-content,
+        #import-salaries-modal .modal-content {
             width: 500px;
             height: auto;
         }

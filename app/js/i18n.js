@@ -150,6 +150,7 @@ const I18n = (function() {
                     "investment": "Investment Calculator",
                     "cagr": "CAGR Calculator",
                     "mortgage": "Mortgage Calculator",
+                    "salary": "Salary Calculator",
                     "fairValue": "Fair Value Calculator"
                 },
                 "loan": {
@@ -209,6 +210,70 @@ const I18n = (function() {
                         "totalAmount": "Total Amount Repaid:",
                         "totalInterest": "Total Interest Paid:",
                         "totalPrincipal": "Total Principal Repaid:"
+                    }
+                },
+                "salary": {
+                    "actions": {
+                        "addSalary": "Add Salary",
+                        "removeSalary": "Remove",
+                        "showInSummary": "Show in Summary",
+                        "addAllowance": "Add Allowance"
+                    },
+                    "hint": "UK tax estimates based on current income tax and National Insurance thresholds.",
+                    "labels": {
+                        "salary": "Salary",
+                        "name": "Salary name",
+                        "basicSalary": "Annual basic salary (£)",
+                        "frequency": "Payment frequency",
+                        "hoursPerWeek": "Hours per week",
+                        "pension": "Pension contribution (%)",
+                        "studentLoan": "Student loan plan",
+                        "age": "Age",
+                        "taxCode": "Tax code",
+                        "benefits": "Paid benefits (annual £)",
+                        "allowances": "Allowances (annual)",
+                        "otherDeductions": "Other deductions (annual £)"
+                    },
+                    "frequency": {
+                        "annual": "Annual",
+                        "monthly": "Monthly",
+                        "fortnightly": "Fortnightly",
+                        "weekly": "Weekly",
+                        "hourly": "Hourly"
+                    },
+                    "studentLoan": {
+                        "none": "None",
+                        "plan1": "Plan 1",
+                        "plan2": "Plan 2",
+                        "plan4": "Plan 4",
+                        "plan5": "Plan 5",
+                        "postgraduate": "Postgraduate"
+                    },
+                    "results": {
+                        "takeHome": "Take-home:",
+                        "tax": "Tax to pay:",
+                        "otherDeductions": "Other deductions:",
+                        "pension": "Pension:",
+                        "nationalInsurance": "National Insurance:",
+                        "studentLoan": "Student loan:",
+                        "other": "Other:",
+                        "perPeriod": "Take-home per"
+                    },
+                    "summary": {
+                        "totalTakeHome": "Total take-home:",
+                        "totalTax": "Total tax (incl. NI):",
+                        "totalDeductions": "Total deductions:",
+                        "noneSelected": "Select salaries to include in the summary."
+                    },
+                    "breakdown": {
+                        "annualTitle": "Annual Breakdown",
+                        "frequencyTitle": "Per pay period",
+                        "gross": "Gross salary:",
+                        "allowances": "Allowances:",
+                        "benefits": "Paid benefits:",
+                        "taxable": "Taxable income:",
+                        "totalTax": "Total tax (incl. NI):",
+                        "totalDeductions": "Total deductions:"
                     }
                 },
                 "fairValue": {
@@ -340,6 +405,7 @@ const I18n = (function() {
                 "display": "Display",
                 "language": "Language",
                 "pension": "Pension",
+                "salary": "Salary",
                 "portfolio": "Portfolio",
                 "watchlist": "Watchlist",
                 "stockTracker": "Stock Performance Tracker",
@@ -353,6 +419,9 @@ const I18n = (function() {
                 "exportPensions": "Export Pensions",
                 "importPensions": "Import Pensions",
                 "deletePensions": "Delete Pensions",
+                "exportSalaries": "Export Salaries",
+                "importSalaries": "Import Salaries",
+                "deleteSalaries": "Delete Salaries",
                 "exportPortfolio": "Export Portfolio",
                   "importPortfolio": "Import Portfolio",
                   "deletePortfolio": "Delete Portfolio",
@@ -387,6 +456,7 @@ const I18n = (function() {
                 "deletePension": "Delete this pension?",
                 "deleteEntry": "Delete this entry?",
                 "deleteAllPension": "Delete all pension data?",
+                "deleteAllSalary": "Delete all salary data?",
                 "deleteAllPortfolio": "Delete all portfolio data?",
                 "deleteAllWatchlist": "Delete all watchlist data?",
                 "deleteAllStock": "Delete all stock tracker data?"

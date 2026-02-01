@@ -1,7 +1,6 @@
 // Calculator Module
 const Calculator = (function() {
     let currentSubTab = 'loan';
-    let currentFairValueSection = 'dcf';
     
     function formatCurrency(amount) {
         const currency = Settings && typeof Settings.getBaseCurrency === 'function'
@@ -109,28 +108,6 @@ const Calculator = (function() {
         });
 
         currentSubTab = subTabName;
-    }
-
-    // Fair Value Section Management
-    function switchFairValueSection(sectionName) {
-        const sectionBtns = document.querySelectorAll('.fair-value-btn');
-        const sections = document.querySelectorAll('.fair-value-section');
-
-        sectionBtns.forEach(btn => {
-            btn.classList.remove('active');
-            if (btn.dataset.section === sectionName) {
-                btn.classList.add('active');
-            }
-        });
-
-        sections.forEach(section => {
-            section.classList.remove('active');
-            if (section.id === sectionName) {
-                section.classList.add('active');
-            }
-        });
-
-        currentFairValueSection = sectionName;
     }
 
     // Loan Calculator
@@ -355,174 +332,591 @@ const Calculator = (function() {
         return { init };
     })();
 
-    // Fair Value Calculator
-    const FairValueCalculator = (function() {
-        
-        // DCF Calculator
-        const DCFCalculator = (function() {
-            function calculate() {
-                const currentFCF = getNumberValue('dcf-current-fcf');
-                const growthRate = parseFloat(document.getElementById('dcf-growth-rate').value) || 0;
-                const terminalRate = parseFloat(document.getElementById('dcf-terminal-rate').value) || 0;
-                const discountRate = parseFloat(document.getElementById('dcf-discount-rate').value) || 0;
-                const projectionYears = parseInt(document.getElementById('dcf-years').value) || 0;
-                const sharesOutstanding = getNumberValue('dcf-shares');
+    // Salary Calculator
+    const SalaryCalculator = (function() {
+        const STORAGE_KEY = 'pf_salary_entries';
+        const salaryTabs = document.getElementById('salary-tabs');
+        const summaryPanel = document.getElementById('salary-summary-panel');
+        const summaryList = document.getElementById('salary-summary-list');
+        const formPanel = document.getElementById('salary-form-panel');
+        const addSalaryBtn = document.getElementById('add-salary-btn');
+        const removeSalaryBtn = document.getElementById('remove-salary-btn');
+        const summaryToggle = document.getElementById('salary-summary-toggle');
+        const formTitle = document.getElementById('salary-form-title');
+        const nameInput = document.getElementById('salary-name');
+        const annualInput = document.getElementById('salary-annual');
+        const frequencySelect = document.getElementById('salary-frequency');
+        const hoursInput = document.getElementById('salary-hours');
+        const pensionInput = document.getElementById('salary-pension');
+        const studentLoanSelect = document.getElementById('salary-student-loan');
+        const ageInput = document.getElementById('salary-age');
+        const taxCodeInput = document.getElementById('salary-tax-code');
+        const benefitsInput = document.getElementById('salary-benefits');
+        const otherDeductionsInput = document.getElementById('salary-other-deductions');
+        const allowancesContainer = document.getElementById('salary-allowances');
+        const addAllowanceBtn = document.getElementById('add-salary-allowance');
+        const takeHomeEl = document.getElementById('salary-take-home');
+        const taxEl = document.getElementById('salary-tax');
+        const deductionsEl = document.getElementById('salary-deductions');
+        const pensionEl = document.getElementById('salary-pension-value');
+        const niEl = document.getElementById('salary-ni');
+        const studentLoanEl = document.getElementById('salary-student-loan-value');
+        const otherEl = document.getElementById('salary-other-value');
+        const perPeriodEl = document.getElementById('salary-per-period');
+        const frequencyLabelEl = document.getElementById('salary-frequency-label');
+        const annualGrossEl = document.getElementById('salary-annual-gross');
+        const annualTaxableEl = document.getElementById('salary-annual-taxable');
+        const annualAllowancesEl = document.getElementById('salary-annual-allowances');
+        const annualBenefitsEl = document.getElementById('salary-annual-benefits');
+        const periodGrossEl = document.getElementById('salary-period-gross');
+        const periodTaxableEl = document.getElementById('salary-period-taxable');
+        const periodAllowancesEl = document.getElementById('salary-period-allowances');
+        const periodBenefitsEl = document.getElementById('salary-period-benefits');
+        const periodTaxEl = document.getElementById('salary-period-tax');
+        const periodPensionEl = document.getElementById('salary-period-pension');
+        const periodNiEl = document.getElementById('salary-period-ni');
+        const periodStudentLoanEl = document.getElementById('salary-period-student-loan');
+        const periodOtherEl = document.getElementById('salary-period-other');
+        const annualTotalTaxEl = document.getElementById('salary-total-tax-annual');
+        const periodTotalTaxEl = document.getElementById('salary-period-total-tax');
+        const periodDeductionsEl = document.getElementById('salary-period-deductions');
+        const totalTakeHomeEl = document.getElementById('salary-total-take-home');
+        const totalTaxEl = document.getElementById('salary-total-tax');
+        const totalDeductionsEl = document.getElementById('salary-total-deductions');
+        const storage = typeof StorageUtils !== 'undefined' ? StorageUtils.getStorage() : window.localStorage;
+        const frequencies = {
+            annual: 1,
+            monthly: 12,
+            fortnightly: 26,
+            weekly: 52
+        };
+        let entries = [];
+        let currentSalaryId = 'summary';
 
-                if (currentFCF <= 0 || discountRate <= 0 || projectionYears <= 0 || sharesOutstanding <= 0) {
-                    document.getElementById('dcf-results').style.display = 'none';
-                    return;
-                }
+        function formatSalaryCurrency(amount) {
+            return I18n.formatCurrency(amount, 'GBP');
+        }
 
-                const discountRateDecimal = discountRate / 100;
-                const growthRateDecimal = growthRate / 100;
-                const terminalRateDecimal = terminalRate / 100;
+        function parseFormattedNumber(value) {
+            return parseFloat(String(value || '').replace(/,/g, '')) || 0;
+        }
 
-                // Calculate projected cash flows and their present values
-                let pvCashFlows = 0;
-                for (let year = 1; year <= projectionYears; year++) {
-                    const fcf = currentFCF * Math.pow(1 + growthRateDecimal, year);
-                    const pv = fcf / Math.pow(1 + discountRateDecimal, year);
-                    pvCashFlows += pv;
-                }
-
-                // Calculate terminal value
-                const terminalFCF = currentFCF * Math.pow(1 + growthRateDecimal, projectionYears) * (1 + terminalRateDecimal);
-                const terminalValue = terminalFCF / (discountRateDecimal - terminalRateDecimal);
-                const pvTerminalValue = terminalValue / Math.pow(1 + discountRateDecimal, projectionYears);
-
-                // Calculate enterprise value and per share value
-                const enterpriseValue = pvCashFlows + pvTerminalValue;
-                const valuePerShare = enterpriseValue / sharesOutstanding;
-
-                document.getElementById('dcf-enterprise-value').textContent = formatCurrency(enterpriseValue * 1000000);
-                document.getElementById('dcf-pv-cashflows').textContent = formatCurrency(pvCashFlows * 1000000);
-                document.getElementById('dcf-terminal-value').textContent = formatCurrency(pvTerminalValue * 1000000);
-                document.getElementById('dcf-per-share').textContent = formatCurrency(valuePerShare * 1000000 / sharesOutstanding);
-                document.getElementById('dcf-results').style.display = 'block';
-            }
-
-            function init() {
-                setupAmountInput('dcf-current-fcf');
-                setupAmountInput('dcf-shares');
-                const inputs = ['dcf-current-fcf', 'dcf-growth-rate', 'dcf-terminal-rate', 'dcf-discount-rate', 'dcf-years', 'dcf-shares'];
-                inputs.forEach(id => {
-                    document.getElementById(id).addEventListener('input', calculate);
-                });
-            }
-
-            return { init };
-        })();
-
-        // P/E Ratio Calculator
-        const PECalculator = (function() {
-            function calculate() {
-                const currentPrice = getNumberValue('pe-current-price');
-                const eps = parseFloat(document.getElementById('pe-eps').value) || 0;
-                const industryPE = parseFloat(document.getElementById('pe-industry-avg').value) || 0;
-                const growthRate = parseFloat(document.getElementById('pe-growth-rate').value) || 0;
-
-                if (currentPrice <= 0 || eps <= 0 || industryPE <= 0) {
-                    document.getElementById('pe-results').style.display = 'none';
-                    return;
-                }
-
-                const currentPE = currentPrice / eps;
-                const fairValue = eps * industryPE;
-                const pegRatio = growthRate > 0 ? currentPE / growthRate : 0;
-                
-                let valuationStatus = '';
-                const valuationDiff = ((currentPrice - fairValue) / fairValue) * 100;
-                
-                if (valuationDiff > 10) {
-                    valuationStatus = `Overvalued by ${formatPercentage(Math.abs(valuationDiff))}`;
-                } else if (valuationDiff < -10) {
-                    valuationStatus = `Undervalued by ${formatPercentage(Math.abs(valuationDiff))}`;
-                } else {
-                    valuationStatus = 'Fairly Valued';
-                }
-
-                document.getElementById('pe-current-ratio').textContent = formatNumber(currentPE);
-                document.getElementById('pe-fair-value').textContent = formatCurrency(fairValue);
-                document.getElementById('pe-peg-ratio').textContent = formatNumber(pegRatio);
-                document.getElementById('pe-valuation-status').textContent = valuationStatus;
-                document.getElementById('pe-results').style.display = 'block';
-            }
-
-            function init() {
-                setupAmountInput('pe-current-price');
-                const inputs = ['pe-current-price', 'pe-eps', 'pe-industry-avg', 'pe-growth-rate'];
-                inputs.forEach(id => {
-                    document.getElementById(id).addEventListener('input', calculate);
-                });
-            }
-
-            return { init };
-        })();
-
-        // Intrinsic Value Calculator
-        const IntrinsicValueCalculator = (function() {
-            function calculate() {
-                const bookValue = parseFloat(document.getElementById('intrinsic-book-value').value) || 0;
-                const roe = parseFloat(document.getElementById('intrinsic-roe').value) || 0;
-                const dividendYield = parseFloat(document.getElementById('intrinsic-dividend-yield').value) || 0;
-                const requiredReturn = parseFloat(document.getElementById('intrinsic-required-return').value) || 0;
-                const growthRate = parseFloat(document.getElementById('intrinsic-growth-rate').value) || 0;
-                const eps = parseFloat(document.getElementById('intrinsic-eps').value) || 0;
-
-                if (bookValue <= 0 || eps <= 0) {
-                    document.getElementById('intrinsic-results').style.display = 'none';
-                    return;
-                }
-
-                // Graham Number = √(22.5 × EPS × Book Value)
-                const grahamNumber = Math.sqrt(22.5 * eps * bookValue);
-
-                // Dividend Discount Model (simplified)
-                const dividendPerShare = (eps * dividendYield) / 100;
-                const ddmValue = requiredReturn > growthRate && requiredReturn > 0 && growthRate >= 0 ? 
-                                dividendPerShare / ((requiredReturn / 100) - (growthRate / 100)) : 0;
-
-                // Book Value Multiple (using ROE)
-                const bookMultiple = bookValue * (1 + (roe / 100));
-
-                // Average intrinsic value
-                const values = [grahamNumber, ddmValue, bookMultiple].filter(v => v > 0);
-                const avgIntrinsicValue = values.length > 0 ? values.reduce((a, b) => a + b) / values.length : 0;
-
-                document.getElementById('intrinsic-graham').textContent = formatCurrency(grahamNumber);
-                document.getElementById('intrinsic-ddm').textContent = ddmValue > 0 ? formatCurrency(ddmValue) : 'N/A';
-                document.getElementById('intrinsic-book-multiple').textContent = formatCurrency(bookMultiple);
-                document.getElementById('intrinsic-average').textContent = formatCurrency(avgIntrinsicValue);
-                document.getElementById('intrinsic-results').style.display = 'block';
-            }
-
-            function init() {
-                const inputs = ['intrinsic-book-value', 'intrinsic-roe', 'intrinsic-dividend-yield', 
-                              'intrinsic-required-return', 'intrinsic-growth-rate', 'intrinsic-eps'];
-                inputs.forEach(id => {
-                    document.getElementById(id).addEventListener('input', calculate);
-                });
-            }
-
-            return { init };
-        })();
-
-        function init() {
-            DCFCalculator.init();
-            PECalculator.init();
-            IntrinsicValueCalculator.init();
-
-            // Initialize fair value section navigation
-            const fairValueBtns = document.querySelectorAll('.fair-value-btn');
-            fairValueBtns.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    switchFairValueSection(btn.dataset.section);
-                });
+        function setupFormattedInput(input) {
+            if (!input) return;
+            input.addEventListener('input', (e) => {
+                e.target.value = formatInputValue(e.target.value);
+            });
+            input.addEventListener('blur', (e) => {
+                e.target.value = formatInputValue(e.target.value, true);
             });
         }
 
-        return { init };
+        function createEntry() {
+            const id = `salary-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+            return {
+                id,
+                name: '',
+                annualSalary: 0,
+                pensionPercent: 0,
+                studentLoanPlan: 'none',
+                age: 30,
+                taxCode: '1257L',
+                benefits: 0,
+                hoursPerWeek: 37.5,
+                frequency: 'monthly',
+                showInSummary: true,
+                allowances: [],
+                otherDeductions: 0
+            };
+        }
+
+        function loadEntries() {
+            const stored = storage.getItem(STORAGE_KEY);
+            if (!stored) {
+                entries = [createEntry()];
+                return;
+            }
+            try {
+                const parsed = JSON.parse(stored);
+                entries = Array.isArray(parsed) ? parsed : [createEntry()];
+            } catch (e) {
+                entries = [createEntry()];
+            }
+            entries.forEach(entry => {
+                if (entry.showInSummary === undefined) {
+                    entry.showInSummary = true;
+                }
+                if (entry.hoursPerWeek === undefined) {
+                    entry.hoursPerWeek = 37.5;
+                }
+            });
+        }
+
+        function saveEntries() {
+            storage.setItem(STORAGE_KEY, JSON.stringify(entries));
+        }
+
+        function getEntryById(id) {
+            return entries.find(entry => entry.id === id);
+        }
+
+        function getPersonalAllowance(taxCode, grossAnnual, benefits) {
+            const code = (taxCode || '').trim().toUpperCase();
+            const match = code.match(/\d+/);
+            let allowance = match ? parseInt(match[0], 10) * 10 : 12570;
+            if (code.startsWith('K')) {
+                allowance = -Math.abs(allowance);
+            }
+            if (allowance > 0 && grossAnnual > 100000) {
+                const reduction = (grossAnnual - 100000) / 2;
+                allowance = Math.max(0, allowance - reduction);
+            }
+            const benefitsTotal = Math.max(0, parseFloat(benefits) || 0);
+            if (allowance > 0) {
+                allowance = Math.max(0, allowance - benefitsTotal);
+            } else if (benefitsTotal > 0) {
+                allowance -= benefitsTotal;
+            }
+            return allowance;
+        }
+
+        function calculateIncomeTax(taxableIncome) {
+            const basicLimit = 37700;
+            const higherLimit = 112570;
+            let remaining = Math.max(0, taxableIncome);
+            let tax = 0;
+            const basicIncome = Math.min(remaining, basicLimit);
+            tax += basicIncome * 0.2;
+            remaining -= basicIncome;
+            if (remaining > 0) {
+                const higherIncome = Math.min(remaining, higherLimit - basicLimit);
+                tax += higherIncome * 0.4;
+                remaining -= higherIncome;
+            }
+            if (remaining > 0) {
+                tax += remaining * 0.45;
+            }
+            return tax;
+        }
+
+        function calculateNationalInsurance(grossAnnual, age) {
+            if (age >= 66) return 0;
+            const primaryThreshold = 12570;
+            const upperLimit = 50270;
+            let ni = 0;
+            if (grossAnnual > primaryThreshold) {
+                const mainBand = Math.min(grossAnnual, upperLimit) - primaryThreshold;
+                if (mainBand > 0) ni += mainBand * 0.08;
+                const upperBand = grossAnnual - upperLimit;
+                if (upperBand > 0) ni += upperBand * 0.02;
+            }
+            return ni;
+        }
+
+        function calculateStudentLoan(income, plan) {
+            const plans = {
+                plan1: { threshold: 22015, rate: 0.09 },
+                plan2: { threshold: 27295, rate: 0.09 },
+                plan4: { threshold: 27660, rate: 0.09 },
+                plan5: { threshold: 25000, rate: 0.09 },
+                postgraduate: { threshold: 21000, rate: 0.06 }
+            };
+            const info = plans[plan];
+            if (!info) return 0;
+            const excess = income - info.threshold;
+            return excess > 0 ? excess * info.rate : 0;
+        }
+
+        function calculateEntry(entry) {
+            const basicSalary = Math.max(0, parseFloat(entry.annualSalary) || 0);
+            const pensionPercent = Math.max(0, parseFloat(entry.pensionPercent) || 0);
+            const pensionContribution = basicSalary * (pensionPercent / 100);
+            const allowancesTotal = (entry.allowances || []).reduce((sum, allowance) => {
+                return sum + Math.max(0, parseFloat(allowance.amount) || 0);
+            }, 0);
+            const benefits = Math.max(0, parseFloat(entry.benefits) || 0);
+            const grossAnnual = basicSalary + allowancesTotal;
+            const otherDeductions = Math.max(0, parseFloat(entry.otherDeductions) || 0);
+            const adjustedIncome = Math.max(0, grossAnnual - pensionContribution);
+            const allowance = getPersonalAllowance(entry.taxCode, grossAnnual, benefits);
+            const taxableIncome = Math.max(0, adjustedIncome - allowance);
+            const tax = calculateIncomeTax(taxableIncome);
+            const nationalInsurance = calculateNationalInsurance(grossAnnual, parseInt(entry.age, 10) || 0);
+            const studentLoan = calculateStudentLoan(adjustedIncome, entry.studentLoanPlan);
+            const totalTax = tax + nationalInsurance;
+            const deductionSubtotal = pensionContribution + studentLoan + otherDeductions;
+            const totalDeductions = totalTax + deductionSubtotal;
+            const takeHome = Math.max(0, grossAnnual - totalDeductions);
+            return {
+                grossAnnual,
+                allowancesTotal,
+                benefits,
+                pensionContribution,
+                otherDeductions,
+                adjustedIncome,
+                taxableIncome,
+                tax,
+                nationalInsurance,
+                studentLoan,
+                totalTax,
+                totalDeductions,
+                takeHome
+            };
+        }
+
+        function updateSummary() {
+            const included = entries.filter(entry => entry.showInSummary !== false);
+            const totals = included.reduce((acc, entry) => {
+                const calc = calculateEntry(entry);
+                acc.takeHome += calc.takeHome;
+                acc.tax += calc.totalTax;
+                acc.other += calc.totalDeductions;
+                return acc;
+            }, { takeHome: 0, tax: 0, other: 0 });
+            if (totalTakeHomeEl) totalTakeHomeEl.textContent = formatSalaryCurrency(totals.takeHome);
+            if (totalTaxEl) totalTaxEl.textContent = formatSalaryCurrency(totals.tax);
+            if (totalDeductionsEl) totalDeductionsEl.textContent = formatSalaryCurrency(totals.other);
+            renderSummaryList(included);
+        }
+
+        function renderSummaryList(included) {
+            if (!summaryList) return;
+            summaryList.innerHTML = '';
+            if (included.length === 0) {
+                const empty = document.createElement('div');
+                empty.className = 'form-hint';
+                empty.textContent = I18n.t('calculators.salary.summary.noneSelected');
+                summaryList.appendChild(empty);
+                return;
+            }
+            included.forEach(entry => {
+                const results = calculateEntry(entry);
+                const item = document.createElement('div');
+                item.className = 'salary-summary-item';
+                const name = entry.name || I18n.t('calculators.salary.labels.salary');
+                item.innerHTML = `<span>${name}</span><span>${formatSalaryCurrency(results.takeHome)}</span>`;
+                summaryList.appendChild(item);
+            });
+        }
+
+        function updateFormResults(entry) {
+            const results = calculateEntry(entry);
+            const frequencyValue = entry.frequency || 'monthly';
+            const hoursPerWeek = Math.max(0, parseFloat(entry.hoursPerWeek) || 0);
+            const divisor = frequencyValue === 'hourly'
+                ? Math.max(1, hoursPerWeek * 52)
+                : (frequencies[frequencyValue] || 12);
+            if (annualGrossEl) annualGrossEl.textContent = formatSalaryCurrency(results.grossAnnual);
+            if (annualTaxableEl) annualTaxableEl.textContent = formatSalaryCurrency(results.taxableIncome);
+            if (annualAllowancesEl) annualAllowancesEl.textContent = formatSalaryCurrency(results.allowancesTotal);
+            if (annualBenefitsEl) annualBenefitsEl.textContent = formatSalaryCurrency(results.benefits);
+            if (takeHomeEl) takeHomeEl.textContent = formatSalaryCurrency(results.takeHome);
+            if (taxEl) taxEl.textContent = formatSalaryCurrency(results.tax);
+            if (annualTotalTaxEl) annualTotalTaxEl.textContent = formatSalaryCurrency(results.totalTax);
+            if (deductionsEl) deductionsEl.textContent = formatSalaryCurrency(results.totalDeductions);
+            if (pensionEl) pensionEl.textContent = formatSalaryCurrency(results.pensionContribution);
+            if (niEl) niEl.textContent = formatSalaryCurrency(results.nationalInsurance);
+            if (studentLoanEl) studentLoanEl.textContent = formatSalaryCurrency(results.studentLoan);
+            if (otherEl) otherEl.textContent = formatSalaryCurrency(results.otherDeductions);
+            if (perPeriodEl) perPeriodEl.textContent = formatSalaryCurrency(results.takeHome / divisor);
+            if (frequencyLabelEl) frequencyLabelEl.textContent = I18n.t(`calculators.salary.frequency.${frequencyValue}`);
+            if (periodGrossEl) periodGrossEl.textContent = formatSalaryCurrency(results.grossAnnual / divisor);
+            if (periodTaxableEl) periodTaxableEl.textContent = formatSalaryCurrency(results.taxableIncome / divisor);
+            if (periodAllowancesEl) periodAllowancesEl.textContent = formatSalaryCurrency(results.allowancesTotal / divisor);
+            if (periodBenefitsEl) periodBenefitsEl.textContent = formatSalaryCurrency(results.benefits / divisor);
+            if (periodTaxEl) periodTaxEl.textContent = formatSalaryCurrency(results.tax / divisor);
+            if (periodPensionEl) periodPensionEl.textContent = formatSalaryCurrency(results.pensionContribution / divisor);
+            if (periodNiEl) periodNiEl.textContent = formatSalaryCurrency(results.nationalInsurance / divisor);
+            if (periodStudentLoanEl) periodStudentLoanEl.textContent = formatSalaryCurrency(results.studentLoan / divisor);
+            if (periodOtherEl) periodOtherEl.textContent = formatSalaryCurrency(results.otherDeductions / divisor);
+            if (periodTotalTaxEl) periodTotalTaxEl.textContent = formatSalaryCurrency(results.totalTax / divisor);
+            if (periodDeductionsEl) periodDeductionsEl.textContent = formatSalaryCurrency(results.totalDeductions / divisor);
+        }
+
+        function renderAllowances(entry) {
+            if (!allowancesContainer) return;
+            allowancesContainer.innerHTML = '';
+            const allowances = entry.allowances || [];
+            allowances.forEach((allowance, index) => {
+                const row = document.createElement('div');
+                row.className = 'salary-allowance-row';
+                row.dataset.index = index;
+                row.innerHTML = `
+                    <input type="text" class="salary-allowance-name" placeholder="Allowance name" value="${allowance.name || ''}">
+                    <input type="text" class="salary-allowance-amount" inputmode="decimal" value="${allowance.amount ? formatInputValue(Number(allowance.amount).toFixed(2), true) : ''}">
+                    <button type="button" class="btn btn-link salary-allowance-remove">&times;</button>
+                `;
+                allowancesContainer.appendChild(row);
+                const amountInput = row.querySelector('.salary-allowance-amount');
+                setupFormattedInput(amountInput);
+            });
+            I18n.apply();
+        }
+
+        function renderTabs() {
+            if (!salaryTabs) return;
+            salaryTabs.innerHTML = '';
+            const summaryBtn = document.createElement('button');
+            summaryBtn.className = 'sub-nav-tab';
+            summaryBtn.dataset.salaryId = 'summary';
+            summaryBtn.textContent = I18n.t('common.summary');
+            salaryTabs.appendChild(summaryBtn);
+            entries.forEach((entry, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'sub-nav-tab';
+                btn.dataset.salaryId = entry.id;
+                btn.textContent = entry.name || `${I18n.t('calculators.salary.labels.salary')} ${index + 1}`;
+                salaryTabs.appendChild(btn);
+            });
+            salaryTabs.querySelectorAll('.sub-nav-tab').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.salaryId === currentSalaryId);
+            });
+        }
+
+        function setActiveTab(id) {
+            currentSalaryId = id;
+            renderTabs();
+            if (currentSalaryId === 'summary') {
+                if (summaryPanel) summaryPanel.style.display = 'block';
+                if (formPanel) formPanel.style.display = 'none';
+            } else {
+                if (summaryPanel) summaryPanel.style.display = 'none';
+                if (formPanel) formPanel.style.display = 'block';
+                const entry = getEntryById(currentSalaryId);
+                if (entry) {
+                    syncFormToEntry(entry);
+                    updateFormResults(entry);
+                }
+            }
+        }
+
+        function syncFormToEntry(entry) {
+            if (formTitle) {
+                formTitle.textContent = entry.name || I18n.t('calculators.salary.labels.salary');
+            }
+            if (nameInput) nameInput.value = entry.name || '';
+            if (annualInput) {
+                annualInput.value = entry.annualSalary ? formatInputValue(entry.annualSalary.toFixed(2), true) : '';
+            }
+            if (frequencySelect) frequencySelect.value = entry.frequency || 'monthly';
+            if (hoursInput) hoursInput.value = entry.hoursPerWeek ?? '';
+            if (pensionInput) pensionInput.value = entry.pensionPercent || '';
+            if (studentLoanSelect) studentLoanSelect.value = entry.studentLoanPlan || 'none';
+            if (ageInput) ageInput.value = entry.age || '';
+            if (taxCodeInput) taxCodeInput.value = entry.taxCode || '';
+            if (benefitsInput) benefitsInput.value = entry.benefits || '';
+            if (otherDeductionsInput) otherDeductionsInput.value = entry.otherDeductions || '';
+            renderAllowances(entry);
+            if (summaryToggle) summaryToggle.checked = entry.showInSummary !== false;
+            if (removeSalaryBtn) removeSalaryBtn.style.display = entries.length > 1 ? 'inline-flex' : 'none';
+        }
+
+        function addEntry() {
+            const newEntry = createEntry();
+            entries.push(newEntry);
+            saveEntries();
+            setActiveTab(newEntry.id);
+            updateSummary();
+        }
+
+        function removeEntry(id) {
+            entries = entries.filter(entry => entry.id !== id);
+            if (entries.length === 0) {
+                entries.push(createEntry());
+            }
+            saveEntries();
+            if (!entries.find(entry => entry.id === currentSalaryId)) {
+                currentSalaryId = entries[0].id;
+            }
+            setActiveTab(currentSalaryId);
+            updateSummary();
+        }
+
+        function handleFieldUpdate() {
+            const entry = getEntryById(currentSalaryId);
+            if (!entry) return;
+            entry.name = nameInput ? nameInput.value.trim() : entry.name;
+            entry.annualSalary = annualInput && annualInput.value !== '' ? parseFormattedNumber(annualInput.value) : 0;
+            entry.frequency = frequencySelect ? frequencySelect.value : entry.frequency;
+            entry.hoursPerWeek = hoursInput && hoursInput.value !== ''
+                ? parseFloat(hoursInput.value) || 0
+                : 0;
+            entry.pensionPercent = pensionInput && pensionInput.value !== '' ? parseFloat(pensionInput.value) || 0 : 0;
+            entry.studentLoanPlan = studentLoanSelect ? studentLoanSelect.value : entry.studentLoanPlan;
+            entry.age = ageInput && ageInput.value !== '' ? parseInt(ageInput.value, 10) || 0 : 0;
+            entry.taxCode = taxCodeInput ? taxCodeInput.value.trim() : entry.taxCode;
+            entry.benefits = benefitsInput && benefitsInput.value !== ''
+                ? parseFloat(benefitsInput.value) || 0
+                : 0;
+            entry.otherDeductions = otherDeductionsInput && otherDeductionsInput.value !== ''
+                ? parseFloat(otherDeductionsInput.value) || 0
+                : 0;
+            saveEntries();
+            syncFormToEntry(entry);
+            updateFormResults(entry);
+            updateSummary();
+            renderTabs();
+        }
+
+        function handleSummaryToggle() {
+            const entry = getEntryById(currentSalaryId);
+            if (!entry) return;
+            entry.showInSummary = summaryToggle ? summaryToggle.checked : true;
+            saveEntries();
+            updateSummary();
+        }
+
+        function handleTabClick(e) {
+            const btn = e.target.closest('.sub-nav-tab');
+            if (!btn || !btn.dataset.salaryId) return;
+            setActiveTab(btn.dataset.salaryId);
+        }
+
+        function handleAllowanceClick(e) {
+            const removeBtn = e.target.closest('.salary-allowance-remove');
+            if (!removeBtn) return;
+            const entry = getEntryById(currentSalaryId);
+            if (!entry) return;
+            const row = removeBtn.closest('.salary-allowance-row');
+            if (!row) return;
+            const index = parseInt(row.dataset.index, 10);
+            entry.allowances.splice(index, 1);
+            saveEntries();
+            renderAllowances(entry);
+            updateFormResults(entry);
+            updateSummary();
+        }
+
+        function handleAllowanceInput(e) {
+            const row = e.target.closest('.salary-allowance-row');
+            if (!row) return;
+            const entry = getEntryById(currentSalaryId);
+            if (!entry) return;
+            const index = parseInt(row.dataset.index, 10);
+            if (!entry.allowances || !entry.allowances[index]) return;
+            const nameInput = row.querySelector('.salary-allowance-name');
+            const amountInput = row.querySelector('.salary-allowance-amount');
+            entry.allowances[index].name = nameInput ? nameInput.value.trim() : entry.allowances[index].name;
+            entry.allowances[index].amount = amountInput ? parseFormattedNumber(amountInput.value) : 0;
+            saveEntries();
+            updateFormResults(entry);
+            updateSummary();
+        }
+
+        function init() {
+            if (!salaryTabs) return;
+            loadEntries();
+            currentSalaryId = 'summary';
+            renderTabs();
+            updateSummary();
+            setActiveTab(currentSalaryId);
+            if (addSalaryBtn) {
+                addSalaryBtn.addEventListener('click', addEntry);
+            }
+            if (removeSalaryBtn) {
+                removeSalaryBtn.addEventListener('click', () => {
+                    if (currentSalaryId !== 'summary') {
+                        removeEntry(currentSalaryId);
+                    }
+                });
+            }
+            if (summaryToggle) summaryToggle.addEventListener('change', handleSummaryToggle);
+            if (salaryTabs) salaryTabs.addEventListener('click', handleTabClick);
+            setupFormattedInput(annualInput);
+            if (allowancesContainer) {
+                allowancesContainer.addEventListener('input', handleAllowanceInput);
+                allowancesContainer.addEventListener('click', handleAllowanceClick);
+            }
+            if (addAllowanceBtn) {
+                addAllowanceBtn.addEventListener('click', () => {
+                    const entry = getEntryById(currentSalaryId);
+                    if (!entry) return;
+                    if (!entry.allowances) entry.allowances = [];
+                    entry.allowances.push({ name: '', amount: 0 });
+                    saveEntries();
+                    renderAllowances(entry);
+                });
+            }
+            [nameInput, annualInput, hoursInput, pensionInput, ageInput, taxCodeInput, benefitsInput, otherDeductionsInput].forEach(input => {
+                if (input) input.addEventListener('input', handleFieldUpdate);
+            });
+            [frequencySelect, studentLoanSelect].forEach(select => {
+                if (select) select.addEventListener('change', handleFieldUpdate);
+            });
+        }
+
+        function exportData(format) {
+            if (format === 'csv') {
+                const headers = ['id', 'name', 'annualSalary', 'pensionPercent', 'studentLoanPlan', 'age', 'taxCode', 'benefits', 'hoursPerWeek', 'frequency', 'showInSummary', 'allowances', 'otherDeductions'];
+                const rows = entries.map(entry => headers.map(key => {
+                    if (key === 'allowances') {
+                        return `"${JSON.stringify(entry.allowances || []).replace(/"/g, '""')}"`;
+                    }
+                    return `"${String(entry[key] ?? '').replace(/"/g, '""')}"`;
+                }).join(','));
+                return `${headers.join(',')}\n${rows.join('\n')}`;
+            }
+            return JSON.stringify(entries, null, 2);
+        }
+
+        function importData(raw, format) {
+            let imported = [];
+            if (format === 'csv') {
+                const lines = raw.split(/\r?\n/).filter(Boolean);
+                const headers = lines.shift()?.split(',') || [];
+                imported = lines.map(line => {
+                    const values = line.match(/("([^"]|"")*"|[^,]+)/g) || [];
+                    const entry = {};
+                    headers.forEach((header, idx) => {
+                        const clean = (values[idx] || '').replace(/^"|"$/g, '').replace(/""/g, '"');
+                        entry[header] = clean;
+                    });
+                    return entry;
+                });
+            } else {
+                imported = JSON.parse(raw);
+            }
+            if (!Array.isArray(imported)) {
+                imported = [];
+            }
+            entries = imported.map(item => ({
+                id: item.id || createEntry().id,
+                name: item.name || '',
+                annualSalary: parseFloat(item.annualSalary) || 0,
+                pensionPercent: parseFloat(item.pensionPercent) || 0,
+                studentLoanPlan: item.studentLoanPlan || 'none',
+                age: parseInt(item.age, 10) || 30,
+                taxCode: item.taxCode || '1257L',
+                benefits: parseFloat(item.benefits) || 0,
+                hoursPerWeek: parseFloat(item.hoursPerWeek) || 0,
+                frequency: item.frequency || 'monthly',
+                showInSummary: item.showInSummary === undefined ? true : String(item.showInSummary) !== 'false',
+                allowances: Array.isArray(item.allowances)
+                    ? item.allowances
+                    : (() => {
+                        try { return JSON.parse(item.allowances || '[]'); } catch (e) { return []; }
+                    })(),
+                otherDeductions: parseFloat(item.otherDeductions) || 0
+            }));
+            if (entries.length === 0) entries = [createEntry()];
+            saveEntries();
+            setActiveTab('summary');
+            updateSummary();
+        }
+
+        function deleteAllData() {
+            entries = [createEntry()];
+            storage.removeItem(STORAGE_KEY);
+            setActiveTab('summary');
+            updateSummary();
+        }
+
+        return { init, exportData, importData, deleteAllData };
     })();
+
+    if (typeof window !== 'undefined') {
+        window.SalaryCalculator = SalaryCalculator;
+    }
 
     function init() {
         updateCurrencyDisplays();
@@ -541,7 +935,7 @@ const Calculator = (function() {
         InvestmentCalculator.init();
         CAGRCalculator.init();
         MortgageCalculator.init();
-        FairValueCalculator.init();
+        SalaryCalculator.init();
     }
 
     return {
