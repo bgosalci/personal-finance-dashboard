@@ -388,7 +388,8 @@ const Calculator = (function() {
             annual: 1,
             monthly: 12,
             fortnightly: 26,
-            weekly: 52
+            weekly: 52,
+            daily: 365
         };
         let entries = [];
         let currentSalaryId = 'summary';
@@ -739,20 +740,22 @@ const Calculator = (function() {
             entry.annualSalary = annualInput && annualInput.value !== '' ? parseFormattedNumber(annualInput.value) : 0;
             entry.frequency = frequencySelect ? frequencySelect.value : entry.frequency;
             entry.hoursPerWeek = hoursInput && hoursInput.value !== ''
-                ? parseFloat(hoursInput.value) || 0
+                ? parseFormattedNumber(hoursInput.value)
                 : 0;
-            entry.pensionPercent = pensionInput && pensionInput.value !== '' ? parseFloat(pensionInput.value) || 0 : 0;
+            entry.pensionPercent = pensionInput && pensionInput.value !== '' ? parseFormattedNumber(pensionInput.value) : 0;
             entry.studentLoanPlan = studentLoanSelect ? studentLoanSelect.value : entry.studentLoanPlan;
             entry.age = ageInput && ageInput.value !== '' ? parseInt(ageInput.value, 10) || 0 : 0;
             entry.taxCode = taxCodeInput ? taxCodeInput.value.trim() : entry.taxCode;
             entry.benefits = benefitsInput && benefitsInput.value !== ''
-                ? parseFloat(benefitsInput.value) || 0
+                ? parseFormattedNumber(benefitsInput.value)
                 : 0;
             entry.otherDeductions = otherDeductionsInput && otherDeductionsInput.value !== ''
-                ? parseFloat(otherDeductionsInput.value) || 0
+                ? parseFormattedNumber(otherDeductionsInput.value)
                 : 0;
             saveEntries();
-            syncFormToEntry(entry);
+            if (formTitle) {
+                formTitle.textContent = entry.name || I18n.t('calculators.salary.labels.salary');
+            }
             updateFormResults(entry);
             updateSummary();
             renderTabs();
@@ -823,6 +826,10 @@ const Calculator = (function() {
             if (summaryToggle) summaryToggle.addEventListener('change', handleSummaryToggle);
             if (salaryTabs) salaryTabs.addEventListener('click', handleTabClick);
             setupFormattedInput(annualInput);
+            setupFormattedInput(hoursInput);
+            setupFormattedInput(pensionInput);
+            setupFormattedInput(benefitsInput);
+            setupFormattedInput(otherDeductionsInput);
             if (allowancesContainer) {
                 allowancesContainer.addEventListener('input', handleAllowanceInput);
                 allowancesContainer.addEventListener('click', handleAllowanceClick);
