@@ -239,6 +239,7 @@ const I18n = (function() {
                         "monthly": "Monthly",
                         "fortnightly": "Fortnightly",
                         "weekly": "Weekly",
+                        "daily": "Daily",
                         "hourly": "Hourly"
                     },
                     "studentLoan": {
