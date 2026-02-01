@@ -6,9 +6,9 @@ const vm = require('vm');
 function loadContext() {
   const dom = new JSDOM('<!DOCTYPE html><body></body>', { url: 'http://localhost' });
   const context = vm.createContext(dom.window);
-  const utils = fs.readFileSync(path.resolve(__dirname, '../app/js/storageUtils.js'), 'utf8');
+  const utils = fs.readFileSync(path.resolve(__dirname, '../app/js/core/storageUtils.js'), 'utf8');
   vm.runInContext(utils, context);
-  let code = fs.readFileSync(path.resolve(__dirname, '../app/js/storageManager.js'), 'utf8');
+  let code = fs.readFileSync(path.resolve(__dirname, '../app/js/core/storageManager.js'), 'utf8');
   code = code.replace('};\n})(typeof', '};\n  global.__sm = { compress, decompress };\n})(typeof');
   vm.runInContext(code, context);
   return context;

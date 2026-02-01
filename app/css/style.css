@@ -836,6 +836,13 @@
             font-weight: 500;
         }
 
+        .salary-percent {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-left: auto;
+            padding-left: 0.5rem;
+        }
+
         .salary-deduction-item.total,
         .salary-results .result-item.total {
             background: rgba(51, 102, 255, 0.1);

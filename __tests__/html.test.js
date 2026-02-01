@@ -8,7 +8,7 @@ test('index.html references CSS and JS', () => {
   const dom = new JSDOM(html);
   const doc = dom.window.document;
   expect(doc.querySelector('link[href="css/style.css"]')).not.toBeNull();
-  expect(doc.querySelector('script[src="js/financialDashboard.js"]')).not.toBeNull();
+  expect(doc.querySelector('script[src="js/features/financialDashboard.js"]')).not.toBeNull();
 });
 
 test('stock chart popup includes chart controls', () => {
