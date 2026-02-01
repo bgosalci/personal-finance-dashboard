@@ -216,18 +216,20 @@ const I18n = (function() {
                     "actions": {
                         "addSalary": "Add Salary",
                         "removeSalary": "Remove",
-                        "showInSummary": "Show in Summary"
+                        "showInSummary": "Show in Summary",
+                        "addAllowance": "Add Allowance"
                     },
                     "hint": "UK tax estimates based on current income tax and National Insurance thresholds.",
                     "labels": {
                         "salary": "Salary",
                         "name": "Salary name",
-                        "annualSalary": "Annual gross salary (£)",
+                        "basicSalary": "Annual basic salary (£)",
                         "frequency": "Payment frequency",
                         "pension": "Pension contribution (%)",
                         "studentLoan": "Student loan plan",
                         "age": "Age",
                         "taxCode": "Tax code",
+                        "allowances": "Allowances (annual)",
                         "otherDeductions": "Other deductions (annual £)"
                     },
                     "frequency": {
@@ -264,6 +266,7 @@ const I18n = (function() {
                         "annualTitle": "Annual Breakdown",
                         "frequencyTitle": "Per pay period",
                         "gross": "Gross salary:",
+                        "allowances": "Allowances:",
                         "taxable": "Taxable income:",
                         "totalDeductions": "Total deductions:"
                     }

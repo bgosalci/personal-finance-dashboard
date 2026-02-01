@@ -351,6 +351,8 @@ const Calculator = (function() {
         const ageInput = document.getElementById('salary-age');
         const taxCodeInput = document.getElementById('salary-tax-code');
         const otherDeductionsInput = document.getElementById('salary-other-deductions');
+        const allowancesContainer = document.getElementById('salary-allowances');
+        const addAllowanceBtn = document.getElementById('add-salary-allowance');
         const takeHomeEl = document.getElementById('salary-take-home');
         const taxEl = document.getElementById('salary-tax');
         const deductionsEl = document.getElementById('salary-deductions');
@@ -362,8 +364,10 @@ const Calculator = (function() {
         const frequencyLabelEl = document.getElementById('salary-frequency-label');
         const annualGrossEl = document.getElementById('salary-annual-gross');
         const annualTaxableEl = document.getElementById('salary-annual-taxable');
+        const annualAllowancesEl = document.getElementById('salary-annual-allowances');
         const periodGrossEl = document.getElementById('salary-period-gross');
         const periodTaxableEl = document.getElementById('salary-period-taxable');
+        const periodAllowancesEl = document.getElementById('salary-period-allowances');
         const periodTaxEl = document.getElementById('salary-period-tax');
         const periodPensionEl = document.getElementById('salary-period-pension');
         const periodNiEl = document.getElementById('salary-period-ni');
@@ -413,6 +417,7 @@ const Calculator = (function() {
                 taxCode: '1257L',
                 frequency: 'monthly',
                 showInSummary: true,
+                allowances: [],
                 otherDeductions: 0
             };
         }
@@ -506,9 +511,13 @@ const Calculator = (function() {
         }
 
         function calculateEntry(entry) {
-            const grossAnnual = Math.max(0, parseFloat(entry.annualSalary) || 0);
+            const basicSalary = Math.max(0, parseFloat(entry.annualSalary) || 0);
             const pensionPercent = Math.max(0, parseFloat(entry.pensionPercent) || 0);
-            const pensionContribution = grossAnnual * (pensionPercent / 100);
+            const pensionContribution = basicSalary * (pensionPercent / 100);
+            const allowancesTotal = (entry.allowances || []).reduce((sum, allowance) => {
+                return sum + Math.max(0, parseFloat(allowance.amount) || 0);
+            }, 0);
+            const grossAnnual = basicSalary + allowancesTotal;
             const otherDeductions = Math.max(0, parseFloat(entry.otherDeductions) || 0);
             const adjustedIncome = Math.max(0, grossAnnual - pensionContribution);
             const allowance = getPersonalAllowance(entry.taxCode, grossAnnual);
@@ -520,6 +529,7 @@ const Calculator = (function() {
             const takeHome = Math.max(0, grossAnnual - tax - otherTotal);
             return {
                 grossAnnual,
+                allowancesTotal,
                 pensionContribution,
                 otherDeductions,
                 adjustedIncome,
@@ -573,6 +583,7 @@ const Calculator = (function() {
             const divisor = frequencies[frequencyValue] || 12;
             if (annualGrossEl) annualGrossEl.textContent = formatSalaryCurrency(results.grossAnnual);
             if (annualTaxableEl) annualTaxableEl.textContent = formatSalaryCurrency(results.taxableIncome);
+            if (annualAllowancesEl) annualAllowancesEl.textContent = formatSalaryCurrency(results.allowancesTotal);
             if (takeHomeEl) takeHomeEl.textContent = formatSalaryCurrency(results.takeHome);
             if (taxEl) taxEl.textContent = formatSalaryCurrency(results.tax);
             if (deductionsEl) deductionsEl.textContent = formatSalaryCurrency(results.otherTotal);
@@ -584,12 +595,33 @@ const Calculator = (function() {
             if (frequencyLabelEl) frequencyLabelEl.textContent = I18n.t(`calculators.salary.frequency.${frequencyValue}`);
             if (periodGrossEl) periodGrossEl.textContent = formatSalaryCurrency(results.grossAnnual / divisor);
             if (periodTaxableEl) periodTaxableEl.textContent = formatSalaryCurrency(results.taxableIncome / divisor);
+            if (periodAllowancesEl) periodAllowancesEl.textContent = formatSalaryCurrency(results.allowancesTotal / divisor);
             if (periodTaxEl) periodTaxEl.textContent = formatSalaryCurrency(results.tax / divisor);
             if (periodPensionEl) periodPensionEl.textContent = formatSalaryCurrency(results.pensionContribution / divisor);
             if (periodNiEl) periodNiEl.textContent = formatSalaryCurrency(results.nationalInsurance / divisor);
             if (periodStudentLoanEl) periodStudentLoanEl.textContent = formatSalaryCurrency(results.studentLoan / divisor);
             if (periodOtherEl) periodOtherEl.textContent = formatSalaryCurrency(results.otherDeductions / divisor);
             if (periodDeductionsEl) periodDeductionsEl.textContent = formatSalaryCurrency(results.otherTotal / divisor);
+        }
+
+        function renderAllowances(entry) {
+            if (!allowancesContainer) return;
+            allowancesContainer.innerHTML = '';
+            const allowances = entry.allowances || [];
+            allowances.forEach((allowance, index) => {
+                const row = document.createElement('div');
+                row.className = 'salary-allowance-row';
+                row.dataset.index = index;
+                row.innerHTML = `
+                    <input type="text" class="salary-allowance-name" placeholder="Allowance name" value="${allowance.name || ''}">
+                    <input type="text" class="salary-allowance-amount" inputmode="decimal" value="${allowance.amount ? formatInputValue(Number(allowance.amount).toFixed(2), true) : ''}">
+                    <button type="button" class="btn btn-link salary-allowance-remove">&times;</button>
+                `;
+                allowancesContainer.appendChild(row);
+                const amountInput = row.querySelector('.salary-allowance-amount');
+                setupFormattedInput(amountInput);
+            });
+            I18n.apply();
         }
 
         function renderTabs() {
@@ -643,6 +675,7 @@ const Calculator = (function() {
             if (ageInput) ageInput.value = entry.age || '';
             if (taxCodeInput) taxCodeInput.value = entry.taxCode || '';
             if (otherDeductionsInput) otherDeductionsInput.value = entry.otherDeductions || '';
+            renderAllowances(entry);
             if (summaryToggle) summaryToggle.checked = entry.showInSummary !== false;
             if (removeSalaryBtn) removeSalaryBtn.style.display = entries.length > 1 ? 'inline-flex' : 'none';
         }
@@ -702,6 +735,37 @@ const Calculator = (function() {
             setActiveTab(btn.dataset.salaryId);
         }
 
+        function handleAllowanceClick(e) {
+            const removeBtn = e.target.closest('.salary-allowance-remove');
+            if (!removeBtn) return;
+            const entry = getEntryById(currentSalaryId);
+            if (!entry) return;
+            const row = removeBtn.closest('.salary-allowance-row');
+            if (!row) return;
+            const index = parseInt(row.dataset.index, 10);
+            entry.allowances.splice(index, 1);
+            saveEntries();
+            renderAllowances(entry);
+            updateFormResults(entry);
+            updateSummary();
+        }
+
+        function handleAllowanceInput(e) {
+            const row = e.target.closest('.salary-allowance-row');
+            if (!row) return;
+            const entry = getEntryById(currentSalaryId);
+            if (!entry) return;
+            const index = parseInt(row.dataset.index, 10);
+            if (!entry.allowances || !entry.allowances[index]) return;
+            const nameInput = row.querySelector('.salary-allowance-name');
+            const amountInput = row.querySelector('.salary-allowance-amount');
+            entry.allowances[index].name = nameInput ? nameInput.value.trim() : entry.allowances[index].name;
+            entry.allowances[index].amount = amountInput ? parseFormattedNumber(amountInput.value) : 0;
+            saveEntries();
+            updateFormResults(entry);
+            updateSummary();
+        }
+
         function init() {
             if (!salaryTabs) return;
             loadEntries();
@@ -722,6 +786,20 @@ const Calculator = (function() {
             if (summaryToggle) summaryToggle.addEventListener('change', handleSummaryToggle);
             if (salaryTabs) salaryTabs.addEventListener('click', handleTabClick);
             setupFormattedInput(annualInput);
+            if (allowancesContainer) {
+                allowancesContainer.addEventListener('input', handleAllowanceInput);
+                allowancesContainer.addEventListener('click', handleAllowanceClick);
+            }
+            if (addAllowanceBtn) {
+                addAllowanceBtn.addEventListener('click', () => {
+                    const entry = getEntryById(currentSalaryId);
+                    if (!entry) return;
+                    if (!entry.allowances) entry.allowances = [];
+                    entry.allowances.push({ name: '', amount: 0 });
+                    saveEntries();
+                    renderAllowances(entry);
+                });
+            }
             [nameInput, annualInput, pensionInput, ageInput, taxCodeInput, otherDeductionsInput].forEach(input => {
                 if (input) input.addEventListener('input', handleFieldUpdate);
             });
@@ -732,8 +810,13 @@ const Calculator = (function() {
 
         function exportData(format) {
             if (format === 'csv') {
-                const headers = ['id', 'name', 'annualSalary', 'pensionPercent', 'studentLoanPlan', 'age', 'taxCode', 'frequency', 'showInSummary', 'otherDeductions'];
-                const rows = entries.map(entry => headers.map(key => `"${String(entry[key] ?? '').replace(/"/g, '""')}"`).join(','));
+                const headers = ['id', 'name', 'annualSalary', 'pensionPercent', 'studentLoanPlan', 'age', 'taxCode', 'frequency', 'showInSummary', 'allowances', 'otherDeductions'];
+                const rows = entries.map(entry => headers.map(key => {
+                    if (key === 'allowances') {
+                        return `"${JSON.stringify(entry.allowances || []).replace(/"/g, '""')}"`;
+                    }
+                    return `"${String(entry[key] ?? '').replace(/"/g, '""')}"`;
+                }).join(','));
                 return `${headers.join(',')}\n${rows.join('\n')}`;
             }
             return JSON.stringify(entries, null, 2);
@@ -769,6 +852,11 @@ const Calculator = (function() {
                 taxCode: item.taxCode || '1257L',
                 frequency: item.frequency || 'monthly',
                 showInSummary: item.showInSummary === undefined ? true : String(item.showInSummary) !== 'false',
+                allowances: Array.isArray(item.allowances)
+                    ? item.allowances
+                    : (() => {
+                        try { return JSON.parse(item.allowances || '[]'); } catch (e) { return []; }
+                    })(),
                 otherDeductions: parseFloat(item.otherDeductions) || 0
             }));
             if (entries.length === 0) entries = [createEntry()];
