@@ -1,241 +1,64 @@
 # Documentation Summary - Personal Finance Dashboard
 
 ## Overview
-This document provides a comprehensive analysis and documentation package for the Personal Finance Dashboard codebase. The analysis covers the complete application structure, functionality, and technical implementation.
+This document summarizes the Personal Finance Dashboard codebase and the supporting documentation set. The app is a client-side financial dashboard built with modular JavaScript files under `app/js/` and a static HTML shell in `app/index.html`.
 
-## Repository Information
+## Repository Snapshot
 - **Repository**: bgosalci/personal-finance-dashboard
-- **Main File**: app/index.html (single-page application)
-- **Architecture**: Vanilla JavaScript with modular IIFE pattern
-- **Size**: ~2,429 lines of code (HTML, CSS, JavaScript combined)
+- **Entry Point**: `app/index.html`
+- **Architecture**: Vanilla JavaScript + IIFE modules
+- **Key Modules**: Portfolio, Watchlist, Pension, Calculators, Stock Tracker, Stock Finance, Settings, i18n
 
-## Key Findings
+## Feature Coverage
 
-### Application Architecture
-- **Single-page HTML application** with embedded CSS and JavaScript
-- **Modular JavaScript architecture** using closures and IIFE pattern
-- **Event-driven communication** between modules
-- **Client-side data persistence** using localStorage
-- **No external dependencies** except Chart.js and Ionicons
+1. **Portfolio Management**
+   - Multiple portfolios, summaries, charts, and transaction history.
+   - Base currency conversion with daily FX updates.
 
-### Core Functionality
-1. **Portfolio Management System**
-   - Investment tracking with CRUD operations
-   - Real-time P&L calculations
-   - Visual portfolio charts
-   - Data persistence across sessions
+2. **Watchlist**
+   - Manual refresh or real-time updates via Finnhub WebSocket.
+   - Drag-and-drop ordering and quick visual indicators.
 
-2. **Financial Calculator Suite**
-   - Loan payment calculator
-   - Investment growth projections
-   - CAGR (Compound Annual Growth Rate) calculator
-   - Fair value stock analysis
+3. **Pension Tracking**
+   - Entry tracking, CAGR metrics, and charts.
+   - Export/import for long-term history.
 
-3. **Stock Performance Tracker**
-   - Historical price tracking
-   - Multi-year performance analysis
-   - Comparative stock analysis
-   - Growth percentage calculations
+4. **Financial Calculators**
+   - Loan, investment, CAGR, mortgage, salary, and fair value calculators.
 
-4. **Data Management**
-   - LocalStorage-based persistence
-   - Export/import functionality
-   - Automatic data backup
-   - Data validation and error handling
+5. **Stock Performance Tracker**
+   - Multi-year price tracking with growth analysis.
 
-### Technical Implementation
-- **Frontend Technologies**: HTML5, CSS3, JavaScript ES6+
-- **Charting Library**: Chart.js for data visualization
-- **Icon System**: Ionicons for UI elements
-- **Styling Approach**: CSS custom properties with professional theme
-- **Browser Compatibility**: Modern browsers (Chrome 60+, Firefox 55+, Safari 12+, Edge 79+)
+6. **Stock Finance Performance**
+   - Income, balance sheet, and cash flow statements from Finnhub.
 
-### Code Quality Assessment
-- **Well-structured modular design** with clear separation of concerns
-- **Consistent coding patterns** throughout the application
-- **Comprehensive error handling** and input validation
-- **Responsive design** with mobile-friendly interface
-- **Professional UI/UX** with financial industry styling
+7. **Settings & Customization**
+   - Base currency, theme, font size, language, RTL toggle.
+   - Data export/import/delete tools.
+   - Finnhub API key storage for live quotes.
 
-## Documentation Package Contents
+## Technical Stack
+- **Frontend**: HTML5, CSS3, JavaScript (ES6+)
+- **Charts**: Chart.js (bundled)
+- **Icons**: Ionicons (CDN)
+- **Storage**: Browser localStorage with memory fallback
+- **Testing**: Jest + JSDOM
 
-### 1. README.md
-- Project overview and features
-- Installation and setup instructions
-- Usage guidelines
-- Technology stack information
-- Browser compatibility details
+## External Integrations
+- **Finnhub**: Quotes, symbol search, and financial statements
+- **Polygon.io**: Market status (pre/regular/after hours)
+- **ExchangeRate-API**: FX conversion rates
 
-### 2. TECHNICAL_DOCUMENTATION.md
-- Detailed architecture analysis
-- Module-by-module breakdown
-- Data structures and schemas
-- Performance considerations
-- Security implementation
-- Deployment guidelines
+## Documentation Index
 
-### 3. API_REFERENCE.md
-- Complete API documentation for all modules
-- Method signatures and parameters
-- Return value specifications
-- Usage examples
-- Error handling documentation
-- Utility function reference
+- **README.md**: High-level overview, features, and setup instructions.
+- **DEVELOPMENT_GUIDE.md**: Contributor workflow, architecture, and testing.
+- **TECHNICAL_DOCUMENTATION.md**: Module map and data/storage details.
+- **API_REFERENCE.md**: Public module APIs.
+- **USER_GUIDE.md**: End-user instructions.
+- **I18N_README.md**: Localization process and translation tips.
+- **RULES.md**: Repository contribution rules.
+- **agent.md**: Developer best practices and project conventions.
 
-### 4. USER_GUIDE.md
-- Step-by-step user instructions
-- Feature walkthroughs
-- Troubleshooting guide
-- Best practices and tips
-- FAQ section
-- Privacy and security information
-
-### 5. DEVELOPMENT_GUIDE.md
-- Development environment setup
-- Code structure and organization
-- Architecture patterns explanation
-- Development best practices
-- Testing strategies
-- Feature addition guidelines
-- Debugging techniques
-
-## Code Analysis Results
-
-### Strengths
-✅ **Clean Architecture**: Well-organized modular structure
-✅ **User Experience**: Intuitive interface with professional design
-✅ **Functionality**: Comprehensive financial tools and calculations
-✅ **Data Persistence**: Reliable localStorage implementation
-✅ **Error Handling**: Robust validation and error management
-✅ **Responsive Design**: Works across different screen sizes
-✅ **Performance**: Efficient client-side operations
-✅ **Maintainability**: Clear code structure and patterns
-
-### Areas for Potential Enhancement
-🔄 **Real-time Data**: Could integrate with stock price APIs
-🔄 **Advanced Analytics**: More sophisticated portfolio analysis
-🔄 **Export Options**: Additional export formats (PDF, Excel)
-🔄 **Multi-currency**: Support for different currencies
-🔄 **Cloud Sync**: Optional cloud backup functionality
-🔄 **Mobile App**: Native mobile application version
-🔄 **Testing Framework**: Automated testing implementation
-
-### Security Considerations
-🔒 **Client-side Only**: All data stays on user's device
-🔒 **Input Sanitization**: Proper validation of user inputs
-🔒 **No External Calls**: No data transmitted to external servers
-🔒 **Local Storage**: Secure browser-based data persistence
-
-## Module Analysis Summary
-
-### TabManager (Lines 1279-1315)
-- **Purpose**: Navigation management
-- **Complexity**: Low
-- **Dependencies**: None
-- **Key Features**: Tab switching, state management
-
-### PortfolioManager (Lines 1318-1606)
-- **Purpose**: Investment portfolio operations
-- **Complexity**: High
-- **Dependencies**: Chart.js, localStorage
-- **Key Features**: CRUD operations, calculations, charting
-
-### Calculator (Lines 1609-1977)
-- **Purpose**: Financial calculations
-- **Complexity**: Medium
-- **Dependencies**: None
-- **Key Features**: Loan, investment, CAGR, fair value calculations
-
-### StockTracker (Lines 1980-2429)
-- **Purpose**: Stock performance analysis
-- **Complexity**: Medium-High
-- **Dependencies**: Chart.js, localStorage
-- **Key Features**: Historical tracking, performance charts
-
-## Technology Stack Analysis
-
-### Frontend Framework
-- **Choice**: Vanilla JavaScript
-- **Rationale**: Simplicity, no build process, direct browser compatibility
-- **Benefits**: Fast loading, no framework overhead, easy deployment
-- **Trade-offs**: More manual DOM manipulation, less structured than modern frameworks
-
-### Data Visualization
-- **Library**: Chart.js
-- **Usage**: Portfolio charts, performance graphs, trend analysis
-- **Integration**: Well-integrated with modular architecture
-- **Performance**: Efficient rendering for financial data
-
-### Styling Approach
-- **Method**: CSS custom properties + traditional CSS
-- **Theme**: Professional financial application styling
-- **Responsiveness**: Mobile-first responsive design
-- **Maintainability**: Good use of CSS variables for theming
-
-## Deployment and Distribution
-
-### Current State
-- **Deployment**: Single HTML file deployment
-- **Hosting**: Any static web hosting service
-- **Setup**: No build process required
-- **Distribution**: Simple file sharing or web hosting
-
-### Recommendations
-- **Static Hosting**: GitHub Pages, Netlify, Vercel
-- **CDN**: Consider CDN for Chart.js and Ionicons
-- **Optimization**: Optional minification for production
-- **Backup**: Regular documentation updates
-
-## Conclusion
-
-The Personal Finance Dashboard is a well-architected, feature-rich financial management application that demonstrates solid software engineering principles. The codebase is maintainable, user-friendly, and provides comprehensive functionality for personal finance management.
-
-The modular architecture makes it easy to understand, extend, and maintain. The choice of vanilla JavaScript keeps the application lightweight and eliminates framework dependencies, making it highly portable and easy to deploy.
-
-This documentation package provides everything needed to understand, use, maintain, and extend the application, making it accessible to both end users and developers.
-
-## Documentation Usage
-
-### For End Users
-- Start with **README.md** for overview
-- Use **USER_GUIDE.md** for detailed instructions
-- Reference **FAQ section** for common questions
-
-### For Developers
-- Begin with **TECHNICAL_DOCUMENTATION.md** for architecture
-- Use **API_REFERENCE.md** for implementation details
-- Follow **DEVELOPMENT_GUIDE.md** for contribution guidelines
-
-### For Maintainers
-- Review **TECHNICAL_DOCUMENTATION.md** for system understanding
-- Use **DEVELOPMENT_GUIDE.md** for maintenance procedures
-- Reference **API_REFERENCE.md** for module interfaces
-
-This comprehensive documentation package ensures the Personal Finance Dashboard codebase is well-documented, maintainable, and accessible to users and developers at all levels.
-
-## Latest Changes
-- Pension summary cards now show current total value.
-- Pension tracking with charts and summary view.
-- Portfolio export/import and deletion options.
-- Portfolio and stock tracker price refresh during pre-, regular, and after-market sessions.
-- Base-currency calculations and sticky table improvements.
-- Automatic input focus in dialog and edit modals.
-- Watchlist now displays last price update timestamps.
-- Documentation updated for modularized codebase.
-- `.gitignore` improvements noted.
-- See [RULES.md](RULES.md) for contribution guidelines.
-- Pseudo locale removed from language selector; internationalization guide updated to add locales via `DEFAULT_TRANSLATIONS` only on developer request.
-## Addendum: Alignment and Upcoming Refactors
-
-- Eventing: Current implementation uses DOM CustomEvent; references to a dedicated EventBus are conceptual. A tiny EventBus may be added later for a consistent API.
-- Storage: Both `portfolioStorage.js` and `storageManager.js` exist; feature modules also use direct localStorage keys. A unified Storage facade is recommended to reduce overlap.
-- Planned service layer (incremental):
-  - QuotesService: centralize Finnhub calls and API key handling from Settings.
-  - ColorService: consistent, persistent color assignment across charts.
-  - ImportExportService: unify import/export modal and file handling across modules.
-- Testing focus:
-  - Unit tests for the service layer and utilities.
-  - DOM tests for critical flows (add/edit/delete, charts presence).
-  - Simple check to detect untranslated strings.
-- API Key Plan:
-  - User-provided Finnhub key stored locally in Settings and consumed by QuotesService. No secrets in the repo.
+## Notes
+The dashboard can run fully offline for manual data entry, but real-time quotes, market status, and FX conversion require network access. All user data remains stored locally in the browser.
