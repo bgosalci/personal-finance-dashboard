@@ -259,6 +259,13 @@ const I18n = (function() {
                         "totalTax": "Total tax:",
                         "totalDeductions": "Total other deductions:",
                         "noneSelected": "Select salaries to include in the summary."
+                    },
+                    "breakdown": {
+                        "annualTitle": "Annual Breakdown",
+                        "frequencyTitle": "Per pay period",
+                        "gross": "Gross salary:",
+                        "taxable": "Taxable income:",
+                        "totalDeductions": "Total deductions:"
                     }
                 },
                 "fairValue": {

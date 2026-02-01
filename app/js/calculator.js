@@ -360,6 +360,16 @@ const Calculator = (function() {
         const otherEl = document.getElementById('salary-other-value');
         const perPeriodEl = document.getElementById('salary-per-period');
         const frequencyLabelEl = document.getElementById('salary-frequency-label');
+        const annualGrossEl = document.getElementById('salary-annual-gross');
+        const annualTaxableEl = document.getElementById('salary-annual-taxable');
+        const periodGrossEl = document.getElementById('salary-period-gross');
+        const periodTaxableEl = document.getElementById('salary-period-taxable');
+        const periodTaxEl = document.getElementById('salary-period-tax');
+        const periodPensionEl = document.getElementById('salary-period-pension');
+        const periodNiEl = document.getElementById('salary-period-ni');
+        const periodStudentLoanEl = document.getElementById('salary-period-student-loan');
+        const periodOtherEl = document.getElementById('salary-period-other');
+        const periodDeductionsEl = document.getElementById('salary-period-deductions');
         const totalTakeHomeEl = document.getElementById('salary-total-take-home');
         const totalTaxEl = document.getElementById('salary-total-tax');
         const totalDeductionsEl = document.getElementById('salary-total-deductions');
@@ -512,6 +522,8 @@ const Calculator = (function() {
                 grossAnnual,
                 pensionContribution,
                 otherDeductions,
+                adjustedIncome,
+                taxableIncome,
                 tax,
                 nationalInsurance,
                 studentLoan,
@@ -559,6 +571,8 @@ const Calculator = (function() {
             const results = calculateEntry(entry);
             const frequencyValue = entry.frequency || 'monthly';
             const divisor = frequencies[frequencyValue] || 12;
+            if (annualGrossEl) annualGrossEl.textContent = formatSalaryCurrency(results.grossAnnual);
+            if (annualTaxableEl) annualTaxableEl.textContent = formatSalaryCurrency(results.taxableIncome);
             if (takeHomeEl) takeHomeEl.textContent = formatSalaryCurrency(results.takeHome);
             if (taxEl) taxEl.textContent = formatSalaryCurrency(results.tax);
             if (deductionsEl) deductionsEl.textContent = formatSalaryCurrency(results.otherTotal);
@@ -568,6 +582,14 @@ const Calculator = (function() {
             if (otherEl) otherEl.textContent = formatSalaryCurrency(results.otherDeductions);
             if (perPeriodEl) perPeriodEl.textContent = formatSalaryCurrency(results.takeHome / divisor);
             if (frequencyLabelEl) frequencyLabelEl.textContent = I18n.t(`calculators.salary.frequency.${frequencyValue}`);
+            if (periodGrossEl) periodGrossEl.textContent = formatSalaryCurrency(results.grossAnnual / divisor);
+            if (periodTaxableEl) periodTaxableEl.textContent = formatSalaryCurrency(results.taxableIncome / divisor);
+            if (periodTaxEl) periodTaxEl.textContent = formatSalaryCurrency(results.tax / divisor);
+            if (periodPensionEl) periodPensionEl.textContent = formatSalaryCurrency(results.pensionContribution / divisor);
+            if (periodNiEl) periodNiEl.textContent = formatSalaryCurrency(results.nationalInsurance / divisor);
+            if (periodStudentLoanEl) periodStudentLoanEl.textContent = formatSalaryCurrency(results.studentLoan / divisor);
+            if (periodOtherEl) periodOtherEl.textContent = formatSalaryCurrency(results.otherDeductions / divisor);
+            if (periodDeductionsEl) periodDeductionsEl.textContent = formatSalaryCurrency(results.otherTotal / divisor);
         }
 
         function renderTabs() {

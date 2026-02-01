@@ -809,6 +809,63 @@
             margin-top: 0.5rem;
         }
 
+        .salary-breakdown-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .salary-breakdown-panel {
+            background: var(--background-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.25rem;
+        }
+
+        .salary-breakdown-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .salary-frequency-chip {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: 999px;
+            background: rgba(51, 102, 255, 0.12);
+            color: var(--primary-blue);
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .salary-deduction-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 0.75rem;
+            margin: 1rem 0;
+        }
+
+        .salary-deduction-item {
+            display: flex;
+            justify-content: space-between;
+            gap: 0.5rem;
+            padding: 0.75rem;
+            border-radius: 10px;
+            background: var(--background-primary);
+            border: 1px solid var(--border-color);
+            font-weight: 500;
+        }
+
+        .salary-deduction-item.total,
+        .salary-results .result-item.total {
+            background: rgba(51, 102, 255, 0.1);
+            border-color: rgba(51, 102, 255, 0.2);
+            font-weight: 600;
+        }
+
         .salary-per-period-row {
             display: flex;
             align-items: baseline;

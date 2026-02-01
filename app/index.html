@@ -745,40 +745,94 @@
                                 </div>
                             </div>
                             <div class="result-display salary-results">
-                                <div class="result-item">
-                                    <span data-i18n="calculators.salary.results.takeHome">Take-home:</span>
-                                    <span id="salary-take-home">£0.00</span>
-                                </div>
-                                <div class="result-item">
-                                    <span data-i18n="calculators.salary.results.tax">Tax to pay:</span>
-                                    <span id="salary-tax">£0.00</span>
-                                </div>
-                                <div class="result-item">
-                                    <span data-i18n="calculators.salary.results.otherDeductions">Other deductions:</span>
-                                    <span id="salary-deductions">£0.00</span>
-                                </div>
-                                <div class="salary-breakdown">
-                                    <div class="result-item">
-                                        <span data-i18n="calculators.salary.results.pension">Pension:</span>
-                                        <span id="salary-pension-value">£0.00</span>
+                                <div class="salary-breakdown-grid">
+                                    <div class="salary-breakdown-panel">
+                                        <div class="salary-breakdown-header">
+                                            <h4 class="section-subtitle" data-i18n="calculators.salary.breakdown.annualTitle">Annual Breakdown</h4>
+                                        </div>
+                                        <div class="result-item">
+                                            <span data-i18n="calculators.salary.breakdown.gross">Gross salary:</span>
+                                            <span id="salary-annual-gross">£0.00</span>
+                                        </div>
+                                        <div class="result-item">
+                                            <span data-i18n="calculators.salary.breakdown.taxable">Taxable income:</span>
+                                            <span id="salary-annual-taxable">£0.00</span>
+                                        </div>
+                                        <div class="salary-deduction-grid">
+                                            <div class="salary-deduction-item">
+                                                <span data-i18n="calculators.salary.results.tax">Tax to pay:</span>
+                                                <span id="salary-tax">£0.00</span>
+                                            </div>
+                                            <div class="salary-deduction-item">
+                                                <span data-i18n="calculators.salary.results.pension">Pension:</span>
+                                                <span id="salary-pension-value">£0.00</span>
+                                            </div>
+                                            <div class="salary-deduction-item">
+                                                <span data-i18n="calculators.salary.results.nationalInsurance">National Insurance:</span>
+                                                <span id="salary-ni">£0.00</span>
+                                            </div>
+                                            <div class="salary-deduction-item">
+                                                <span data-i18n="calculators.salary.results.studentLoan">Student loan:</span>
+                                                <span id="salary-student-loan-value">£0.00</span>
+                                            </div>
+                                            <div class="salary-deduction-item">
+                                                <span data-i18n="calculators.salary.results.other">Other:</span>
+                                                <span id="salary-other-value">£0.00</span>
+                                            </div>
+                                            <div class="salary-deduction-item total">
+                                                <span data-i18n="calculators.salary.breakdown.totalDeductions">Total deductions:</span>
+                                                <span id="salary-deductions">£0.00</span>
+                                            </div>
+                                        </div>
+                                        <div class="result-item total">
+                                            <span data-i18n="calculators.salary.results.takeHome">Take-home:</span>
+                                            <span id="salary-take-home">£0.00</span>
+                                        </div>
                                     </div>
-                                    <div class="result-item">
-                                        <span data-i18n="calculators.salary.results.nationalInsurance">National Insurance:</span>
-                                        <span id="salary-ni">£0.00</span>
+                                    <div class="salary-breakdown-panel">
+                                        <div class="salary-breakdown-header">
+                                            <h4 class="section-subtitle" data-i18n="calculators.salary.breakdown.frequencyTitle">Per pay period</h4>
+                                            <span class="salary-frequency-chip" id="salary-frequency-label">Monthly</span>
+                                        </div>
+                                        <div class="result-item">
+                                            <span data-i18n="calculators.salary.breakdown.gross">Gross salary:</span>
+                                            <span id="salary-period-gross">£0.00</span>
+                                        </div>
+                                        <div class="result-item">
+                                            <span data-i18n="calculators.salary.breakdown.taxable">Taxable income:</span>
+                                            <span id="salary-period-taxable">£0.00</span>
+                                        </div>
+                                        <div class="salary-deduction-grid">
+                                            <div class="salary-deduction-item">
+                                                <span data-i18n="calculators.salary.results.tax">Tax to pay:</span>
+                                                <span id="salary-period-tax">£0.00</span>
+                                            </div>
+                                            <div class="salary-deduction-item">
+                                                <span data-i18n="calculators.salary.results.pension">Pension:</span>
+                                                <span id="salary-period-pension">£0.00</span>
+                                            </div>
+                                            <div class="salary-deduction-item">
+                                                <span data-i18n="calculators.salary.results.nationalInsurance">National Insurance:</span>
+                                                <span id="salary-period-ni">£0.00</span>
+                                            </div>
+                                            <div class="salary-deduction-item">
+                                                <span data-i18n="calculators.salary.results.studentLoan">Student loan:</span>
+                                                <span id="salary-period-student-loan">£0.00</span>
+                                            </div>
+                                            <div class="salary-deduction-item">
+                                                <span data-i18n="calculators.salary.results.other">Other:</span>
+                                                <span id="salary-period-other">£0.00</span>
+                                            </div>
+                                            <div class="salary-deduction-item total">
+                                                <span data-i18n="calculators.salary.breakdown.totalDeductions">Total deductions:</span>
+                                                <span id="salary-period-deductions">£0.00</span>
+                                            </div>
+                                        </div>
+                                        <div class="result-item total">
+                                            <span data-i18n="calculators.salary.results.takeHome">Take-home:</span>
+                                            <span id="salary-per-period">£0.00</span>
+                                        </div>
                                     </div>
-                                    <div class="result-item">
-                                        <span data-i18n="calculators.salary.results.studentLoan">Student loan:</span>
-                                        <span id="salary-student-loan-value">£0.00</span>
-                                    </div>
-                                    <div class="result-item">
-                                        <span data-i18n="calculators.salary.results.other">Other:</span>
-                                        <span id="salary-other-value">£0.00</span>
-                                    </div>
-                                </div>
-                                <div class="result-item salary-per-period-row">
-                                    <span data-i18n="calculators.salary.results.perPeriod">Take-home per</span>
-                                    <span id="salary-frequency-label">Monthly</span>
-                                    <span id="salary-per-period">£0.00</span>
                                 </div>
                             </div>
                         </div>
