@@ -1064,6 +1064,363 @@ const Calculator = (function() {
         window.SalaryCalculator = SalaryCalculator;
     }
 
+    // Dividend & CGT Calculator
+    const DividendCgtCalculator = (function() {
+        const STORAGE_KEY = 'pf_dividend_cgt';
+        const taxYearSelect = document.getElementById('dividend-cgt-tax-year');
+        const taxableIncomeInput = document.getElementById('dividend-cgt-taxable-income');
+        const dividendsInput = document.getElementById('dividend-cgt-dividends');
+        const dividendsExcludedInput = document.getElementById('dividend-cgt-dividends-excluded');
+        const gainsInput = document.getElementById('dividend-cgt-gains');
+        const lossesInput = document.getElementById('dividend-cgt-losses');
+        const applyAeaToggle = document.getElementById('dividend-cgt-apply-aea');
+        const tooltipEl = document.getElementById('tooltip');
+
+        const dividendTotalEl = document.getElementById('dividend-total');
+        const dividendPaUsedEl = document.getElementById('dividend-pa-used');
+        const dividendAllowanceEl = document.getElementById('dividend-allowance-used');
+        const dividendTaxableEl = document.getElementById('dividend-taxable');
+        const dividendBasicAmountEl = document.getElementById('dividend-basic-amount');
+        const dividendBasicTaxEl = document.getElementById('dividend-basic-tax');
+        const dividendHigherAmountEl = document.getElementById('dividend-higher-amount');
+        const dividendHigherTaxEl = document.getElementById('dividend-higher-tax');
+        const dividendAdditionalAmountEl = document.getElementById('dividend-additional-amount');
+        const dividendAdditionalTaxEl = document.getElementById('dividend-additional-tax');
+        const dividendTaxDueEl = document.getElementById('dividend-tax-due');
+        const dividendEffectiveRateEl = document.getElementById('dividend-effective-rate');
+        const dividendNetEl = document.getElementById('dividend-net');
+
+        const cgtNetGainsEl = document.getElementById('cgt-net-gains');
+        const cgtLossesUsedEl = document.getElementById('cgt-losses-used');
+        const cgtAeaEl = document.getElementById('cgt-aea-used');
+        const cgtTaxableEl = document.getElementById('cgt-taxable');
+        const cgtBasicBandRemainingEl = document.getElementById('cgt-basic-band-remaining');
+        const cgtBasicAmountEl = document.getElementById('cgt-basic-amount');
+        const cgtBasicTaxEl = document.getElementById('cgt-basic-tax');
+        const cgtHigherAmountEl = document.getElementById('cgt-higher-amount');
+        const cgtHigherTaxEl = document.getElementById('cgt-higher-tax');
+        const cgtTaxDueEl = document.getElementById('cgt-tax-due');
+        const cgtEffectiveRateEl = document.getElementById('cgt-effective-rate');
+        const cgtNetEl = document.getElementById('cgt-net');
+
+        const storage = typeof StorageUtils !== 'undefined' ? StorageUtils.getStorage() : window.localStorage;
+        let activeTooltipBtn = null;
+
+        function formatGbp(amount) {
+            return I18n.formatCurrency(amount, 'GBP');
+        }
+
+        function formatRate(rate) {
+            return formatPercentage(rate * 100);
+        }
+
+        function parseAmount(value) {
+            return parseFloat(String(value || '').replace(/,/g, '')) || 0;
+        }
+
+        function getTaxYearData(year) {
+            if (typeof UKTaxYears !== 'undefined' && UKTaxYears[year]) {
+                return UKTaxYears[year];
+            }
+            return UKTaxYears ? UKTaxYears['2025/26'] : null;
+        }
+
+        function computePersonalAllowance(adjustedNetIncome, taxYearData) {
+            if (!taxYearData) return 0;
+            let allowance = taxYearData.personalAllowance;
+            if (adjustedNetIncome > taxYearData.paTaperStart) {
+                const reduction = (adjustedNetIncome - taxYearData.paTaperStart) / 2;
+                allowance = Math.max(0, allowance - reduction);
+            }
+            return allowance;
+        }
+
+        function computeTaxableIncomeFromGross(grossIncome, taxYearData) {
+            const gross = Math.max(0, grossIncome);
+            const allowance = computePersonalAllowance(gross, taxYearData);
+            return Math.max(0, gross - allowance);
+        }
+
+        function deriveAdjustedNetIncome(taxableIncome, taxYearData) {
+            const baseAllowance = taxYearData.personalAllowance;
+            const fullAllowanceIncome = taxableIncome + baseAllowance;
+            if (fullAllowanceIncome <= taxYearData.paTaperStart) {
+                return fullAllowanceIncome;
+            }
+            const taperIncome = (taxableIncome + baseAllowance + (taxYearData.paTaperStart / 2)) / 1.5;
+            if (taperIncome >= taxYearData.paTaperStart && taperIncome <= taxYearData.paTaperEnd) {
+                return taperIncome;
+            }
+            return taxableIncome;
+        }
+
+        function calculateFromValues(values) {
+            const taxYearData = getTaxYearData(values.taxYear);
+            if (!taxYearData) return null;
+            const taxableIncome = Math.max(0, values.taxableIncome || 0);
+            const dividendsGross = Math.max(0, values.dividends || 0);
+            const dividendsExcluded = Math.max(0, values.dividendsExcluded || 0);
+            const dividendOutsideIsa = Math.max(0, dividendsGross - dividendsExcluded);
+            const adjustedNetIncome = deriveAdjustedNetIncome(taxableIncome, taxYearData);
+            const personalAllowance = computePersonalAllowance(adjustedNetIncome, taxYearData);
+            const personalAllowanceUsed = Math.max(0, personalAllowance - taxableIncome);
+            const taxableDividends = Math.max(0, dividendOutsideIsa - personalAllowanceUsed);
+            const dividendAllowanceUsed = Math.min(taxYearData.dividendAllowance, taxableDividends);
+
+            let remainingBasicBand = Math.max(0, taxYearData.basicRateBand - taxableIncome);
+            let remainingHigherBand = Math.max(
+                0,
+                (taxYearData.higherRateThreshold - taxYearData.basicRateBand) - Math.max(0, taxableIncome - taxYearData.basicRateBand)
+            );
+
+            let remainingDividends = taxableDividends;
+            const basicBandDividends = Math.min(remainingDividends, remainingBasicBand);
+            remainingDividends -= basicBandDividends;
+            const higherBandDividends = Math.min(remainingDividends, remainingHigherBand);
+            remainingDividends -= higherBandDividends;
+            const additionalBandDividends = Math.max(0, remainingDividends);
+
+            let allowanceRemaining = dividendAllowanceUsed;
+            const applyAllowance = (amount) => {
+                const free = Math.min(amount, allowanceRemaining);
+                allowanceRemaining -= free;
+                return { taxable: amount - free, allowance: free };
+            };
+
+            const basicSplit = applyAllowance(basicBandDividends);
+            const higherSplit = applyAllowance(higherBandDividends);
+            const additionalSplit = applyAllowance(additionalBandDividends);
+
+            const dividendTaxDue = (basicSplit.taxable * taxYearData.dividendRates.basic)
+                + (higherSplit.taxable * taxYearData.dividendRates.higher)
+                + (additionalSplit.taxable * taxYearData.dividendRates.additional);
+            const dividendEffectiveRate = dividendOutsideIsa > 0 ? dividendTaxDue / dividendOutsideIsa : 0;
+            const dividendNet = Math.max(0, dividendOutsideIsa - dividendTaxDue);
+
+            const gains = Math.max(0, values.gains || 0);
+            const losses = Math.max(0, values.losses || 0);
+            const lossesUsed = Math.min(losses, gains);
+            const netGains = Math.max(0, gains - losses);
+            const aeaUsed = values.applyAea ? Math.min(taxYearData.cgtAnnualExempt, netGains) : 0;
+            const taxableGains = Math.max(0, netGains - aeaUsed);
+            const taxableIncomeForCgtBanding = taxableIncome + taxableDividends;
+            remainingBasicBand = Math.max(0, taxYearData.basicRateBand - Math.min(taxYearData.basicRateBand, taxableIncomeForCgtBanding));
+            const cgtBasicGains = Math.min(taxableGains, remainingBasicBand);
+            const cgtHigherGains = Math.max(0, taxableGains - cgtBasicGains);
+            const cgtTaxDue = (cgtBasicGains * taxYearData.cgtRates.basic) + (cgtHigherGains * taxYearData.cgtRates.higher);
+            const cgtEffectiveRate = netGains > 0 ? cgtTaxDue / netGains : 0;
+            const cgtNet = Math.max(0, netGains - cgtTaxDue);
+
+            return {
+                taxYear: values.taxYear,
+                dividend: {
+                    outsideIsa: dividendOutsideIsa,
+                    personalAllowanceUsed,
+                    allowanceUsed: dividendAllowanceUsed,
+                    taxable: taxableDividends,
+                    basicBand: basicBandDividends,
+                    higherBand: higherBandDividends,
+                    additionalBand: additionalBandDividends,
+                    basicTax: basicSplit.taxable * taxYearData.dividendRates.basic,
+                    higherTax: higherSplit.taxable * taxYearData.dividendRates.higher,
+                    additionalTax: additionalSplit.taxable * taxYearData.dividendRates.additional,
+                    taxDue: dividendTaxDue,
+                    effectiveRate: dividendEffectiveRate,
+                    net: dividendNet
+                },
+                cgt: {
+                    netGains,
+                    lossesUsed,
+                    aeaUsed,
+                    taxableGains,
+                    basicBandRemaining: remainingBasicBand,
+                    basicGains: cgtBasicGains,
+                    higherGains: cgtHigherGains,
+                    basicTax: cgtBasicGains * taxYearData.cgtRates.basic,
+                    higherTax: cgtHigherGains * taxYearData.cgtRates.higher,
+                    taxDue: cgtTaxDue,
+                    effectiveRate: cgtEffectiveRate,
+                    net: cgtNet
+                }
+            };
+        }
+
+        function updateOutputs(results) {
+            if (!results) return;
+            if (dividendTotalEl) dividendTotalEl.textContent = formatGbp(results.dividend.outsideIsa);
+            if (dividendPaUsedEl) dividendPaUsedEl.textContent = formatGbp(results.dividend.personalAllowanceUsed);
+            if (dividendAllowanceEl) dividendAllowanceEl.textContent = formatGbp(results.dividend.allowanceUsed);
+            if (dividendTaxableEl) dividendTaxableEl.textContent = formatGbp(results.dividend.taxable);
+            if (dividendBasicAmountEl) dividendBasicAmountEl.textContent = formatGbp(results.dividend.basicBand);
+            if (dividendBasicTaxEl) dividendBasicTaxEl.textContent = formatGbp(results.dividend.basicTax);
+            if (dividendHigherAmountEl) dividendHigherAmountEl.textContent = formatGbp(results.dividend.higherBand);
+            if (dividendHigherTaxEl) dividendHigherTaxEl.textContent = formatGbp(results.dividend.higherTax);
+            if (dividendAdditionalAmountEl) dividendAdditionalAmountEl.textContent = formatGbp(results.dividend.additionalBand);
+            if (dividendAdditionalTaxEl) dividendAdditionalTaxEl.textContent = formatGbp(results.dividend.additionalTax);
+            if (dividendTaxDueEl) dividendTaxDueEl.textContent = formatGbp(results.dividend.taxDue);
+            if (dividendEffectiveRateEl) dividendEffectiveRateEl.textContent = formatRate(results.dividend.effectiveRate);
+            if (dividendNetEl) dividendNetEl.textContent = formatGbp(results.dividend.net);
+
+            if (cgtNetGainsEl) cgtNetGainsEl.textContent = formatGbp(results.cgt.netGains);
+            if (cgtLossesUsedEl) cgtLossesUsedEl.textContent = formatGbp(results.cgt.lossesUsed);
+            if (cgtAeaEl) cgtAeaEl.textContent = formatGbp(results.cgt.aeaUsed);
+            if (cgtTaxableEl) cgtTaxableEl.textContent = formatGbp(results.cgt.taxableGains);
+            if (cgtBasicBandRemainingEl) cgtBasicBandRemainingEl.textContent = formatGbp(results.cgt.basicBandRemaining);
+            if (cgtBasicAmountEl) cgtBasicAmountEl.textContent = formatGbp(results.cgt.basicGains);
+            if (cgtBasicTaxEl) cgtBasicTaxEl.textContent = formatGbp(results.cgt.basicTax);
+            if (cgtHigherAmountEl) cgtHigherAmountEl.textContent = formatGbp(results.cgt.higherGains);
+            if (cgtHigherTaxEl) cgtHigherTaxEl.textContent = formatGbp(results.cgt.higherTax);
+            if (cgtTaxDueEl) cgtTaxDueEl.textContent = formatGbp(results.cgt.taxDue);
+            if (cgtEffectiveRateEl) cgtEffectiveRateEl.textContent = formatRate(results.cgt.effectiveRate);
+            if (cgtNetEl) cgtNetEl.textContent = formatGbp(results.cgt.net);
+        }
+
+        function loadState() {
+            const fallback = {
+                taxYear: '2025/26',
+                taxableIncome: 0,
+                dividends: 0,
+                dividendsExcluded: 0,
+                gains: 0,
+                losses: 0,
+                applyAea: true
+            };
+            const stored = storage.getItem(STORAGE_KEY);
+            if (!stored) return fallback;
+            try {
+                const parsed = JSON.parse(stored);
+                return {
+                    taxYear: parsed.taxYear || fallback.taxYear,
+                    taxableIncome: parseAmount(parsed.taxableIncome),
+                    dividends: parseAmount(parsed.dividends),
+                    dividendsExcluded: parseAmount(parsed.dividendsExcluded),
+                    gains: parseAmount(parsed.gains),
+                    losses: parseAmount(parsed.losses),
+                    applyAea: parsed.applyAea !== false
+                };
+            } catch (e) {
+                return fallback;
+            }
+        }
+
+        function saveState(state) {
+            storage.setItem(STORAGE_KEY, JSON.stringify(state));
+        }
+
+        function syncForm(state) {
+            if (taxYearSelect) taxYearSelect.value = state.taxYear;
+            if (taxableIncomeInput) taxableIncomeInput.value = formatInputValue(state.taxableIncome.toFixed(2), true);
+            if (dividendsInput) dividendsInput.value = formatInputValue(state.dividends.toFixed(2), true);
+            if (dividendsExcludedInput) dividendsExcludedInput.value = formatInputValue(state.dividendsExcluded.toFixed(2), true);
+            if (gainsInput) gainsInput.value = formatInputValue(state.gains.toFixed(2), true);
+            if (lossesInput) lossesInput.value = formatInputValue(state.losses.toFixed(2), true);
+            if (applyAeaToggle) applyAeaToggle.checked = state.applyAea !== false;
+        }
+
+        function readState() {
+            return {
+                taxYear: taxYearSelect ? taxYearSelect.value : '2025/26',
+                taxableIncome: taxableIncomeInput ? parseAmount(taxableIncomeInput.value) : 0,
+                dividends: dividendsInput ? parseAmount(dividendsInput.value) : 0,
+                dividendsExcluded: dividendsExcludedInput ? parseAmount(dividendsExcludedInput.value) : 0,
+                gains: gainsInput ? parseAmount(gainsInput.value) : 0,
+                losses: lossesInput ? parseAmount(lossesInput.value) : 0,
+                applyAea: applyAeaToggle ? applyAeaToggle.checked : true
+            };
+        }
+
+        function handleInput() {
+            const state = readState();
+            saveState(state);
+            const results = calculateFromValues(state);
+            updateOutputs(results);
+        }
+
+        function hideTooltip() {
+            if (!tooltipEl) return;
+            tooltipEl.style.display = 'none';
+            tooltipEl.textContent = '';
+            activeTooltipBtn = null;
+        }
+
+        function positionTooltip(btn) {
+            if (!tooltipEl) return;
+            const rect = btn.getBoundingClientRect();
+            tooltipEl.style.left = '0px';
+            tooltipEl.style.top = '0px';
+            tooltipEl.style.display = 'block';
+            const tooltipRect = tooltipEl.getBoundingClientRect();
+            let left = rect.left + window.scrollX + rect.width / 2 - tooltipRect.width / 2;
+            left = Math.max(8, Math.min(left, window.scrollX + window.innerWidth - tooltipRect.width - 8));
+            let top = rect.bottom + window.scrollY + 8;
+            if (top + tooltipRect.height > window.scrollY + window.innerHeight) {
+                top = rect.top + window.scrollY - tooltipRect.height - 8;
+            }
+            tooltipEl.style.left = `${left}px`;
+            tooltipEl.style.top = `${top}px`;
+        }
+
+        function showTooltip(btn) {
+            if (!tooltipEl) return;
+            const key = btn.dataset.tooltipKey;
+            const text = key ? I18n.t(key) : btn.dataset.tooltip;
+            if (!text) return;
+            tooltipEl.textContent = text;
+            tooltipEl.style.display = 'block';
+            positionTooltip(btn);
+            activeTooltipBtn = btn;
+        }
+
+        function initInfoButtons(panel) {
+            if (!panel) return;
+            panel.addEventListener('click', (e) => {
+                const btn = e.target.closest('.info-button');
+                if (!btn) return;
+                e.preventDefault();
+                e.stopPropagation();
+                if (activeTooltipBtn === btn) {
+                    hideTooltip();
+                    return;
+                }
+                showTooltip(btn);
+            });
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.info-button')) {
+                    hideTooltip();
+                }
+            });
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') hideTooltip();
+            });
+            window.addEventListener('scroll', hideTooltip, true);
+            window.addEventListener('resize', hideTooltip);
+        }
+
+        function init() {
+            if (!taxYearSelect) return;
+            const state = loadState();
+            syncForm(state);
+            updateOutputs(calculateFromValues(state));
+            [taxableIncomeInput, dividendsInput, dividendsExcludedInput, gainsInput, lossesInput].forEach(input => {
+                if (input) input.addEventListener('input', handleInput);
+            });
+            if (taxYearSelect) taxYearSelect.addEventListener('change', handleInput);
+            if (applyAeaToggle) applyAeaToggle.addEventListener('change', handleInput);
+            setupAmountInput('dividend-cgt-taxable-income');
+            setupAmountInput('dividend-cgt-dividends');
+            setupAmountInput('dividend-cgt-dividends-excluded');
+            setupAmountInput('dividend-cgt-gains');
+            setupAmountInput('dividend-cgt-losses');
+            initInfoButtons(document.getElementById('dividend-cgt'));
+        }
+
+        return { init, calculateFromValues, computeTaxableIncomeFromGross, getTaxYearData };
+    })();
+
+    if (typeof window !== 'undefined') {
+        window.DividendCgtCalculator = DividendCgtCalculator;
+    }
+
     function init() {
         updateCurrencyDisplays();
         document.addEventListener('baseCurrencyChanged', updateCurrencyDisplays);
@@ -1082,6 +1439,7 @@ const Calculator = (function() {
         CAGRCalculator.init();
         MortgageCalculator.init();
         SalaryCalculator.init();
+        DividendCgtCalculator.init();
     }
 
     return {
