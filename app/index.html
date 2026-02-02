@@ -699,15 +699,31 @@
                             </div>
                             <div class="form-grid">
                                 <div class="form-group">
-                                    <label for="salary-name" data-i18n="calculators.salary.labels.name">Salary name</label>
+                                    <label for="salary-name" class="label-with-info">
+                                        <span data-i18n="calculators.salary.labels.name">Salary name</span>
+                                        <button type="button" class="info-button" data-tooltip-key="calculators.salary.tooltips.name" aria-label="More info">i</button>
+                                    </label>
                                     <input type="text" id="salary-name">
                                 </div>
                                 <div class="form-group">
-                                    <label for="salary-annual" data-i18n="calculators.salary.labels.basicSalary">Annual basic salary (£)</label>
+                                    <label for="salary-annual" class="label-with-info">
+                                        <span data-i18n="calculators.salary.labels.basicSalary">Pay rate (£)</span>
+                                        <button type="button" class="info-button" data-tooltip-key="calculators.salary.tooltips.basicSalary" aria-label="More info">i</button>
+                                    </label>
                                     <input type="text" inputmode="decimal" id="salary-annual">
                                 </div>
                                 <div class="form-group">
-                                    <label for="salary-frequency" data-i18n="calculators.salary.labels.frequency">Payment frequency</label>
+                                    <label for="salary-annualized" class="label-with-info">
+                                        <span data-i18n="calculators.salary.labels.annualizedSalary">Calculated annual salary (£)</span>
+                                        <button type="button" class="info-button" data-tooltip-key="calculators.salary.tooltips.annualizedSalary" aria-label="More info">i</button>
+                                    </label>
+                                    <input type="text" id="salary-annualized" readonly>
+                                </div>
+                                <div class="form-group">
+                                    <label for="salary-frequency" class="label-with-info">
+                                        <span data-i18n="calculators.salary.labels.frequency">Payment frequency</span>
+                                        <button type="button" class="info-button" data-tooltip-key="calculators.salary.tooltips.frequency" aria-label="More info">i</button>
+                                    </label>
                                     <select id="salary-frequency">
                                         <option value="annual" data-i18n="calculators.salary.frequency.annual">Annual</option>
                                         <option value="monthly" data-i18n="calculators.salary.frequency.monthly">Monthly</option>
@@ -718,20 +734,32 @@
                                     </select>
                                 </div>
                                 <div class="form-group">
-                                    <label for="salary-hours" data-i18n="calculators.salary.labels.hoursPerWeek">Hours per week</label>
+                                    <label for="salary-hours" class="label-with-info">
+                                        <span data-i18n="calculators.salary.labels.hoursPerWeek">Hours per week</span>
+                                        <button type="button" class="info-button" data-tooltip-key="calculators.salary.tooltips.hoursPerWeek" aria-label="More info">i</button>
+                                    </label>
                                     <input type="text" inputmode="decimal" id="salary-hours">
                                 </div>
                                 <div class="form-group">
-                                    <label for="salary-pension" data-i18n="calculators.salary.labels.pension">Pension contribution (%)</label>
+                                    <label for="salary-pension" class="label-with-info">
+                                        <span data-i18n="calculators.salary.labels.pension">Pension contribution (%)</span>
+                                        <button type="button" class="info-button" data-tooltip-key="calculators.salary.tooltips.pension" aria-label="More info">i</button>
+                                    </label>
                                     <input type="text" inputmode="decimal" id="salary-pension">
                                 </div>
                                 <div class="form-group full-width">
-                                    <label data-i18n="calculators.salary.labels.allowances">Allowances (annual)</label>
+                                    <label class="label-with-info">
+                                        <span data-i18n="calculators.salary.labels.allowances">Allowances (annual)</span>
+                                        <button type="button" class="info-button" data-tooltip-key="calculators.salary.tooltips.allowances" aria-label="More info">i</button>
+                                    </label>
                                     <div id="salary-allowances" class="salary-allowances"></div>
                                     <button type="button" class="btn btn-secondary" id="add-salary-allowance" data-i18n="calculators.salary.actions.addAllowance">Add Allowance</button>
                                 </div>
                                 <div class="form-group">
-                                    <label for="salary-student-loan" data-i18n="calculators.salary.labels.studentLoan">Student loan plan</label>
+                                    <label for="salary-student-loan" class="label-with-info">
+                                        <span data-i18n="calculators.salary.labels.studentLoan">Student loan plan</span>
+                                        <button type="button" class="info-button" data-tooltip-key="calculators.salary.tooltips.studentLoan" aria-label="More info">i</button>
+                                    </label>
                                     <select id="salary-student-loan">
                                         <option value="none" data-i18n="calculators.salary.studentLoan.none">None</option>
                                         <option value="plan1" data-i18n="calculators.salary.studentLoan.plan1">Plan 1</option>
@@ -742,19 +770,31 @@
                                     </select>
                                 </div>
                                 <div class="form-group">
-                                    <label for="salary-age" data-i18n="calculators.salary.labels.age">Age</label>
+                                    <label for="salary-age" class="label-with-info">
+                                        <span data-i18n="calculators.salary.labels.age">Age</span>
+                                        <button type="button" class="info-button" data-tooltip-key="calculators.salary.tooltips.age" aria-label="More info">i</button>
+                                    </label>
                                     <input type="text" inputmode="numeric" id="salary-age">
                                 </div>
                                 <div class="form-group">
-                                    <label for="salary-tax-code" data-i18n="calculators.salary.labels.taxCode">Tax code</label>
+                                    <label for="salary-tax-code" class="label-with-info">
+                                        <span data-i18n="calculators.salary.labels.taxCode">Tax code</span>
+                                        <button type="button" class="info-button" data-tooltip-key="calculators.salary.tooltips.taxCode" aria-label="More info">i</button>
+                                    </label>
                                     <input type="text" id="salary-tax-code">
                                 </div>
                                 <div class="form-group">
-                                    <label for="salary-benefits" data-i18n="calculators.salary.labels.benefits">Paid benefits (annual £)</label>
+                                    <label for="salary-benefits" class="label-with-info">
+                                        <span data-i18n="calculators.salary.labels.benefits">Paid benefits (annual £)</span>
+                                        <button type="button" class="info-button" data-tooltip-key="calculators.salary.tooltips.benefits" aria-label="More info">i</button>
+                                    </label>
                                     <input type="text" inputmode="decimal" id="salary-benefits">
                                 </div>
                                 <div class="form-group">
-                                    <label for="salary-other-deductions" data-i18n="calculators.salary.labels.otherDeductions">Other deductions (annual £)</label>
+                                    <label for="salary-other-deductions" class="label-with-info">
+                                        <span data-i18n="calculators.salary.labels.otherDeductions">Other deductions (annual £)</span>
+                                        <button type="button" class="info-button" data-tooltip-key="calculators.salary.tooltips.otherDeductions" aria-label="More info">i</button>
+                                    </label>
                                     <input type="text" inputmode="decimal" id="salary-other-deductions">
                                 </div>
                             </div>

@@ -289,6 +289,40 @@
             color: var(--text-primary);
         }
 
+        .label-with-info {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .info-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 18px;
+            height: 18px;
+            border-radius: 999px;
+            border: 1px solid var(--primary-blue);
+            color: var(--primary-blue);
+            background: var(--background-tertiary);
+            font-size: 0.7rem;
+            font-weight: 700;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        .info-button:hover,
+        .info-button:focus {
+            background: rgba(59, 130, 246, 0.12);
+            outline: none;
+        }
+
+        .form-group input[readonly] {
+            background: var(--background-secondary);
+            color: var(--text-muted);
+            cursor: not-allowed;
+        }
+
         .form-group input, .form-group select {
             padding: 0.75rem;
             border: 2px solid var(--border-color);
@@ -1148,7 +1182,9 @@
             font-size: 0.75rem;
             pointer-events: none;
             z-index: 10000;
-            white-space: nowrap;
+            max-width: 260px;
+            white-space: normal;
+            line-height: 1.4;
 }
 
         /* Hide portfolio menu toggle on large screens */

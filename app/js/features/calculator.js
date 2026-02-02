@@ -345,6 +345,7 @@ const Calculator = (function() {
         const formTitle = document.getElementById('salary-form-title');
         const nameInput = document.getElementById('salary-name');
         const annualInput = document.getElementById('salary-annual');
+        const annualizedInput = document.getElementById('salary-annualized');
         const frequencySelect = document.getElementById('salary-frequency');
         const hoursInput = document.getElementById('salary-hours');
         const pensionInput = document.getElementById('salary-pension');
@@ -389,6 +390,7 @@ const Calculator = (function() {
         const totalTakeHomeEl = document.getElementById('salary-total-take-home');
         const totalTaxEl = document.getElementById('salary-total-tax');
         const totalDeductionsEl = document.getElementById('salary-total-deductions');
+        const tooltipEl = document.getElementById('tooltip');
         const storage = typeof StorageUtils !== 'undefined' ? StorageUtils.getStorage() : window.localStorage;
         const frequencies = {
             annual: 1,
@@ -399,6 +401,7 @@ const Calculator = (function() {
         };
         let entries = [];
         let currentSalaryId = 'summary';
+        let activeTooltipBtn = null;
 
         function formatSalaryCurrency(amount) {
             return I18n.formatCurrency(amount, 'GBP');
@@ -411,6 +414,24 @@ const Calculator = (function() {
         function formatPercent(value, base) {
             if (!base || base <= 0) return '0%';
             return `${(value / base * 100).toFixed(2)}%`;
+        }
+
+        function getAnnualSalary(entry) {
+            const rate = Math.max(0, parseFloat(entry.rateAmount) || 0);
+            const frequencyValue = entry.frequency || 'monthly';
+            if (frequencyValue === 'hourly') {
+                const hoursPerWeek = Math.max(0, parseFloat(entry.hoursPerWeek) || 0);
+                return rate * hoursPerWeek * 52;
+            }
+            return rate * (frequencies[frequencyValue] || 1);
+        }
+
+        function updateAnnualizedInput(entry) {
+            if (!annualizedInput) return;
+            const annualSalary = getAnnualSalary(entry);
+            annualizedInput.value = annualSalary
+                ? formatInputValue(annualSalary.toFixed(2), true)
+                : '';
         }
 
         function setupFormattedInput(input) {
@@ -428,6 +449,7 @@ const Calculator = (function() {
             return {
                 id,
                 name: '',
+                rateAmount: 0,
                 annualSalary: 0,
                 pensionPercent: 0,
                 studentLoanPlan: 'none',
@@ -461,6 +483,10 @@ const Calculator = (function() {
                 if (entry.hoursPerWeek === undefined) {
                     entry.hoursPerWeek = 37.5;
                 }
+                if (entry.rateAmount === undefined) {
+                    entry.rateAmount = entry.annualSalary || 0;
+                }
+                entry.annualSalary = getAnnualSalary(entry);
             });
         }
 
@@ -540,7 +566,7 @@ const Calculator = (function() {
         }
 
         function calculateEntry(entry) {
-            const basicSalary = Math.max(0, parseFloat(entry.annualSalary) || 0);
+            const basicSalary = Math.max(0, getAnnualSalary(entry));
             const pensionPercent = Math.max(0, parseFloat(entry.pensionPercent) || 0);
             const pensionContribution = basicSalary * (pensionPercent / 100);
             const allowancesTotal = (entry.allowances || []).reduce((sum, allowance) => {
@@ -694,6 +720,7 @@ const Calculator = (function() {
         function setActiveTab(id) {
             currentSalaryId = id;
             renderTabs();
+            hideTooltip();
             if (currentSalaryId === 'summary') {
                 if (summaryPanel) summaryPanel.style.display = 'block';
                 if (formPanel) formPanel.style.display = 'none';
@@ -714,7 +741,8 @@ const Calculator = (function() {
             }
             if (nameInput) nameInput.value = entry.name || '';
             if (annualInput) {
-                annualInput.value = entry.annualSalary ? formatInputValue(entry.annualSalary.toFixed(2), true) : '';
+                const rateAmount = entry.rateAmount ?? entry.annualSalary;
+                annualInput.value = rateAmount ? formatInputValue(Number(rateAmount).toFixed(2), true) : '';
             }
             if (frequencySelect) frequencySelect.value = entry.frequency || 'monthly';
             if (hoursInput) hoursInput.value = entry.hoursPerWeek ?? '';
@@ -725,6 +753,7 @@ const Calculator = (function() {
             if (benefitsInput) benefitsInput.value = entry.benefits || '';
             if (otherDeductionsInput) otherDeductionsInput.value = entry.otherDeductions || '';
             renderAllowances(entry);
+            updateAnnualizedInput(entry);
             if (summaryToggle) summaryToggle.checked = entry.showInSummary !== false;
             if (removeSalaryBtn) removeSalaryBtn.style.display = entries.length > 1 ? 'inline-flex' : 'none';
         }
@@ -754,11 +783,12 @@ const Calculator = (function() {
             const entry = getEntryById(currentSalaryId);
             if (!entry) return;
             entry.name = nameInput ? nameInput.value.trim() : entry.name;
-            entry.annualSalary = annualInput && annualInput.value !== '' ? parseFormattedNumber(annualInput.value) : 0;
+            entry.rateAmount = annualInput && annualInput.value !== '' ? parseFormattedNumber(annualInput.value) : 0;
             entry.frequency = frequencySelect ? frequencySelect.value : entry.frequency;
             entry.hoursPerWeek = hoursInput && hoursInput.value !== ''
                 ? parseFormattedNumber(hoursInput.value)
                 : 0;
+            entry.annualSalary = getAnnualSalary(entry);
             entry.pensionPercent = pensionInput && pensionInput.value !== '' ? parseFormattedNumber(pensionInput.value) : 0;
             entry.studentLoanPlan = studentLoanSelect ? studentLoanSelect.value : entry.studentLoanPlan;
             entry.age = ageInput && ageInput.value !== '' ? parseInt(ageInput.value, 10) || 0 : 0;
@@ -773,6 +803,7 @@ const Calculator = (function() {
             if (formTitle) {
                 formTitle.textContent = entry.name || I18n.t('calculators.salary.labels.salary');
             }
+            updateAnnualizedInput(entry);
             updateFormResults(entry);
             updateSummary();
             renderTabs();
@@ -823,6 +854,66 @@ const Calculator = (function() {
             updateSummary();
         }
 
+        function hideTooltip() {
+            if (!tooltipEl) return;
+            tooltipEl.style.display = 'none';
+            tooltipEl.textContent = '';
+            activeTooltipBtn = null;
+        }
+
+        function positionTooltip(btn) {
+            if (!tooltipEl) return;
+            const rect = btn.getBoundingClientRect();
+            tooltipEl.style.left = '0px';
+            tooltipEl.style.top = '0px';
+            tooltipEl.style.display = 'block';
+            const tooltipRect = tooltipEl.getBoundingClientRect();
+            let left = rect.left + window.scrollX + rect.width / 2 - tooltipRect.width / 2;
+            left = Math.max(8, Math.min(left, window.scrollX + window.innerWidth - tooltipRect.width - 8));
+            let top = rect.bottom + window.scrollY + 8;
+            if (top + tooltipRect.height > window.scrollY + window.innerHeight) {
+                top = rect.top + window.scrollY - tooltipRect.height - 8;
+            }
+            tooltipEl.style.left = `${left}px`;
+            tooltipEl.style.top = `${top}px`;
+        }
+
+        function showTooltip(btn) {
+            if (!tooltipEl) return;
+            const key = btn.dataset.tooltipKey;
+            const text = key ? I18n.t(key) : btn.dataset.tooltip;
+            if (!text) return;
+            tooltipEl.textContent = text;
+            tooltipEl.style.display = 'block';
+            positionTooltip(btn);
+            activeTooltipBtn = btn;
+        }
+
+        function initInfoButtons() {
+            if (!formPanel) return;
+            formPanel.addEventListener('click', (e) => {
+                const btn = e.target.closest('.info-button');
+                if (!btn) return;
+                e.preventDefault();
+                e.stopPropagation();
+                if (activeTooltipBtn === btn) {
+                    hideTooltip();
+                    return;
+                }
+                showTooltip(btn);
+            });
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.info-button')) {
+                    hideTooltip();
+                }
+            });
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') hideTooltip();
+            });
+            window.addEventListener('scroll', hideTooltip, true);
+            window.addEventListener('resize', hideTooltip);
+        }
+
         function init() {
             if (!salaryTabs) return;
             loadEntries();
@@ -830,6 +921,7 @@ const Calculator = (function() {
             renderTabs();
             updateSummary();
             setActiveTab(currentSalaryId);
+            initInfoButtons();
             if (addSalaryBtn) {
                 addSalaryBtn.addEventListener('click', addEntry);
             }
@@ -871,7 +963,7 @@ const Calculator = (function() {
 
         function exportData(format) {
             if (format === 'csv') {
-                const headers = ['id', 'name', 'annualSalary', 'pensionPercent', 'studentLoanPlan', 'age', 'taxCode', 'benefits', 'hoursPerWeek', 'frequency', 'showInSummary', 'allowances', 'otherDeductions'];
+                const headers = ['id', 'name', 'rateAmount', 'annualSalary', 'pensionPercent', 'studentLoanPlan', 'age', 'taxCode', 'benefits', 'hoursPerWeek', 'frequency', 'showInSummary', 'allowances', 'otherDeductions'];
                 const rows = entries.map(entry => headers.map(key => {
                     if (key === 'allowances') {
                         return `"${JSON.stringify(entry.allowances || []).replace(/"/g, '""')}"`;
@@ -903,25 +995,36 @@ const Calculator = (function() {
             if (!Array.isArray(imported)) {
                 imported = [];
             }
-            entries = imported.map(item => ({
-                id: item.id || createEntry().id,
-                name: item.name || '',
-                annualSalary: parseFloat(item.annualSalary) || 0,
-                pensionPercent: parseFloat(item.pensionPercent) || 0,
-                studentLoanPlan: item.studentLoanPlan || 'none',
-                age: parseInt(item.age, 10) || 30,
-                taxCode: item.taxCode || '1257L',
-                benefits: parseFloat(item.benefits) || 0,
-                hoursPerWeek: parseFloat(item.hoursPerWeek) || 0,
-                frequency: item.frequency || 'monthly',
-                showInSummary: item.showInSummary === undefined ? true : String(item.showInSummary) !== 'false',
-                allowances: Array.isArray(item.allowances)
-                    ? item.allowances
-                    : (() => {
-                        try { return JSON.parse(item.allowances || '[]'); } catch (e) { return []; }
-                    })(),
-                otherDeductions: parseFloat(item.otherDeductions) || 0
-            }));
+            entries = imported.map(item => {
+                const frequency = item.frequency || 'monthly';
+                const hoursPerWeek = parseFloat(item.hoursPerWeek) || 0;
+                const rateAmount = parseFloat(item.rateAmount);
+                const baseRate = Number.isFinite(rateAmount)
+                    ? rateAmount
+                    : (parseFloat(item.annualSalary) || 0);
+                const entry = {
+                    id: item.id || createEntry().id,
+                    name: item.name || '',
+                    rateAmount: baseRate,
+                    annualSalary: parseFloat(item.annualSalary) || 0,
+                    pensionPercent: parseFloat(item.pensionPercent) || 0,
+                    studentLoanPlan: item.studentLoanPlan || 'none',
+                    age: parseInt(item.age, 10) || 30,
+                    taxCode: item.taxCode || '1257L',
+                    benefits: parseFloat(item.benefits) || 0,
+                    hoursPerWeek,
+                    frequency,
+                    showInSummary: item.showInSummary === undefined ? true : String(item.showInSummary) !== 'false',
+                    allowances: Array.isArray(item.allowances)
+                        ? item.allowances
+                        : (() => {
+                            try { return JSON.parse(item.allowances || '[]'); } catch (e) { return []; }
+                        })(),
+                    otherDeductions: parseFloat(item.otherDeductions) || 0
+                };
+                entry.annualSalary = getAnnualSalary(entry);
+                return entry;
+            });
             if (entries.length === 0) entries = [createEntry()];
             saveEntries();
             setActiveTab('summary');
