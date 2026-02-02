@@ -345,6 +345,7 @@ const Calculator = (function() {
         const formTitle = document.getElementById('salary-form-title');
         const nameInput = document.getElementById('salary-name');
         const annualInput = document.getElementById('salary-annual');
+        const rateFrequencySelect = document.getElementById('salary-rate-frequency');
         const annualizedInput = document.getElementById('salary-annualized');
         const frequencySelect = document.getElementById('salary-frequency');
         const hoursInput = document.getElementById('salary-hours');
@@ -417,7 +418,7 @@ const Calculator = (function() {
         }
 
         function getAnnualDivisor(entry) {
-            const frequencyValue = entry.frequency || 'monthly';
+            const frequencyValue = entry.rateFrequency || 'annual';
             if (frequencyValue === 'hourly') {
                 const hoursPerWeek = Math.max(0, parseFloat(entry.hoursPerWeek) || 0);
                 return Math.max(1, hoursPerWeek * 52);
@@ -454,6 +455,7 @@ const Calculator = (function() {
                 id,
                 name: '',
                 rateAmount: 0,
+                rateFrequency: 'annual',
                 annualSalary: 0,
                 pensionPercent: 0,
                 studentLoanPlan: 'none',
@@ -486,6 +488,9 @@ const Calculator = (function() {
                 }
                 if (entry.hoursPerWeek === undefined) {
                     entry.hoursPerWeek = 37.5;
+                }
+                if (!entry.rateFrequency) {
+                    entry.rateFrequency = 'annual';
                 }
                 if (entry.rateAmount === undefined) {
                     entry.rateAmount = entry.annualSalary
@@ -750,6 +755,7 @@ const Calculator = (function() {
                 const rateAmount = entry.rateAmount ?? entry.annualSalary;
                 annualInput.value = rateAmount ? formatInputValue(Number(rateAmount).toFixed(2), true) : '';
             }
+            if (rateFrequencySelect) rateFrequencySelect.value = entry.rateFrequency || 'annual';
             if (frequencySelect) frequencySelect.value = entry.frequency || 'monthly';
             if (hoursInput) hoursInput.value = entry.hoursPerWeek ?? '';
             if (pensionInput) pensionInput.value = entry.pensionPercent || '';
@@ -790,6 +796,7 @@ const Calculator = (function() {
             if (!entry) return;
             entry.name = nameInput ? nameInput.value.trim() : entry.name;
             entry.rateAmount = annualInput && annualInput.value !== '' ? parseFormattedNumber(annualInput.value) : 0;
+            entry.rateFrequency = rateFrequencySelect ? rateFrequencySelect.value : entry.rateFrequency;
             entry.frequency = frequencySelect ? frequencySelect.value : entry.frequency;
             entry.hoursPerWeek = hoursInput && hoursInput.value !== ''
                 ? parseFormattedNumber(hoursInput.value)
@@ -962,14 +969,14 @@ const Calculator = (function() {
             [nameInput, annualInput, hoursInput, pensionInput, ageInput, taxCodeInput, benefitsInput, otherDeductionsInput].forEach(input => {
                 if (input) input.addEventListener('input', handleFieldUpdate);
             });
-            [frequencySelect, studentLoanSelect].forEach(select => {
+            [rateFrequencySelect, frequencySelect, studentLoanSelect].forEach(select => {
                 if (select) select.addEventListener('change', handleFieldUpdate);
             });
         }
 
         function exportData(format) {
             if (format === 'csv') {
-                const headers = ['id', 'name', 'rateAmount', 'annualSalary', 'pensionPercent', 'studentLoanPlan', 'age', 'taxCode', 'benefits', 'hoursPerWeek', 'frequency', 'showInSummary', 'allowances', 'otherDeductions'];
+                const headers = ['id', 'name', 'rateAmount', 'rateFrequency', 'annualSalary', 'pensionPercent', 'studentLoanPlan', 'age', 'taxCode', 'benefits', 'hoursPerWeek', 'frequency', 'showInSummary', 'allowances', 'otherDeductions'];
                 const rows = entries.map(entry => headers.map(key => {
                     if (key === 'allowances') {
                         return `"${JSON.stringify(entry.allowances || []).replace(/"/g, '""')}"`;
@@ -1002,11 +1009,12 @@ const Calculator = (function() {
                 imported = [];
             }
             entries = imported.map(item => {
+                const rateFrequency = item.rateFrequency || 'annual';
                 const frequency = item.frequency || 'monthly';
                 const hoursPerWeek = parseFloat(item.hoursPerWeek) || 0;
                 const rateAmount = parseFloat(item.rateAmount);
                 const annualSalary = parseFloat(item.annualSalary) || 0;
-                const divisor = getAnnualDivisor({ frequency, hoursPerWeek });
+                const divisor = getAnnualDivisor({ rateFrequency, hoursPerWeek });
                 const baseRate = Number.isFinite(rateAmount)
                     ? rateAmount
                     : (annualSalary ? annualSalary / divisor : 0);
@@ -1014,6 +1022,7 @@ const Calculator = (function() {
                     id: item.id || createEntry().id,
                     name: item.name || '',
                     rateAmount: baseRate,
+                    rateFrequency,
                     annualSalary,
                     pensionPercent: parseFloat(item.pensionPercent) || 0,
                     studentLoanPlan: item.studentLoanPlan || 'none',

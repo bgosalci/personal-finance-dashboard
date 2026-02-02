@@ -18,6 +18,12 @@ function buildSalaryDom() {
     <div id="salary-form-title"></div>
     <input id="salary-name" />
     <input id="salary-annual" />
+    <select id="salary-rate-frequency">
+      <option value="annual">Annual</option>
+      <option value="monthly">Monthly</option>
+      <option value="weekly">Weekly</option>
+      <option value="hourly">Hourly</option>
+    </select>
     <input id="salary-annualized" />
     <select id="salary-frequency">
       <option value="monthly">Monthly</option>
@@ -77,6 +83,7 @@ test('salary calculator outputs tax percentages', () => {
     {
       id: 'salary-test',
       name: 'Test',
+      rateFrequency: 'annual',
       annualSalary: 50000,
       pensionPercent: 0,
       studentLoanPlan: 'none',
@@ -115,6 +122,7 @@ test('salary calculator annualizes hourly rate based on hours per week', () => {
       id: 'salary-hourly',
       name: 'Hourly',
       rateAmount: 20,
+      rateFrequency: 'hourly',
       annualSalary: 0,
       pensionPercent: 0,
       studentLoanPlan: 'none',
@@ -148,6 +156,7 @@ test('salary calculator annualizes weekly rate', () => {
       id: 'salary-weekly',
       name: 'Weekly',
       rateAmount: 750,
+      rateFrequency: 'weekly',
       annualSalary: 0,
       pensionPercent: 0,
       studentLoanPlan: 'none',

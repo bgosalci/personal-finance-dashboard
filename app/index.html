@@ -713,6 +713,20 @@
                                     <input type="text" inputmode="decimal" id="salary-annual">
                                 </div>
                                 <div class="form-group">
+                                    <label for="salary-rate-frequency" class="label-with-info">
+                                        <span data-i18n="calculators.salary.labels.rateFrequency">Pay rate frequency</span>
+                                        <button type="button" class="info-button" data-tooltip-key="calculators.salary.tooltips.rateFrequency" aria-label="More info">i</button>
+                                    </label>
+                                    <select id="salary-rate-frequency">
+                                        <option value="annual" data-i18n="calculators.salary.frequency.annual">Annual</option>
+                                        <option value="monthly" data-i18n="calculators.salary.frequency.monthly">Monthly</option>
+                                        <option value="fortnightly" data-i18n="calculators.salary.frequency.fortnightly">Fortnightly</option>
+                                        <option value="weekly" data-i18n="calculators.salary.frequency.weekly">Weekly</option>
+                                        <option value="daily" data-i18n="calculators.salary.frequency.daily">Daily</option>
+                                        <option value="hourly" data-i18n="calculators.salary.frequency.hourly">Hourly</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
                                     <label for="salary-annualized" class="label-with-info">
                                         <span data-i18n="calculators.salary.labels.annualizedSalary">Calculated annual salary (£)</span>
                                         <button type="button" class="info-button" data-tooltip-key="calculators.salary.tooltips.annualizedSalary" aria-label="More info">i</button>
@@ -721,8 +735,8 @@
                                 </div>
                                 <div class="form-group">
                                     <label for="salary-frequency" class="label-with-info">
-                                        <span data-i18n="calculators.salary.labels.frequency">Payment frequency</span>
-                                        <button type="button" class="info-button" data-tooltip-key="calculators.salary.tooltips.frequency" aria-label="More info">i</button>
+                                        <span data-i18n="calculators.salary.labels.paymentFrequency">Payment frequency</span>
+                                        <button type="button" class="info-button" data-tooltip-key="calculators.salary.tooltips.paymentFrequency" aria-label="More info">i</button>
                                     </label>
                                     <select id="salary-frequency">
                                         <option value="annual" data-i18n="calculators.salary.frequency.annual">Annual</option>
