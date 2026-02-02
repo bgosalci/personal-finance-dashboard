@@ -4,6 +4,7 @@ const { JSDOM } = require('jsdom');
 const vm = require('vm');
 
 const i18nCode = fs.readFileSync(path.resolve(__dirname, '../app/js/core/i18n.js'), 'utf8');
+const ukTaxYearsCode = fs.readFileSync(path.resolve(__dirname, '../app/js/data/ukTaxYears.js'), 'utf8');
 const calculatorCode = fs.readFileSync(path.resolve(__dirname, '../app/js/features/calculator.js'), 'utf8');
 
 function buildSalaryDom() {
@@ -81,6 +82,7 @@ test('salary calculator outputs tax percentages', () => {
   const dom = new JSDOM(`<!DOCTYPE html><html><body>${buildSalaryDom()}</body></html>`, { url: 'http://localhost' });
   const context = vm.createContext(dom.window);
   vm.runInContext(i18nCode, context);
+  vm.runInContext(ukTaxYearsCode, context);
   dom.window.localStorage.setItem('pf_salary_entries', JSON.stringify([
     {
       id: 'salary-test',
@@ -119,6 +121,7 @@ test('salary calculator annualizes hourly rate based on hours per week', () => {
   const dom = new JSDOM(`<!DOCTYPE html><html><body>${buildSalaryDom()}</body></html>`, { url: 'http://localhost' });
   const context = vm.createContext(dom.window);
   vm.runInContext(i18nCode, context);
+  vm.runInContext(ukTaxYearsCode, context);
   dom.window.localStorage.setItem('pf_salary_entries', JSON.stringify([
     {
       id: 'salary-hourly',
@@ -153,6 +156,7 @@ test('salary calculator annualizes weekly rate', () => {
   const dom = new JSDOM(`<!DOCTYPE html><html><body>${buildSalaryDom()}</body></html>`, { url: 'http://localhost' });
   const context = vm.createContext(dom.window);
   vm.runInContext(i18nCode, context);
+  vm.runInContext(ukTaxYearsCode, context);
   dom.window.localStorage.setItem('pf_salary_entries', JSON.stringify([
     {
       id: 'salary-weekly',
@@ -187,6 +191,7 @@ test('salary calculator annualizes daily rate using workdays only', () => {
   const dom = new JSDOM(`<!DOCTYPE html><html><body>${buildSalaryDom()}</body></html>`, { url: 'http://localhost' });
   const context = vm.createContext(dom.window);
   vm.runInContext(i18nCode, context);
+  vm.runInContext(ukTaxYearsCode, context);
   dom.window.localStorage.setItem('pf_salary_entries', JSON.stringify([
     {
       id: 'salary-daily',
@@ -215,4 +220,50 @@ test('salary calculator annualizes daily rate using workdays only', () => {
 
   const annualized = dom.window.document.getElementById('salary-annualized').value;
   expect(annualized).toBe('52,000.00');
+});
+
+test('dividend calculator matches GOV.UK dividend example', () => {
+  const dom = new JSDOM(`<!DOCTYPE html><html><body></body></html>`, { url: 'http://localhost' });
+  const context = vm.createContext(dom.window);
+  vm.runInContext(i18nCode, context);
+  vm.runInContext(ukTaxYearsCode, context);
+  vm.runInContext(calculatorCode, context);
+
+  vm.runInContext('const exampleTaxableIncome = DividendCgtCalculator.computeTaxableIncomeFromGross(29570, DividendCgtCalculator.getTaxYearData("2025/26"));', context);
+  const result = vm.runInContext(
+    'DividendCgtCalculator.calculateFromValues({ taxYear: "2025/26", taxableIncome: exampleTaxableIncome, dividends: 3000, dividendsExcluded: 0, gains: 0, losses: 0, applyAea: true })',
+    context
+  );
+
+  expect(result.dividend.taxDue).toBeCloseTo(218.75, 2);
+});
+
+test('CGT calculator matches GOV.UK example within basic band', () => {
+  const dom = new JSDOM(`<!DOCTYPE html><html><body></body></html>`, { url: 'http://localhost' });
+  const context = vm.createContext(dom.window);
+  vm.runInContext(i18nCode, context);
+  vm.runInContext(ukTaxYearsCode, context);
+  vm.runInContext(calculatorCode, context);
+
+  const result = vm.runInContext(
+    'DividendCgtCalculator.calculateFromValues({ taxYear: "2025/26", taxableIncome: 20000, dividends: 0, dividendsExcluded: 0, gains: 12600, losses: 0, applyAea: true })',
+    context
+  );
+
+  expect(result.cgt.taxDue).toBeCloseTo(1728, 2);
+});
+
+test('CGT calculator matches GOV.UK example across bands', () => {
+  const dom = new JSDOM(`<!DOCTYPE html><html><body></body></html>`, { url: 'http://localhost' });
+  const context = vm.createContext(dom.window);
+  vm.runInContext(i18nCode, context);
+  vm.runInContext(ukTaxYearsCode, context);
+  vm.runInContext(calculatorCode, context);
+
+  const result = vm.runInContext(
+    'DividendCgtCalculator.calculateFromValues({ taxYear: "2025/26", taxableIncome: 20000, dividends: 0, dividendsExcluded: 0, gains: 52600, losses: 0, applyAea: true })',
+    context
+  );
+
+  expect(result.cgt.taxDue).toBeCloseTo(10842, 2);
 });

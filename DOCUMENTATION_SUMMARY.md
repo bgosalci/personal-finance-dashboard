@@ -24,7 +24,7 @@ This document summarizes the Personal Finance Dashboard codebase and the support
    - Export/import for long-term history.
 
 4. **Financial Calculators**
-   - Loan, investment, CAGR, mortgage, and salary calculators.
+   - Loan, investment, CAGR, mortgage, salary, and Dividend & CGT calculators.
 
 5. **Stock Performance Tracker**
    - Multi-year price tracking with growth analysis.

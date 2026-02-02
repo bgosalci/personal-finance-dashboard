@@ -486,6 +486,7 @@
                     <button class="sub-nav-tab" data-subtab="cagr" data-i18n="calculators.tabs.cagr">CAGR Calculator</button>
                     <button class="sub-nav-tab" data-subtab="mortgage" data-i18n="calculators.tabs.mortgage">Mortgage Calculator</button>
                     <button class="sub-nav-tab" data-subtab="salary" data-i18n="calculators.tabs.salary">Salary Calculator</button>
+                    <button class="sub-nav-tab" data-subtab="dividend-cgt" data-i18n="calculators.tabs.dividendCgt">Dividend &amp; CGT</button>
                 </div>
 
                 <!-- Loan Calculator Sub-Tab -->
@@ -936,6 +937,177 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Dividend & CGT Calculator Sub-Tab -->
+                <div id="dividend-cgt" class="sub-tab-content">
+                    <div class="calculator-section">
+                        <div class="section-header">
+                            <h3 class="calculator-title" data-i18n="calculators.tabs.dividendCgt">Dividend &amp; CGT</h3>
+                        </div>
+                        <p class="form-hint" data-i18n="calculators.dividendCgt.hint">Estimate UK dividend and capital gains tax based on your taxable income and annual gains.</p>
+                        <div class="form-grid">
+                            <div class="form-group full-width">
+                                <h4 class="section-subtitle" data-i18n="calculators.dividendCgt.sections.taxContext">Tax context</h4>
+                            </div>
+                            <div class="form-group">
+                                <label for="dividend-cgt-tax-year" class="label-with-info">
+                                    <span data-i18n="calculators.dividendCgt.labels.taxYear">Tax year</span>
+                                    <button type="button" class="info-button" data-tooltip-key="calculators.dividendCgt.tooltips.taxYear" aria-label="More info">i</button>
+                                </label>
+                                <select id="dividend-cgt-tax-year">
+                                    <option value="2025/26">2025/26</option>
+                                    <option value="2026/27">2026/27</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="dividend-cgt-taxable-income" class="label-with-info">
+                                    <span data-i18n="calculators.dividendCgt.labels.taxableIncome">Taxable income (excluding dividends and capital gains)</span>
+                                    <button type="button" class="info-button" data-tooltip-key="calculators.dividendCgt.tooltips.taxableIncome" aria-label="More info">i</button>
+                                </label>
+                                <input type="text" inputmode="decimal" id="dividend-cgt-taxable-income">
+                            </div>
+                            <div class="form-group full-width">
+                                <h4 class="section-subtitle" data-i18n="calculators.dividendCgt.sections.dividends">Dividends</h4>
+                            </div>
+                            <div class="form-group">
+                                <label for="dividend-cgt-dividends" class="label-with-info">
+                                    <span data-i18n="calculators.dividendCgt.labels.dividends">Total dividend income (annual, gross)</span>
+                                    <button type="button" class="info-button" data-tooltip-key="calculators.dividendCgt.tooltips.dividends" aria-label="More info">i</button>
+                                </label>
+                                <input type="text" inputmode="decimal" id="dividend-cgt-dividends">
+                            </div>
+                            <div class="form-group">
+                                <label for="dividend-cgt-dividends-excluded" class="label-with-info">
+                                    <span data-i18n="calculators.dividendCgt.labels.dividendsExcluded">Dividends inside ISA / pension (excluded)</span>
+                                    <button type="button" class="info-button" data-tooltip-key="calculators.dividendCgt.tooltips.dividendsExcluded" aria-label="More info">i</button>
+                                </label>
+                                <input type="text" inputmode="decimal" id="dividend-cgt-dividends-excluded">
+                            </div>
+                            <div class="form-group full-width">
+                                <h4 class="section-subtitle" data-i18n="calculators.dividendCgt.sections.gains">Capital gains</h4>
+                            </div>
+                            <div class="form-group">
+                                <label for="dividend-cgt-gains" class="label-with-info">
+                                    <span data-i18n="calculators.dividendCgt.labels.gains">Total chargeable gains (annual)</span>
+                                    <button type="button" class="info-button" data-tooltip-key="calculators.dividendCgt.tooltips.gains" aria-label="More info">i</button>
+                                </label>
+                                <input type="text" inputmode="decimal" id="dividend-cgt-gains">
+                            </div>
+                            <div class="form-group">
+                                <label for="dividend-cgt-losses" class="label-with-info">
+                                    <span data-i18n="calculators.dividendCgt.labels.losses">Capital losses to offset (annual)</span>
+                                    <button type="button" class="info-button" data-tooltip-key="calculators.dividendCgt.tooltips.losses" aria-label="More info">i</button>
+                                </label>
+                                <input type="text" inputmode="decimal" id="dividend-cgt-losses">
+                            </div>
+                            <div class="form-group full-width">
+                                <label class="summary-toggle label-with-info">
+                                    <input type="checkbox" id="dividend-cgt-apply-aea" checked>
+                                    <span data-i18n="calculators.dividendCgt.labels.applyAea">Apply annual exempt amount automatically</span>
+                                    <button type="button" class="info-button" data-tooltip-key="calculators.dividendCgt.tooltips.applyAea" aria-label="More info">i</button>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="result-display dividend-cgt-results">
+                            <div class="salary-breakdown-grid">
+                                <div class="salary-breakdown-panel">
+                                    <div class="salary-breakdown-header">
+                                        <h4 class="section-subtitle" data-i18n="calculators.dividendCgt.results.dividendTitle">Dividend Tax Breakdown (Annual)</h4>
+                                    </div>
+                                    <div class="result-item">
+                                        <span data-i18n="calculators.dividendCgt.results.dividend.totalDividends">Dividends outside ISA/pension:</span>
+                                        <span id="dividend-total">£0.00</span>
+                                    </div>
+                                    <div class="result-item">
+                                        <span data-i18n="calculators.dividendCgt.results.dividend.personalAllowanceUsed">Personal allowance offset:</span>
+                                        <span id="dividend-pa-used">£0.00</span>
+                                    </div>
+                                    <div class="result-item">
+                                        <span data-i18n="calculators.dividendCgt.results.dividend.allowance">Dividend allowance (0%):</span>
+                                        <span id="dividend-allowance-used">£0.00</span>
+                                    </div>
+                                    <div class="result-item">
+                                        <span data-i18n="calculators.dividendCgt.results.dividend.taxable">Taxable dividends:</span>
+                                        <span id="dividend-taxable">£0.00</span>
+                                    </div>
+                                    <div class="salary-deduction-grid">
+                                        <div class="salary-deduction-item">
+                                            <span data-i18n="calculators.dividendCgt.results.dividend.basicRate">Basic rate portion:</span>
+                                            <span id="dividend-basic-amount">£0.00</span>
+                                            <span id="dividend-basic-tax" class="salary-percent">£0.00</span>
+                                        </div>
+                                        <div class="salary-deduction-item">
+                                            <span data-i18n="calculators.dividendCgt.results.dividend.higherRate">Higher rate portion:</span>
+                                            <span id="dividend-higher-amount">£0.00</span>
+                                            <span id="dividend-higher-tax" class="salary-percent">£0.00</span>
+                                        </div>
+                                        <div class="salary-deduction-item">
+                                            <span data-i18n="calculators.dividendCgt.results.dividend.additionalRate">Additional rate portion:</span>
+                                            <span id="dividend-additional-amount">£0.00</span>
+                                            <span id="dividend-additional-tax" class="salary-percent">£0.00</span>
+                                        </div>
+                                        <div class="salary-deduction-item total">
+                                            <span data-i18n="calculators.dividendCgt.results.dividend.taxDue">Dividend tax due:</span>
+                                            <span id="dividend-tax-due">£0.00</span>
+                                            <span id="dividend-effective-rate" class="salary-percent">0%</span>
+                                        </div>
+                                    </div>
+                                    <div class="result-item total">
+                                        <span data-i18n="calculators.dividendCgt.results.dividend.net">Net dividends after tax:</span>
+                                        <span id="dividend-net">£0.00</span>
+                                    </div>
+                                </div>
+                                <div class="salary-breakdown-panel">
+                                    <div class="salary-breakdown-header">
+                                        <h4 class="section-subtitle" data-i18n="calculators.dividendCgt.results.cgtTitle">Capital Gains Tax Breakdown (Annual)</h4>
+                                    </div>
+                                    <div class="result-item">
+                                        <span data-i18n="calculators.dividendCgt.results.cgt.netGains">Net gains after losses:</span>
+                                        <span id="cgt-net-gains">£0.00</span>
+                                    </div>
+                                    <div class="result-item">
+                                        <span data-i18n="calculators.dividendCgt.results.cgt.losses">Capital losses applied:</span>
+                                        <span id="cgt-losses-used">£0.00</span>
+                                    </div>
+                                    <div class="result-item">
+                                        <span data-i18n="calculators.dividendCgt.results.cgt.aea">Annual exempt amount:</span>
+                                        <span id="cgt-aea-used">£0.00</span>
+                                    </div>
+                                    <div class="result-item">
+                                        <span data-i18n="calculators.dividendCgt.results.cgt.taxable">Taxable gains:</span>
+                                        <span id="cgt-taxable">£0.00</span>
+                                    </div>
+                                    <div class="result-item">
+                                        <span data-i18n="calculators.dividendCgt.results.cgt.basicBandRemaining">Basic rate band remaining:</span>
+                                        <span id="cgt-basic-band-remaining">£0.00</span>
+                                    </div>
+                                    <div class="salary-deduction-grid">
+                                        <div class="salary-deduction-item">
+                                            <span data-i18n="calculators.dividendCgt.results.cgt.basicRate">Basic rate gains:</span>
+                                            <span id="cgt-basic-amount">£0.00</span>
+                                            <span id="cgt-basic-tax" class="salary-percent">£0.00</span>
+                                        </div>
+                                        <div class="salary-deduction-item">
+                                            <span data-i18n="calculators.dividendCgt.results.cgt.higherRate">Higher/additional rate gains:</span>
+                                            <span id="cgt-higher-amount">£0.00</span>
+                                            <span id="cgt-higher-tax" class="salary-percent">£0.00</span>
+                                        </div>
+                                        <div class="salary-deduction-item total">
+                                            <span data-i18n="calculators.dividendCgt.results.cgt.taxDue">CGT due:</span>
+                                            <span id="cgt-tax-due">£0.00</span>
+                                            <span id="cgt-effective-rate" class="salary-percent">0%</span>
+                                        </div>
+                                    </div>
+                                    <div class="result-item total">
+                                        <span data-i18n="calculators.dividendCgt.results.cgt.net">Net gains after CGT:</span>
+                                        <span id="cgt-net">£0.00</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="form-hint" data-i18n="calculators.dividendCgt.disclaimer">Estimates only. Check HMRC guidance or an accountant for complex cases.</p>
+                    </div>
+                </div>
             </div>
 
             <!-- Stock Performance Tracker Tab -->
@@ -1346,6 +1518,7 @@
     <script src="js/data/priceStorage.js"></script>
     <script src="js/features/watchlistManager.js"></script>
     <script src="js/features/pensionManager.js"></script>
+    <script src="js/data/ukTaxYears.js"></script>
     <script src="js/features/calculator.js"></script>
     <script src="js/features/stockTracker.js"></script>
     <script src="js/core/appVersion.js"></script>

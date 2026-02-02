@@ -150,6 +150,7 @@ const I18n = (function() {
                     "cagr": "CAGR Calculator",
                     "mortgage": "Mortgage Calculator",
                     "salary": "Salary Calculator",
+                    "dividendCgt": "Dividend & CGT",
                     "fairValue": "Fair Value Calculator"
                 },
                 "loan": {
@@ -291,6 +292,59 @@ const I18n = (function() {
                         "taxable": "Taxable income:",
                         "totalTax": "Total tax (incl. NI):",
                         "totalDeductions": "Total deductions:"
+                    }
+                },
+                "dividendCgt": {
+                    "hint": "Estimate UK dividend and capital gains tax based on your taxable income and annual gains.",
+                    "disclaimer": "Estimates only. Check HMRC guidance or an accountant for complex cases.",
+                    "sections": {
+                        "taxContext": "Tax context",
+                        "dividends": "Dividends",
+                        "gains": "Capital gains"
+                    },
+                    "labels": {
+                        "taxYear": "Tax year",
+                        "taxableIncome": "Taxable income (excluding dividends and capital gains)",
+                        "dividends": "Total dividend income (annual, gross)",
+                        "dividendsExcluded": "Dividends inside ISA / pension (excluded)",
+                        "gains": "Total chargeable gains (annual)",
+                        "losses": "Capital losses to offset (annual)",
+                        "applyAea": "Apply annual exempt amount automatically"
+                    },
+                    "tooltips": {
+                        "taxYear": "Select the tax year to apply the correct allowances and rates.",
+                        "taxableIncome": "This is your taxable income after Personal Allowance/reliefs. If you don’t know it, use the Salary Calculator output and paste it here.",
+                        "dividends": "Gross dividends received in the tax year before any allowances.",
+                        "dividendsExcluded": "Dividends held inside an ISA or pension are tax-free and excluded here.",
+                        "gains": "Chargeable gains after allowable costs but before the annual exempt amount.",
+                        "losses": "Capital losses you want to offset against gains for the same year.",
+                        "applyAea": "Applies the annual exempt amount automatically before calculating CGT."
+                    },
+                    "results": {
+                        "dividendTitle": "Dividend Tax Breakdown (Annual)",
+                        "cgtTitle": "Capital Gains Tax Breakdown (Annual)",
+                        "dividend": {
+                            "totalDividends": "Dividends outside ISA/pension:",
+                            "personalAllowanceUsed": "Personal allowance offset:",
+                            "allowance": "Dividend allowance (0%):",
+                            "taxable": "Taxable dividends:",
+                            "basicRate": "Basic rate portion:",
+                            "higherRate": "Higher rate portion:",
+                            "additionalRate": "Additional rate portion:",
+                            "taxDue": "Dividend tax due:",
+                            "net": "Net dividends after tax:"
+                        },
+                        "cgt": {
+                            "netGains": "Net gains after losses:",
+                            "losses": "Capital losses applied:",
+                            "aea": "Annual exempt amount:",
+                            "taxable": "Taxable gains:",
+                            "basicBandRemaining": "Basic rate band remaining:",
+                            "basicRate": "Basic rate gains:",
+                            "higherRate": "Higher/additional rate gains:",
+                            "taxDue": "CGT due:",
+                            "net": "Net gains after CGT:"
+                        }
                     }
                 },
                 "fairValue": {
