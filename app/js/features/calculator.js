@@ -416,14 +416,18 @@ const Calculator = (function() {
             return `${(value / base * 100).toFixed(2)}%`;
         }
 
-        function getAnnualSalary(entry) {
-            const rate = Math.max(0, parseFloat(entry.rateAmount) || 0);
+        function getAnnualDivisor(entry) {
             const frequencyValue = entry.frequency || 'monthly';
             if (frequencyValue === 'hourly') {
                 const hoursPerWeek = Math.max(0, parseFloat(entry.hoursPerWeek) || 0);
-                return rate * hoursPerWeek * 52;
+                return Math.max(1, hoursPerWeek * 52);
             }
-            return rate * (frequencies[frequencyValue] || 1);
+            return Math.max(1, frequencies[frequencyValue] || 1);
+        }
+
+        function getAnnualSalary(entry) {
+            const rate = Math.max(0, parseFloat(entry.rateAmount) || 0);
+            return rate * getAnnualDivisor(entry);
         }
 
         function updateAnnualizedInput(entry) {
@@ -484,7 +488,9 @@ const Calculator = (function() {
                     entry.hoursPerWeek = 37.5;
                 }
                 if (entry.rateAmount === undefined) {
-                    entry.rateAmount = entry.annualSalary || 0;
+                    entry.rateAmount = entry.annualSalary
+                        ? entry.annualSalary / getAnnualDivisor(entry)
+                        : 0;
                 }
                 entry.annualSalary = getAnnualSalary(entry);
             });
@@ -999,14 +1005,16 @@ const Calculator = (function() {
                 const frequency = item.frequency || 'monthly';
                 const hoursPerWeek = parseFloat(item.hoursPerWeek) || 0;
                 const rateAmount = parseFloat(item.rateAmount);
+                const annualSalary = parseFloat(item.annualSalary) || 0;
+                const divisor = getAnnualDivisor({ frequency, hoursPerWeek });
                 const baseRate = Number.isFinite(rateAmount)
                     ? rateAmount
-                    : (parseFloat(item.annualSalary) || 0);
+                    : (annualSalary ? annualSalary / divisor : 0);
                 const entry = {
                     id: item.id || createEntry().id,
                     name: item.name || '',
                     rateAmount: baseRate,
-                    annualSalary: parseFloat(item.annualSalary) || 0,
+                    annualSalary,
                     pensionPercent: parseFloat(item.pensionPercent) || 0,
                     studentLoanPlan: item.studentLoanPlan || 'none',
                     age: parseInt(item.age, 10) || 30,
