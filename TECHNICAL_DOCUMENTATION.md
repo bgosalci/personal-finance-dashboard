@@ -26,7 +26,7 @@ The Personal Finance Dashboard is a client-side single-page application (SPA) bu
 - **`features/pensionManager.js`**: Pension entries, summaries, chart rendering, and CSV/JSON import/export.
 
 ### Calculators
-- **`features/calculator.js`**: Loan, investment, CAGR, mortgage, and salary calculators. Salary calculator entries persist locally.
+- **`features/calculator.js`**: Loan, investment, CAGR, mortgage, salary, and Dividend & CGT calculators. Salary and dividend/CGT entries persist locally.
 
 ### Stock Tracking
 - **`features/stockTracker.js`**: Manual and live price tracking across years, growth calculations, and CSV/JSON import/export.
@@ -59,6 +59,7 @@ The Personal Finance Dashboard is a client-side single-page application (SPA) bu
 - **Watchlist**: Ticker list with last known prices.
 - **Pensions**: Pension entries and metadata.
 - **Salary**: Salary calculator entries.
+- **Dividend & CGT**: Dividend and capital gains calculator inputs.
 - **Stock Tracker**: Multi-year price history per ticker.
 
 ## External Integrations

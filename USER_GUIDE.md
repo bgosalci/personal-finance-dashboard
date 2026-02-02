@@ -18,7 +18,7 @@ The dashboard is organized into these tabs:
 - **Portfolio** - Track investments and portfolio summaries.
 - **Watchlist** - Monitor tickers with optional real-time updates.
 - **Pension** - Record pension contributions and growth.
-- **Calculators** - Loan, investment, CAGR, mortgage, and salary tools.
+- **Calculators** - Loan, investment, CAGR, mortgage, salary, and Dividend & CGT tools.
 - **Stock Performance Tracker** - Track multi-year prices and growth.
 - **Settings** - Configure base currency, theme, language, data import/export, and API keys.
 
@@ -84,6 +84,9 @@ Estimate monthly payments and interest portions based on property price and depo
 
 ### Salary Calculator
 Model take-home pay with allowances, pension, student loan, and deductions. You can save multiple salary profiles.
+
+### Dividend & CGT Calculator
+Estimate UK dividend tax and capital gains tax using your taxable income, dividend income, and gains for a selected tax year.
 
 ## Stock Performance Tracker
 

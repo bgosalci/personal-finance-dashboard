@@ -82,7 +82,7 @@ const ModuleName = (function() {
 - **PortfolioManager**: Portfolio CRUD, charts, and summary metrics.
 - **WatchlistManager**: Watchlist CRUD with optional real-time quotes.
 - **PensionManager**: Pension tracking, charts, and summaries.
-- **Calculator**: Loan, investment, CAGR, mortgage, and salary calculators.
+- **Calculator**: Loan, investment, CAGR, mortgage, salary, and Dividend & CGT calculators.
 - **StockTracker**: Historical price tracking and growth calculations.
 - **Settings**: Base currency, theme, language, API key, and data import/export.
 - **I18n**: Translation utilities and locale management.
@@ -91,7 +91,7 @@ const ModuleName = (function() {
 ## Data and Storage
 
 - Local data is stored in `localStorage` with graceful fallback to memory storage (`StorageUtils`).
-- Portfolio, watchlist, pension, salary, and stock tracker data have dedicated storage keys.
+- Portfolio, watchlist, pension, salary, dividend/CGT, and stock tracker data have dedicated storage keys.
 - Data export/import flows are handled in the Settings module.
 
 ## External Services

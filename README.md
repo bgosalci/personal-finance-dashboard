@@ -40,6 +40,7 @@ The Personal Finance Dashboard is a client-side HTML application that loads modu
 - **CAGR Calculator**
 - **Mortgage Calculator**
 - **Salary Calculator**
+- **Dividend & CGT (UK) Calculator**
 
 ### 📈 Stock Performance Tracker
 - Track multi-year prices and compute growth metrics.

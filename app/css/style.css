@@ -870,16 +870,26 @@
             font-weight: 500;
         }
 
+        #dividend-cgt .form-grid {
+            grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+        }
+
         .dividend-cgt-results .result-item,
         .dividend-cgt-results .salary-deduction-item {
             flex-wrap: wrap;
             align-items: center;
+            gap: 0.75rem;
         }
 
         .dividend-cgt-results .result-item span:first-child,
         .dividend-cgt-results .salary-deduction-item span:first-child {
-            flex: 1 1 60%;
-            min-width: 180px;
+            flex: 1 1 auto;
+            min-width: 0;
+        }
+
+        .dividend-cgt-results .result-item span:nth-child(2),
+        .dividend-cgt-results .salary-deduction-item span:nth-child(2) {
+            margin-left: auto;
         }
 
         .dividend-cgt-results .result-item span:not(:first-child),
