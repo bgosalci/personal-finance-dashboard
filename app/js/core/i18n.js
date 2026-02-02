@@ -222,8 +222,10 @@ const I18n = (function() {
                     "labels": {
                         "salary": "Salary",
                         "name": "Salary name",
-                        "basicSalary": "Annual basic salary (£)",
-                        "frequency": "Payment frequency",
+                        "basicSalary": "Pay rate (£)",
+                        "annualizedSalary": "Calculated annual salary (£)",
+                        "rateFrequency": "Pay rate frequency",
+                        "paymentFrequency": "Payment frequency",
                         "hoursPerWeek": "Hours per week",
                         "pension": "Pension contribution (%)",
                         "studentLoan": "Student loan plan",
@@ -232,6 +234,21 @@ const I18n = (function() {
                         "benefits": "Paid benefits (annual £)",
                         "allowances": "Allowances (annual)",
                         "otherDeductions": "Other deductions (annual £)"
+                    },
+                    "tooltips": {
+                        "name": "Give this salary a nickname. Example: \"Main job\" or \"Contract role\".",
+                        "basicSalary": "Enter the pay rate that matches the frequency. Examples: £20/hour, £200/day, £750/week, £3,000/month, or £60,000/year.",
+                        "annualizedSalary": "We calculate this from the pay rate and frequency to estimate your annual income.",
+                        "rateFrequency": "Choose the unit for the pay rate (hourly, daily, weekly, monthly, or annual).",
+                        "paymentFrequency": "Choose how often you actually receive pay (weekly, monthly, etc.).",
+                        "hoursPerWeek": "Average hours worked per week. Example: 37.5 for full-time or 20 for part-time.",
+                        "pension": "Percentage of gross pay contributed to pension. Example: 5%.",
+                        "allowances": "Annual add-ons paid on top of base salary. Examples: car allowance £3,000, bonus £1,500.",
+                        "studentLoan": "Select the repayment plan that applies to you. Example: Plan 2 or Postgraduate.",
+                        "age": "Your age in years. Used to estimate National Insurance. Example: 29.",
+                        "taxCode": "Your HMRC tax code. Examples: 1257L, BR, K500.",
+                        "benefits": "Annual value of taxable benefits. Examples: company car £2,400, health cover £600.",
+                        "otherDeductions": "Other annual deductions not listed elsewhere. Examples: union fees £120, childcare vouchers £600."
                     },
                     "frequency": {
                         "annual": "Annual",
