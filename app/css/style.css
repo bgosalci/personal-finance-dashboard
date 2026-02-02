@@ -897,6 +897,12 @@
             white-space: nowrap;
         }
 
+        @media (max-width: 1100px) {
+            #dividend-cgt .salary-breakdown-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
         .salary-percent {
             font-size: 0.85rem;
             color: var(--text-secondary);
