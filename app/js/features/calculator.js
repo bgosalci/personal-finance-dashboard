@@ -393,12 +393,14 @@ const Calculator = (function() {
         const totalDeductionsEl = document.getElementById('salary-total-deductions');
         const tooltipEl = document.getElementById('tooltip');
         const storage = typeof StorageUtils !== 'undefined' ? StorageUtils.getStorage() : window.localStorage;
+        const WORK_WEEKS_PER_YEAR = 52;
+        const WORK_DAYS_PER_YEAR = 260;
         const frequencies = {
             annual: 1,
             monthly: 12,
             fortnightly: 26,
-            weekly: 52,
-            daily: 365
+            weekly: WORK_WEEKS_PER_YEAR,
+            daily: WORK_DAYS_PER_YEAR
         };
         let entries = [];
         let currentSalaryId = 'summary';
@@ -421,7 +423,7 @@ const Calculator = (function() {
             const frequencyValue = entry.rateFrequency || 'annual';
             if (frequencyValue === 'hourly') {
                 const hoursPerWeek = Math.max(0, parseFloat(entry.hoursPerWeek) || 0);
-                return Math.max(1, hoursPerWeek * 52);
+                return Math.max(1, hoursPerWeek * WORK_WEEKS_PER_YEAR);
             }
             return Math.max(1, frequencies[frequencyValue] || 1);
         }

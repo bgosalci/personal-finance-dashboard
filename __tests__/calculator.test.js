@@ -22,12 +22,14 @@ function buildSalaryDom() {
       <option value="annual">Annual</option>
       <option value="monthly">Monthly</option>
       <option value="weekly">Weekly</option>
+      <option value="daily">Daily</option>
       <option value="hourly">Hourly</option>
     </select>
     <input id="salary-annualized" />
     <select id="salary-frequency">
       <option value="monthly">Monthly</option>
       <option value="weekly">Weekly</option>
+      <option value="daily">Daily</option>
       <option value="hourly">Hourly</option>
     </select>
     <input id="salary-hours" />
@@ -179,4 +181,38 @@ test('salary calculator annualizes weekly rate', () => {
 
   const annualized = dom.window.document.getElementById('salary-annualized').value;
   expect(annualized).toBe('39,000.00');
+});
+
+test('salary calculator annualizes daily rate using workdays only', () => {
+  const dom = new JSDOM(`<!DOCTYPE html><html><body>${buildSalaryDom()}</body></html>`, { url: 'http://localhost' });
+  const context = vm.createContext(dom.window);
+  vm.runInContext(i18nCode, context);
+  dom.window.localStorage.setItem('pf_salary_entries', JSON.stringify([
+    {
+      id: 'salary-daily',
+      name: 'Daily',
+      rateAmount: 200,
+      rateFrequency: 'daily',
+      annualSalary: 0,
+      pensionPercent: 0,
+      studentLoanPlan: 'none',
+      age: 30,
+      taxCode: '1257L',
+      benefits: 0,
+      hoursPerWeek: 37.5,
+      frequency: 'daily',
+      showInSummary: true,
+      allowances: [],
+      otherDeductions: 0
+    }
+  ]));
+  vm.runInContext(calculatorCode, context);
+  vm.runInContext('SalaryCalculator.init()', context);
+
+  const salaryTabs = dom.window.document.getElementById('salary-tabs');
+  const entryButton = salaryTabs.querySelector('button[data-salary-id="salary-daily"]');
+  entryButton.dispatchEvent(new dom.window.MouseEvent('click', { bubbles: true }));
+
+  const annualized = dom.window.document.getElementById('salary-annualized').value;
+  expect(annualized).toBe('52,000.00');
 });
