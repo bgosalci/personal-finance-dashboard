@@ -1,6 +1,6 @@
-let currentTab = "portfolio";
-
 const TabManager = (function() {
+    let currentTab = 'portfolio'; // moved inside IIFE — no longer a global
+
     const tabs = document.querySelectorAll('.nav-tab');
     const contents = document.querySelectorAll('.tab-content');
 
@@ -24,6 +24,10 @@ const TabManager = (function() {
         currentTab = tabName;
     }
 
+    function getCurrentTab() {
+        return currentTab;
+    }
+
     function init() {
         tabs.forEach(tab => {
             tab.addEventListener('click', () => {
@@ -34,6 +38,7 @@ const TabManager = (function() {
 
     return {
         init,
-        switchTab
+        switchTab,
+        getCurrentTab
     };
 })();

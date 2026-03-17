@@ -1244,3 +1244,30 @@
                 accent-color: var(--primary-blue);
             }
         }
+
+/* ─── Toast notifications (Utils.showToast) ─── */
+.pf-toast {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    z-index: 9999;
+    padding: 0.75rem 1.25rem;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #fff;
+    max-width: 22rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    opacity: 0;
+    transform: translateY(0.5rem);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    pointer-events: none;
+}
+.pf-toast.pf-toast-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+.pf-toast-error   { background-color: #dc2626; }
+.pf-toast-warning { background-color: #d97706; }
+.pf-toast-info    { background-color: #2563eb; }
+.pf-toast-success { background-color: #16a34a; }

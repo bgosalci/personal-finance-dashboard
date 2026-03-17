@@ -14,9 +14,16 @@ const PriceUpdater = (function() {
         timer = setInterval(checkAndUpdate, 60000); // every minute
     }
 
+    function stop() {
+        if (timer) {
+            clearInterval(timer);
+            timer = null;
+        }
+    }
+
     function init() {
         start();
     }
 
-    return { init };
+    return { init, stop };
 })();

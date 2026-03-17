@@ -1,5 +1,5 @@
-# Simple workflow for deploying static content to GitHub Pages
-name: Deploy static content to Pages
+# Workflow for running tests and deploying static content to GitHub Pages
+name: Test and Deploy
 
 on:
   # Runs on pushes targeting the default branch
@@ -22,8 +22,26 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  # Single deploy job since we're just deploying
+  # Run tests before deploying — deploy is blocked if tests fail
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: app/js/package-lock.json
+      - name: Install dependencies
+        run: cd app/js && npm ci
+      - name: Run tests
+        run: cd app/js && npm test
+
+  # Deploy only the app/ directory (not tests, docs, or config files)
   deploy:
+    needs: test
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -36,8 +54,8 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # Upload entire repository
-          path: '.'
+          # Deploy only the app/ directory, not tests/docs/config
+          path: './app'
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4

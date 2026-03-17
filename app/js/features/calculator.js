@@ -17,20 +17,8 @@ const Calculator = (function() {
         return I18n.formatNumber(num, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     }
 
-    function formatInputValue(value, pad = false) {
-        const clean = value.replace(/[^0-9.]/g, '');
-        if (clean === '') return '';
-        const [intPart, decPart] = clean.split('.');
-        const formattedInt = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-        if (decPart !== undefined) {
-            if (decPart === '') {
-                return `${formattedInt}.`;
-            }
-            const decimals = decPart.slice(0, 2);
-            return pad ? `${formattedInt}.${decimals.padEnd(2, '0')}` : `${formattedInt}.${decimals}`;
-        }
-        return formattedInt;
-    }
+    // Delegate to shared utility — single definition lives in core/utils.js
+    const formatInputValue = Utils.formatInputValue;
 
     function setupAmountInput(id) {
         const input = document.getElementById(id);

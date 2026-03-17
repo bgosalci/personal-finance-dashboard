@@ -5,7 +5,9 @@ const vm = require('vm');
 
 const i18nCode = fs.readFileSync(path.resolve(__dirname, '../app/js/core/i18n.js'), 'utf8');
 const ukTaxYearsCode = fs.readFileSync(path.resolve(__dirname, '../app/js/data/ukTaxYears.js'), 'utf8');
-const calculatorCode = fs.readFileSync(path.resolve(__dirname, '../app/js/features/calculator.js'), 'utf8');
+// calculator.js uses Utils.formatInputValue — prepend utils.js so it's always available
+const utlsCode = fs.readFileSync(path.resolve(__dirname, '../app/js/core/utils.js'), 'utf8');
+const calculatorCode = utlsCode + '\n' + fs.readFileSync(path.resolve(__dirname, '../app/js/features/calculator.js'), 'utf8');
 
 function buildSalaryDom() {
   return `

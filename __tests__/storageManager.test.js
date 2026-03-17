@@ -9,7 +9,11 @@ function loadContext() {
   const utils = fs.readFileSync(path.resolve(__dirname, '../app/js/core/storageUtils.js'), 'utf8');
   vm.runInContext(utils, context);
   let code = fs.readFileSync(path.resolve(__dirname, '../app/js/core/storageManager.js'), 'utf8');
-  code = code.replace('};\n})(typeof', '};\n  global.__sm = { compress, decompress };\n})(typeof');
+  // Expose internal compress/decompress for whitebox testing
+  code = code.replace(
+    'global.StorageManager = {',
+    'global.__sm = { compress, decompress };\n  global.StorageManager = {'
+  );
   vm.runInContext(code, context);
   return context;
 }
@@ -25,6 +29,24 @@ describe('StorageManager compression utilities', () => {
     const compressed = ctx.__sm.compress(sample);
     const output = ctx.__sm.decompress(compressed);
     expect(output).toEqual(sample);
+  });
+
+  test('compress and decompress are safe when JSON contains tilde characters', () => {
+    // Regression test: old ~ delimiter would corrupt data containing literal ~
+    const ctx = loadContext();
+    const sample = { url: 'https://example.com/~user/path', note: 'val~3~extra' };
+    const compressed = ctx.__sm.compress(sample);
+    const output = ctx.__sm.decompress(compressed);
+    expect(output).toEqual(sample);
+  });
+
+  test('getPortfolioPositions returns a copy, not the internal array', () => {
+    const ctx = loadContext();
+    vm.runInContext('StorageManager.addPortfolioPosition({symbol:"COPY", quantity:5, purchase_price_per_share:10});', ctx);
+    const positions = vm.runInContext('StorageManager.getPortfolioPositions();', ctx);
+    positions.push({ fake: true }); // mutate the returned copy
+    const positionsAgain = vm.runInContext('StorageManager.getPortfolioPositions();', ctx);
+    expect(positionsAgain).toHaveLength(1); // internal array must be unaffected
   });
 });
 

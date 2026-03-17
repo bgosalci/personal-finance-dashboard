@@ -1,20 +1,21 @@
-let stockData = {
-    tickers: [],
-    startYear: new Date().getFullYear() - 5,
-    prices: {}
-};
-
 const StockTracker = (function() {
     const STORAGE_KEY = 'stockTrackerData';
+    // stockData moved inside the IIFE to avoid polluting the global scope
+    let stockData = {
+        tickers: [],
+        startYear: new Date().getFullYear() - 5,
+        prices: {}
+    };
+    const storage = StorageUtils.getStorage();
     let editMode = false;
     const getPriceBtn = document.getElementById('get-stock-last-price-btn');
 
     function saveData() {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(stockData));
+        storage.setItem(STORAGE_KEY, JSON.stringify(stockData));
     }
 
     function loadData() {
-        const data = localStorage.getItem(STORAGE_KEY);
+        const data = storage.getItem(STORAGE_KEY);
         if (data) {
             try {
                 const parsed = JSON.parse(data);
@@ -102,21 +103,21 @@ const StockTracker = (function() {
         btn.style.display = editMode && stockData.tickers.length > 0 ? 'inline-flex' : 'none';
     }
 
-   function applyEditMode() {
-       const management = document.querySelector('#stock-tracker .ticker-management');
-       if (management) management.style.display = editMode ? 'flex' : 'none';
+    function applyEditMode() {
+        const management = document.querySelector('#stock-tracker .ticker-management');
+        if (management) management.style.display = editMode ? 'flex' : 'none';
 
         const tags = document.getElementById('ticker-tags');
         if (tags) tags.style.display = editMode ? 'flex' : 'none';
 
-       const inputs = document.querySelectorAll('#performance-table input.price-input');
-       inputs.forEach(inp => {
-           inp.readOnly = !editMode;
-           inp.style.display = editMode ? 'block' : 'none';
-       });
+        const inputs = document.querySelectorAll('#performance-table input.price-input');
+        inputs.forEach(inp => {
+            inp.readOnly = !editMode;
+            inp.style.display = editMode ? 'block' : 'none';
+        });
 
-       updateGenerateButton();
-   }
+        updateGenerateButton();
+    }
 
     function toggleEditMode() {
         editMode = !editMode;
@@ -128,6 +129,7 @@ const StockTracker = (function() {
     async function fetchLatestPrices() {
         if (stockData.tickers.length === 0) return;
         const currentYear = new Date().getFullYear();
+        let failCount = 0;
         const updates = stockData.tickers.map(ticker => {
             return QuotesService.fetchQuote(ticker)
                 .then(({ price }) => {
@@ -138,9 +140,12 @@ const StockTracker = (function() {
                         updateGrowthCalculations(ticker);
                     }
                 })
-                .catch(() => {});
+                .catch(() => { failCount++; });
         });
         await Promise.all(updates);
+        if (failCount > 0 && failCount === stockData.tickers.length && typeof Utils !== 'undefined') {
+            Utils.showToast('Stock price fetch failed — check your Finnhub API key in Settings', 'warning');
+        }
         saveData();
         updateSummaryCards();
     }
@@ -531,7 +536,7 @@ const StockTracker = (function() {
     }
 
     function deleteAllData() {
-        localStorage.removeItem(STORAGE_KEY);
+        storage.removeItem(STORAGE_KEY);
         stockData = { tickers: [], startYear: new Date().getFullYear() - 5, prices: {} };
         if (document.getElementById('ticker-tags')) updateTickerTags();
         const cont = document.getElementById('performance-table-container');
@@ -590,12 +595,21 @@ const StockTracker = (function() {
     }
 
 
+    function getData() {
+        return {
+            tickers: stockData.tickers.slice(),
+            startYear: stockData.startYear,
+            prices: JSON.parse(JSON.stringify(stockData.prices))
+        };
+    }
+
     return {
         init,
         removeTicker,
         exportData,
         importData,
         deleteAllData,
-        fetchLatestPrices
+        fetchLatestPrices,
+        getData
     };
 })();

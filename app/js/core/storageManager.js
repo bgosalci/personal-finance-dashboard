@@ -1,7 +1,11 @@
 (function(global){
   'use strict';
 
-  const VERSION = 1;
+  // VERSION bump to 2: replaced fragile `~`-delimited RLE with null-byte sentinel.
+  // Existing v1 data (stored as `~`-delimited base64+RLE) will be migrated away
+  // (cleared) on first load, as the old format was susceptible to data corruption
+  // when JSON values contained the `~` character.
+  const VERSION = 2;
   const STORAGE_VERSION_KEY = 'pf_storage_version';
   const POSITIONS_KEY = 'pf_positions_v1';
   const SNAPSHOTS_KEY = 'pf_snapshots_v1';
@@ -11,31 +15,21 @@
   let snapshots = null;
   let saveTimer = null;
 
-  function rleEncode(str){
-    return str.replace(/(.)\1+/g, (m, c) => c + '~' + m.length + '~');
+  // RLE using \x00 (null byte) as sentinel — safe because JSON.stringify never
+  // emits raw null bytes (they would be encoded as \u0000 inside strings).
+  // Format: \x00<count>\x00<char>  e.g. "AAA" → "\x003\x00A"
+  function rleEncode(str) {
+    return str.replace(/(.)\1{1,}/g, (m, c) => '\x00' + m.length + '\x00' + c);
   }
-  function rleDecode(str){
-    let result = '';
-    for(let i = 0; i < str.length; i++){
-      const ch = str[i];
-      if(str[i + 1] === '~'){
-        let j = i + 2;
-        let digits = '';
-        while(j < str.length && str[j] !== '~'){ digits += str[j]; j++; }
-        result += ch.repeat(parseInt(digits, 10));
-        i = j;
-      } else {
-        result += ch;
-      }
-    }
-    return result;
+  function rleDecode(str) {
+    return str.replace(/\x00(\d+)\x00(.)/g, (_, n, c) => c.repeat(parseInt(n, 10)));
   }
 
-  function compress(obj){
+  function compress(obj) {
     const json = JSON.stringify(obj);
     return btoa(rleEncode(json));
   }
-  function decompress(data){
+  function decompress(data) {
     const decoded = atob(data);
     const json = rleDecode(decoded);
     return JSON.parse(json);
@@ -43,33 +37,32 @@
 
   const storage = StorageUtils.getStorage();
 
-  function ensureLoaded(){
-    if(positions && snapshots) return;
+  function ensureLoaded() {
+    if (positions && snapshots) return;
     positions = [];
     snapshots = [];
-    try{
-      const ver = parseInt(storage.getItem(STORAGE_VERSION_KEY),10);
-      if(ver && ver !== VERSION){
+    try {
+      const ver = parseInt(storage.getItem(STORAGE_VERSION_KEY), 10);
+      if (ver && ver !== VERSION) {
         migrate(ver);
+        return;
       }
       const posStr = storage.getItem(POSITIONS_KEY);
       const snapStr = storage.getItem(SNAPSHOTS_KEY);
-      if(posStr){
-        try{ positions = decompress(posStr); }
-        catch(e){ positions = []; }
+      if (posStr) {
+        try { positions = decompress(posStr); } catch (e) { positions = []; }
       }
-      if(snapStr){
-        try{ snapshots = decompress(snapStr); }
-        catch(e){ snapshots = []; }
+      if (snapStr) {
+        try { snapshots = decompress(snapStr); } catch (e) { snapshots = []; }
       }
-    }catch(e){
+    } catch (e) {
       positions = [];
       snapshots = [];
     }
   }
 
-  function migrate(oldVersion){
-    // simple migration placeholder
+  function migrate(oldVersion) {
+    // Clear data stored in old format — cannot safely decode old RLE format.
     positions = [];
     snapshots = [];
     storage.removeItem(POSITIONS_KEY);
@@ -77,82 +70,81 @@
     storage.setItem(STORAGE_VERSION_KEY, VERSION);
   }
 
-  function queueSave(){
-    if(saveTimer) clearTimeout(saveTimer);
+  function queueSave() {
+    if (saveTimer) clearTimeout(saveTimer);
     saveTimer = setTimeout(save, SAVE_DEBOUNCE_MS);
   }
 
-  function save(){
-    try{
+  function save() {
+    try {
       storage.setItem(STORAGE_VERSION_KEY, VERSION);
       storage.setItem(POSITIONS_KEY, compress(positions));
       storage.setItem(SNAPSHOTS_KEY, compress(snapshots));
-    }catch(e){
-      if(e && e.name === 'QuotaExceededError'){
-        // try removing oldest snapshot
+    } catch (e) {
+      if (e && e.name === 'QuotaExceededError') {
+        // Remove oldest snapshot to free space
         snapshots.shift();
-        try{ storage.setItem(SNAPSHOTS_KEY, compress(snapshots)); }
-        catch(err){}
+        try { storage.setItem(SNAPSHOTS_KEY, compress(snapshots)); } catch (err) {}
       }
     }
   }
 
-  function validate(pos){
-    if(!pos) return null;
-    const id = pos.id || 'pos_' + Math.random().toString(36).slice(2,10);
+  function validate(pos) {
+    if (!pos) return null;
+    const id = pos.id || 'pos_' + Math.random().toString(36).slice(2, 10);
     const symbol = String(pos.symbol || '').trim().toUpperCase();
     const quantity = parseFloat(pos.quantity);
     const price = parseFloat(pos.purchase_price_per_share);
     const date = pos.purchase_date || new Date().toISOString().split('T')[0];
-    if(!symbol || isNaN(quantity) || quantity<=0 || isNaN(price) || price<=0) return null;
+    if (!symbol || isNaN(quantity) || quantity <= 0 || isNaN(price) || price <= 0) return null;
     return {
       id, symbol, quantity, purchase_price_per_share: price,
       purchase_date: date,
-      total_investment: parseFloat((price*quantity).toFixed(2))
+      total_investment: parseFloat((price * quantity).toFixed(2))
     };
   }
 
-  function addPortfolioPosition(position){
+  function addPortfolioPosition(position) {
     ensureLoaded();
     const val = validate(position);
-    if(!val) return false;
+    if (!val) return false;
     positions.push(val);
     queueSave();
     return true;
   }
 
-  function getPortfolioPositions(){
+  function getPortfolioPositions() {
     ensureLoaded();
-    return positions.slice();
+    return positions.slice(); // return a copy to prevent external mutation
   }
 
-  function updatePosition(id, updates){
+  function updatePosition(id, updates) {
     ensureLoaded();
     const idx = positions.findIndex(p => p.id === id);
-    if(idx === -1) return false;
-    const updated = validate(Object.assign({}, positions[idx], updates, {id}));
-    if(!updated) return false;
+    if (idx === -1) return false;
+    const updated = validate(Object.assign({}, positions[idx], updates, { id }));
+    if (!updated) return false;
     positions[idx] = updated;
     queueSave();
     return true;
   }
 
-  function deletePosition(id){
+  function deletePosition(id) {
     ensureLoaded();
     const idx = positions.findIndex(p => p.id === id);
-    if(idx === -1) return false;
-    positions.splice(idx,1);
+    if (idx === -1) return false;
+    positions.splice(idx, 1);
     queueSave();
     return true;
   }
 
-  function createPortfolioSnapshot(){
+  function createPortfolioSnapshot() {
     ensureLoaded();
     const snapshot_date = new Date().toISOString().split('T')[0];
-    const total_portfolio_value = positions.reduce((s,p)=>s+p.quantity*p.purchase_price_per_share,0);
-    const total_invested = positions.reduce((s,p)=>s+p.total_investment,0);
+    const total_portfolio_value = positions.reduce((s, p) => s + p.quantity * p.purchase_price_per_share, 0);
+    const total_invested = positions.reduce((s, p) => s + p.total_investment, 0);
     const gain_loss = total_portfolio_value - total_invested;
-    const gain_loss_percentage = total_invested ? (gain_loss/total_invested)*100 : 0;
+    const gain_loss_percentage = total_invested ? (gain_loss / total_invested) * 100 : 0;
     const snap = {
       snapshot_date,
       total_portfolio_value: parseFloat(total_portfolio_value.toFixed(2)),
@@ -166,18 +158,18 @@
     return snap;
   }
 
-  function getPortfolioSnapshots(){
+  function getPortfolioSnapshots() {
     ensureLoaded();
-    return snapshots.slice();
+    return snapshots.slice(); // return a copy to prevent external mutation
   }
 
-  function getSnapshotsByDateRange(startDate,endDate){
+  function getSnapshotsByDateRange(startDate, endDate) {
     ensureLoaded();
     const start = new Date(startDate).getTime();
     const end = new Date(endDate).getTime();
-    return snapshots.filter(s=>{
+    return snapshots.filter(s => {
       const d = new Date(s.snapshot_date).getTime();
-      return d>=start && d<=end;
+      return d >= start && d <= end;
     });
   }
 

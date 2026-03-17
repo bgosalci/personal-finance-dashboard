@@ -16,6 +16,8 @@ function loadMarketStatus(response) {
   const context = vm.createContext(dom.window);
   dom.window.fetch = jest.fn().mockResolvedValue({ json: () => Promise.resolve(response) });
   dom.window.setInterval = () => {};
+  // Provide a dummy key so update() doesn't skip the fetch
+  dom.window.localStorage.setItem('pf_api_key_polygon', 'test-key');
   const code = fs.readFileSync(path.resolve(__dirname, '../app/js/services/marketStatus.js'), 'utf8');
   vm.runInContext(code, context);
   return context;

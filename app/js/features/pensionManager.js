@@ -3,6 +3,10 @@ const PensionManager = (function() {
 
     const LIST_KEY = 'pensionList';
     const STORAGE_PREFIX = 'pensionData_';
+    // Use StorageUtils for consistent access (in-memory fallback for tests/private browsing)
+    const storage = StorageUtils.getStorage();
+    // Delegate to shared utility — single definition lives in core/utils.js
+    const formatInputValue = Utils.formatInputValue;
     let pensions = [];
     let currentPensionId = null;
     let summaryMode = false;
@@ -49,21 +53,6 @@ const PensionManager = (function() {
     const chartClose = document.getElementById('pension-chart-close');
     let pensionChart = null;
 
-    function formatInputValue(value, pad = false) {
-        const clean = value.replace(/[^0-9.]/g, '');
-        if (clean === '') return '';
-        const [intPart, decPart] = clean.split('.');
-        const formattedInt = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-        if (decPart !== undefined) {
-            if (decPart === '') {
-                return `${formattedInt}.`;
-            }
-            const decimals = decPart.slice(0, 2);
-            return pad ? `${formattedInt}.${decimals.padEnd(2, '0')}` : `${formattedInt}.${decimals}`;
-        }
-        return formattedInt;
-    }
-
     function setupAmountInput(input) {
         if (!input) return;
         input.addEventListener('input', (e) => {
@@ -79,7 +68,7 @@ const PensionManager = (function() {
     }
 
     function loadPensionList() {
-        const list = localStorage.getItem(LIST_KEY);
+        const list = storage.getItem(LIST_KEY);
         if (list) {
             try { pensions = JSON.parse(list) || []; } catch (e) { pensions = []; }
         }
@@ -87,13 +76,13 @@ const PensionManager = (function() {
         if (pensions.length === 0) {
             pensions = [{ id: 'pen1', name: 'Pension 1', type: 'growth', start: 0, show: true }];
             savePensionList();
-            localStorage.setItem(getStorageKey('pen1'), '[]');
+            storage.setItem(getStorageKey('pen1'), '[]');
         }
         currentPensionId = pensions[0].id;
     }
 
     function savePensionList() {
-        localStorage.setItem(LIST_KEY, JSON.stringify(pensions));
+        storage.setItem(LIST_KEY, JSON.stringify(pensions));
     }
 
     function loadEntries() {
@@ -104,7 +93,7 @@ const PensionManager = (function() {
             const dateSet = new Set();
             const dataMap = {};
             included.forEach(p => {
-                const d = localStorage.getItem(getStorageKey(p.id));
+                const d = storage.getItem(getStorageKey(p.id));
                 let arr = [];
                 if (d) { try { arr = JSON.parse(d) || []; } catch (e) { arr = []; } }
                 dataMap[p.id] = arr;
@@ -127,7 +116,7 @@ const PensionManager = (function() {
                 entries.push({ date, value: totalVal, payment: paymentSum });
             });
         } else {
-            const data = localStorage.getItem(getStorageKey(currentPensionId));
+            const data = storage.getItem(getStorageKey(currentPensionId));
             if (data) {
                 try { entries = JSON.parse(data) || []; } catch (e) { entries = []; }
             } else {
@@ -137,7 +126,7 @@ const PensionManager = (function() {
     }
 
     function saveEntries() {
-        localStorage.setItem(getStorageKey(currentPensionId), JSON.stringify(entries));
+        storage.setItem(getStorageKey(currentPensionId), JSON.stringify(entries));
     }
 
     function updatePaymentHeader() {
@@ -235,7 +224,7 @@ const PensionManager = (function() {
         const id = 'pen' + Date.now();
         pensions.push({ id, name, type, start, show: true });
         savePensionList();
-        localStorage.setItem(getStorageKey(id), '[]');
+        storage.setItem(getStorageKey(id), '[]');
         switchPension(id);
         updatePaymentHeader();
         closeNewPensionModal();
@@ -247,7 +236,7 @@ const PensionManager = (function() {
         if (idx !== -1) {
             const confirmed = await DialogManager.confirm(I18n.t('dialog.deletePension'), I18n.t('dialog.delete'));
             if (!confirmed) return;
-            localStorage.removeItem(getStorageKey(currentPensionId));
+            storage.removeItem(getStorageKey(currentPensionId));
             pensions.splice(idx, 1);
             savePensionList();
             const next = pensions[idx] || pensions[idx-1];
@@ -335,7 +324,7 @@ const PensionManager = (function() {
             const dateSet = new Set();
             const dataMap = {};
             included.forEach(p => {
-                const d = localStorage.getItem(getStorageKey(p.id));
+                const d = storage.getItem(getStorageKey(p.id));
                 let arr = [];
                 if (d) { try { arr = JSON.parse(d) || []; } catch (e) { arr = []; } }
                 dataMap[p.id] = arr;
@@ -353,7 +342,7 @@ const PensionManager = (function() {
                 return { date, value: totalVal };
             });
         } else {
-            const data = localStorage.getItem(getStorageKey(id));
+            const data = storage.getItem(getStorageKey(id));
             let arr = [];
             if (data) { try { arr = JSON.parse(data) || []; } catch (e) { arr = []; } }
             arr.sort((a,b)=>new Date(a.date)-new Date(b.date));
@@ -638,7 +627,7 @@ const PensionManager = (function() {
 
     function exportData(format = 'json') {
         const data = pensions.map(p => {
-            let entriesData = localStorage.getItem(getStorageKey(p.id));
+            let entriesData = storage.getItem(getStorageKey(p.id));
             let arr = [];
             if (entriesData) {
                 try { arr = JSON.parse(entriesData) || []; } catch (e) { arr = []; }
@@ -690,7 +679,7 @@ const PensionManager = (function() {
         arr.forEach(p => {
             const id = 'pen' + Date.now() + Math.random().toString(36).slice(2,5);
             pensions.push({ id, name: p.name, type: p.type, start: parseFloat(p.start) || 0, show: true });
-            localStorage.setItem(getStorageKey(id), JSON.stringify((p.entries || []).map(en => ({
+            storage.setItem(getStorageKey(id), JSON.stringify((p.entries || []).map(en => ({
                 date: en.date,
                 value: parseFloat(en.value),
                 payment: parseFloat(en.payment) || 0
@@ -704,9 +693,9 @@ const PensionManager = (function() {
 
     function deleteAllData() {
         pensions.forEach(p => {
-            localStorage.removeItem(getStorageKey(p.id));
+            storage.removeItem(getStorageKey(p.id));
         });
-        localStorage.removeItem(LIST_KEY);
+        storage.removeItem(LIST_KEY);
         pensions = [];
         entries = [];
         loadPensionList();

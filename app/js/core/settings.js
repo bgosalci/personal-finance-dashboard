@@ -131,6 +131,38 @@ const Settings = (function() {
             });
         }
 
+        // Polygon.io API key (market status indicator)
+        const polygonKeyInput = document.getElementById('settings-polygon-api-key');
+        const polygonKeyToggle = document.getElementById('settings-polygon-api-key-toggle');
+        if (polygonKeyToggle && polygonKeyInput) {
+            polygonKeyToggle.addEventListener('change', () => {
+                polygonKeyInput.type = polygonKeyToggle.checked ? 'text' : 'password';
+            });
+        }
+        if (polygonKeyInput && typeof MarketStatus !== 'undefined') {
+            try { polygonKeyInput.value = MarketStatus.getApiKey(); } catch (e) {}
+            polygonKeyInput.addEventListener('input', (e) => {
+                const val = (e.target.value || '').trim();
+                try { MarketStatus.setApiKey(val); } catch (err) {}
+            });
+        }
+
+        // ExchangeRate-API key (forex / currency conversion)
+        const exchangerateKeyInput = document.getElementById('settings-exchangerate-api-key');
+        const exchangerateKeyToggle = document.getElementById('settings-exchangerate-api-key-toggle');
+        if (exchangerateKeyToggle && exchangerateKeyInput) {
+            exchangerateKeyToggle.addEventListener('change', () => {
+                exchangerateKeyInput.type = exchangerateKeyToggle.checked ? 'text' : 'password';
+            });
+        }
+        if (exchangerateKeyInput && typeof ForexData !== 'undefined') {
+            try { exchangerateKeyInput.value = ForexData.getApiKey(); } catch (e) {}
+            exchangerateKeyInput.addEventListener('input', (e) => {
+                const val = (e.target.value || '').trim();
+                try { ForexData.setApiKey(val); } catch (err) {}
+            });
+        }
+
         const langSelect = document.getElementById('language-select');
         if (langSelect) {
             const localeFlags = {
