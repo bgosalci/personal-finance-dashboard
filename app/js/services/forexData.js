@@ -4,16 +4,17 @@ const ForexData = (function() {
     const STORAGE_KEY = 'pf_forex_data';
     let data = null;
     let timerId = null;
+    const storage = StorageUtils.getStorage();
 
     function getApiKey() {
-        try { return localStorage.getItem(LS_API_KEY) || ''; } catch (e) { return ''; }
+        try { return storage.getItem(LS_API_KEY) || ''; } catch (e) { return ''; }
     }
     function setApiKey(key) {
-        try { localStorage.setItem(LS_API_KEY, key || ''); } catch (e) {}
+        try { storage.setItem(LS_API_KEY, key || ''); } catch (e) {}
     }
 
     function load() {
-        const stored = localStorage.getItem(STORAGE_KEY);
+        const stored = storage.getItem(STORAGE_KEY);
         if (stored) {
             try {
                 const parsed = JSON.parse(stored);
@@ -28,7 +29,7 @@ const ForexData = (function() {
 
     function save() {
         if (data) {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+            storage.setItem(STORAGE_KEY, JSON.stringify(data));
         }
     }
 

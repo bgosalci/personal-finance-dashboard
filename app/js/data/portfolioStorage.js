@@ -106,7 +106,9 @@ const PortfolioStorage = (function() {
     }
 
     function getUsage() {
-        // Use raw localStorage for quota estimation — only if available
+        // Intentionally bypasses StorageUtils: quota estimation only makes sense
+        // against the real localStorage backend. The in-memory fallback returned
+        // by StorageUtils has no size limit, so estimating it is meaningless.
         if (typeof window !== 'undefined' && window.localStorage) {
             let total = 0;
             for (let i = 0; i < window.localStorage.length; i++) {
