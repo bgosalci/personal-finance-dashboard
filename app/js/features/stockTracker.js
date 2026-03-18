@@ -138,9 +138,10 @@ const StockTracker = (function() {
                         const input = document.querySelector(`#table-body input.price-input[data-ticker="${ticker}"][data-year="${currentYear}"]`);
                         if (input) input.value = price;
                         updateGrowthCalculations(ticker);
+                    } else {
+                        failCount++;
                     }
-                })
-                .catch(() => { failCount++; });
+                });
         });
         await Promise.all(updates);
         if (failCount > 0 && typeof Utils !== 'undefined') {

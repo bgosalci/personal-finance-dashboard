@@ -62,12 +62,27 @@
   }
 
   function migrate(oldVersion) {
-    // Clear data stored in old format — cannot safely decode old RLE format.
-    positions = [];
-    snapshots = [];
+    // Attempt to decode v1 tilde-delimited RLE and re-save in v2 format.
+    // If decoding fails (corrupted data), data is cleared.
+    try {
+      const posStr = storage.getItem(POSITIONS_KEY);
+      const snapStr = storage.getItem(SNAPSHOTS_KEY);
+      if (posStr) {
+        const json = atob(posStr).replace(/~(\d+)~(.)/g, (_, n, c) => c.repeat(parseInt(n, 10)));
+        positions = JSON.parse(json);
+      }
+      if (snapStr) {
+        const json = atob(snapStr).replace(/~(\d+)~(.)/g, (_, n, c) => c.repeat(parseInt(n, 10)));
+        snapshots = JSON.parse(json);
+      }
+    } catch (e) {
+      positions = [];
+      snapshots = [];
+    }
     storage.removeItem(POSITIONS_KEY);
     storage.removeItem(SNAPSHOTS_KEY);
     storage.setItem(STORAGE_VERSION_KEY, VERSION);
+    save(); // persist migrated data in v2 format
   }
 
   function queueSave() {

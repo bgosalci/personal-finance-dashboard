@@ -355,14 +355,19 @@ const WatchlistManager = (function() {
                     item.open = typeof raw.o === 'number' ? raw.o : null;
                     item.prevClose = typeof raw.pc === 'number' ? raw.pc : null;
                     item.lastUpdate = Date.now();
+                } else {
+                    failCount++;
                 }
             } catch (e) {
                 failCount++;
             }
         });
         await Promise.all(updates);
-        if (failCount > 0 && failCount === watchlist.length && typeof Utils !== 'undefined') {
-            Utils.showToast('Watchlist price fetch failed — check your Finnhub API key in Settings', 'warning');
+        if (failCount > 0 && typeof Utils !== 'undefined') {
+            const msg = failCount === watchlist.length
+                ? 'All watchlist price fetches failed — check your Finnhub API key in Settings'
+                : `${failCount} watchlist price fetch(es) failed`;
+            Utils.showToast(msg, 'warning');
         }
         save();
         render();
