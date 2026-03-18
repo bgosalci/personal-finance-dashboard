@@ -52,3 +52,5 @@ const Utils = (function() {
 
     return { formatInputValue, showToast };
 })();
+
+if (typeof module !== 'undefined') module.exports = Utils;

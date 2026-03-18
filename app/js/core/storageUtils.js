@@ -33,3 +33,5 @@ const StorageUtils = (function() {
 
     return { isLocalStorageAvailable, getStorage };
 })();
+
+if (typeof module !== 'undefined') module.exports = StorageUtils;

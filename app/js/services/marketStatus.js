@@ -84,3 +84,5 @@ const MarketStatus = (function() {
 
     return { init, stop, isMarketOpen, getApiKey, setApiKey };
 })();
+
+if (typeof module !== 'undefined') module.exports = MarketStatus;

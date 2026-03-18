@@ -42,3 +42,5 @@ const PriceStorage = (function() {
 
     return { save, get, getAll, onChange, offChange };
 })();
+
+if (typeof module !== 'undefined') module.exports = PriceStorage;

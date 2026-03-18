@@ -1,53 +1,53 @@
-const fs = require('fs');
-const path = require('path');
-const { JSDOM } = require('jsdom');
-const vm = require('vm');
+let FakeWebSocket;
 
-function loadWatchlist(initialData = [{ ticker: 'AAPL' }]) {
-  const dom = new JSDOM('<!DOCTYPE html><body><table><tbody id="watchlist-body"></tbody></table></body>', { url: 'http://localhost' });
-  const { window } = dom;
-  window.QuotesService = { getApiKey: () => 'TOKEN', fetchQuote: jest.fn() };
-  window.I18n = { t: (k) => k };
-  class FakeWebSocket {
+beforeEach(() => {
+  jest.resetModules();
+  localStorage.clear();
+
+  document.body.innerHTML = '<table><tbody id="watchlist-body"></tbody></table>';
+
+  class _FakeWebSocket {
     constructor(url) {
       this.url = url;
       this.listeners = {};
-      FakeWebSocket.instances.push(this);
+      _FakeWebSocket.instances.push(this);
     }
     addEventListener(type, cb) { this.listeners[type] = cb; }
     send() {}
     close() {}
   }
-  FakeWebSocket.instances = [];
-  window.WebSocket = FakeWebSocket;
-  window.localStorage.setItem('watchlistData', JSON.stringify(initialData));
-  const context = vm.createContext(window);
-  const utilCode = fs.readFileSync(path.resolve(__dirname, '../app/js/core/storageUtils.js'), 'utf8');
-  const priceStorageCode = fs.readFileSync(path.resolve(__dirname, '../app/js/data/priceStorage.js'), 'utf8');
-  const watchlistCode = fs.readFileSync(path.resolve(__dirname, '../app/js/features/watchlistManager.js'), 'utf8');
-  vm.runInContext(utilCode, context);
-  vm.runInContext(priceStorageCode, context);
-  vm.runInContext(watchlistCode, context);
-  return { context, FakeWebSocket };
-}
+  _FakeWebSocket.instances = [];
+  FakeWebSocket = _FakeWebSocket;
+  global.WebSocket = FakeWebSocket;
+
+  global.QuotesService = { getApiKey: () => 'TOKEN', fetchQuote: jest.fn() };
+  global.I18n = { t: k => k };
+  global.StorageUtils = require('../app/js/core/storageUtils');
+  global.PriceStorage = require('../app/js/data/priceStorage');
+});
+
+afterEach(() => {
+  jest.restoreAllMocks();
+});
 
 test('stores websocket price updates in localStorage', () => {
-  const { context, FakeWebSocket } = loadWatchlist();
-  vm.runInContext('WatchlistManager.init();', context);
+  localStorage.setItem('watchlistData', JSON.stringify([{ ticker: 'AAPL' }]));
+  const WatchlistManager = require('../app/js/features/watchlistManager');
+  WatchlistManager.init();
   const ws = FakeWebSocket.instances[0];
   ws.listeners.message({ data: JSON.stringify({ type: 'trade', data: [{ s: 'AAPL', p: 123.45 }] }) });
-  const stored = vm.runInContext('PriceStorage.getAll()', context);
-  expect(stored.AAPL.price).toBe(123.45);
-  const lastUpdate = vm.runInContext('JSON.parse(localStorage.getItem("watchlistData"))[0].lastUpdate', context);
+  expect(PriceStorage.getAll().AAPL.price).toBe(123.45);
+  const lastUpdate = JSON.parse(localStorage.getItem('watchlistData'))[0].lastUpdate;
   expect(typeof lastUpdate).toBe('number');
 });
 
 test('uses exponential backoff for reconnect attempts', () => {
-  const { context, FakeWebSocket } = loadWatchlist();
+  localStorage.setItem('watchlistData', JSON.stringify([{ ticker: 'AAPL' }]));
   const delays = [];
-  context.setTimeout = jest.fn((fn, delay) => { delays.push(delay); return 1; });
-  context.clearTimeout = jest.fn();
-  vm.runInContext('WatchlistManager.init();', context);
+  jest.spyOn(global, 'setTimeout').mockImplementation((fn, delay) => { delays.push(delay); return 1; });
+  jest.spyOn(global, 'clearTimeout').mockImplementation(() => {});
+  const WatchlistManager = require('../app/js/features/watchlistManager');
+  WatchlistManager.init();
   const ws = FakeWebSocket.instances[0];
   ws.listeners.close();
   ws.listeners.close();
@@ -56,54 +56,55 @@ test('uses exponential backoff for reconnect attempts', () => {
 });
 
 test('beforeunload closes socket', () => {
-  const { context, FakeWebSocket } = loadWatchlist();
+  localStorage.setItem('watchlistData', JSON.stringify([{ ticker: 'AAPL' }]));
   const closeSpy = jest.spyOn(FakeWebSocket.prototype, 'close');
-  vm.runInContext('WatchlistManager.init();', context);
-  context.dispatchEvent(new context.Event('beforeunload'));
+  const WatchlistManager = require('../app/js/features/watchlistManager');
+  WatchlistManager.init();
+  window.dispatchEvent(new Event('beforeunload'));
   expect(closeSpy).toHaveBeenCalled();
 });
 
 test('beforeunload clears reconnect timer', () => {
-  const { context, FakeWebSocket } = loadWatchlist();
-  context.setTimeout = jest.fn(() => 1);
-  const clearTimeoutSpy = jest.fn();
-  context.clearTimeout = clearTimeoutSpy;
-  vm.runInContext('WatchlistManager.init();', context);
+  localStorage.setItem('watchlistData', JSON.stringify([{ ticker: 'AAPL' }]));
+  jest.spyOn(global, 'setTimeout').mockReturnValue(1);
+  const clearTimeoutSpy = jest.spyOn(global, 'clearTimeout').mockImplementation(() => {});
+  const WatchlistManager = require('../app/js/features/watchlistManager');
+  WatchlistManager.init();
   const ws = FakeWebSocket.instances[0];
   ws.listeners.close();
-  context.dispatchEvent(new context.Event('beforeunload'));
+  window.dispatchEvent(new Event('beforeunload'));
   expect(clearTimeoutSpy).toHaveBeenCalledWith(1);
 });
 
 test('flashes and persists background colour on price updates', async () => {
-  const initData = [{ ticker: 'AAPL', price: 110, prevClose: 100, change: 10 }];
-  const { context, FakeWebSocket } = loadWatchlist(initData);
-  vm.runInContext('WatchlistManager.init();', context);
+  localStorage.setItem('watchlistData', JSON.stringify([{ ticker: 'AAPL', price: 110, prevClose: 100, change: 10 }]));
+  const WatchlistManager = require('../app/js/features/watchlistManager');
+  WatchlistManager.init();
   const ws = FakeWebSocket.instances[0];
   ws.listeners.message({ data: JSON.stringify({ type: 'trade', data: [{ s: 'AAPL', p: 108 }] }) });
-  const during = vm.runInContext("document.querySelector('#watchlist-body tr td:nth-child(4)').style.backgroundColor", context);
+  const during = document.querySelector('#watchlist-body tr td:nth-child(4)').style.backgroundColor;
   expect(during).toBe('rgba(239, 68, 68, 0.35)');
   await new Promise(res => setTimeout(res, 1100));
-  const after = vm.runInContext("document.querySelector('#watchlist-body tr td:nth-child(4)').style.backgroundColor", context);
+  const after = document.querySelector('#watchlist-body tr td:nth-child(4)').style.backgroundColor;
   expect(after).toBe('rgb(55, 65, 81)');
 });
 
 test('renders range when high and low are available', () => {
-  const initData = [{ ticker: 'AAPL', high: 150, low: 140 }];
-  const { context } = loadWatchlist(initData);
-  vm.runInContext('WatchlistManager.init();', context);
-  const text = vm.runInContext("document.querySelector('#watchlist-body tr td:nth-child(9)').textContent", context);
+  localStorage.setItem('watchlistData', JSON.stringify([{ ticker: 'AAPL', high: 150, low: 140 }]));
+  const WatchlistManager = require('../app/js/features/watchlistManager');
+  WatchlistManager.init();
+  const text = document.querySelector('#watchlist-body tr td:nth-child(9)').textContent;
   expect(text).toBe('10.00');
-  const sortVal = vm.runInContext("document.querySelector('#watchlist-body tr td:nth-child(9)').getAttribute('data-sort-value')", context);
+  const sortVal = document.querySelector('#watchlist-body tr td:nth-child(9)').getAttribute('data-sort-value');
   expect(sortVal).toBe('10');
 });
 
 test('uses em dash and disables sorting when range unavailable', () => {
-  const initData = [{ ticker: 'AAPL', high: 150 }];
-  const { context } = loadWatchlist(initData);
-  vm.runInContext('WatchlistManager.init();', context);
-  const text = vm.runInContext("document.querySelector('#watchlist-body tr td:nth-child(9)').textContent", context);
+  localStorage.setItem('watchlistData', JSON.stringify([{ ticker: 'AAPL', high: 150 }]));
+  const WatchlistManager = require('../app/js/features/watchlistManager');
+  WatchlistManager.init();
+  const text = document.querySelector('#watchlist-body tr td:nth-child(9)').textContent;
   expect(text).toBe('—');
-  const hasAttr = vm.runInContext("document.querySelector('#watchlist-body tr td:nth-child(9)').hasAttribute('data-sort-value')", context);
+  const hasAttr = document.querySelector('#watchlist-body tr td:nth-child(9)').hasAttribute('data-sort-value');
   expect(hasAttr).toBe(false);
 });

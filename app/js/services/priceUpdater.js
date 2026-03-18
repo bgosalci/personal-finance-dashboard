@@ -27,3 +27,5 @@ const PriceUpdater = (function() {
 
     return { init, stop };
 })();
+
+if (typeof module !== 'undefined') module.exports = PriceUpdater;

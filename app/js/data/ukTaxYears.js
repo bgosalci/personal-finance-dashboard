@@ -40,3 +40,5 @@ const UKTaxYears = {
 if (typeof window !== 'undefined') {
     window.UKTaxYears = UKTaxYears;
 }
+
+if (typeof module !== 'undefined') module.exports = UKTaxYears;

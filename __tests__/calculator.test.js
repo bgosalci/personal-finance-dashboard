@@ -1,14 +1,3 @@
-const fs = require('fs');
-const path = require('path');
-const { JSDOM } = require('jsdom');
-const vm = require('vm');
-
-const i18nCode = fs.readFileSync(path.resolve(__dirname, '../app/js/core/i18n.js'), 'utf8');
-const ukTaxYearsCode = fs.readFileSync(path.resolve(__dirname, '../app/js/data/ukTaxYears.js'), 'utf8');
-// calculator.js uses Utils.formatInputValue — prepend utils.js so it's always available
-const utlsCode = fs.readFileSync(path.resolve(__dirname, '../app/js/core/utils.js'), 'utf8');
-const calculatorCode = utlsCode + '\n' + fs.readFileSync(path.resolve(__dirname, '../app/js/features/calculator.js'), 'utf8');
-
 function buildSalaryDom() {
   return `
     <div id="salary-tabs"></div>
@@ -44,7 +33,6 @@ function buildSalaryDom() {
     <input id="salary-other-deductions" />
     <div id="salary-allowances"></div>
     <button id="add-salary-allowance"></button>
-
     <span id="salary-take-home"></span>
     <span id="salary-tax"></span>
     <span id="salary-tax-percent"></span>
@@ -80,192 +68,83 @@ function buildSalaryDom() {
   `;
 }
 
+beforeEach(() => {
+  jest.resetModules();
+  localStorage.clear();
+  global.Utils = require('../app/js/core/utils');
+  global.I18n = require('../app/js/core/i18n');
+  global.UKTaxYears = require('../app/js/data/ukTaxYears');
+  global.Settings = undefined;
+});
+
+function loadSalaryCalculator(entries) {
+  localStorage.clear();
+  document.body.innerHTML = buildSalaryDom();
+  localStorage.setItem('pf_salary_entries', JSON.stringify(entries));
+  require('../app/js/features/calculator');
+  window.SalaryCalculator.init();
+  const entryButton = document.getElementById('salary-tabs').querySelector(`button[data-salary-id="${entries[0].id}"]`);
+  entryButton.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+}
+
 test('salary calculator outputs tax percentages', () => {
-  const dom = new JSDOM(`<!DOCTYPE html><html><body>${buildSalaryDom()}</body></html>`, { url: 'http://localhost' });
-  const context = vm.createContext(dom.window);
-  vm.runInContext(i18nCode, context);
-  vm.runInContext(ukTaxYearsCode, context);
-  dom.window.localStorage.setItem('pf_salary_entries', JSON.stringify([
-    {
-      id: 'salary-test',
-      name: 'Test',
-      rateFrequency: 'annual',
-      annualSalary: 50000,
-      pensionPercent: 0,
-      studentLoanPlan: 'none',
-      age: 30,
-      taxCode: '1257L',
-      benefits: 0,
-      hoursPerWeek: 37.5,
-      frequency: 'monthly',
-      showInSummary: true,
-      allowances: [],
-      otherDeductions: 0
-    }
-  ]));
-  vm.runInContext(calculatorCode, context);
-  vm.runInContext('SalaryCalculator.init()', context);
-
-  const salaryTabs = dom.window.document.getElementById('salary-tabs');
-  const entryButton = salaryTabs.querySelector('button[data-salary-id="salary-test"]');
-  entryButton.dispatchEvent(new dom.window.MouseEvent('click', { bubbles: true }));
-
-  const taxPercent = dom.window.document.getElementById('salary-tax-percent').textContent;
-  const niPercent = dom.window.document.getElementById('salary-ni-percent').textContent;
-  const totalTaxPercent = dom.window.document.getElementById('salary-total-tax-percent').textContent;
-
-  expect(taxPercent).toBe('14.97%');
-  expect(niPercent).toBe('5.99%');
-  expect(totalTaxPercent).toBe('20.96%');
+  loadSalaryCalculator([{
+    id: 'salary-test', name: 'Test', rateFrequency: 'annual', annualSalary: 50000,
+    pensionPercent: 0, studentLoanPlan: 'none', age: 30, taxCode: '1257L',
+    benefits: 0, hoursPerWeek: 37.5, frequency: 'monthly', showInSummary: true,
+    allowances: [], otherDeductions: 0
+  }]);
+  expect(document.getElementById('salary-tax-percent').textContent).toBe('14.97%');
+  expect(document.getElementById('salary-ni-percent').textContent).toBe('5.99%');
+  expect(document.getElementById('salary-total-tax-percent').textContent).toBe('20.96%');
 });
 
 test('salary calculator annualizes hourly rate based on hours per week', () => {
-  const dom = new JSDOM(`<!DOCTYPE html><html><body>${buildSalaryDom()}</body></html>`, { url: 'http://localhost' });
-  const context = vm.createContext(dom.window);
-  vm.runInContext(i18nCode, context);
-  vm.runInContext(ukTaxYearsCode, context);
-  dom.window.localStorage.setItem('pf_salary_entries', JSON.stringify([
-    {
-      id: 'salary-hourly',
-      name: 'Hourly',
-      rateAmount: 20,
-      rateFrequency: 'hourly',
-      annualSalary: 0,
-      pensionPercent: 0,
-      studentLoanPlan: 'none',
-      age: 30,
-      taxCode: '1257L',
-      benefits: 0,
-      hoursPerWeek: 40,
-      frequency: 'hourly',
-      showInSummary: true,
-      allowances: [],
-      otherDeductions: 0
-    }
-  ]));
-  vm.runInContext(calculatorCode, context);
-  vm.runInContext('SalaryCalculator.init()', context);
-
-  const salaryTabs = dom.window.document.getElementById('salary-tabs');
-  const entryButton = salaryTabs.querySelector('button[data-salary-id="salary-hourly"]');
-  entryButton.dispatchEvent(new dom.window.MouseEvent('click', { bubbles: true }));
-
-  const annualized = dom.window.document.getElementById('salary-annualized').value;
-  expect(annualized).toBe('41,600.00');
+  loadSalaryCalculator([{
+    id: 'salary-hourly', name: 'Hourly', rateAmount: 20, rateFrequency: 'hourly',
+    annualSalary: 0, pensionPercent: 0, studentLoanPlan: 'none', age: 30,
+    taxCode: '1257L', benefits: 0, hoursPerWeek: 40, frequency: 'hourly',
+    showInSummary: true, allowances: [], otherDeductions: 0
+  }]);
+  expect(document.getElementById('salary-annualized').value).toBe('41,600.00');
 });
 
 test('salary calculator annualizes weekly rate', () => {
-  const dom = new JSDOM(`<!DOCTYPE html><html><body>${buildSalaryDom()}</body></html>`, { url: 'http://localhost' });
-  const context = vm.createContext(dom.window);
-  vm.runInContext(i18nCode, context);
-  vm.runInContext(ukTaxYearsCode, context);
-  dom.window.localStorage.setItem('pf_salary_entries', JSON.stringify([
-    {
-      id: 'salary-weekly',
-      name: 'Weekly',
-      rateAmount: 750,
-      rateFrequency: 'weekly',
-      annualSalary: 0,
-      pensionPercent: 0,
-      studentLoanPlan: 'none',
-      age: 30,
-      taxCode: '1257L',
-      benefits: 0,
-      hoursPerWeek: 37.5,
-      frequency: 'weekly',
-      showInSummary: true,
-      allowances: [],
-      otherDeductions: 0
-    }
-  ]));
-  vm.runInContext(calculatorCode, context);
-  vm.runInContext('SalaryCalculator.init()', context);
-
-  const salaryTabs = dom.window.document.getElementById('salary-tabs');
-  const entryButton = salaryTabs.querySelector('button[data-salary-id="salary-weekly"]');
-  entryButton.dispatchEvent(new dom.window.MouseEvent('click', { bubbles: true }));
-
-  const annualized = dom.window.document.getElementById('salary-annualized').value;
-  expect(annualized).toBe('39,000.00');
+  loadSalaryCalculator([{
+    id: 'salary-weekly', name: 'Weekly', rateAmount: 750, rateFrequency: 'weekly',
+    annualSalary: 0, pensionPercent: 0, studentLoanPlan: 'none', age: 30,
+    taxCode: '1257L', benefits: 0, hoursPerWeek: 37.5, frequency: 'weekly',
+    showInSummary: true, allowances: [], otherDeductions: 0
+  }]);
+  expect(document.getElementById('salary-annualized').value).toBe('39,000.00');
 });
 
 test('salary calculator annualizes daily rate using workdays only', () => {
-  const dom = new JSDOM(`<!DOCTYPE html><html><body>${buildSalaryDom()}</body></html>`, { url: 'http://localhost' });
-  const context = vm.createContext(dom.window);
-  vm.runInContext(i18nCode, context);
-  vm.runInContext(ukTaxYearsCode, context);
-  dom.window.localStorage.setItem('pf_salary_entries', JSON.stringify([
-    {
-      id: 'salary-daily',
-      name: 'Daily',
-      rateAmount: 200,
-      rateFrequency: 'daily',
-      annualSalary: 0,
-      pensionPercent: 0,
-      studentLoanPlan: 'none',
-      age: 30,
-      taxCode: '1257L',
-      benefits: 0,
-      hoursPerWeek: 37.5,
-      frequency: 'daily',
-      showInSummary: true,
-      allowances: [],
-      otherDeductions: 0
-    }
-  ]));
-  vm.runInContext(calculatorCode, context);
-  vm.runInContext('SalaryCalculator.init()', context);
-
-  const salaryTabs = dom.window.document.getElementById('salary-tabs');
-  const entryButton = salaryTabs.querySelector('button[data-salary-id="salary-daily"]');
-  entryButton.dispatchEvent(new dom.window.MouseEvent('click', { bubbles: true }));
-
-  const annualized = dom.window.document.getElementById('salary-annualized').value;
-  expect(annualized).toBe('52,000.00');
+  loadSalaryCalculator([{
+    id: 'salary-daily', name: 'Daily', rateAmount: 200, rateFrequency: 'daily',
+    annualSalary: 0, pensionPercent: 0, studentLoanPlan: 'none', age: 30,
+    taxCode: '1257L', benefits: 0, hoursPerWeek: 37.5, frequency: 'daily',
+    showInSummary: true, allowances: [], otherDeductions: 0
+  }]);
+  expect(document.getElementById('salary-annualized').value).toBe('52,000.00');
 });
 
 test('dividend calculator matches GOV.UK dividend example', () => {
-  const dom = new JSDOM(`<!DOCTYPE html><html><body></body></html>`, { url: 'http://localhost' });
-  const context = vm.createContext(dom.window);
-  vm.runInContext(i18nCode, context);
-  vm.runInContext(ukTaxYearsCode, context);
-  vm.runInContext(calculatorCode, context);
-
-  vm.runInContext('const exampleTaxableIncome = DividendCgtCalculator.computeTaxableIncomeFromGross(29570, DividendCgtCalculator.getTaxYearData("2025/26"));', context);
-  const result = vm.runInContext(
-    'DividendCgtCalculator.calculateFromValues({ taxYear: "2025/26", taxableIncome: exampleTaxableIncome, dividends: 3000, dividendsExcluded: 0, gains: 0, losses: 0, applyAea: true })',
-    context
-  );
-
+  require('../app/js/features/calculator');
+  const DividendCgtCalculator = window.DividendCgtCalculator;
+  const exampleTaxableIncome = DividendCgtCalculator.computeTaxableIncomeFromGross(29570, DividendCgtCalculator.getTaxYearData('2025/26'));
+  const result = DividendCgtCalculator.calculateFromValues({ taxYear: '2025/26', taxableIncome: exampleTaxableIncome, dividends: 3000, dividendsExcluded: 0, gains: 0, losses: 0, applyAea: true });
   expect(result.dividend.taxDue).toBeCloseTo(218.75, 2);
 });
 
 test('CGT calculator matches GOV.UK example within basic band', () => {
-  const dom = new JSDOM(`<!DOCTYPE html><html><body></body></html>`, { url: 'http://localhost' });
-  const context = vm.createContext(dom.window);
-  vm.runInContext(i18nCode, context);
-  vm.runInContext(ukTaxYearsCode, context);
-  vm.runInContext(calculatorCode, context);
-
-  const result = vm.runInContext(
-    'DividendCgtCalculator.calculateFromValues({ taxYear: "2025/26", taxableIncome: 20000, dividends: 0, dividendsExcluded: 0, gains: 12600, losses: 0, applyAea: true })',
-    context
-  );
-
+  require('../app/js/features/calculator');
+  const result = window.DividendCgtCalculator.calculateFromValues({ taxYear: '2025/26', taxableIncome: 20000, dividends: 0, dividendsExcluded: 0, gains: 12600, losses: 0, applyAea: true });
   expect(result.cgt.taxDue).toBeCloseTo(1728, 2);
 });
 
 test('CGT calculator matches GOV.UK example across bands', () => {
-  const dom = new JSDOM(`<!DOCTYPE html><html><body></body></html>`, { url: 'http://localhost' });
-  const context = vm.createContext(dom.window);
-  vm.runInContext(i18nCode, context);
-  vm.runInContext(ukTaxYearsCode, context);
-  vm.runInContext(calculatorCode, context);
-
-  const result = vm.runInContext(
-    'DividendCgtCalculator.calculateFromValues({ taxYear: "2025/26", taxableIncome: 20000, dividends: 0, dividendsExcluded: 0, gains: 52600, losses: 0, applyAea: true })',
-    context
-  );
-
+  require('../app/js/features/calculator');
+  const result = window.DividendCgtCalculator.calculateFromValues({ taxYear: '2025/26', taxableIncome: 20000, dividends: 0, dividendsExcluded: 0, gains: 52600, losses: 0, applyAea: true });
   expect(result.cgt.taxDue).toBeCloseTo(10842, 2);
 });

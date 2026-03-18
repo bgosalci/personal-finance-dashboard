@@ -1436,3 +1436,5 @@ const Calculator = (function() {
         formatPercentage
     };
 })();
+
+if (typeof module !== 'undefined') module.exports = Calculator;
