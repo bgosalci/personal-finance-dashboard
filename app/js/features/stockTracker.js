@@ -132,13 +132,13 @@ const StockTracker = (function() {
         let failCount = 0;
         const updates = stockData.tickers.map(ticker => {
             return QuotesService.fetchQuote(ticker)
-                .then(({ price }) => {
+                .then(({ price, excluded, allZero }) => {
                     if (typeof price === 'number' && price > 0) {
                         stockData.prices[ticker][currentYear] = price;
                         const input = document.querySelector(`#table-body input.price-input[data-ticker="${ticker}"][data-year="${currentYear}"]`);
                         if (input) input.value = price;
                         updateGrowthCalculations(ticker);
-                    } else {
+                    } else if (!excluded && !allZero) {
                         failCount++;
                     }
                 });

@@ -110,7 +110,7 @@ test('QuotesService.fetchQuote ignores all-zero responses', async () => {
   const qsCode = fs.readFileSync(path.resolve(__dirname, '../app/js/services/quotesService.js'), 'utf8');
   vm.runInContext(qsCode, context);
   const res = await vm.runInContext('QuotesService.fetchQuote("ZERO")', context);
-  expect(res).toEqual({ price: null, raw: null });
+  expect(res).toEqual({ price: null, raw: null, allZero: true });
 });
 
 test('fetchQuote ignores all-zero response', async () => {

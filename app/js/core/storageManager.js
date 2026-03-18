@@ -68,11 +68,11 @@
       const posStr = storage.getItem(POSITIONS_KEY);
       const snapStr = storage.getItem(SNAPSHOTS_KEY);
       if (posStr) {
-        const json = atob(posStr).replace(/~(\d+)~(.)/g, (_, n, c) => c.repeat(parseInt(n, 10)));
+        const json = atob(posStr).replace(/([^~])~(\d+)~/g, (_, c, n) => c.repeat(parseInt(n, 10)));
         positions = JSON.parse(json);
       }
       if (snapStr) {
-        const json = atob(snapStr).replace(/~(\d+)~(.)/g, (_, n, c) => c.repeat(parseInt(n, 10)));
+        const json = atob(snapStr).replace(/([^~])~(\d+)~/g, (_, c, n) => c.repeat(parseInt(n, 10)));
         snapshots = JSON.parse(json);
       }
     } catch (e) {

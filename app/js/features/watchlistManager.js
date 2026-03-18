@@ -340,7 +340,7 @@ const WatchlistManager = (function() {
         let failCount = 0;
         const updates = watchlist.map(async item => {
             try {
-                const { raw } = await QuotesService.fetchQuote(item.ticker);
+                const { raw, excluded, allZero } = await QuotesService.fetchQuote(item.ticker);
                 if (raw) {
                     const prev = item.price;
                     item.price = typeof raw.c === 'number' ? raw.c : null;
@@ -355,7 +355,7 @@ const WatchlistManager = (function() {
                     item.open = typeof raw.o === 'number' ? raw.o : null;
                     item.prevClose = typeof raw.pc === 'number' ? raw.pc : null;
                     item.lastUpdate = Date.now();
-                } else {
+                } else if (!excluded && !allZero) {
                     failCount++;
                 }
             } catch (e) {

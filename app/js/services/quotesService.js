@@ -75,7 +75,7 @@ const QuotesService = (function() {
             if (price !== null) {
                 quoteCache[t] = { price, raw: data, time: now };
             }
-            return { price, raw: allZero ? null : data };
+            return { price, raw: allZero ? null : data, allZero: !!allZero };
         } catch (err) {
             const msg = String((err && err.message) || '');
             if (/\bHTTP (401|403|429)\b/.test(msg)) {
