@@ -42,7 +42,11 @@ const Utils = (function() {
         });
         setTimeout(() => {
             toast.classList.remove('pf-toast-visible');
-            toast.addEventListener('transitionend', () => toast.remove(), { once: true });
+            const fallback = setTimeout(() => toast.remove(), 500);
+            toast.addEventListener('transitionend', () => {
+                clearTimeout(fallback);
+                toast.remove();
+            }, { once: true });
         }, 4000);
     }
 

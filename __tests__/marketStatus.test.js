@@ -3,6 +3,8 @@ const path = require('path');
 const { JSDOM } = require('jsdom');
 const vm = require('vm');
 
+const storageUtilsCode = fs.readFileSync(path.resolve(__dirname, '../app/js/core/storageUtils.js'), 'utf8');
+
 function loadMarketStatus(response) {
   const html = '<!DOCTYPE html><html><body>' +
     '<div id="market-led"></div>' +
@@ -18,6 +20,7 @@ function loadMarketStatus(response) {
   dom.window.setInterval = () => {};
   // Provide a dummy key so update() doesn't skip the fetch
   dom.window.localStorage.setItem('pf_api_key_polygon', 'test-key');
+  vm.runInContext(storageUtilsCode, context);
   const code = fs.readFileSync(path.resolve(__dirname, '../app/js/services/marketStatus.js'), 'utf8');
   vm.runInContext(code, context);
   return context;

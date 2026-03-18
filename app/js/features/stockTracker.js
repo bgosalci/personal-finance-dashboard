@@ -143,8 +143,11 @@ const StockTracker = (function() {
                 .catch(() => { failCount++; });
         });
         await Promise.all(updates);
-        if (failCount > 0 && failCount === stockData.tickers.length && typeof Utils !== 'undefined') {
-            Utils.showToast('Stock price fetch failed — check your Finnhub API key in Settings', 'warning');
+        if (failCount > 0 && typeof Utils !== 'undefined') {
+            const msg = failCount === stockData.tickers.length
+                ? 'All stock price fetches failed — check your Finnhub API key in Settings'
+                : `${failCount} stock price fetch(es) failed`;
+            Utils.showToast(msg, 'warning');
         }
         saveData();
         updateSummaryCards();
@@ -222,15 +225,15 @@ const StockTracker = (function() {
         totalGrowthRow.className = 'summary-row';
         totalGrowthRow.innerHTML = `<td><strong>${I18n.t('stockTracker.table.totalGrowth')}</strong></td>`;
 
-       const cagrRow = document.createElement('tr');
-       cagrRow.className = 'summary-row';
-       cagrRow.innerHTML = `<td><strong>${I18n.t('stockTracker.table.cagr')}</strong></td>`;
+        const cagrRow = document.createElement('tr');
+        cagrRow.className = 'summary-row';
+        cagrRow.innerHTML = `<td><strong>${I18n.t('stockTracker.table.cagr')}</strong></td>`;
 
         const chartRow = document.createElement('tr');
         chartRow.className = 'summary-row';
         chartRow.innerHTML = `<td><strong>${I18n.t('stockTracker.table.chart')}</strong></td>`;
 
-       stockData.tickers.forEach(ticker => {
+        stockData.tickers.forEach(ticker => {
             const totalCell = document.createElement('td');
             totalCell.id = `total-growth-${ticker}`;
             totalCell.className = 'growth-neutral';
@@ -248,10 +251,10 @@ const StockTracker = (function() {
             chartBtn.addEventListener('click', () => showChart(ticker));
             chartCell.appendChild(chartBtn);
             chartRow.appendChild(chartCell);
-       });
+        });
 
-       tbody.appendChild(totalGrowthRow);
-       tbody.appendChild(cagrRow);
+        tbody.appendChild(totalGrowthRow);
+        tbody.appendChild(cagrRow);
         tbody.appendChild(chartRow);
 
         document.getElementById('performance-table-container').style.display = 'block';

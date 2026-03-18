@@ -186,6 +186,7 @@ test('Settings module saves currency to localStorage', () => {
   const { window } = dom;
   const context = vm.createContext(window);
   vm.runInContext(i18nCode, context);
+  vm.runInContext(storageUtilsCode, context);
   const verCode = fs.readFileSync(path.resolve(__dirname, '../app/js/core/appVersion.js'), 'utf8');
   vm.runInContext(verCode, context);
   const content = fs.readFileSync(path.resolve(__dirname, '../app/js/core/settings.js'), 'utf8');
@@ -208,6 +209,7 @@ test('Font scale setting persists, updates CSS variable, and highlights selectio
   const { window } = dom;
   const context = vm.createContext(window);
   vm.runInContext(i18nCode, context);
+  vm.runInContext(storageUtilsCode, context);
   const content = fs.readFileSync(path.resolve(__dirname, '../app/js/core/settings.js'), 'utf8');
   vm.runInContext(content, context);
   vm.runInContext('Settings.init()', context);
@@ -230,6 +232,7 @@ test('Finnhub API key visibility toggle', () => {
   const { window } = dom;
   const context = vm.createContext(window);
   vm.runInContext(i18nCode, context);
+  vm.runInContext(storageUtilsCode, context);
   const content = fs.readFileSync(path.resolve(__dirname, '../app/js/core/settings.js'), 'utf8');
   vm.runInContext(content, context);
   vm.runInContext('Settings.init()', context);

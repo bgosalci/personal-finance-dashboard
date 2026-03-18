@@ -174,6 +174,7 @@ describe('ForexData', () => {
         const { window } = dom;
         if (fetchImpl) window.fetch = fetchImpl;
         const context = vm.createContext(window);
+        vm.runInContext(storageUtilsCode, context);
         const code = fs.readFileSync(path.resolve(__dirname, '../app/js/services/forexData.js'), 'utf8');
         vm.runInContext(code, context);
         return { context, window };

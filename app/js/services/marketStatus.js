@@ -2,12 +2,13 @@
 const MarketStatus = (function() {
     // Uses Polygon.io to check current US market status including pre-market and after-hours sessions
     const LS_KEY = 'pf_api_key_polygon';
+    const storage = StorageUtils.getStorage();
 
     function getApiKey() {
-        try { return localStorage.getItem(LS_KEY) || ''; } catch (e) { return ''; }
+        try { return storage.getItem(LS_KEY) || ''; } catch (e) { return ''; }
     }
     function setApiKey(key) {
-        try { localStorage.setItem(LS_KEY, key || ''); } catch (e) {}
+        try { storage.setItem(LS_KEY, key || ''); } catch (e) {}
     }
 
     const ledEl = document.getElementById('market-led');

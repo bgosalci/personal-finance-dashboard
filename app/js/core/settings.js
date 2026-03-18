@@ -3,13 +3,14 @@ const Settings = (function() {
 
     const STORAGE_KEY = 'pf_base_currency';
     const FONT_SCALE_KEY = 'pf_font_scale';
+    const storage = StorageUtils.getStorage();
 
     function load() {
-        return localStorage.getItem(STORAGE_KEY) || 'USD';
+        return storage.getItem(STORAGE_KEY) || 'USD';
     }
 
     function save(value) {
-        localStorage.setItem(STORAGE_KEY, value);
+        storage.setItem(STORAGE_KEY, value);
     }
 
     function getBaseCurrency() {
@@ -21,12 +22,12 @@ const Settings = (function() {
     }
 
     function loadFontScale() {
-        const v = parseFloat(localStorage.getItem(FONT_SCALE_KEY));
+        const v = parseFloat(storage.getItem(FONT_SCALE_KEY));
         return isNaN(v) ? 1 : v;
     }
 
     function saveFontScale(v) {
-        localStorage.setItem(FONT_SCALE_KEY, String(v));
+        storage.setItem(FONT_SCALE_KEY, String(v));
     }
 
     function applyFontScale(scale) {
@@ -144,6 +145,7 @@ const Settings = (function() {
             polygonKeyInput.addEventListener('input', (e) => {
                 const val = (e.target.value || '').trim();
                 try { MarketStatus.setApiKey(val); } catch (err) {}
+                document.dispatchEvent(new CustomEvent('settings:api-key-updated'));
             });
         }
 
@@ -160,6 +162,7 @@ const Settings = (function() {
             exchangerateKeyInput.addEventListener('input', (e) => {
                 const val = (e.target.value || '').trim();
                 try { ForexData.setApiKey(val); } catch (err) {}
+                document.dispatchEvent(new CustomEvent('settings:api-key-updated'));
             });
         }
 
