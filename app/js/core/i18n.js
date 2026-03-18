@@ -2908,3 +2908,5 @@ const I18n = (function() {
         getCurrentLocale
     };
 })();
+
+if (typeof module !== 'undefined') module.exports = I18n;

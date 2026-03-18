@@ -191,3 +191,7 @@
     getSnapshotsByDateRange
   };
 })(typeof window !== 'undefined' ? window : global);
+
+if (typeof module !== 'undefined') {
+  module.exports = (typeof window !== 'undefined' ? window : global).StorageManager;
+}

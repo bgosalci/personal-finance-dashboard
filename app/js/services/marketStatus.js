@@ -66,3 +66,5 @@ const MarketStatus = (function() {
 
     return { init, isMarketOpen };
 })();
+
+if (typeof module !== 'undefined') module.exports = MarketStatus;
