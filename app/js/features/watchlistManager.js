@@ -439,3 +439,5 @@ const WatchlistManager = (function() {
 
     return { init, fetchLastPrices, exportData, importData, deleteAllData };
 })();
+
+if (typeof module !== 'undefined') module.exports = WatchlistManager;
