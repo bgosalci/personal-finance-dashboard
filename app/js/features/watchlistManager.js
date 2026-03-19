@@ -309,14 +309,13 @@ const WatchlistManager = (function() {
         }
         const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000));
         try {
-            const [{ price, currency }, searchData] = await Promise.race([
+            const [{ price }, searchData] = await Promise.race([
                 Promise.all([
                     QuotesService.fetchQuote(ticker),
                     QuotesService.searchSymbol(ticker)
                 ]),
                 timeout
             ]);
-            if (currency) currencySelect.value = currency;
             let description = '';
             if (searchData && Array.isArray(searchData.result)) {
                 const match = searchData.result.find(item => (item.symbol || '').toUpperCase() === ticker);

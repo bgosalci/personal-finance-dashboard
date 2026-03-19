@@ -107,6 +107,7 @@ test('QuotesService.fetchQuote ignores all-zero responses', async () => {
     json: () => Promise.resolve({ c: 0, h: 0, l: 0, o: 0, pc: 0, t: 0, d: 0, dp: 0 })
   });
   const context = vm.createContext(dom.window);
+  vm.runInContext(storageUtilsCode, context);
   const qsCode = fs.readFileSync(path.resolve(__dirname, '../app/js/services/quotesService.js'), 'utf8');
   vm.runInContext(qsCode, context);
   const res = await vm.runInContext('QuotesService.fetchQuote("ZERO")', context);

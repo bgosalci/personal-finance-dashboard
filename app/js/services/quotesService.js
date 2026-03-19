@@ -4,18 +4,19 @@ const QuotesService = (function() {
     const EXCEPTION_KEY = 'finnhub_exceptions';
     const CACHE_TTL_MS = 60 * 1000; // 1 minute
     const quoteCache = {};
+    const storage = StorageUtils.getStorage();
     function getToday() {
         return new Date().toISOString().split('T')[0];
     }
     function loadExceptions() {
         try {
-            const data = localStorage.getItem(EXCEPTION_KEY);
+            const data = storage.getItem(EXCEPTION_KEY);
             if (data) return JSON.parse(data);
         } catch (e) {}
         return { date: '', tickers: [] };
     }
     function saveExceptions(obj) {
-        try { localStorage.setItem(EXCEPTION_KEY, JSON.stringify(obj)); } catch (e) {}
+        try { storage.setItem(EXCEPTION_KEY, JSON.stringify(obj)); } catch (e) {}
     }
     function isTickerExcluded(ticker) {
         const list = loadExceptions();
@@ -41,10 +42,10 @@ const QuotesService = (function() {
 
 
     function getApiKey() {
-        try { return localStorage.getItem(LS_KEY) || ''; } catch (e) { return ''; }
+        try { return storage.getItem(LS_KEY) || ''; } catch (e) { return ''; }
     }
     function setApiKey(key) {
-        try { localStorage.setItem(LS_KEY, key || ''); } catch (e) {}
+        try { storage.setItem(LS_KEY, key || ''); } catch (e) {}
     }
     async function fetchJson(url) {
         const res = await fetch(url);
