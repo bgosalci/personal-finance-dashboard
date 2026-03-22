@@ -71,6 +71,7 @@ function buildSalaryDom() {
 beforeEach(() => {
   jest.resetModules();
   localStorage.clear();
+  global.Utils = require('../app/js/core/utils');
   global.I18n = require('../app/js/core/i18n');
   global.UKTaxYears = require('../app/js/data/ukTaxYears');
   global.Settings = undefined;

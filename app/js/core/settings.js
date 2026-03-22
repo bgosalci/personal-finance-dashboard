@@ -3,13 +3,14 @@ const Settings = (function() {
 
     const STORAGE_KEY = 'pf_base_currency';
     const FONT_SCALE_KEY = 'pf_font_scale';
+    const storage = StorageUtils.getStorage();
 
     function load() {
-        return localStorage.getItem(STORAGE_KEY) || 'USD';
+        return storage.getItem(STORAGE_KEY) || 'USD';
     }
 
     function save(value) {
-        localStorage.setItem(STORAGE_KEY, value);
+        storage.setItem(STORAGE_KEY, value);
     }
 
     function getBaseCurrency() {
@@ -21,12 +22,12 @@ const Settings = (function() {
     }
 
     function loadFontScale() {
-        const v = parseFloat(localStorage.getItem(FONT_SCALE_KEY));
+        const v = parseFloat(storage.getItem(FONT_SCALE_KEY));
         return isNaN(v) ? 1 : v;
     }
 
     function saveFontScale(v) {
-        localStorage.setItem(FONT_SCALE_KEY, String(v));
+        storage.setItem(FONT_SCALE_KEY, String(v));
     }
 
     function applyFontScale(scale) {
@@ -127,6 +128,40 @@ const Settings = (function() {
             apiKeyInput.addEventListener('input', (e) => {
                 const val = (e.target.value || '').trim();
                 try { QuotesService.setApiKey(val); } catch (err) {}
+                document.dispatchEvent(new CustomEvent('settings:api-key-updated'));
+            });
+        }
+
+        // Polygon.io API key (market status indicator)
+        const polygonKeyInput = document.getElementById('settings-polygon-api-key');
+        const polygonKeyToggle = document.getElementById('settings-polygon-api-key-toggle');
+        if (polygonKeyToggle && polygonKeyInput) {
+            polygonKeyToggle.addEventListener('change', () => {
+                polygonKeyInput.type = polygonKeyToggle.checked ? 'text' : 'password';
+            });
+        }
+        if (polygonKeyInput && typeof MarketStatus !== 'undefined') {
+            try { polygonKeyInput.value = MarketStatus.getApiKey(); } catch (e) {}
+            polygonKeyInput.addEventListener('input', (e) => {
+                const val = (e.target.value || '').trim();
+                try { MarketStatus.setApiKey(val); } catch (err) {}
+                document.dispatchEvent(new CustomEvent('settings:api-key-updated'));
+            });
+        }
+
+        // ExchangeRate-API key (forex / currency conversion)
+        const exchangerateKeyInput = document.getElementById('settings-exchangerate-api-key');
+        const exchangerateKeyToggle = document.getElementById('settings-exchangerate-api-key-toggle');
+        if (exchangerateKeyToggle && exchangerateKeyInput) {
+            exchangerateKeyToggle.addEventListener('change', () => {
+                exchangerateKeyInput.type = exchangerateKeyToggle.checked ? 'text' : 'password';
+            });
+        }
+        if (exchangerateKeyInput && typeof ForexData !== 'undefined') {
+            try { exchangerateKeyInput.value = ForexData.getApiKey(); } catch (e) {}
+            exchangerateKeyInput.addEventListener('input', (e) => {
+                const val = (e.target.value || '').trim();
+                try { ForexData.setApiKey(val); } catch (err) {}
                 document.dispatchEvent(new CustomEvent('settings:api-key-updated'));
             });
         }

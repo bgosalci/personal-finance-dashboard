@@ -1,4 +1,6 @@
-// Portfolio Storage Module
+// LEGACY MODULE — not used by the main application.
+// PortfolioManager manages its own storage directly (portfolioList / portfolioData_* keys).
+// This module is retained only as a standalone utility and is covered by its own tests.
 const PortfolioStorage = (function() {
     const POSITIONS_KEY = 'portfolio_positions';
     const SNAPSHOTS_KEY = 'portfolio_snapshots';
@@ -6,12 +8,15 @@ const PortfolioStorage = (function() {
     let portfolioPositions = [];
     let portfolioSnapshots = [];
 
+    // Use StorageUtils so tests and private-browsing (no localStorage) work correctly.
+    const storage = StorageUtils.getStorage();
+
     function generateId() {
         return 'pos_' + Math.random().toString(36).substring(2, 11);
     }
 
     function load() {
-        const p = localStorage.getItem(POSITIONS_KEY);
+        const p = storage.getItem(POSITIONS_KEY);
         if (p) {
             try {
                 portfolioPositions = JSON.parse(p) || [];
@@ -19,7 +24,7 @@ const PortfolioStorage = (function() {
                 portfolioPositions = [];
             }
         }
-        const s = localStorage.getItem(SNAPSHOTS_KEY);
+        const s = storage.getItem(SNAPSHOTS_KEY);
         if (s) {
             try {
                 portfolioSnapshots = JSON.parse(s) || [];
@@ -31,12 +36,12 @@ const PortfolioStorage = (function() {
     }
 
     function save() {
-        localStorage.setItem(POSITIONS_KEY, JSON.stringify(portfolioPositions));
-        localStorage.setItem(SNAPSHOTS_KEY, JSON.stringify(portfolioSnapshots));
+        storage.setItem(POSITIONS_KEY, JSON.stringify(portfolioPositions));
+        storage.setItem(SNAPSHOTS_KEY, JSON.stringify(portfolioSnapshots));
     }
 
     function migrateLegacyData() {
-        const legacy = localStorage.getItem(LEGACY_KEY);
+        const legacy = storage.getItem(LEGACY_KEY);
         if (!legacy) return;
         try {
             const old = JSON.parse(legacy) || [];
@@ -48,7 +53,7 @@ const PortfolioStorage = (function() {
                     purchase_date: new Date().toISOString().split('T')[0]
                 });
             });
-            localStorage.removeItem(LEGACY_KEY);
+            storage.removeItem(LEGACY_KEY);
         } catch (e) {
             // ignore malformed legacy data
         }
@@ -101,13 +106,19 @@ const PortfolioStorage = (function() {
     }
 
     function getUsage() {
-        let total = 0;
-        for (let i = 0; i < localStorage.length; i++) {
-            const key = localStorage.key(i);
-            const value = localStorage.getItem(key);
-            if (key && value) total += key.length + value.length;
+        // Intentionally bypasses StorageUtils: quota estimation only makes sense
+        // against the real localStorage backend. The in-memory fallback returned
+        // by StorageUtils has no size limit, so estimating it is meaningless.
+        if (typeof window !== 'undefined' && window.localStorage) {
+            let total = 0;
+            for (let i = 0; i < window.localStorage.length; i++) {
+                const key = window.localStorage.key(i);
+                const value = window.localStorage.getItem(key);
+                if (key && value) total += key.length + value.length;
+            }
+            return total;
         }
-        return total;
+        return 0;
     }
 
     function checkQuota() {
@@ -126,9 +137,18 @@ const PortfolioStorage = (function() {
         return JSON.stringify({ portfolioPositions, portfolioSnapshots });
     }
 
+    // Return copies of internal arrays so callers cannot mutate state directly.
+    function getPositions() {
+        return portfolioPositions.slice();
+    }
+
+    function getSnapshots() {
+        return portfolioSnapshots.slice();
+    }
+
     function init() {
         load();
     }
 
-    return { init, addPosition, createSnapshot, exportData, portfolioPositions, portfolioSnapshots, save };
+    return { init, addPosition, createSnapshot, exportData, getPositions, getSnapshots, save };
 })();

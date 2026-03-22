@@ -1,5 +1,7 @@
 beforeEach(() => {
   jest.resetModules();
+  global.StorageUtils = require('../app/js/core/storageUtils');
+  localStorage.setItem('pf_api_key_polygon', 'test-key');
   document.body.innerHTML =
     '<div id="market-led"></div>' +
     '<span id="market-session"></span>' +

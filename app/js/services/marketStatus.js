@@ -1,7 +1,16 @@
 // Market Status Indicator
 const MarketStatus = (function() {
     // Uses Polygon.io to check current US market status including pre-market and after-hours sessions
-    const API_KEY = 'hQmiS4FP5wJQrg8rX3gTMane2digQcLF';
+    const LS_KEY = 'pf_api_key_polygon';
+    const storage = StorageUtils.getStorage();
+
+    function getApiKey() {
+        try { return storage.getItem(LS_KEY) || ''; } catch (e) { return ''; }
+    }
+    function setApiKey(key) {
+        try { storage.setItem(LS_KEY, key || ''); } catch (e) {}
+    }
+
     const ledEl = document.getElementById('market-led');
     const sessionEl = document.getElementById('market-session');
     const earlyLedEl = document.getElementById('early-led');
@@ -13,8 +22,10 @@ const MarketStatus = (function() {
 
     async function update() {
         if (!ledEl) return;
+        const apiKey = getApiKey();
+        if (!apiKey) return; // silently skip if no key configured
         try {
-            const url = `https://api.polygon.io/v1/marketstatus/now?apiKey=${API_KEY}`;
+            const url = `https://api.polygon.io/v1/marketstatus/now?apiKey=${encodeURIComponent(apiKey)}`;
             const res = await fetch(url);
             const data = await res.json();
             const isOpen = data && data.market === 'open';
@@ -56,6 +67,13 @@ const MarketStatus = (function() {
         timer = setInterval(update, 60000); // 1 minute
     }
 
+    function stop() {
+        if (timer) {
+            clearInterval(timer);
+            timer = null;
+        }
+    }
+
     function isMarketOpen() {
         return marketOpen;
     }
@@ -64,7 +82,7 @@ const MarketStatus = (function() {
         start();
     }
 
-    return { init, isMarketOpen };
+    return { init, stop, isMarketOpen, getApiKey, setApiKey };
 })();
 
 if (typeof module !== 'undefined') module.exports = MarketStatus;

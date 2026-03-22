@@ -1,12 +1,20 @@
 const ForexData = (function() {
     'use strict';
-    const API_KEY = '62094c7a08c83faca81a0fdf';
+    const LS_API_KEY = 'pf_api_key_exchangerate';
     const STORAGE_KEY = 'pf_forex_data';
     let data = null;
     let timerId = null;
+    const storage = StorageUtils.getStorage();
+
+    function getApiKey() {
+        try { return storage.getItem(LS_API_KEY) || ''; } catch (e) { return ''; }
+    }
+    function setApiKey(key) {
+        try { storage.setItem(LS_API_KEY, key || ''); } catch (e) {}
+    }
 
     function load() {
-        const stored = localStorage.getItem(STORAGE_KEY);
+        const stored = storage.getItem(STORAGE_KEY);
         if (stored) {
             try {
                 const parsed = JSON.parse(stored);
@@ -21,13 +29,15 @@ const ForexData = (function() {
 
     function save() {
         if (data) {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+            storage.setItem(STORAGE_KEY, JSON.stringify(data));
         }
     }
 
     async function fetchRates() {
+        const apiKey = getApiKey();
+        if (!apiKey) return; // silently skip if no key configured
         try {
-            const url = `https://v6.exchangerate-api.com/v6/${API_KEY}/latest/USD`;
+            const url = `https://v6.exchangerate-api.com/v6/${encodeURIComponent(apiKey)}/latest/USD`;
             const res = await fetch(url);
             const json = await res.json();
             if (json && json.time_next_update_utc) {
@@ -68,5 +78,5 @@ const ForexData = (function() {
         scheduleNextFetch();
     }
 
-    return { init, getRates };
+    return { init, getRates, getApiKey, setApiKey };
 })();

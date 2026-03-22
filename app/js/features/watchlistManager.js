@@ -10,6 +10,11 @@ const WatchlistManager = (function() {
     const RECONNECT_MAX_DELAY = 60000;
     let reconnectDelay = RECONNECT_BASE_DELAY;
 
+    // Use StorageUtils so in-memory fallback is available in tests / private browsing
+    const storage = StorageUtils.getStorage();
+    // Named reference kept so it can be removed with removeEventListener
+    let _beforeUnloadHandler = null;
+
     const addBtn = document.getElementById('add-watchstock-btn');
     const getPriceBtn = document.getElementById('watchlist-get-price-btn');
     const modal = document.getElementById('watchlist-modal');
@@ -26,13 +31,13 @@ const WatchlistManager = (function() {
     function save() {
         try {
             const data = JSON.stringify(watchlist, (k, v) => k === 'delta' ? undefined : v);
-            localStorage.setItem(STORAGE_KEY, data);
+            storage.setItem(STORAGE_KEY, data);
         } catch (e) {}
     }
 
     function load() {
         try {
-            const data = localStorage.getItem(STORAGE_KEY);
+            const data = storage.getItem(STORAGE_KEY);
             if (data) watchlist = JSON.parse(data) || [];
         } catch (e) {
             watchlist = [];
@@ -304,14 +309,13 @@ const WatchlistManager = (function() {
         }
         const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000));
         try {
-            const [{ price, currency }, searchData] = await Promise.race([
+            const [{ price }, searchData] = await Promise.race([
                 Promise.all([
                     QuotesService.fetchQuote(ticker),
                     QuotesService.searchSymbol(ticker)
                 ]),
                 timeout
             ]);
-            if (currency) currencySelect.value = currency;
             let description = '';
             if (searchData && Array.isArray(searchData.result)) {
                 const match = searchData.result.find(item => (item.symbol || '').toUpperCase() === ticker);
@@ -332,9 +336,10 @@ const WatchlistManager = (function() {
 
     async function fetchLastPrices() {
         if (watchlist.length === 0) return;
+        let failCount = 0;
         const updates = watchlist.map(async item => {
             try {
-                const { raw } = await QuotesService.fetchQuote(item.ticker);
+                const { raw, excluded, allZero } = await QuotesService.fetchQuote(item.ticker);
                 if (raw) {
                     const prev = item.price;
                     item.price = typeof raw.c === 'number' ? raw.c : null;
@@ -349,10 +354,20 @@ const WatchlistManager = (function() {
                     item.open = typeof raw.o === 'number' ? raw.o : null;
                     item.prevClose = typeof raw.pc === 'number' ? raw.pc : null;
                     item.lastUpdate = Date.now();
+                } else if (!excluded && !allZero) {
+                    failCount++;
                 }
-            } catch (e) {}
+            } catch (e) {
+                failCount++;
+            }
         });
         await Promise.all(updates);
+        if (failCount > 0 && typeof Utils !== 'undefined') {
+            const msg = failCount === watchlist.length
+                ? I18n.t('watchlist.errors.allFetchesFailed')
+                : I18n.t('watchlist.errors.someFetchesFailed').replace('{count}', failCount);
+            Utils.showToast(msg, 'warning');
+        }
         save();
         render();
     }
@@ -402,7 +417,7 @@ const WatchlistManager = (function() {
     }
 
     function deleteAllData() {
-        try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+        try { storage.removeItem(STORAGE_KEY); } catch (e) {}
         watchlist = [];
         if (ws) { try { ws.close(); } catch (e) {} ws = null; }
         if (reconnectTimer) { clearTimeout(reconnectTimer); reconnectTimer = null; }
@@ -422,7 +437,12 @@ const WatchlistManager = (function() {
             tickerInput.addEventListener('blur', handleTickerLookup);
         }
         window.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
-        window.addEventListener('beforeunload', () => {
+
+        // Use a named handler so it can be removed to avoid duplicate listeners
+        if (_beforeUnloadHandler) {
+            window.removeEventListener('beforeunload', _beforeUnloadHandler);
+        }
+        _beforeUnloadHandler = function() {
             // Close socket and clear pending reconnects before leaving
             if (ws) {
                 try { ws.close(); } catch (e) {}
@@ -432,7 +452,9 @@ const WatchlistManager = (function() {
                 clearTimeout(reconnectTimer);
                 reconnectTimer = null;
             }
-        });
+        };
+        window.addEventListener('beforeunload', _beforeUnloadHandler);
+
         document.addEventListener('settings:api-key-updated', reconnectWebSocket);
         connectWebSocket();
     }

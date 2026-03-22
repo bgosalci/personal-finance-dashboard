@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://unpkg.com; style-src 'self' 'unsafe-inline'; connect-src 'self' https://api.polygon.io https://v6.exchangerate-api.com https://finnhub.io wss://ws.finnhub.io; img-src 'self' data: blob:; font-src 'self' https://unpkg.com; worker-src blob:;">
     <title>Financial Dashboard</title>
     <link rel="icon" type="image/png" href="favicon.png">
     <link rel="stylesheet" href="css/style.css">
@@ -1224,6 +1225,20 @@
                     <p class="form-hint"><span data-i18n="settings.finnhubApiKeyHint">{{settings.finnhubApiKeyHint}}</span> <a href="https://finnhub.io/dashboard" target="_blank" rel="noopener">finnhub.io/dashboard</a></p>
                     <p class="form-hint" data-i18n="settings.realTimeQuotes">{{settings.realTimeQuotes}}</p>
                 </div>
+                <div class="form-group">
+                    <label for="settings-polygon-api-key" data-i18n="settings.polygonApiKey">Polygon.io API Key</label>
+                    <input type="password" id="settings-polygon-api-key" placeholder="Optional — stored locally">
+                    <label><input type="checkbox" id="settings-polygon-api-key-toggle"> <span data-i18n="settings.showApiKey">Show API Key</span></label>
+                    <p class="form-hint"><span data-i18n="settings.polygonApiKeyHint">Create a free API key at</span> <a href="https://polygon.io/dashboard" target="_blank" rel="noopener">polygon.io/dashboard</a></p>
+                    <p class="form-hint" data-i18n="settings.polygonApiKeyUsage">Used for market open/closed status indicator.</p>
+                </div>
+                <div class="form-group">
+                    <label for="settings-exchangerate-api-key" data-i18n="settings.exchangerateApiKey">ExchangeRate-API Key</label>
+                    <input type="password" id="settings-exchangerate-api-key" placeholder="Optional — stored locally">
+                    <label><input type="checkbox" id="settings-exchangerate-api-key-toggle"> <span data-i18n="settings.showApiKey">Show API Key</span></label>
+                    <p class="form-hint"><span data-i18n="settings.exchangerateApiKeyHint">Create a free API key at</span> <a href="https://app.exchangerate-api.com/sign-up" target="_blank" rel="noopener">exchangerate-api.com</a></p>
+                    <p class="form-hint" data-i18n="settings.exchangerateApiKeyUsage">Used for currency conversion rates.</p>
+                </div>
 
                 <h3 class="section-subtitle" data-i18n="settings.sectionTitles.pension">Pension</h3>
                 <div class="form-group">
@@ -1507,14 +1522,14 @@
     <div id="tooltip" class="tooltip"></div>
 
     <script src="js/core/i18n.js"></script>
+    <script src="js/core/storageUtils.js"></script>
+    <script src="js/core/utils.js"></script>
     <script src="js/core/dialogManager.js"></script>
     <script src="js/core/dateUtils.js"></script>
     <script src="js/core/tabManager.js"></script>
-    <script src="js/data/portfolioStorage.js"></script>
     <script src="js/services/colorService.js"></script>
     <script src="js/services/quotesService.js"></script>
     <script src="js/features/portfolioManager.js"></script>
-    <script src="js/core/storageUtils.js"></script>
     <script src="js/data/priceStorage.js"></script>
     <script src="js/features/watchlistManager.js"></script>
     <script src="js/features/pensionManager.js"></script>

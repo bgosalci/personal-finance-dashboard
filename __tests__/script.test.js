@@ -3,6 +3,8 @@ const path = require('path');
 const {JSDOM} = require('jsdom');
 const vm = require('vm');
 const i18nCode = fs.readFileSync(path.resolve(__dirname, '../app/js/core/i18n.js'), 'utf8');
+const storageUtilsCode = fs.readFileSync(path.resolve(__dirname, '../app/js/core/storageUtils.js'), 'utf8');
+const utlsCode = fs.readFileSync(path.resolve(__dirname, '../app/js/core/utils.js'), 'utf8');
 
 test('FinancialDashboard global object exists with init and removeTicker', () => {
   const dom = new JSDOM('<!DOCTYPE html><html><body></body></html>', {url: 'http://localhost'});
@@ -10,10 +12,13 @@ test('FinancialDashboard global object exists with init and removeTicker', () =>
   const context = vm.createContext(dom.window);
   vm.runInContext(i18nCode, context);
   [
+    'core/storageUtils.js',
+    'core/utils.js',
     'core/dialogManager.js',
     'core/dateUtils.js',
     'core/tabManager.js',
     'data/portfolioStorage.js',
+    'data/ukTaxYears.js',
     'features/portfolioManager.js',
     'features/watchlistManager.js',
     'features/pensionManager.js',
@@ -102,10 +107,11 @@ test('QuotesService.fetchQuote ignores all-zero responses', async () => {
     json: () => Promise.resolve({ c: 0, h: 0, l: 0, o: 0, pc: 0, t: 0, d: 0, dp: 0 })
   });
   const context = vm.createContext(dom.window);
+  vm.runInContext(storageUtilsCode, context);
   const qsCode = fs.readFileSync(path.resolve(__dirname, '../app/js/services/quotesService.js'), 'utf8');
   vm.runInContext(qsCode, context);
   const res = await vm.runInContext('QuotesService.fetchQuote("ZERO")', context);
-  expect(res).toEqual({ price: null, raw: null });
+  expect(res).toEqual({ price: null, raw: null, allZero: true });
 });
 
 test('fetchQuote ignores all-zero response', async () => {
@@ -126,12 +132,16 @@ test('StockTracker ignores zero-price quotes', async () => {
   const fetchQuoteMock = jest.fn().mockResolvedValue({ price: 0 });
   dom.window.QuotesService = { fetchQuote: fetchQuoteMock };
   const context = vm.createContext(dom.window);
+  const utilsCode = fs.readFileSync(path.resolve(__dirname, '../app/js/core/storageUtils.js'), 'utf8');
+  vm.runInContext(utilsCode, context);
+  context.Utils = { formatInputValue: v => v, showToast: () => {} };
   const stCode = fs.readFileSync(path.resolve(__dirname, '../app/js/features/stockTracker.js'), 'utf8');
   vm.runInContext(stCode, context);
   const year = new Date().getFullYear();
-  vm.runInContext('stockData.tickers = ["ZERO"]; stockData.prices["ZERO"] = {};', context);
+  // stockData is now internal — use the public importData API to set up state
+  vm.runInContext(`StockTracker.importData(JSON.stringify({tickers:["ZERO"],startYear:${year - 5},prices:{"ZERO":{}}}), "json")`, context);
   await vm.runInContext('StockTracker.fetchLatestPrices()', context);
-  const stored = vm.runInContext(`stockData.prices["ZERO"][${year}]`, context);
+  const stored = vm.runInContext(`StockTracker.getData().prices["ZERO"][${year}]`, context);
   expect(stored).toBeUndefined();
   expect(fetchQuoteMock).toHaveBeenCalled();
 });
@@ -177,6 +187,7 @@ test('Settings module saves currency to localStorage', () => {
   const { window } = dom;
   const context = vm.createContext(window);
   vm.runInContext(i18nCode, context);
+  vm.runInContext(storageUtilsCode, context);
   const verCode = fs.readFileSync(path.resolve(__dirname, '../app/js/core/appVersion.js'), 'utf8');
   vm.runInContext(verCode, context);
   const content = fs.readFileSync(path.resolve(__dirname, '../app/js/core/settings.js'), 'utf8');
@@ -199,6 +210,7 @@ test('Font scale setting persists, updates CSS variable, and highlights selectio
   const { window } = dom;
   const context = vm.createContext(window);
   vm.runInContext(i18nCode, context);
+  vm.runInContext(storageUtilsCode, context);
   const content = fs.readFileSync(path.resolve(__dirname, '../app/js/core/settings.js'), 'utf8');
   vm.runInContext(content, context);
   vm.runInContext('Settings.init()', context);
@@ -221,6 +233,7 @@ test('Finnhub API key visibility toggle', () => {
   const { window } = dom;
   const context = vm.createContext(window);
   vm.runInContext(i18nCode, context);
+  vm.runInContext(storageUtilsCode, context);
   const content = fs.readFileSync(path.resolve(__dirname, '../app/js/core/settings.js'), 'utf8');
   vm.runInContext(content, context);
   vm.runInContext('Settings.init()', context);
@@ -252,6 +265,8 @@ test('pension summary tab updates translation on locale change', async () => {
   const dom = new JSDOM(html, { url: 'http://localhost' });
   const context = vm.createContext(dom.window);
   vm.runInContext(i18nCode, context);
+  vm.runInContext(storageUtilsCode, context);
+  vm.runInContext(utlsCode, context);
   let penCode = fs.readFileSync(path.resolve(__dirname, '../app/js/features/pensionManager.js'), 'utf8');
   penCode = penCode.replace(
     'return { init, exportData, importData, deleteAllData };',
@@ -371,6 +386,8 @@ test('computeStats includes payments in total percent', () => {
   const dom = new JSDOM('<!DOCTYPE html><html><body></body></html>', { url: 'http://localhost' });
   const context = vm.createContext(dom.window);
   vm.runInContext(i18nCode, context);
+  vm.runInContext(storageUtilsCode, context);
+  vm.runInContext(utlsCode, context);
   let pmCode = fs.readFileSync(path.resolve(__dirname, '../app/js/features/pensionManager.js'), 'utf8');
   pmCode = pmCode.replace(
     'return { init, exportData, importData, deleteAllData };',
@@ -391,6 +408,8 @@ test('computeStats returns cumulative payments', () => {
   const dom = new JSDOM('<!DOCTYPE html><html><body></body></html>', { url: 'http://localhost' });
   const context = vm.createContext(dom.window);
   vm.runInContext(i18nCode, context);
+  vm.runInContext(storageUtilsCode, context);
+  vm.runInContext(utlsCode, context);
   let pmCode = fs.readFileSync(path.resolve(__dirname, '../app/js/features/pensionManager.js'), 'utf8');
   pmCode = pmCode.replace(
     'return { init, exportData, importData, deleteAllData };',
@@ -416,6 +435,8 @@ test('initial tabs highlight only selected portfolio and pension', () => {
   const dom = new JSDOM(html, { url: 'http://localhost' });
   const context = vm.createContext(dom.window);
   vm.runInContext(i18nCode, context);
+  vm.runInContext(storageUtilsCode, context);
+  vm.runInContext(utlsCode, context);
 
   let pmCode = fs.readFileSync(path.resolve(__dirname, '../app/js/features/portfolioManager.js'), 'utf8');
   pmCode = pmCode.replace(
@@ -452,6 +473,8 @@ test('selecting portfolio summary does not change active pension tab', () => {
   const dom = new JSDOM(html, { url: 'http://localhost' });
   const context = vm.createContext(dom.window);
   vm.runInContext(i18nCode, context);
+  vm.runInContext(storageUtilsCode, context);
+  vm.runInContext(utlsCode, context);
 
   let pmCode = fs.readFileSync(path.resolve(__dirname, '../app/js/features/portfolioManager.js'), 'utf8');
   pmCode = pmCode.replace(
@@ -490,9 +513,13 @@ test('StockTracker export and import cycle', () => {
   const dom = new JSDOM(html, { url: 'http://localhost' });
   const context = vm.createContext(dom.window);
   vm.runInContext(i18nCode, context);
+  const utilsCode = fs.readFileSync(path.resolve(__dirname, '../app/js/core/storageUtils.js'), 'utf8');
+  vm.runInContext(utilsCode, context);
+  context.Utils = { formatInputValue: v => v, showToast: () => {} };
   const code = fs.readFileSync(path.resolve(__dirname, '../app/js/features/stockTracker.js'), 'utf8');
   vm.runInContext(code, context);
-  vm.runInContext('stockData = { tickers:["AAA"], startYear:2020, prices:{AAA:{2020:10}} }; localStorage.setItem("stockTrackerData", JSON.stringify(stockData));', context);
+  // stockData is now internal — use importData to set up state instead of global mutation
+  vm.runInContext('StockTracker.importData(JSON.stringify({ tickers:["AAA"], startYear:2020, prices:{AAA:{2020:10}} }), "json")', context);
   const csv = vm.runInContext('StockTracker.exportData("csv")', context);
   vm.runInContext('StockTracker.deleteAllData()', context);
   expect(context.localStorage.getItem('stockTrackerData')).toBeNull();
@@ -500,20 +527,25 @@ test('StockTracker export and import cycle', () => {
   expect(context.localStorage.getItem('stockTrackerData')).not.toBeNull();
 });
 
-test('StockTracker exposes fetchLatestPrices', () => {
+test('StockTracker exposes fetchLatestPrices and getData', () => {
   const dom = new JSDOM('<!DOCTYPE html><html><body></body></html>', { url: 'http://localhost' });
   const context = vm.createContext(dom.window);
   vm.runInContext(i18nCode, context);
+  const utilsCode = fs.readFileSync(path.resolve(__dirname, '../app/js/core/storageUtils.js'), 'utf8');
+  vm.runInContext(utilsCode, context);
+  context.Utils = { formatInputValue: v => v, showToast: () => {} };
   const code = fs.readFileSync(path.resolve(__dirname, '../app/js/features/stockTracker.js'), 'utf8');
   vm.runInContext(code, context);
-  const fnType = vm.runInContext('typeof StockTracker.fetchLatestPrices', context);
-  expect(fnType).toBe('function');
+  expect(vm.runInContext('typeof StockTracker.fetchLatestPrices', context)).toBe('function');
+  expect(vm.runInContext('typeof StockTracker.getData', context)).toBe('function');
 });
 
 test('WatchlistManager exposes fetchLastPrices', () => {
   const dom = new JSDOM('<!DOCTYPE html><html><body></body></html>', { url: 'http://localhost' });
   const context = vm.createContext(dom.window);
   vm.runInContext(i18nCode, context);
+  const utilsCode = fs.readFileSync(path.resolve(__dirname, '../app/js/core/storageUtils.js'), 'utf8');
+  vm.runInContext(utilsCode, context);
   const code = fs.readFileSync(path.resolve(__dirname, '../app/js/features/watchlistManager.js'), 'utf8');
   vm.runInContext(code, context);
   const fnType = vm.runInContext('typeof WatchlistManager.fetchLastPrices', context);
