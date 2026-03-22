@@ -92,6 +92,10 @@ const I18n = (function() {
                 "dialogs": {
                     "addStock": { "title": "Add Stock" },
                     "deleteStock": "Delete this stock?"
+                },
+                "errors": {
+                    "allFetchesFailed": "All watchlist price fetches failed — check your Finnhub API key in Settings",
+                    "someFetchesFailed": "{count} watchlist price fetch(es) failed"
                 }
             },
         "pension": {
@@ -433,6 +437,10 @@ const I18n = (function() {
                     "title": "Stock Chart",
                     "price": "Price",
                     "growth": "Growth"
+                },
+                "errors": {
+                    "allFetchesFailed": "All stock price fetches failed — check your Finnhub API key in Settings",
+                    "someFetchesFailed": "{count} stock price fetch(es) failed"
                 }
             },
             "settings": {
@@ -602,6 +610,10 @@ const I18n = (function() {
                 "dialogs": {
                     "addStock": { "title": "Shto Aksion" },
                     "deleteStock": "Ta fshij këtë aksion?"
+                },
+                "errors": {
+                    "allFetchesFailed": "All watchlist price fetches failed — check your Finnhub API key in Settings",
+                    "someFetchesFailed": "{count} watchlist price fetch(es) failed"
                 }
             },
             "pension": {
@@ -808,6 +820,10 @@ const I18n = (function() {
                     "title": "Grafiku i Aksioneve",
                     "price": "Çmim",
                     "growth": "Rritje"
+                },
+                "errors": {
+                    "allFetchesFailed": "All stock price fetches failed — check your Finnhub API key in Settings",
+                    "someFetchesFailed": "{count} stock price fetch(es) failed"
                 }
             },
             "settings": {
@@ -966,6 +982,10 @@ const I18n = (function() {
                 "dialogs": {
                     "addStock": { "title": "Ajouter une action" },
                     "deleteStock": "Supprimer cette action ?",
+                },
+                "errors": {
+                    "allFetchesFailed": "All watchlist price fetches failed — check your Finnhub API key in Settings",
+                    "someFetchesFailed": "{count} watchlist price fetch(es) failed"
                 }
             },
             "pension": {
@@ -1172,6 +1192,10 @@ const I18n = (function() {
                     "title": "Graphique Boursier",
                     "price": "Prix",
                     "growth": "Croissance"
+                },
+                "errors": {
+                    "allFetchesFailed": "All stock price fetches failed — check your Finnhub API key in Settings",
+                    "someFetchesFailed": "{count} stock price fetch(es) failed"
                 }
             },
             "settings": {
@@ -1330,6 +1354,10 @@ const I18n = (function() {
                 "dialogs": {
                     "addStock": { "title": "Aktie hinzufügen" },
                     "deleteStock": "Diese Aktie löschen?",
+                },
+                "errors": {
+                    "allFetchesFailed": "All watchlist price fetches failed — check your Finnhub API key in Settings",
+                    "someFetchesFailed": "{count} watchlist price fetch(es) failed"
                 }
             },
             "pension": {
@@ -1536,6 +1564,10 @@ const I18n = (function() {
                     "title": "Aktienchart",
                     "price": "Preis",
                     "growth": "Wachstum"
+                },
+                "errors": {
+                    "allFetchesFailed": "All stock price fetches failed — check your Finnhub API key in Settings",
+                    "someFetchesFailed": "{count} stock price fetch(es) failed"
                 }
             },
             "settings": {
@@ -1694,6 +1726,10 @@ const I18n = (function() {
                 "dialogs": {
                     "addStock": { "title": "Agregar acción" },
                     "deleteStock": "¿Eliminar esta acción?",
+                },
+                "errors": {
+                    "allFetchesFailed": "All watchlist price fetches failed — check your Finnhub API key in Settings",
+                    "someFetchesFailed": "{count} watchlist price fetch(es) failed"
                 }
             },
             "pension": {
@@ -1900,6 +1936,10 @@ const I18n = (function() {
                     "title": "Gráfico de Acciones",
                     "price": "Precio",
                     "growth": "Crecimiento"
+                },
+                "errors": {
+                    "allFetchesFailed": "All stock price fetches failed — check your Finnhub API key in Settings",
+                    "someFetchesFailed": "{count} stock price fetch(es) failed"
                 }
             },
             "settings": {
@@ -2058,6 +2098,10 @@ const I18n = (function() {
                 "dialogs": {
                     "addStock": { "title": "Aggiungi titolo" },
                     "deleteStock": "Eliminare questa azione?",
+                },
+                "errors": {
+                    "allFetchesFailed": "All watchlist price fetches failed — check your Finnhub API key in Settings",
+                    "someFetchesFailed": "{count} watchlist price fetch(es) failed"
                 }
             },
             "pension": {
@@ -2264,6 +2308,10 @@ const I18n = (function() {
                     "title": "Grafico Azioni",
                     "price": "Prezzo",
                     "growth": "Crescita"
+                },
+                "errors": {
+                    "allFetchesFailed": "All stock price fetches failed — check your Finnhub API key in Settings",
+                    "someFetchesFailed": "{count} stock price fetch(es) failed"
                 }
             },
             "settings": {
@@ -2428,6 +2476,10 @@ const I18n = (function() {
                 "dialogs": {
                     "addStock": { "title": "Adaugă acțiune" },
                     "deleteStock": "Ștergeți această acțiune?",
+                },
+                "errors": {
+                    "allFetchesFailed": "All watchlist price fetches failed — check your Finnhub API key in Settings",
+                    "someFetchesFailed": "{count} watchlist price fetch(es) failed"
                 }
             },
             "pension": {
@@ -2632,6 +2684,10 @@ const I18n = (function() {
                     "title": "Grafic de stocuri",
                     "price": "Preț",
                     "growth": "Creștere"
+                },
+                "errors": {
+                    "allFetchesFailed": "All stock price fetches failed — check your Finnhub API key in Settings",
+                    "someFetchesFailed": "{count} stock price fetch(es) failed"
                 }
             },
             "settings": {

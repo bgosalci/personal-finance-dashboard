@@ -146,8 +146,8 @@ const StockTracker = (function() {
         await Promise.all(updates);
         if (failCount > 0 && typeof Utils !== 'undefined') {
             const msg = failCount === stockData.tickers.length
-                ? 'All stock price fetches failed — check your Finnhub API key in Settings'
-                : `${failCount} stock price fetch(es) failed`;
+                ? I18n.t('stockTracker.errors.allFetchesFailed')
+                : I18n.t('stockTracker.errors.someFetchesFailed').replace('{count}', failCount);
             Utils.showToast(msg, 'warning');
         }
         saveData();

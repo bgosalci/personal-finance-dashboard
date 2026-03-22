@@ -364,8 +364,8 @@ const WatchlistManager = (function() {
         await Promise.all(updates);
         if (failCount > 0 && typeof Utils !== 'undefined') {
             const msg = failCount === watchlist.length
-                ? 'All watchlist price fetches failed — check your Finnhub API key in Settings'
-                : `${failCount} watchlist price fetch(es) failed`;
+                ? I18n.t('watchlist.errors.allFetchesFailed')
+                : I18n.t('watchlist.errors.someFetchesFailed').replace('{count}', failCount);
             Utils.showToast(msg, 'warning');
         }
         save();
