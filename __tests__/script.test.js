@@ -132,6 +132,7 @@ test('StockTracker ignores zero-price quotes', async () => {
   const fetchQuoteMock = jest.fn().mockResolvedValue({ price: 0 });
   dom.window.QuotesService = { fetchQuote: fetchQuoteMock };
   const context = vm.createContext(dom.window);
+  vm.runInContext(i18nCode, context);
   const utilsCode = fs.readFileSync(path.resolve(__dirname, '../app/js/core/storageUtils.js'), 'utf8');
   vm.runInContext(utilsCode, context);
   context.Utils = { formatInputValue: v => v, showToast: () => {} };
