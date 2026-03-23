@@ -21,3 +21,5 @@ coverage/
 # Editor directories
 .vscode/
 .idea/
+/.claude/worktrees/coverage-refactor
+/.claude/worktrees
