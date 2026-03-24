@@ -595,9 +595,9 @@ const PensionManager = (function() {
                         const value = pensionChart.data.datasets[datasetIndex].data[index];
                         if (value === null) return;
                         const label = pensionChart.data.labels[index];
+                        if (selectedPoints.length === 1 && selectedPoints[0].index === index && selectedPoints[0].datasetIndex === datasetIndex) return;
                         if (selectedPoints.length >= 2) selectedPoints = [];
-                        if (selectedPoints.length === 1 && selectedPoints[0].index === index) return;
-                        selectedPoints.push({ label, value, index });
+                        selectedPoints.push({ label, value, index, datasetIndex });
                         updateRangeDisplay();
                     }
                 },
