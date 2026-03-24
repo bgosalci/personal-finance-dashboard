@@ -629,18 +629,22 @@ const PensionManager = (function() {
                 },
                 plugins: [selectionLinesPlugin, crosshairPlugin]
             });
-            chartCanvas.addEventListener('mousemove', (e) => {
-                const rect = chartCanvas.getBoundingClientRect();
-                pensionChart._crosshairPos = { x: e.clientX - rect.left, y: e.clientY - rect.top };
-                pensionChart.draw();
-            });
-            chartCanvas.addEventListener('mouseleave', () => {
-                pensionChart._crosshairPos = null;
-                pensionChart.draw();
-            });
         }
 
         updateChart();
+
+        chartCanvas.addEventListener('mousemove', (e) => {
+            if (!pensionChart) return;
+            const rect = chartCanvas.getBoundingClientRect();
+            pensionChart._crosshairPos = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+            pensionChart.update('none');
+        });
+        chartCanvas.addEventListener('mouseleave', () => {
+            if (!pensionChart) return;
+            pensionChart._crosshairPos = null;
+            pensionChart.update('none');
+        });
+
         chartModal.style.display = 'flex';
     }
 
