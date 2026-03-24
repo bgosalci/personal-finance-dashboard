@@ -88,6 +88,32 @@ const PensionManager = (function() {
         }
     };
 
+    const crosshairPlugin = {
+        id: 'crosshair',
+        afterDraw(chart) {
+            const pos = chart._crosshairPos;
+            if (!pos) return;
+            const { x, y } = pos;
+            const ctx = chart.ctx;
+            const xAxis = chart.scales.x;
+            const yAxis = chart.scales.y;
+            if (x < xAxis.left || x > xAxis.right || y < yAxis.top || y > yAxis.bottom) return;
+            ctx.save();
+            ctx.strokeStyle = 'rgba(200, 200, 200, 0.5)';
+            ctx.lineWidth = 1;
+            ctx.setLineDash([4, 4]);
+            ctx.beginPath();
+            ctx.moveTo(x, yAxis.top);
+            ctx.lineTo(x, yAxis.bottom);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(xAxis.left, y);
+            ctx.lineTo(xAxis.right, y);
+            ctx.stroke();
+            ctx.restore();
+        }
+    };
+
     function clearSelection() {
         selectedPoints = [];
         if (pensionChart) { pensionChart._selectionIndices = []; pensionChart.update('none'); }
@@ -601,11 +627,24 @@ const PensionManager = (function() {
                         updateRangeDisplay();
                     }
                 },
-                plugins: [selectionLinesPlugin]
+                plugins: [selectionLinesPlugin, crosshairPlugin]
             });
         }
 
         updateChart();
+
+        chartCanvas.addEventListener('mousemove', (e) => {
+            if (!pensionChart) return;
+            const rect = chartCanvas.getBoundingClientRect();
+            pensionChart._crosshairPos = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+            pensionChart.update('none');
+        });
+        chartCanvas.addEventListener('mouseleave', () => {
+            if (!pensionChart) return;
+            pensionChart._crosshairPos = null;
+            pensionChart.update('none');
+        });
+
         chartModal.style.display = 'flex';
     }
 
