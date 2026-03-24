@@ -143,7 +143,11 @@ const I18n = (function() {
                     }
                 },
                 "chart": {
-                    "title": "Pension Chart"
+                    "title": "Pension Chart",
+                    "rangeTool": "Range Tool",
+                    "rangeToolClear": "Clear",
+                    "rangeSelectFirst": "Click a point to select start",
+                    "rangeSelectSecond": "Click a point to select end"
                 }
             },
             "calculators": {
@@ -661,7 +665,11 @@ const I18n = (function() {
                     }
                 },
                 "chart": {
-                    "title": "Grafiku i Pensionit"
+                    "title": "Grafiku i Pensionit",
+                    "rangeTool": "Mjeti i Diapazonit",
+                    "rangeToolClear": "Pastro",
+                    "rangeSelectFirst": "Kliko një pikë për të zgjedhur fillimin",
+                    "rangeSelectSecond": "Kliko një pikë për të zgjedhur fundin"
                 }
             },
             "calculators": {
@@ -1033,7 +1041,11 @@ const I18n = (function() {
                     }
                 },
                 "chart": {
-                    "title": "Graphique de Pension"
+                    "title": "Graphique de Pension",
+                    "rangeTool": "Outil de plage",
+                    "rangeToolClear": "Effacer",
+                    "rangeSelectFirst": "Cliquez sur un point pour sélectionner le début",
+                    "rangeSelectSecond": "Cliquez sur un point pour sélectionner la fin"
                 }
             },
             "calculators": {
@@ -1405,7 +1417,11 @@ const I18n = (function() {
                     }
                 },
                 "chart": {
-                    "title": "Rentendiagramm"
+                    "title": "Rentendiagramm",
+                    "rangeTool": "Bereichstool",
+                    "rangeToolClear": "Löschen",
+                    "rangeSelectFirst": "Klicken Sie einen Punkt, um den Start auszuwählen",
+                    "rangeSelectSecond": "Klicken Sie einen Punkt, um das Ende auszuwählen"
                 }
             },
             "calculators": {
@@ -1777,7 +1793,11 @@ const I18n = (function() {
                     }
                 },
                 "chart": {
-                    "title": "Gráfico de Pensión"
+                    "title": "Gráfico de Pensión",
+                    "rangeTool": "Herramienta de rango",
+                    "rangeToolClear": "Limpiar",
+                    "rangeSelectFirst": "Haga clic en un punto para seleccionar el inicio",
+                    "rangeSelectSecond": "Haga clic en un punto para seleccionar el fin"
                 }
             },
             "calculators": {
@@ -2149,7 +2169,11 @@ const I18n = (function() {
                     }
                 },
                 "chart": {
-                    "title": "Grafico Pensione"
+                    "title": "Grafico Pensione",
+                    "rangeTool": "Strumento di intervallo",
+                    "rangeToolClear": "Cancella",
+                    "rangeSelectFirst": "Clicca un punto per selezionare l'inizio",
+                    "rangeSelectSecond": "Clicca un punto per selezionare la fine"
                 }
             },
             "calculators": {
@@ -2527,7 +2551,11 @@ const I18n = (function() {
                     }
                 },
                 "chart": {
-                    "title": "Grafic de pensii"
+                    "title": "Grafic de pensii",
+                    "rangeTool": "Instrument de interval",
+                    "rangeToolClear": "Șterge",
+                    "rangeSelectFirst": "Faceți clic pe un punct pentru a selecta începutul",
+                    "rangeSelectSecond": "Faceți clic pe un punct pentru a selecta sfârșitul"
                 }
             },
             "calculators": {

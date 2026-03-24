@@ -470,6 +470,18 @@
                         <h3 data-i18n="pension.chart.title">Pension Chart</h3>
                         <div class="chart-control-panel">
                             <div class="ticker-select" id="pension-chart-select"></div>
+                            <button id="pension-range-tool-btn" class="btn btn-secondary btn-sm" data-i18n="pension.chart.rangeTool">Range Tool</button>
+                        </div>
+                        <div id="pension-range-result" class="range-result" style="display:none">
+                            <span id="pension-range-hint" class="range-hint"></span>
+                            <div id="pension-range-values" class="range-values" style="display:none">
+                                <span id="pension-range-from"></span>
+                                <span class="range-arrow">&rarr;</span>
+                                <span id="pension-range-to"></span>
+                                <span id="pension-range-diff" class="range-diff"></span>
+                                <span id="pension-range-pct" class="range-pct"></span>
+                                <button id="pension-range-clear" class="btn btn-sm" data-i18n="pension.chart.rangeToolClear">Clear</button>
+                            </div>
                         </div>
                         <canvas id="pension-chart-canvas" width="800" height="500"></canvas>
                     </div>
