@@ -1114,6 +1114,55 @@
             margin-right: 0.75rem;
         }
 
+        #pension-range-tool-btn.active {
+            background: var(--primary-blue);
+            color: #fff;
+            border-color: var(--primary-blue);
+        }
+
+        .range-result {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            padding: 0.5rem 0.75rem;
+            background: var(--background-secondary);
+            border-radius: 6px;
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .range-hint {
+            font-style: italic;
+            opacity: 0.7;
+        }
+
+        .range-values {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .range-arrow {
+            opacity: 0.5;
+        }
+
+        .range-diff,
+        .range-pct {
+            font-weight: 600;
+        }
+
+        .range-diff.positive,
+        .range-pct.positive {
+            color: var(--success-green);
+        }
+
+        .range-diff.negative,
+        .range-pct.negative {
+            color: var(--danger-red);
+        }
+
         .modal-actions {
             display: flex;
             justify-content: flex-end;

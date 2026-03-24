@@ -51,7 +51,77 @@ const PensionManager = (function() {
     const chartSelect = document.getElementById('pension-chart-select');
     const chartCanvas = document.getElementById('pension-chart-canvas');
     const chartClose = document.getElementById('pension-chart-close');
+    const rangeToolBtn = document.getElementById('pension-range-tool-btn');
+    const rangeResult = document.getElementById('pension-range-result');
+    const rangeHint = document.getElementById('pension-range-hint');
+    const rangeValues = document.getElementById('pension-range-values');
+    const rangeFrom = document.getElementById('pension-range-from');
+    const rangeTo = document.getElementById('pension-range-to');
+    const rangeDiff = document.getElementById('pension-range-diff');
+    const rangePct = document.getElementById('pension-range-pct');
+    const rangeClear = document.getElementById('pension-range-clear');
     let pensionChart = null;
+    let rangeToolActive = false;
+    let selectedPoints = [];
+
+    const selectionLinesPlugin = {
+        id: 'selectionLines',
+        afterDraw(chart) {
+            const indices = chart._selectionIndices || [];
+            if (!indices.length) return;
+            const ctx = chart.ctx;
+            const xAxis = chart.scales.x;
+            const yAxis = chart.scales.y;
+            const colors = ['#22c55e', '#3b82f6'];
+            indices.forEach((xIdx, i) => {
+                const x = xAxis.getPixelForValue(xIdx);
+                ctx.save();
+                ctx.strokeStyle = colors[i];
+                ctx.lineWidth = 2;
+                ctx.setLineDash([5, 4]);
+                ctx.beginPath();
+                ctx.moveTo(x, yAxis.top);
+                ctx.lineTo(x, yAxis.bottom);
+                ctx.stroke();
+                ctx.restore();
+            });
+        }
+    };
+
+    function clearSelection() {
+        selectedPoints = [];
+        if (pensionChart) { pensionChart._selectionIndices = []; pensionChart.update('none'); }
+        updateRangeDisplay();
+    }
+
+    function updateRangeDisplay() {
+        if (!rangeHint || !rangeValues) return;
+        if (selectedPoints.length === 0) {
+            rangeHint.textContent = I18n.t('pension.chart.rangeSelectFirst');
+            rangeHint.style.display = '';
+            rangeValues.style.display = 'none';
+        } else if (selectedPoints.length === 1) {
+            rangeHint.textContent = I18n.t('pension.chart.rangeSelectSecond');
+            rangeHint.style.display = '';
+            rangeValues.style.display = 'none';
+            if (pensionChart) { pensionChart._selectionIndices = [selectedPoints[0].index]; pensionChart.update('none'); }
+        } else {
+            const [p1, p2] = [...selectedPoints].sort((a, b) => a.index - b.index);
+            const diff = p2.value - p1.value;
+            const pct = p1.value !== 0 ? (diff / p1.value) * 100 : 0;
+            const baseCurrency = Settings.getBaseCurrency ? Settings.getBaseCurrency() : 'USD';
+            rangeFrom.textContent = `${p1.label}: ${formatCurrency(p1.value, baseCurrency)}`;
+            rangeTo.textContent = `${p2.label}: ${formatCurrency(p2.value, baseCurrency)}`;
+            const diffSign = diff >= 0 ? '+' : '';
+            rangeDiff.textContent = `${diffSign}${formatCurrency(diff, baseCurrency)}`;
+            rangeDiff.className = 'range-diff ' + (diff >= 0 ? 'positive' : 'negative');
+            rangePct.textContent = `(${diffSign}${pct.toFixed(2)}%)`;
+            rangePct.className = 'range-pct ' + (pct >= 0 ? 'positive' : 'negative');
+            rangeHint.style.display = 'none';
+            rangeValues.style.display = 'flex';
+            if (pensionChart) { pensionChart._selectionIndices = [p1.index, p2.index]; pensionChart.update('none'); }
+        }
+    }
 
     function setupAmountInput(input) {
         if (!input) return;
@@ -488,6 +558,7 @@ const PensionManager = (function() {
         });
 
         function updateChart() {
+            clearSelection();
             const ids = Array.from(chartSelect.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value);
             const dateSet = new Set();
             const datasets = [];
@@ -514,7 +585,23 @@ const PensionManager = (function() {
             pensionChart = new Chart(chartCanvas.getContext('2d'), {
                 type: 'line',
                 data: { labels, datasets: chartDatasets },
-                options: { responsive: true }
+                options: {
+                    responsive: true,
+                    onClick(event) {
+                        if (!rangeToolActive) return;
+                        const pts = pensionChart.getElementsAtEventForMode(event, 'nearest', { intersect: false }, false);
+                        if (!pts.length) return;
+                        const { datasetIndex, index } = pts[0];
+                        const value = pensionChart.data.datasets[datasetIndex].data[index];
+                        if (value === null) return;
+                        const label = pensionChart.data.labels[index];
+                        if (selectedPoints.length === 1 && selectedPoints[0].index === index && selectedPoints[0].datasetIndex === datasetIndex) return;
+                        if (selectedPoints.length >= 2) selectedPoints = [];
+                        selectedPoints.push({ label, value, index, datasetIndex });
+                        updateRangeDisplay();
+                    }
+                },
+                plugins: [selectionLinesPlugin]
             });
         }
 
@@ -524,6 +611,10 @@ const PensionManager = (function() {
 
     function closeChart() {
         if (chartModal) chartModal.style.display = 'none';
+        rangeToolActive = false;
+        if (rangeToolBtn) rangeToolBtn.classList.remove('active');
+        if (rangeResult) rangeResult.style.display = 'none';
+        clearSelection();
     }
 
     async function renderTable() {
@@ -605,6 +696,14 @@ const PensionManager = (function() {
         if (chartBtn) chartBtn.addEventListener('click', showChart);
         if (chartClose) chartClose.addEventListener('click', closeChart);
         if (chartModal) chartModal.addEventListener('click', e => { if (e.target === chartModal) closeChart(); });
+        if (rangeToolBtn) rangeToolBtn.addEventListener('click', () => {
+            rangeToolActive = !rangeToolActive;
+            rangeToolBtn.classList.toggle('active', rangeToolActive);
+            if (rangeResult) rangeResult.style.display = rangeToolActive ? 'flex' : 'none';
+            if (rangeToolActive) updateRangeDisplay();
+            else clearSelection();
+        });
+        if (rangeClear) rangeClear.addEventListener('click', clearSelection);
 
         document.getElementById('pension-body').addEventListener('click', handleRowAction);
         editCancel.addEventListener('click', closeEditEntryModal);
