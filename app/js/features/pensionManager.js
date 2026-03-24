@@ -106,11 +106,10 @@ const PensionManager = (function() {
             rangeValues.style.display = 'none';
             if (pensionChart) { pensionChart._selectionIndices = [selectedPoints[0].index]; pensionChart.update('none'); }
         } else {
-            const p1 = selectedPoints[0];
-            const p2 = selectedPoints[1];
+            const [p1, p2] = [...selectedPoints].sort((a, b) => a.index - b.index);
             const diff = p2.value - p1.value;
             const pct = p1.value !== 0 ? (diff / p1.value) * 100 : 0;
-            const baseCurrency = Settings.getBaseCurrency ? Settings.getBaseCurrency() : 'GBP';
+            const baseCurrency = Settings.getBaseCurrency ? Settings.getBaseCurrency() : 'USD';
             rangeFrom.textContent = `${p1.label}: ${formatCurrency(p1.value, baseCurrency)}`;
             rangeTo.textContent = `${p2.label}: ${formatCurrency(p2.value, baseCurrency)}`;
             const diffSign = diff >= 0 ? '+' : '';
@@ -699,7 +698,7 @@ const PensionManager = (function() {
         if (rangeToolBtn) rangeToolBtn.addEventListener('click', () => {
             rangeToolActive = !rangeToolActive;
             rangeToolBtn.classList.toggle('active', rangeToolActive);
-            rangeResult.style.display = rangeToolActive ? 'flex' : 'none';
+            if (rangeResult) rangeResult.style.display = rangeToolActive ? 'flex' : 'none';
             if (rangeToolActive) updateRangeDisplay();
             else clearSelection();
         });
