@@ -74,7 +74,7 @@ const PensionManager = (function() {
             const yAxis = chart.scales.y;
             const colors = ['#22c55e', '#3b82f6'];
             indices.forEach((xIdx, i) => {
-                const x = xAxis.getPixelForTick(xIdx);
+                const x = xAxis.getPixelForValue(xIdx);
                 ctx.save();
                 ctx.strokeStyle = colors[i];
                 ctx.lineWidth = 2;
@@ -90,7 +90,7 @@ const PensionManager = (function() {
 
     function clearSelection() {
         selectedPoints = [];
-        if (pensionChart) { pensionChart._selectionIndices = []; pensionChart.draw(); }
+        if (pensionChart) { pensionChart._selectionIndices = []; pensionChart.update('none'); }
         updateRangeDisplay();
     }
 
@@ -104,7 +104,7 @@ const PensionManager = (function() {
             rangeHint.textContent = I18n.t('pension.chart.rangeSelectSecond');
             rangeHint.style.display = '';
             rangeValues.style.display = 'none';
-            if (pensionChart) { pensionChart._selectionIndices = [selectedPoints[0].index]; pensionChart.draw(); }
+            if (pensionChart) { pensionChart._selectionIndices = [selectedPoints[0].index]; pensionChart.update('none'); }
         } else {
             const p1 = selectedPoints[0];
             const p2 = selectedPoints[1];
@@ -120,7 +120,7 @@ const PensionManager = (function() {
             rangePct.className = 'range-pct ' + (pct >= 0 ? 'positive' : 'negative');
             rangeHint.style.display = 'none';
             rangeValues.style.display = 'flex';
-            if (pensionChart) { pensionChart._selectionIndices = [p1.index, p2.index]; pensionChart.draw(); }
+            if (pensionChart) { pensionChart._selectionIndices = [p1.index, p2.index]; pensionChart.update('none'); }
         }
     }
 
