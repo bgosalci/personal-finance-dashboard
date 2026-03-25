@@ -99,7 +99,8 @@ const PensionManager = (function() {
             const yAxis = chart.scales.y;
             if (x < xAxis.left || x > xAxis.right || y < yAxis.top || y > yAxis.bottom) return;
             ctx.save();
-            ctx.strokeStyle = 'rgba(200, 200, 200, 0.5)';
+            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+            ctx.strokeStyle = isDark ? 'rgba(200, 200, 200, 0.5)' : 'rgba(80, 80, 80, 0.6)';
             ctx.lineWidth = 1;
             ctx.setLineDash([4, 4]);
             ctx.beginPath();
