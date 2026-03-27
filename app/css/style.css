@@ -1114,10 +1114,15 @@
             margin-right: 0.75rem;
         }
 
-        #pension-range-tool-btn.active {
+        #pension-range-tool-btn.active,
+        #portfolio-stock-range-tool-btn.active {
             background: var(--primary-blue);
             color: #fff;
             border-color: var(--primary-blue);
+        }
+
+        #portfolio-stock-range-tool-btn {
+            margin-left: auto;
         }
 
         .range-result {
@@ -1161,6 +1166,12 @@
         .range-diff.negative,
         .range-pct.negative {
             color: var(--danger-red);
+        }
+
+        .range-duration {
+            font-size: 0.85em;
+            opacity: 0.7;
+            font-style: italic;
         }
 
         .modal-actions {

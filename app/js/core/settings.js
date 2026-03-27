@@ -166,6 +166,22 @@ const Settings = (function() {
             });
         }
 
+        // FMP API key (historical EOD stock charts)
+        const fmpKeyInput = document.getElementById('settings-fmp-api-key');
+        const fmpKeyToggle = document.getElementById('settings-fmp-api-key-toggle');
+        if (fmpKeyToggle && fmpKeyInput) {
+            fmpKeyToggle.addEventListener('change', () => {
+                fmpKeyInput.type = fmpKeyToggle.checked ? 'text' : 'password';
+            });
+        }
+        if (fmpKeyInput && typeof FmpService !== 'undefined') {
+            try { fmpKeyInput.value = FmpService.getApiKey(); } catch (e) {}
+            fmpKeyInput.addEventListener('input', (e) => {
+                const val = (e.target.value || '').trim();
+                try { FmpService.setApiKey(val); } catch (err) {}
+            });
+        }
+
         const langSelect = document.getElementById('language-select');
         if (langSelect) {
             const localeFlags = {
