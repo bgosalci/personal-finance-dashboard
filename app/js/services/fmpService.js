@@ -59,19 +59,30 @@ const FmpService = (() => {
         const today = getToday();
         const cache = readCache(symbol);
 
-        // Use cache if it fully covers the requested range and is fresh for today
-        if (cache && cache.from <= from && cache.to >= to) {
-            const staleToday = to === today && cache.cachedAt !== today;
-            if (!staleToday) {
+        // Use cache if:
+        //   - it covers the requested `from` date, AND
+        //   - either it was fetched today (market data won't exceed the last trading day)
+        //     or it fully covers the requested range
+        if (cache && cache.from <= from) {
+            if (cache.cachedAt === today || cache.to >= to) {
                 return cache.data.filter(d => d.date >= from && d.date <= to);
             }
         }
 
-        // Fetch from API
+        // Fetch from API; fall back to cache on network failure
         const url = `https://financialmodelingprep.com/stable/historical-price-eod/full?symbol=${encodeURIComponent(symbol)}&from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}&apikey=${encodeURIComponent(apiKey)}`;
-        const resp = await fetch(url);
-        if (!resp.ok) throw new Error(`FMP API error: ${resp.status}`);
-        const data = await resp.json();
+        let data;
+        try {
+            const resp = await fetch(url);
+            if (!resp.ok) throw new Error(`FMP API error: ${resp.status}`);
+            data = await resp.json();
+        } catch (err) {
+            // Network unavailable — serve from cache if we have anything covering `from`
+            if (cache && cache.from <= from) {
+                return cache.data.filter(d => d.date >= from && d.date <= to);
+            }
+            throw err;
+        }
 
         // Persist to cache (merge with any existing data)
         if (Array.isArray(data) && data.length > 0) {
