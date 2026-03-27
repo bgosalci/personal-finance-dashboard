@@ -59,6 +59,7 @@ const PensionManager = (function() {
     const rangeTo = document.getElementById('pension-range-to');
     const rangeDiff = document.getElementById('pension-range-diff');
     const rangePct = document.getElementById('pension-range-pct');
+    const rangeDuration = document.getElementById('pension-range-duration');
     const rangeClear = document.getElementById('pension-range-clear');
     let pensionChart = null;
     let rangeToolActive = false;
@@ -115,6 +116,21 @@ const PensionManager = (function() {
         }
     };
 
+    function formatRangeDuration(rawDate1, rawDate2) {
+        const d1 = new Date(rawDate1), d2 = new Date(rawDate2);
+        const later = d1 < d2 ? d2 : d1, earlier = d1 < d2 ? d1 : d2;
+        let years = later.getFullYear() - earlier.getFullYear();
+        let months = later.getMonth() - earlier.getMonth();
+        let days = later.getDate() - earlier.getDate();
+        if (days < 0) { months--; days += new Date(later.getFullYear(), later.getMonth(), 0).getDate(); }
+        if (months < 0) { years--; months += 12; }
+        const parts = [];
+        if (years > 0) parts.push(`${years} yr${years !== 1 ? 's' : ''}`);
+        if (months > 0) parts.push(`${months} mo`);
+        if (days > 0 && years === 0) parts.push(`${days} day${days !== 1 ? 's' : ''}`);
+        return parts.length ? parts.join(' ') : '0 days';
+    }
+
     function clearSelection() {
         selectedPoints = [];
         if (pensionChart) { pensionChart._selectionIndices = []; pensionChart.update('none'); }
@@ -144,6 +160,7 @@ const PensionManager = (function() {
             rangeDiff.className = 'range-diff ' + (diff >= 0 ? 'positive' : 'negative');
             rangePct.textContent = `(${diffSign}${pct.toFixed(2)}%)`;
             rangePct.className = 'range-pct ' + (pct >= 0 ? 'positive' : 'negative');
+            if (rangeDuration) rangeDuration.textContent = formatRangeDuration(p1.rawDate, p2.rawDate);
             rangeHint.style.display = 'none';
             rangeValues.style.display = 'flex';
             if (pensionChart) { pensionChart._selectionIndices = [p1.index, p2.index]; pensionChart.update('none'); }
@@ -624,7 +641,7 @@ const PensionManager = (function() {
                         const label = pensionChart.data.labels[index];
                         if (selectedPoints.length === 1 && selectedPoints[0].index === index && selectedPoints[0].datasetIndex === datasetIndex) return;
                         if (selectedPoints.length >= 2) selectedPoints = [];
-                        selectedPoints.push({ label, value, index, datasetIndex });
+                        selectedPoints.push({ label, value, index, datasetIndex, rawDate: rawDates[index] });
                         updateRangeDisplay();
                     }
                 },

@@ -480,12 +480,14 @@
                                 <span id="pension-range-to"></span>
                                 <span id="pension-range-diff" class="range-diff"></span>
                                 <span id="pension-range-pct" class="range-pct"></span>
+                                <span id="pension-range-duration" class="range-duration"></span>
                                 <button id="pension-range-clear" class="btn btn-sm" data-i18n="pension.chart.rangeToolClear">Clear</button>
                             </div>
                         </div>
                         <canvas id="pension-chart-canvas" width="800" height="500"></canvas>
                     </div>
                 </div>
+
             </div>
 
             <!-- Calculators Tab -->
@@ -1251,6 +1253,13 @@
                     <p class="form-hint"><span data-i18n="settings.exchangerateApiKeyHint">Create a free API key at</span> <a href="https://app.exchangerate-api.com/sign-up" target="_blank" rel="noopener">exchangerate-api.com</a></p>
                     <p class="form-hint" data-i18n="settings.exchangerateApiKeyUsage">Used for currency conversion rates.</p>
                 </div>
+                <div class="form-group">
+                    <label for="settings-fmp-api-key">Financial Modeling Prep API Key</label>
+                    <input type="password" id="settings-fmp-api-key" placeholder="Optional — stored locally">
+                    <label><input type="checkbox" id="settings-fmp-api-key-toggle"> <span data-i18n="settings.showApiKey">Show API Key</span></label>
+                    <p class="form-hint">Create a free API key at <a href="https://financialmodelingprep.com/developer/docs" target="_blank" rel="noopener">financialmodelingprep.com</a></p>
+                    <p class="form-hint">Used for historical EOD stock price charts in the portfolio.</p>
+                </div>
 
                 <h3 class="section-subtitle" data-i18n="settings.sectionTitles.pension">Pension</h3>
                 <div class="form-group">
@@ -1533,6 +1542,30 @@
 
     <div id="tooltip" class="tooltip"></div>
 
+    <!-- Portfolio Stock Chart Modal (outside tab content so it's never hidden by tab switching) -->
+    <div id="portfolio-stock-chart-popup" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" id="portfolio-stock-chart-close">&times;</span>
+            <h3 id="portfolio-stock-chart-title">Stock Chart</h3>
+            <div class="chart-control-panel">
+                <button id="portfolio-stock-range-tool-btn" class="btn btn-secondary btn-sm" data-i18n="pension.chart.rangeTool">Range Tool</button>
+            </div>
+            <div id="portfolio-stock-range-result" class="range-result" style="display:none">
+                <span id="portfolio-stock-range-hint" class="range-hint"></span>
+                <div id="portfolio-stock-range-values" class="range-values" style="display:none">
+                    <span id="portfolio-stock-range-from"></span>
+                    <span class="range-arrow">&rarr;</span>
+                    <span id="portfolio-stock-range-to"></span>
+                    <span id="portfolio-stock-range-diff" class="range-diff"></span>
+                    <span id="portfolio-stock-range-pct" class="range-pct"></span>
+                    <span id="portfolio-stock-range-duration" class="range-duration"></span>
+                    <button id="portfolio-stock-range-clear" class="btn btn-sm" data-i18n="pension.chart.rangeToolClear">Clear</button>
+                </div>
+            </div>
+            <canvas id="portfolio-stock-chart-canvas" width="800" height="500"></canvas>
+        </div>
+    </div>
+
     <script src="js/core/i18n.js"></script>
     <script src="js/core/storageUtils.js"></script>
     <script src="js/core/utils.js"></script>
@@ -1541,6 +1574,7 @@
     <script src="js/core/tabManager.js"></script>
     <script src="js/services/colorService.js"></script>
     <script src="js/services/quotesService.js"></script>
+    <script src="js/services/fmpService.js"></script>
     <script src="js/features/portfolioManager.js"></script>
     <script src="js/data/priceStorage.js"></script>
     <script src="js/features/watchlistManager.js"></script>

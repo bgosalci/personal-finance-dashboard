@@ -18,6 +18,9 @@ const PortfolioManager = (function() {
     let tickerColors = {};
     let colorIndex = 0;
     let tickerValid = false;
+    let stockChart = null;
+    let stockRangeToolActive = false;
+    let stockSelectedPoints = [];
 
     const addBtn = document.getElementById('add-investment-btn');
     const getPriceBtn = document.getElementById('get-last-price-btn');
@@ -554,7 +557,8 @@ const PortfolioManager = (function() {
                     cost: 0,
                     last: 0,
                     count: 0,
-                    index: idx
+                    index: idx,
+                    tradeDate: inv.tradeDate || getToday()
                 };
             }
             const item = map[inv.ticker];
@@ -566,6 +570,8 @@ const PortfolioManager = (function() {
             if (!item.currency && inv.currency) {
                 item.currency = inv.currency;
             }
+            const td = inv.tradeDate || getToday();
+            if (td < item.tradeDate) item.tradeDate = td;
         });
         return Object.values(map).map(it => ({
             ticker: it.ticker,
@@ -574,7 +580,8 @@ const PortfolioManager = (function() {
             quantity: it.quantity,
             purchasePrice: it.quantity ? it.cost / it.quantity : 0,
             lastPrice: it.count ? it.last / it.count : 0,
-            index: it.index
+            index: it.index,
+            tradeDate: it.tradeDate
         }));
     }
 
@@ -600,6 +607,9 @@ const PortfolioManager = (function() {
                 <td class="actions-cell">
                     <button class="icon-btn edit-btn" data-index="${inv.index}" title="${I18n.t('portfolio.actions.edit')}" aria-label="${I18n.t('portfolio.actions.edit')}">
                         <svg width="16" height="16" viewBox="0 0 512 512"><polygon points="364.13 125.25 87 403 64 448 108.99 425 386.75 147.87 364.13 125.25" style="fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"/><path d="M420.69,68.69,398.07,91.31l22.62,22.63,22.62-22.63a16,16,0,0,0,0-22.62h0A16,16,0,0,0,420.69,68.69Z" style="fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"/></svg>
+                    </button>
+                    <button class="icon-btn chart-btn" data-index="${inv.index}" title="View Chart" aria-label="View Chart">
+                        <svg width="16" height="16" viewBox="0 0 512 512"><polyline points="64 400 192 272 288 368 448 160" style="fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"/><line x1="64" y1="112" x2="64" y2="400" style="stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"/><line x1="64" y1="400" x2="448" y2="400" style="stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"/></svg>
                     </button>
                     <button class="icon-btn delete-btn" data-index="${inv.index}" title="${I18n.t('portfolio.actions.delete')}" aria-label="${I18n.t('portfolio.actions.delete')}">
                         <svg width="16" height="16" viewBox="0 0 512 512"><path d="M112,112l20,320c.95,18.49,14.4,32,32,32H348c17.67,0,30.87-13.51,32-32l20-320" style="fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"/><line x1="80" y1="112" x2="432" y2="112" style="stroke:currentColor;stroke-linecap:round;stroke-miterlimit:10;stroke-width:32px"/><path d="M192,112V72h0a23.93,23.93,0,0,1,24-24h80a23.93,23.93,0,0,1,24,24h0v40" style="fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"/><line x1="256" y1="176" x2="256" y2="400" style="fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"/><line x1="184" y1="176" x2="192" y2="400" style="fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"/><line x1="328" y1="176" x2="320" y2="400" style="fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"/></svg>
@@ -941,10 +951,230 @@ const PortfolioManager = (function() {
         closeEditModal();
     }
 
+    function formatRangeDuration(rawDate1, rawDate2) {
+        const d1 = new Date(rawDate1), d2 = new Date(rawDate2);
+        const later = d1 < d2 ? d2 : d1, earlier = d1 < d2 ? d1 : d2;
+        let years = later.getFullYear() - earlier.getFullYear();
+        let months = later.getMonth() - earlier.getMonth();
+        let days = later.getDate() - earlier.getDate();
+        if (days < 0) { months--; days += new Date(later.getFullYear(), later.getMonth(), 0).getDate(); }
+        if (months < 0) { years--; months += 12; }
+        const parts = [];
+        if (years > 0) parts.push(`${years} yr${years !== 1 ? 's' : ''}`);
+        if (months > 0) parts.push(`${months} mo`);
+        if (days > 0 && years === 0) parts.push(`${days} day${days !== 1 ? 's' : ''}`);
+        return parts.length ? parts.join(' ') : '0 days';
+    }
+
+    const stockSelectionLinesPlugin = {
+        id: 'stockSelectionLines',
+        afterDraw(chart) {
+            const indices = chart._selectionIndices || [];
+            if (!indices.length) return;
+            const ctx = chart.ctx;
+            const xAxis = chart.scales.x;
+            const yAxis = chart.scales.y;
+            const colors = ['#22c55e', '#3b82f6'];
+            indices.forEach((xIdx, i) => {
+                const x = xAxis.getPixelForValue(xIdx);
+                ctx.save();
+                ctx.strokeStyle = colors[i];
+                ctx.lineWidth = 2;
+                ctx.setLineDash([5, 4]);
+                ctx.beginPath();
+                ctx.moveTo(x, yAxis.top);
+                ctx.lineTo(x, yAxis.bottom);
+                ctx.stroke();
+                ctx.restore();
+            });
+        }
+    };
+
+    const stockCrosshairPlugin = {
+        id: 'stockCrosshair',
+        afterDraw(chart) {
+            const pos = chart._crosshairPos;
+            if (!pos) return;
+            const { x, y } = pos;
+            const ctx = chart.ctx;
+            const xAxis = chart.scales.x;
+            const yAxis = chart.scales.y;
+            if (x < xAxis.left || x > xAxis.right || y < yAxis.top || y > yAxis.bottom) return;
+            ctx.save();
+            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+            ctx.strokeStyle = isDark ? 'rgba(200, 200, 200, 0.5)' : 'rgba(80, 80, 80, 0.6)';
+            ctx.lineWidth = 1;
+            ctx.setLineDash([4, 4]);
+            ctx.beginPath();
+            ctx.moveTo(x, yAxis.top);
+            ctx.lineTo(x, yAxis.bottom);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(xAxis.left, y);
+            ctx.lineTo(xAxis.right, y);
+            ctx.stroke();
+            ctx.restore();
+        }
+    };
+
+    function clearStockSelection() {
+        stockSelectedPoints = [];
+        if (stockChart) { stockChart._selectionIndices = []; stockChart.update('none'); }
+        updateStockRangeDisplay();
+    }
+
+    function updateStockRangeDisplay(currency) {
+        const rangeResult = document.getElementById('portfolio-stock-range-result');
+        const rangeHint = document.getElementById('portfolio-stock-range-hint');
+        const rangeValues = document.getElementById('portfolio-stock-range-values');
+        const rangeFrom = document.getElementById('portfolio-stock-range-from');
+        const rangeTo = document.getElementById('portfolio-stock-range-to');
+        const rangeDiff = document.getElementById('portfolio-stock-range-diff');
+        const rangePct = document.getElementById('portfolio-stock-range-pct');
+        const rangeDuration = document.getElementById('portfolio-stock-range-duration');
+        if (!rangeHint || !rangeValues) return;
+        if (stockSelectedPoints.length === 0) {
+            rangeHint.textContent = 'Click a point to start range selection';
+            rangeHint.style.display = '';
+            rangeValues.style.display = 'none';
+        } else if (stockSelectedPoints.length === 1) {
+            rangeHint.textContent = 'Click a second point to complete the range';
+            rangeHint.style.display = '';
+            rangeValues.style.display = 'none';
+            if (stockChart) { stockChart._selectionIndices = [stockSelectedPoints[0].index]; stockChart.update('none'); }
+        } else {
+            const [p1, p2] = [...stockSelectedPoints].sort((a, b) => a.index - b.index);
+            const diff = p2.value - p1.value;
+            const pct = p1.value !== 0 ? (diff / p1.value) * 100 : 0;
+            const cur = currency || 'USD';
+            rangeFrom.textContent = `${p1.label}: ${formatCurrency(p1.value, cur)}`;
+            rangeTo.textContent = `${p2.label}: ${formatCurrency(p2.value, cur)}`;
+            const diffSign = diff >= 0 ? '+' : '';
+            rangeDiff.textContent = `${diffSign}${formatCurrency(diff, cur)}`;
+            rangeDiff.className = 'range-diff ' + (diff >= 0 ? 'positive' : 'negative');
+            rangePct.textContent = `(${diffSign}${pct.toFixed(2)}%)`;
+            rangePct.className = 'range-pct ' + (pct >= 0 ? 'positive' : 'negative');
+            if (rangeDuration) rangeDuration.textContent = formatRangeDuration(p1.label, p2.label);
+            rangeHint.style.display = 'none';
+            rangeValues.style.display = 'flex';
+            if (stockChart) { stockChart._selectionIndices = [p1.index, p2.index]; stockChart.update('none'); }
+        }
+    }
+
+    async function showStockChart(ticker, fromDate, quantity, currency) {
+        const popup = document.getElementById('portfolio-stock-chart-popup');
+        const canvas = document.getElementById('portfolio-stock-chart-canvas');
+        const title = document.getElementById('portfolio-stock-chart-title');
+        const rangeResult = document.getElementById('portfolio-stock-range-result');
+        const rangeToolBtn = document.getElementById('portfolio-stock-range-tool-btn');
+        if (!popup || !canvas) return;
+
+        if (typeof FmpService === 'undefined' || !FmpService.getApiKey()) {
+            DialogManager.alert('Please set your Financial Modeling Prep API key in Settings to view stock charts.');
+            return;
+        }
+
+        stockRangeToolActive = false;
+        stockSelectedPoints = [];
+        if (rangeToolBtn) rangeToolBtn.classList.remove('active');
+        if (rangeResult) rangeResult.style.display = 'none';
+        title.textContent = `Loading ${ticker}...`;
+        popup.style.display = 'flex';
+
+        let data;
+        try {
+            data = await FmpService.fetchHistoricalEOD(ticker, fromDate, getToday());
+        } catch (err) {
+            popup.style.display = 'none';
+            DialogManager.alert(`Failed to load chart data for ${ticker}: ${err.message}`);
+            return;
+        }
+
+        if (!Array.isArray(data) || data.length === 0) {
+            popup.style.display = 'none';
+            DialogManager.alert(`No historical data found for ${ticker}.`);
+            return;
+        }
+
+        // API returns newest-first; sort chronologically
+        const sorted = [...data].sort((a, b) => a.date < b.date ? -1 : 1);
+        const labels = sorted.map(d => d.date);
+        const values = sorted.map(d => d.close * quantity);
+        const color = tickerColors[ticker] || '#14b8a6';
+
+        if (stockChart) stockChart.destroy();
+        stockChart = new Chart(canvas.getContext('2d'), {
+            type: 'line',
+            data: {
+                labels,
+                datasets: [{
+                    label: `${ticker} Value (${currency})`,
+                    data: values,
+                    borderColor: color,
+                    backgroundColor: color,
+                    fill: false,
+                    tension: 0.2,
+                    pointRadius: 0,
+                    pointHoverRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                onClick(event) {
+                    if (!stockRangeToolActive) return;
+                    const pts = stockChart.getElementsAtEventForMode(event, 'nearest', { intersect: false }, false);
+                    if (!pts.length) return;
+                    const { datasetIndex, index } = pts[0];
+                    const value = stockChart.data.datasets[datasetIndex].data[index];
+                    if (value === null || value === undefined) return;
+                    const label = stockChart.data.labels[index];
+                    if (stockSelectedPoints.length === 1 && stockSelectedPoints[0].index === index) return;
+                    if (stockSelectedPoints.length >= 2) stockSelectedPoints = [];
+                    stockSelectedPoints.push({ label, value, index, datasetIndex });
+                    updateStockRangeDisplay(currency);
+                }
+            },
+            plugins: [stockSelectionLinesPlugin, stockCrosshairPlugin]
+        });
+
+        title.textContent = `${ticker} — Historical Value`;
+
+        canvas.addEventListener('mousemove', (e) => {
+            if (!stockChart) return;
+            const rect = canvas.getBoundingClientRect();
+            stockChart._crosshairPos = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+            stockChart.update('none');
+        });
+        canvas.addEventListener('mouseleave', () => {
+            if (!stockChart) return;
+            stockChart._crosshairPos = null;
+            stockChart.update('none');
+        });
+    }
+
+    function closeStockChart() {
+        const popup = document.getElementById('portfolio-stock-chart-popup');
+        if (popup) popup.style.display = 'none';
+        stockRangeToolActive = false;
+        const rangeToolBtn = document.getElementById('portfolio-stock-range-tool-btn');
+        if (rangeToolBtn) rangeToolBtn.classList.remove('active');
+        const rangeResult = document.getElementById('portfolio-stock-range-result');
+        if (rangeResult) rangeResult.style.display = 'none';
+        clearStockSelection();
+        if (stockChart) { stockChart.destroy(); stockChart = null; }
+    }
+
     async function handleRowAction(e) {
-        if (summaryMode) return;
         const btn = e.target.closest('button');
         if (!btn) return;
+        if (btn.classList.contains('chart-btn')) {
+            const idx = parseInt(btn.dataset.index, 10);
+            const displayData = aggregateInvestments();
+            const inv = displayData.find(d => d.index === idx);
+            if (inv) showStockChart(inv.ticker, inv.tradeDate, inv.quantity, inv.currency);
+            return;
+        }
+        if (summaryMode) return;
         if (btn.classList.contains('edit-btn')) {
             const idx = parseInt(btn.dataset.index, 10);
             openEditModal(idx);
@@ -992,6 +1222,23 @@ const PortfolioManager = (function() {
         tickerInput.addEventListener('input', () => { tickerValid = false; });
 
         document.getElementById('portfolio-body').addEventListener('click', handleRowAction);
+
+        const stockChartClose = document.getElementById('portfolio-stock-chart-close');
+        const stockChartPopup = document.getElementById('portfolio-stock-chart-popup');
+        const stockRangeToolBtn = document.getElementById('portfolio-stock-range-tool-btn');
+        const stockRangeClear = document.getElementById('portfolio-stock-range-clear');
+        if (stockChartClose) stockChartClose.addEventListener('click', closeStockChart);
+        if (stockChartPopup) stockChartPopup.addEventListener('click', (e) => { if (e.target === stockChartPopup) closeStockChart(); });
+        if (stockRangeToolBtn) {
+            stockRangeToolBtn.addEventListener('click', () => {
+                stockRangeToolActive = !stockRangeToolActive;
+                stockRangeToolBtn.classList.toggle('active', stockRangeToolActive);
+                const rangeResult = document.getElementById('portfolio-stock-range-result');
+                if (rangeResult) rangeResult.style.display = stockRangeToolActive ? '' : 'none';
+                if (!stockRangeToolActive) clearStockSelection();
+            });
+        }
+        if (stockRangeClear) stockRangeClear.addEventListener('click', clearStockSelection);
         editClose.addEventListener('click', closeEditModal);
         editCancel.addEventListener('click', closeEditModal);
         editForm.addEventListener('input', handleEditInput);
