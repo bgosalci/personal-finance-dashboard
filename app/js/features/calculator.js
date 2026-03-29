@@ -1412,11 +1412,17 @@ const Calculator = (function() {
     // Expected Move Calculator (ATM Straddle)
     const ExpectedMoveCalculator = (function() {
         // Sigma band definitions — drawn back-to-front (δ3 first, δ1 on top)
-        var BANDS = [
+        // δ1 stroke/fill resolved at draw time from CSS variable for theme support
+        var BANDS_STATIC = [
             { n: 3, fill: 'rgba(139,92,246,0.13)', stroke: '#8b5cf6', prob: '99.73%' },
             { n: 2, fill: 'rgba(245,158,11,0.16)',  stroke: '#f59e0b', prob: '95.45%' },
-            { n: 1, fill: 'rgba(0,255,127,0.20)',   stroke: '#00ff7f', prob: '68.27%' },
         ];
+
+        function getBands(accentGreen) {
+            return BANDS_STATIC.concat([
+                { n: 1, fill: 'rgba(0,255,127,0.20)', stroke: accentGreen, prob: '68.27%' },
+            ]);
+        }
 
         function drawChart(price, em1) {
             var canvas = document.getElementById('em-chart');
@@ -1439,6 +1445,13 @@ const Calculator = (function() {
             var plotH    = H - pad.top  - pad.bottom;
             var baseline = pad.top + plotH;
 
+            // Read theme-aware colours from CSS variables
+            var style       = getComputedStyle(document.documentElement);
+            var panelBg     = style.getPropertyValue('--em-panel-bg').trim();
+            var bellColor   = style.getPropertyValue('--em-accent-green').trim();
+            var textBright  = style.getPropertyValue('--em-panel-text-bright').trim();
+            var separator   = style.getPropertyValue('--em-panel-separator').trim();
+
             var mu = price, sigma = em1;
             var xMin = mu - 3.5 * sigma;
             var xMax = mu + 3.5 * sigma;
@@ -1453,10 +1466,11 @@ const Calculator = (function() {
             function yC(y) { return pad.top + plotH * (1 - (y / maxPdf) * 0.88); }
 
             // Background
-            ctx.fillStyle = '#0d1117';
+            ctx.fillStyle = panelBg;
             ctx.fillRect(0, 0, W, H);
 
             var STEPS = 400;
+            var BANDS = getBands(bellColor);
 
             // Sigma bands (δ3 → δ2 → δ1, back-to-front)
             for (var i = 0; i < BANDS.length; i++) {
@@ -1475,14 +1489,14 @@ const Calculator = (function() {
                 ctx.fill();
             }
 
-            // Bell curve (neon green)
+            // Bell curve
             ctx.beginPath();
             for (var s = 0; s <= STEPS; s++) {
                 var x = xMin + (xMax - xMin) * s / STEPS;
                 var px = xC(x), py = yC(pdf(x));
                 if (s === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
             }
-            ctx.strokeStyle = '#00ff7f';
+            ctx.strokeStyle = bellColor;
             ctx.lineWidth   = 1.5;
             ctx.setLineDash([]);
             ctx.stroke();
@@ -1508,15 +1522,17 @@ const Calculator = (function() {
             ctx.beginPath();
             ctx.moveTo(xC(mu), pad.top);
             ctx.lineTo(xC(mu), baseline);
-            ctx.strokeStyle = 'rgba(255,255,255,0.22)';
+            ctx.strokeStyle = textBright;
+            ctx.globalAlpha = 0.22;
             ctx.lineWidth   = 1;
             ctx.stroke();
+            ctx.globalAlpha = 1;
 
             // Baseline
             ctx.beginPath();
             ctx.moveTo(pad.left, baseline + 0.5);
             ctx.lineTo(W - pad.right, baseline + 0.5);
-            ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+            ctx.strokeStyle = separator;
             ctx.lineWidth   = 1;
             ctx.stroke();
 
@@ -1533,7 +1549,7 @@ const Calculator = (function() {
                 ctx.fillText(text, cx, labelY);
             }
 
-            drawXLabel(mu, formatCurrency(mu), 'rgba(255,255,255,0.85)');
+            drawXLabel(mu, formatCurrency(mu), textBright);
             for (var i = 0; i < BANDS.length; i++) {
                 var band = BANDS[i];
                 drawXLabel(mu - band.n * sigma, formatCurrency(mu - band.n * sigma), band.stroke);
@@ -1556,6 +1572,8 @@ const Calculator = (function() {
         }
 
         function buildTable(price, em1) {
+            var accentGreen = getComputedStyle(document.documentElement).getPropertyValue('--em-accent-green').trim();
+            var BANDS = getBands(accentGreen);
             var tbody = document.getElementById('em-sigma-body');
             tbody.innerHTML = '';
             // Render δ1, δ2, δ3 order
@@ -1571,9 +1589,9 @@ const Calculator = (function() {
                     'background:' + band.stroke + ';margin-right:6px;vertical-align:middle"></span>' +
                     '<strong style="color:' + band.stroke + '">\u03b4' + band.n + '</strong></td>' +
                     '<td style="color:var(--text-secondary)">' + band.prob + '</td>' +
-                    '<td style="color:#00ff7f">' + formatCurrency(upper) + '</td>' +
-                    '<td style="color:#ef4444">' + formatCurrency(lower) + '</td>' +
-                    '<td style="color:#f59e0b">' + formatCurrency(delta) + '</td>' +
+                    '<td class="em-col-upper">' + formatCurrency(upper) + '</td>' +
+                    '<td class="em-col-lower">' + formatCurrency(lower) + '</td>' +
+                    '<td class="em-col-delta">' + formatCurrency(delta) + '</td>' +
                     '<td style="color:var(--text-secondary)">\u00b1\u00a0' + pct.toFixed(2) + '%</td>';
                 tbody.appendChild(tr);
             }
@@ -1588,51 +1606,51 @@ const Calculator = (function() {
             document.getElementById('em-hero').style.display = show ? '' : 'none';
         }
 
-        // Render the coloured formula block using inline spans
+        // Render the coloured formula block using CSS-class spans (theme-aware)
         function renderFormula(call, put, straddle, em, pct, price, upperLabel, lowerLabel) {
-            var dim   = 'color:rgba(255,255,255,0.38)';
-            var white = 'color:rgba(255,255,255,0.88);font-weight:600';
-            var green = 'color:#00ff7f;font-weight:700';
-            var amber = 'color:#f59e0b;font-weight:600';
-            var comment = 'color:rgba(255,255,255,0.32)';
+            var dim     = 'class="em-f-dim"';
+            var white   = 'class="em-f-bright"';
+            var green   = 'class="em-f-green"';
+            var amber   = 'class="em-f-amber"';
+            var comment = 'class="em-f-comment"';
 
             var callLabel = I18n.t('calculators.expectedMove.labels.atmCall');
             var putLabel  = I18n.t('calculators.expectedMove.labels.atmPut');
 
             var lines = [
-                '<span style="' + green + '">EM</span>'  +
-                    '<span style="' + dim + '">  = (' + callLabel + ' + ' + putLabel + ') \u00d7 0.85</span>',
+                '<span ' + green + '>EM</span>'  +
+                    '<span ' + dim + '>  = (' + callLabel + ' + ' + putLabel + ') \u00d7 0.85</span>',
 
-                '<span style="' + dim + '">    = (</span>' +
-                    '<span style="' + white + '">' + formatCurrency(call) + '</span>' +
-                    '<span style="' + dim + '"> + </span>' +
-                    '<span style="' + white + '">' + formatCurrency(put) + '</span>' +
-                    '<span style="' + dim + '">) \u00d7 0.85</span>',
+                '<span ' + dim + '>    = (</span>' +
+                    '<span ' + white + '>' + formatCurrency(call) + '</span>' +
+                    '<span ' + dim + '> + </span>' +
+                    '<span ' + white + '>' + formatCurrency(put) + '</span>' +
+                    '<span ' + dim + '>) \u00d7 0.85</span>',
 
-                '<span style="' + dim + '">    = </span>' +
-                    '<span style="' + white + '">' + formatCurrency(straddle) + '</span>' +
-                    '<span style="' + dim + '"> \u00d7 0.85</span>',
+                '<span ' + dim + '>    = </span>' +
+                    '<span ' + white + '>' + formatCurrency(straddle) + '</span>' +
+                    '<span ' + dim + '> \u00d7 0.85</span>',
             ];
 
             if (price > 0) {
                 lines.push(
-                    '<span style="' + dim + '">    = </span>' +
-                        '<span style="' + green + '">' + formatCurrency(em) + '</span>' +
-                        '<span style="' + dim + '">  </span>' +
-                        '<span style="' + amber + '">\u00b1 ' + pct.toFixed(2) + '%</span>'
+                    '<span ' + dim + '>    = </span>' +
+                        '<span ' + green + '>' + formatCurrency(em) + '</span>' +
+                        '<span ' + dim + '>  </span>' +
+                        '<span ' + amber + '>\u00b1 ' + pct.toFixed(2) + '%</span>'
                 );
                 lines.push(
-                    '<span style="' + comment + '">// ' + upperLabel + ': ' +
+                    '<span ' + comment + '>// ' + upperLabel + ': ' +
                         formatCurrency(price + em) + '&nbsp;&nbsp;&nbsp;' +
                         lowerLabel + ': ' + formatCurrency(price - em) + '</span>'
                 );
             } else {
                 lines.push(
-                    '<span style="' + dim + '">    = </span>' +
-                        '<span style="' + green + '">' + formatCurrency(em) + '</span>'
+                    '<span ' + dim + '>    = </span>' +
+                        '<span ' + green + '>' + formatCurrency(em) + '</span>'
                 );
                 lines.push(
-                    '<span style="' + comment + '">// ' +
+                    '<span ' + comment + '>// ' +
                         I18n.t('calculators.expectedMove.formula.enterPrice') + '</span>'
                 );
             }
@@ -1651,7 +1669,7 @@ const Calculator = (function() {
             if (!bothOptions) {
                 showHero(false);
                 document.getElementById('em-formula').innerHTML =
-                    '<span style="color:rgba(255,255,255,0.38)">' +
+                    '<span class="em-f-dim">' +
                     I18n.t('calculators.expectedMove.formula.enterOptions') + '</span>';
                 showChart(false);
                 return;
