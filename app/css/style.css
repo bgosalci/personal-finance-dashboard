@@ -27,6 +27,14 @@
             --header-gradient-start: #131014;    /* Keep header black across themes */
             --header-gradient-end: #475569;      /* Subtle gradient accent */
             --app-font-scale: 1;
+            /* Expected Move — matches page in light mode */
+            --em-panel-bg: #f8fafc;
+            --em-panel-border: #e2e8f0;
+            --em-panel-separator: #e2e8f0;
+            --em-panel-text-dim: #64748b;
+            --em-panel-text-bright: #0f172a;
+            --em-panel-text-comment: #64748b;
+            --em-accent-green: #059669;
         }
 
         :root[data-theme="dark"] {
@@ -47,6 +55,14 @@
             --gosalci-shadow: #000000;
             --header-gradient-start: #131014;
             --header-gradient-end: #475569;
+            /* Expected Move — dark panel in dark mode */
+            --em-panel-bg: #0d1117;
+            --em-panel-border: rgba(255, 255, 255, 0.08);
+            --em-panel-separator: rgba(255, 255, 255, 0.08);
+            --em-panel-text-dim: rgba(255, 255, 255, 0.38);
+            --em-panel-text-bright: rgba(255, 255, 255, 0.88);
+            --em-panel-text-comment: rgba(255, 255, 255, 0.32);
+            --em-accent-green: #00ff7f;
         }
 
         html {
@@ -642,23 +658,23 @@
             min-width: 0;
         }
         .em-chart-wrap {
-            background: #0d1117;
+            background: var(--em-panel-bg);
             border-radius: 8px;
             overflow: hidden;
-            border: 1px solid rgba(255,255,255,0.08);
+            border: 1px solid var(--em-panel-border);
         }
         .em-chart-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
             padding: 0.5rem 0.875rem;
-            border-bottom: 1px solid rgba(255,255,255,0.06);
+            border-bottom: 1px solid var(--em-panel-separator);
         }
         .em-chart-title {
             font-family: 'Courier New', Courier, monospace;
             font-size: 0.82rem;
             letter-spacing: 0.08em;
-            color: rgba(255,255,255,0.4);
+            color: var(--em-panel-text-dim);
         }
         .em-chart-sigmas {
             display: flex;
@@ -744,11 +760,11 @@
             outline: none;
             transition: border-color 0.15s;
         }
-        .em-ticker-input:focus { border-color: var(--accent-primary); }
+        .em-ticker-input:focus { border-color: var(--primary-blue); }
         .em-ticker-input::placeholder { text-transform: none; letter-spacing: normal; color: var(--text-secondary); opacity: 0.6; }
         .em-fetch-btn {
             padding: 0.5rem 1.1rem;
-            background: var(--accent-primary);
+            background: var(--primary-blue);
             color: #fff;
             border: none;
             border-radius: 6px;
@@ -765,9 +781,9 @@
             margin-bottom: 0.75rem;
             font-family: 'Courier New', Courier, monospace;
         }
-        .em-fetch-loading { color: rgba(255,255,255,0.45); }
-        .em-fetch-success { color: #00ff7f; }
-        .em-fetch-error   { color: #ef4444; }
+        .em-fetch-loading { color: var(--text-secondary); }
+        .em-fetch-success { color: var(--success-green); }
+        .em-fetch-error   { color: var(--danger-red); }
         .em-expiry-row {
             display: flex;
             align-items: center;
@@ -792,12 +808,12 @@
             cursor: pointer;
             transition: border-color 0.15s;
         }
-        .em-expiry-select:focus { border-color: var(--accent-primary); }
+        .em-expiry-select:focus { border-color: var(--primary-blue); }
 
         /* Expected Move — hero result card */
         .em-hero {
-            background: #0d1117;
-            border: 1px solid rgba(255,255,255,0.08);
+            background: var(--em-panel-bg);
+            border: 1px solid var(--em-panel-border);
             border-radius: 10px;
             text-align: center;
             padding: 1.25rem 1rem 0;
@@ -807,28 +823,28 @@
             font-family: 'Courier New', Courier, monospace;
             font-size: 0.78rem;
             letter-spacing: 0.1em;
-            color: rgba(255,255,255,0.32);
+            color: var(--em-panel-text-dim);
             margin-bottom: 0.6rem;
         }
         .em-hero-value {
             font-family: 'Courier New', Courier, monospace;
             font-size: 2.8rem;
             font-weight: 700;
-            color: #00ff7f;
+            color: var(--em-accent-green);
             line-height: 1;
             margin-bottom: 0.3rem;
         }
         .em-hero-pct {
             font-size: 1.15rem;
             font-weight: 600;
-            color: #f59e0b;
+            color: var(--warning-orange-light);
             margin-bottom: 1rem;
         }
         /* Three-column spot card inside hero */
         .em-spot-card {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
-            border-top: 1px solid rgba(255,255,255,0.08);
+            border-top: 1px solid var(--em-panel-separator);
             margin: 0 -1rem;
         }
         .em-spot-col {
@@ -838,30 +854,31 @@
             padding: 0.75rem 0.5rem;
         }
         .em-spot-center {
-            border-left: 1px solid rgba(255,255,255,0.08);
-            border-right: 1px solid rgba(255,255,255,0.08);
+            border-left: 1px solid var(--em-panel-separator);
+            border-right: 1px solid var(--em-panel-separator);
         }
         .em-spot-price {
             font-family: 'Courier New', Courier, monospace;
             font-size: 1.2rem;
             font-weight: 700;
-            color: rgba(255,255,255,0.88);
+            color: var(--em-panel-text-bright);
         }
-        .em-col-upper { color: #00ff7f; }
-        .em-col-lower { color: #ef4444; }
+        .em-col-upper { color: var(--success-green-light); }
+        .em-col-lower { color: var(--danger-red-light); }
+        .em-col-delta { color: var(--warning-orange-light); }
         .em-spot-label {
             font-family: 'Courier New', Courier, monospace;
             font-size: 0.75rem;
             letter-spacing: 0.08em;
-            color: rgba(255,255,255,0.35);
+            color: var(--em-panel-text-dim);
             margin-top: 0.2rem;
         }
 
         /* Expected Move — coloured formula block */
         .em-formula-block {
             font-family: 'Courier New', Courier, monospace;
-            background: #0d1117;
-            border: 1px solid rgba(255,255,255,0.08);
+            background: var(--em-panel-bg);
+            border: 1px solid var(--em-panel-border);
             border-radius: 8px;
             font-size: 1rem;
             padding: 1rem 1.25rem;
@@ -869,6 +886,13 @@
             line-height: 1.9;
             white-space: pre;
         }
+
+        /* Expected Move — formula syntax classes (used by renderFormula JS) */
+        .em-f-dim     { color: var(--em-panel-text-dim); }
+        .em-f-bright  { color: var(--em-panel-text-bright); font-weight: 600; }
+        .em-f-green   { color: var(--em-accent-green); font-weight: 700; }
+        .em-f-amber   { color: var(--warning-orange-light); font-weight: 600; }
+        .em-f-comment { color: var(--em-panel-text-comment); }
 
         .ticker-management {
             display: flex;
