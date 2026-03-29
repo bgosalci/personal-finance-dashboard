@@ -623,6 +623,253 @@
             color: var(--primary-blue);
         }
 
+        /* Expected Move two-column layout */
+        .em-layout {
+            display: flex;
+            gap: 2rem;
+            align-items: flex-start;
+            margin-top: 1rem;
+        }
+        .em-left {
+            flex: 1;
+            min-width: 0;
+        }
+        .em-left .form-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        .em-right {
+            flex: 1;
+            min-width: 0;
+        }
+        .em-chart-wrap {
+            background: #0d1117;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        .em-chart-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.5rem 0.875rem;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+        .em-chart-title {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.82rem;
+            letter-spacing: 0.08em;
+            color: rgba(255,255,255,0.4);
+        }
+        .em-chart-sigmas {
+            display: flex;
+            gap: 0.875rem;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        #em-chart {
+            width: 100%;
+            display: block;
+        }
+        .em-sigma-table {
+            margin-top: 0.75rem;
+            font-size: 0.95rem;
+        }
+        .em-sigma-table th {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.8rem;
+            letter-spacing: 0.07em;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+        .em-chart-hint {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 220px;
+            border: 2px dashed var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            text-align: center;
+        }
+        @media (max-width: 900px) {
+            .em-layout { flex-direction: column; }
+            .em-left .form-grid { grid-template-columns: repeat(2, 1fr); }
+            .em-right { width: 100%; }
+        }
+
+        #em-results .result-item:last-child {
+            font-weight: normal;
+            font-size: inherit;
+            color: inherit;
+            background: transparent;
+            padding: 0.5rem 0;
+            border-radius: 0;
+            margin-top: 0;
+        }
+
+        .calculator-formula {
+            font-family: 'Courier New', Courier, monospace;
+            background: var(--background-secondary);
+            padding: 1rem 1.25rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            font-size: 0.875rem;
+            white-space: pre;
+            margin-top: 1rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Expected Move — ticker fetch row */
+        .em-ticker-row {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .em-ticker-input {
+            flex: 1;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.95rem;
+            background: var(--background-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 0.5rem 0.75rem;
+            color: var(--text-primary);
+            outline: none;
+            transition: border-color 0.15s;
+        }
+        .em-ticker-input:focus { border-color: var(--accent-primary); }
+        .em-ticker-input::placeholder { text-transform: none; letter-spacing: normal; color: var(--text-secondary); opacity: 0.6; }
+        .em-fetch-btn {
+            padding: 0.5rem 1.1rem;
+            background: var(--accent-primary);
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: opacity 0.15s;
+        }
+        .em-fetch-btn:hover { opacity: 0.85; }
+        .em-fetch-status {
+            font-size: 0.775rem;
+            min-height: 1.2em;
+            margin-bottom: 0.75rem;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        .em-fetch-loading { color: rgba(255,255,255,0.45); }
+        .em-fetch-success { color: #00ff7f; }
+        .em-fetch-error   { color: #ef4444; }
+        .em-expiry-row {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+        }
+        .em-expiry-row label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            white-space: nowrap;
+        }
+        .em-expiry-select {
+            flex: 1;
+            background: var(--background-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 0.4rem 0.75rem;
+            color: var(--text-primary);
+            font-size: 0.875rem;
+            font-family: 'Courier New', Courier, monospace;
+            outline: none;
+            cursor: pointer;
+            transition: border-color 0.15s;
+        }
+        .em-expiry-select:focus { border-color: var(--accent-primary); }
+
+        /* Expected Move — hero result card */
+        .em-hero {
+            background: #0d1117;
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 10px;
+            text-align: center;
+            padding: 1.25rem 1rem 0;
+            margin-top: 0.75rem;
+        }
+        .em-hero-header {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.78rem;
+            letter-spacing: 0.1em;
+            color: rgba(255,255,255,0.32);
+            margin-bottom: 0.6rem;
+        }
+        .em-hero-value {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 2.8rem;
+            font-weight: 700;
+            color: #00ff7f;
+            line-height: 1;
+            margin-bottom: 0.3rem;
+        }
+        .em-hero-pct {
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: #f59e0b;
+            margin-bottom: 1rem;
+        }
+        /* Three-column spot card inside hero */
+        .em-spot-card {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            border-top: 1px solid rgba(255,255,255,0.08);
+            margin: 0 -1rem;
+        }
+        .em-spot-col {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0.75rem 0.5rem;
+        }
+        .em-spot-center {
+            border-left: 1px solid rgba(255,255,255,0.08);
+            border-right: 1px solid rgba(255,255,255,0.08);
+        }
+        .em-spot-price {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: rgba(255,255,255,0.88);
+        }
+        .em-col-upper { color: #00ff7f; }
+        .em-col-lower { color: #ef4444; }
+        .em-spot-label {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.75rem;
+            letter-spacing: 0.08em;
+            color: rgba(255,255,255,0.35);
+            margin-top: 0.2rem;
+        }
+
+        /* Expected Move — coloured formula block */
+        .em-formula-block {
+            font-family: 'Courier New', Courier, monospace;
+            background: #0d1117;
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 8px;
+            font-size: 1rem;
+            padding: 1rem 1.25rem;
+            margin-top: 0.75rem;
+            line-height: 1.9;
+            white-space: pre;
+        }
+
         .ticker-management {
             display: flex;
             gap: 1rem;

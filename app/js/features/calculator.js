@@ -1409,6 +1409,387 @@ const Calculator = (function() {
         window.DividendCgtCalculator = DividendCgtCalculator;
     }
 
+    // Expected Move Calculator (ATM Straddle)
+    const ExpectedMoveCalculator = (function() {
+        // Sigma band definitions — drawn back-to-front (δ3 first, δ1 on top)
+        var BANDS = [
+            { n: 3, fill: 'rgba(139,92,246,0.13)', stroke: '#8b5cf6', prob: '99.73%' },
+            { n: 2, fill: 'rgba(245,158,11,0.16)',  stroke: '#f59e0b', prob: '95.45%' },
+            { n: 1, fill: 'rgba(0,255,127,0.20)',   stroke: '#00ff7f', prob: '68.27%' },
+        ];
+
+        function drawChart(price, em1) {
+            var canvas = document.getElementById('em-chart');
+            var wrap   = document.querySelector('.em-chart-wrap');
+            var dpr    = window.devicePixelRatio || 1;
+            var cssW   = wrap.clientWidth;
+            var cssH   = Math.round(cssW * 0.52);
+
+            canvas.style.width  = cssW + 'px';
+            canvas.style.height = cssH + 'px';
+            canvas.width  = Math.round(cssW * dpr);
+            canvas.height = Math.round(cssH * dpr);
+
+            var ctx = canvas.getContext('2d');
+            ctx.scale(dpr, dpr);
+
+            var W = cssW, H = cssH;
+            var pad = { top: 16, right: 14, bottom: 44, left: 14 };
+            var plotW    = W - pad.left - pad.right;
+            var plotH    = H - pad.top  - pad.bottom;
+            var baseline = pad.top + plotH;
+
+            var mu = price, sigma = em1;
+            var xMin = mu - 3.5 * sigma;
+            var xMax = mu + 3.5 * sigma;
+
+            function pdf(x) {
+                var z = (x - mu) / sigma;
+                return Math.exp(-0.5 * z * z) / (sigma * Math.sqrt(2 * Math.PI));
+            }
+            var maxPdf = pdf(mu);
+
+            function xC(x) { return pad.left + (x - xMin) / (xMax - xMin) * plotW; }
+            function yC(y) { return pad.top + plotH * (1 - (y / maxPdf) * 0.88); }
+
+            // Background
+            ctx.fillStyle = '#0d1117';
+            ctx.fillRect(0, 0, W, H);
+
+            var STEPS = 400;
+
+            // Sigma bands (δ3 → δ2 → δ1, back-to-front)
+            for (var i = 0; i < BANDS.length; i++) {
+                var band = BANDS[i];
+                var x1 = mu - band.n * sigma;
+                var x2 = mu + band.n * sigma;
+                ctx.beginPath();
+                ctx.moveTo(xC(x1), baseline);
+                for (var s = 0; s <= STEPS; s++) {
+                    var x = x1 + (x2 - x1) * s / STEPS;
+                    ctx.lineTo(xC(x), yC(pdf(x)));
+                }
+                ctx.lineTo(xC(x2), baseline);
+                ctx.closePath();
+                ctx.fillStyle = band.fill;
+                ctx.fill();
+            }
+
+            // Bell curve (neon green)
+            ctx.beginPath();
+            for (var s = 0; s <= STEPS; s++) {
+                var x = xMin + (xMax - xMin) * s / STEPS;
+                var px = xC(x), py = yC(pdf(x));
+                if (s === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+            }
+            ctx.strokeStyle = '#00ff7f';
+            ctx.lineWidth   = 1.5;
+            ctx.setLineDash([]);
+            ctx.stroke();
+
+            // Dashed vertical lines at ±1σ, ±2σ, ±3σ
+            for (var i = 0; i < BANDS.length; i++) {
+                var band = BANDS[i];
+                for (var si = 0; si < 2; si++) {
+                    var sign = si === 0 ? -1 : 1;
+                    var cx = xC(mu + sign * band.n * sigma);
+                    ctx.beginPath();
+                    ctx.setLineDash([3, 5]);
+                    ctx.moveTo(cx, pad.top);
+                    ctx.lineTo(cx, baseline);
+                    ctx.strokeStyle = band.stroke;
+                    ctx.lineWidth   = 1;
+                    ctx.stroke();
+                }
+            }
+            ctx.setLineDash([]);
+
+            // Spot price centre line
+            ctx.beginPath();
+            ctx.moveTo(xC(mu), pad.top);
+            ctx.lineTo(xC(mu), baseline);
+            ctx.strokeStyle = 'rgba(255,255,255,0.22)';
+            ctx.lineWidth   = 1;
+            ctx.stroke();
+
+            // Baseline
+            ctx.beginPath();
+            ctx.moveTo(pad.left, baseline + 0.5);
+            ctx.lineTo(W - pad.right, baseline + 0.5);
+            ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+            ctx.lineWidth   = 1;
+            ctx.stroke();
+
+            // X-axis labels
+            ctx.font      = '13px "Courier New", Courier, monospace';
+            ctx.textAlign = 'center';
+            var labelY     = baseline + 16;
+            var edgeMargin = 30;
+
+            function drawXLabel(x, text, color) {
+                var cx = xC(x);
+                if (cx < edgeMargin || cx > W - edgeMargin) return;
+                ctx.fillStyle = color;
+                ctx.fillText(text, cx, labelY);
+            }
+
+            drawXLabel(mu, formatCurrency(mu), 'rgba(255,255,255,0.85)');
+            for (var i = 0; i < BANDS.length; i++) {
+                var band = BANDS[i];
+                drawXLabel(mu - band.n * sigma, formatCurrency(mu - band.n * sigma), band.stroke);
+                drawXLabel(mu + band.n * sigma, formatCurrency(mu + band.n * sigma), band.stroke);
+            }
+
+            // Legend (top-right): δ1, δ2, δ3
+            ctx.font      = '14px "Courier New", Courier, monospace';
+            var lx = W - pad.right - 84;
+            var ly = pad.top + 14;
+            for (var i = BANDS.length - 1; i >= 0; i--) {
+                var band = BANDS[i];
+                ctx.fillStyle  = band.stroke;
+                ctx.textAlign  = 'left';
+                ctx.fillText('\u03b4' + band.n, lx, ly);
+                ctx.textAlign  = 'right';
+                ctx.fillText(band.prob, W - pad.right, ly);
+                ly += 18;
+            }
+        }
+
+        function buildTable(price, em1) {
+            var tbody = document.getElementById('em-sigma-body');
+            tbody.innerHTML = '';
+            // Render δ1, δ2, δ3 order
+            for (var i = BANDS.length - 1; i >= 0; i--) {
+                var band  = BANDS[i];
+                var delta = em1 * band.n;
+                var upper = price + delta;
+                var lower = price - delta;
+                var pct   = (delta / price) * 100;
+                var tr = document.createElement('tr');
+                tr.innerHTML =
+                    '<td><span style="display:inline-block;width:8px;height:8px;border-radius:50%;' +
+                    'background:' + band.stroke + ';margin-right:6px;vertical-align:middle"></span>' +
+                    '<strong style="color:' + band.stroke + '">\u03b4' + band.n + '</strong></td>' +
+                    '<td style="color:var(--text-secondary)">' + band.prob + '</td>' +
+                    '<td style="color:#00ff7f">' + formatCurrency(upper) + '</td>' +
+                    '<td style="color:#ef4444">' + formatCurrency(lower) + '</td>' +
+                    '<td style="color:#f59e0b">' + formatCurrency(delta) + '</td>' +
+                    '<td style="color:var(--text-secondary)">\u00b1\u00a0' + pct.toFixed(2) + '%</td>';
+                tbody.appendChild(tr);
+            }
+        }
+
+        function showChart(show) {
+            document.getElementById('em-dist-section').style.display = show ? '' : 'none';
+            document.getElementById('em-chart-hint').style.display   = show ? 'none' : '';
+        }
+
+        function showHero(show) {
+            document.getElementById('em-hero').style.display = show ? '' : 'none';
+        }
+
+        // Render the coloured formula block using inline spans
+        function renderFormula(call, put, straddle, em, pct, price, upperLabel, lowerLabel) {
+            var dim   = 'color:rgba(255,255,255,0.38)';
+            var white = 'color:rgba(255,255,255,0.88);font-weight:600';
+            var green = 'color:#00ff7f;font-weight:700';
+            var amber = 'color:#f59e0b;font-weight:600';
+            var comment = 'color:rgba(255,255,255,0.32)';
+
+            var callLabel = I18n.t('calculators.expectedMove.labels.atmCall');
+            var putLabel  = I18n.t('calculators.expectedMove.labels.atmPut');
+
+            var lines = [
+                '<span style="' + green + '">EM</span>'  +
+                    '<span style="' + dim + '">  = (' + callLabel + ' + ' + putLabel + ') \u00d7 0.85</span>',
+
+                '<span style="' + dim + '">    = (</span>' +
+                    '<span style="' + white + '">' + formatCurrency(call) + '</span>' +
+                    '<span style="' + dim + '"> + </span>' +
+                    '<span style="' + white + '">' + formatCurrency(put) + '</span>' +
+                    '<span style="' + dim + '">) \u00d7 0.85</span>',
+
+                '<span style="' + dim + '">    = </span>' +
+                    '<span style="' + white + '">' + formatCurrency(straddle) + '</span>' +
+                    '<span style="' + dim + '"> \u00d7 0.85</span>',
+            ];
+
+            if (price > 0) {
+                lines.push(
+                    '<span style="' + dim + '">    = </span>' +
+                        '<span style="' + green + '">' + formatCurrency(em) + '</span>' +
+                        '<span style="' + dim + '">  </span>' +
+                        '<span style="' + amber + '">\u00b1 ' + pct.toFixed(2) + '%</span>'
+                );
+                lines.push(
+                    '<span style="' + comment + '">// ' + upperLabel + ': ' +
+                        formatCurrency(price + em) + '&nbsp;&nbsp;&nbsp;' +
+                        lowerLabel + ': ' + formatCurrency(price - em) + '</span>'
+                );
+            } else {
+                lines.push(
+                    '<span style="' + dim + '">    = </span>' +
+                        '<span style="' + green + '">' + formatCurrency(em) + '</span>'
+                );
+                lines.push(
+                    '<span style="' + comment + '">// ' +
+                        I18n.t('calculators.expectedMove.formula.enterPrice') + '</span>'
+                );
+            }
+
+            document.getElementById('em-formula').innerHTML = lines.join('\n');
+        }
+
+        function calculate() {
+            var price = getNumberValue('em-stock-price');
+            var call  = getNumberValue('em-atm-call');
+            var put   = getNumberValue('em-atm-put');
+
+            var bothOptions = call > 0 && put > 0;
+            var straddle    = bothOptions ? call + put : 0;
+
+            if (!bothOptions) {
+                showHero(false);
+                document.getElementById('em-formula').innerHTML =
+                    '<span style="color:rgba(255,255,255,0.38)">' +
+                    I18n.t('calculators.expectedMove.formula.enterOptions') + '</span>';
+                showChart(false);
+                return;
+            }
+
+            var em         = straddle * 0.85;
+            var upperLabel = I18n.t('calculators.expectedMove.formula.upper');
+            var lowerLabel = I18n.t('calculators.expectedMove.formula.lower');
+
+            if (price > 0) {
+                var pct = (em / price) * 100;
+                // Hero card
+                document.getElementById('em-hero-value').textContent = formatCurrency(em);
+                document.getElementById('em-hero-pct').textContent   = '\u00b1 ' + pct.toFixed(2) + '%';
+                document.getElementById('em-upper').textContent      = formatCurrency(price + em);
+                document.getElementById('em-spot-price').textContent = formatCurrency(price);
+                document.getElementById('em-lower').textContent      = formatCurrency(price - em);
+                showHero(true);
+                renderFormula(call, put, straddle, em, pct, price, upperLabel, lowerLabel);
+                showChart(true);
+                drawChart(price, em);
+                buildTable(price, em);
+            } else {
+                showHero(false);
+                renderFormula(call, put, straddle, em, 0, 0, upperLabel, lowerLabel);
+                showChart(false);
+            }
+        }
+
+        function setFetchStatus(state, a, b) {
+            var el = document.getElementById('em-fetch-status');
+            if (state === 'loading') {
+                el.textContent = I18n.t('calculators.expectedMove.ticker.loading');
+                el.className = 'em-fetch-status em-fetch-loading';
+            } else if (state === 'success') {
+                el.textContent = I18n.t('calculators.expectedMove.ticker.expiry')
+                    .replace('{expiry}', a).replace('{strike}', b);
+                el.className = 'em-fetch-status em-fetch-success';
+            } else {
+                el.textContent = a;
+                el.className = 'em-fetch-status em-fetch-error';
+            }
+        }
+
+        function applyFetchResult(res) {
+            document.getElementById('em-stock-price').value = res.price;
+            document.getElementById('em-atm-call').value    = res.call;
+            document.getElementById('em-atm-put').value     = res.put;
+            setFetchStatus('success', res.expiry, res.strike);
+            calculate();
+        }
+
+        function populateExpirySelect(expirations, selected) {
+            var sel = document.getElementById('em-expiry-select');
+            sel.innerHTML = '';
+            expirations.forEach(function(exp) {
+                var opt = document.createElement('option');
+                opt.value = exp;
+                opt.textContent = exp;
+                if (exp === selected) opt.selected = true;
+                sel.appendChild(opt);
+            });
+            document.getElementById('em-expiry-row').style.display = '';
+        }
+
+        function apiGet(url) {
+            return fetch(url).then(function(r) {
+                return r.text().then(function(text) {
+                    try {
+                        var data = JSON.parse(text);
+                        return { ok: r.ok, data: data };
+                    } catch (_) {
+                        throw new Error('Server error (' + r.status + ')');
+                    }
+                });
+            });
+        }
+
+        function fetchOptions() {
+            var ticker = document.getElementById('em-ticker').value.trim().toUpperCase();
+            if (!ticker) return;
+            setFetchStatus('loading');
+            apiGet('/api/options?ticker=' + encodeURIComponent(ticker))
+                .then(function(res) {
+                    if (!res.ok) throw new Error(res.data.error || 'Error fetching options');
+                    populateExpirySelect(res.data.expirations || [], res.data.expiry);
+                    applyFetchResult(res.data);
+                })
+                .catch(function(err) {
+                    setFetchStatus('error', err.message);
+                });
+        }
+
+        function fetchForExpiry(expiry) {
+            var ticker = document.getElementById('em-ticker').value.trim().toUpperCase();
+            if (!ticker) return;
+            setFetchStatus('loading');
+            apiGet('/api/options?ticker=' + encodeURIComponent(ticker) + '&expiry=' + encodeURIComponent(expiry))
+                .then(function(res) {
+                    if (!res.ok) throw new Error(res.data.error || 'Error fetching options');
+                    applyFetchResult(res.data);
+                })
+                .catch(function(err) {
+                    setFetchStatus('error', err.message);
+                });
+        }
+
+        function init() {
+            ['em-stock-price', 'em-atm-call', 'em-atm-put'].forEach(function(id) {
+                document.getElementById(id).addEventListener('input', calculate);
+            });
+            setupAmountInput('em-stock-price');
+            setupAmountInput('em-atm-call');
+            setupAmountInput('em-atm-put');
+
+            document.getElementById('em-fetch-btn').addEventListener('click', fetchOptions);
+            document.getElementById('em-ticker').addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') fetchOptions();
+            });
+            document.getElementById('em-expiry-select').addEventListener('change', function() {
+                fetchForExpiry(this.value);
+            });
+
+            if (window.ResizeObserver) {
+                new ResizeObserver(function() {
+                    var price = getNumberValue('em-stock-price');
+                    var call  = getNumberValue('em-atm-call');
+                    var put   = getNumberValue('em-atm-put');
+                    if (price > 0 && call > 0 && put > 0) {
+                        drawChart(price, (call + put) * 0.85);
+                    }
+                }).observe(document.getElementById('em-right'));
+            }
+        }
+
+        return { init };
+    })();
+
     function init() {
         updateCurrencyDisplays();
         document.addEventListener('baseCurrencyChanged', updateCurrencyDisplays);
@@ -1428,6 +1809,7 @@ const Calculator = (function() {
         MortgageCalculator.init();
         SalaryCalculator.init();
         DividendCgtCalculator.init();
+        ExpectedMoveCalculator.init();
     }
 
     return {

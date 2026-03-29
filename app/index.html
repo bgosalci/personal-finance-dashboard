@@ -502,6 +502,7 @@
                     <button class="sub-nav-tab" data-subtab="mortgage" data-i18n="calculators.tabs.mortgage">Mortgage Calculator</button>
                     <button class="sub-nav-tab" data-subtab="salary" data-i18n="calculators.tabs.salary">Salary Calculator</button>
                     <button class="sub-nav-tab" data-subtab="dividend-cgt" data-i18n="calculators.tabs.dividendCgt">Dividend &amp; CGT</button>
+                    <button class="sub-nav-tab" data-subtab="expected-move" data-i18n="calculators.tabs.expectedMove">Expected Move</button>
                 </div>
 
                 <!-- Loan Calculator Sub-Tab -->
@@ -1121,6 +1122,103 @@
                             </div>
                         </div>
                         <p class="form-hint" data-i18n="calculators.dividendCgt.disclaimer">Estimates only. Check HMRC guidance or an accountant for complex cases.</p>
+                    </div>
+                </div>
+
+                <!-- Expected Move Calculator Sub-Tab -->
+                <div id="expected-move" class="sub-tab-content">
+                    <div class="calculator-section">
+                        <h3 class="calculator-title" data-i18n="calculators.tabs.expectedMove">Expected Move</h3>
+                        <div class="em-layout">
+                            <!-- Left: ticker fetch + inputs + hero results + formula -->
+                            <div class="em-left">
+                                <div id="em-fetch-status" class="em-fetch-status"></div>
+                                <!-- Expiry selector — shown after fetch -->
+                                <div id="em-expiry-row" class="em-expiry-row" style="display:none">
+                                    <label for="em-expiry-select" data-i18n="calculators.expectedMove.ticker.expiryLabel">Expiry Date</label>
+                                    <select id="em-expiry-select" class="em-expiry-select"></select>
+                                </div>
+                                <!-- 2-column grid: [Ticker + Fetch | Stock Price] / [ATM Call | ATM Put] -->
+                                <div class="form-grid em-form-grid">
+                                    <div class="form-group">
+                                        <label for="em-ticker" data-i18n="calculators.expectedMove.ticker.label">Ticker Symbol</label>
+                                        <div class="em-ticker-row">
+                                            <input type="text" id="em-ticker" class="em-ticker-input" maxlength="10"
+                                                   autocomplete="off" spellcheck="false"
+                                                   data-i18n-placeholder="calculators.expectedMove.ticker.placeholder">
+                                            <button id="em-fetch-btn" class="em-fetch-btn"
+                                                    data-i18n="calculators.expectedMove.ticker.fetch">Fetch</button>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="em-stock-price" data-i18n="calculators.expectedMove.labels.stockPrice">Stock Price</label>
+                                        <input type="text" id="em-stock-price" inputmode="decimal">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="em-atm-call" data-i18n="calculators.expectedMove.labels.atmCall">ATM Call</label>
+                                        <input type="text" id="em-atm-call" inputmode="decimal">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="em-atm-put" data-i18n="calculators.expectedMove.labels.atmPut">ATM Put</label>
+                                        <input type="text" id="em-atm-put" inputmode="decimal">
+                                    </div>
+                                </div>
+                                <!-- Hero result card (hidden until call+put+price populated) -->
+                                <div id="em-hero" class="em-hero" style="display:none">
+                                    <div class="em-hero-header" data-i18n="calculators.expectedMove.heroHeader">// EXPECTED MOVE · (CALL + PUT) × 0.85</div>
+                                    <div id="em-hero-value" class="em-hero-value">—</div>
+                                    <div id="em-hero-pct" class="em-hero-pct">—</div>
+                                    <div class="em-spot-card">
+                                        <div class="em-spot-col">
+                                            <span id="em-upper" class="em-spot-price em-col-upper">—</span>
+                                            <span class="em-spot-label" data-i18n="calculators.expectedMove.spot.upper">↑ 1Σ UPPER</span>
+                                        </div>
+                                        <div class="em-spot-col em-spot-center">
+                                            <span id="em-spot-price" class="em-spot-price">—</span>
+                                            <span class="em-spot-label" data-i18n="calculators.expectedMove.spot.spot">SPOT</span>
+                                        </div>
+                                        <div class="em-spot-col">
+                                            <span id="em-lower" class="em-spot-price em-col-lower">—</span>
+                                            <span class="em-spot-label" data-i18n="calculators.expectedMove.spot.lower">↓ 1Σ LOWER</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Coloured formula block -->
+                                <div id="em-formula" class="em-formula-block"></div>
+                            </div>
+                            <!-- Right: probability distribution chart -->
+                            <div class="em-right" id="em-right">
+                                <div id="em-dist-section" style="display:none;">
+                                    <div class="em-chart-wrap">
+                                        <div class="em-chart-header">
+                                            <span class="em-chart-title" data-i18n="calculators.expectedMove.chartTitle">// PROBABILITY DISTRIBUTION</span>
+                                            <span class="em-chart-sigmas">
+                                                <span style="color:#00ff7f">&delta;1</span>
+                                                <span style="color:#f59e0b">&delta;2</span>
+                                                <span style="color:#8b5cf6">&delta;3</span>
+                                            </span>
+                                        </div>
+                                        <canvas id="em-chart"></canvas>
+                                    </div>
+                                    <table class="data-table em-sigma-table">
+                                        <thead>
+                                            <tr>
+                                                <th data-i18n="calculators.expectedMove.sigma.level">MOVE</th>
+                                                <th data-i18n="calculators.expectedMove.sigma.probability">PROBABILITY</th>
+                                                <th data-i18n="calculators.expectedMove.sigma.upper">UPPER</th>
+                                                <th data-i18n="calculators.expectedMove.sigma.lower">LOWER</th>
+                                                <th data-i18n="calculators.expectedMove.sigma.move">± $</th>
+                                                <th data-i18n="calculators.expectedMove.sigma.movePct">± %</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="em-sigma-body"></tbody>
+                                    </table>
+                                </div>
+                                <div id="em-chart-hint" class="em-chart-hint">
+                                    <span data-i18n="calculators.expectedMove.sigma.hint">Enter all three values to see the probability distribution chart.</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

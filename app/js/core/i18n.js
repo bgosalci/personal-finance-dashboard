@@ -159,6 +159,7 @@ const I18n = (function() {
                     "mortgage": "Mortgage Calculator",
                     "salary": "Salary Calculator",
                     "dividendCgt": "Dividend & CGT",
+                    "expectedMove": "Expected Move",
                     "fairValue": "Fair Value Calculator"
                 },
                 "loan": {
@@ -409,6 +410,48 @@ const I18n = (function() {
                             "bookMultiple": "Book Value Multiple:",
                             "average": "Average Intrinsic Value:"
                         }
+                    }
+                },
+                "expectedMove": {
+                    "heroHeader": "// EXPECTED MOVE · (CALL + PUT) × 0.85",
+                    "spot": { "upper": "↑ 1Σ UPPER", "spot": "SPOT", "lower": "↓ 1Σ LOWER" },
+                    "chartTitle": "// PROBABILITY DISTRIBUTION",
+                    "labels": {
+                        "stockPrice": "Stock Price",
+                        "atmCall": "ATM Call",
+                        "atmPut": "ATM Put"
+                    },
+                    "results": {
+                        "straddle": "Straddle (Call + Put):",
+                        "expectedMove": "Expected Move:",
+                        "movePercent": "Move %:",
+                        "upperBound": "Upper Bound:",
+                        "lowerBound": "Lower Bound:"
+                    },
+                    "formula": {
+                        "upper": "Upper",
+                        "lower": "Lower",
+                        "enterOptions": "Enter ATM Call and ATM Put to calculate the expected move.",
+                        "enterPrice": "Enter Stock Price to see % and price bounds."
+                    },
+                    "sigma": {
+                        "level": "MOVE",
+                        "probability": "PROBABILITY",
+                        "upper": "UPPER",
+                        "lower": "LOWER",
+                        "move": "± $",
+                        "movePct": "± %",
+                        "hint": "Enter all three values to see the probability distribution chart."
+                    },
+                    "ticker": {
+                        "label": "Ticker Symbol",
+                        "placeholder": "e.g. AAPL",
+                        "fetch": "Fetch",
+                        "loading": "Fetching options data\u2026",
+                        "expiry": "Expiry {expiry} \u00b7 ATM Strike ${strike}",
+                        "errorNotFound": "Ticker not found",
+                        "errorNoOptions": "No options available for this ticker",
+                        "expiryLabel": "Expiry Date"
                     }
                 }
             },
@@ -679,7 +722,8 @@ const I18n = (function() {
                     "investment": "Kalkulator investimesh",
                     "cagr": "Kalkulator CAGR",
                     "mortgage": "Kalkulator hipotekor",
-                    "fairValue": "Kalkulator i vlerës së drejtë"
+                    "fairValue": "Kalkulator i vlerës së drejtë",
+                    "expectedMove": "Lëvizja e Pritshme"
                 },
 
                 "loan": {
@@ -795,6 +839,48 @@ const I18n = (function() {
                             "bookMultiple": "Shumëzues i vlerës kontabël:",
                             "average": "Vlera mesatare e brendshme:",
                         }
+                    }
+                },
+                "expectedMove": {
+                    "heroHeader": "// LËVIZJA E PRITSHME · (THIRRJE + VËNIE) × 0.85",
+                    "spot": { "upper": "↑ 1Σ LART", "spot": "SPOT", "lower": "↓ 1Σ POSHTË" },
+                    "chartTitle": "// SHPËRNDARJA E PROBABILITETIT",
+                    "labels": {
+                        "stockPrice": "Çmimi i aksionit",
+                        "atmCall": "Thirrje ATM",
+                        "atmPut": "Vënie ATM"
+                    },
+                    "results": {
+                        "straddle": "Straddle (Thirrje + Vënie):",
+                        "expectedMove": "Lëvizja e Pritshme:",
+                        "movePercent": "Lëvizja %:",
+                        "upperBound": "Kufiri i sipërm:",
+                        "lowerBound": "Kufiri i poshtëm:"
+                    },
+                    "formula": {
+                        "upper": "Lart",
+                        "lower": "Poshtë",
+                        "enterOptions": "Shkruani Thirrje ATM dhe Vënie ATM për të llogaritur lëvizjen e pritshme.",
+                        "enterPrice": "Shkruani çmimin e aksionit për të parë % dhe kufijtë e çmimit."
+                    },
+                    "sigma": {
+                        "level": "LËVIZJA",
+                        "probability": "PROBABILITETI",
+                        "upper": "LART",
+                        "lower": "POSHTË",
+                        "move": "± $",
+                        "movePct": "± %",
+                        "hint": "Shkruani të tre vlerat për të parë grafikun e shpërndarjes probabiliste."
+                    },
+                    "ticker": {
+                        "label": "Simboli i aksionit",
+                        "placeholder": "p.sh. AAPL",
+                        "fetch": "Merr",
+                        "loading": "Po merr të dhënat e opsioneve\u2026",
+                        "expiry": "Skadimi {expiry} \u00b7 Çmimi ATM ${strike}",
+                        "errorNotFound": "Simboli i aksionit nuk u gjet",
+                        "errorNoOptions": "Nuk ka opsione të disponueshme për këtë aksion",
+                        "expiryLabel": "Data e skadimit"
                     }
                 }
 
@@ -1055,7 +1141,8 @@ const I18n = (function() {
                     "investment": "Calculateur d'investissement",
                     "cagr": "Calculateur de TCAC",
                     "mortgage": "Calculateur hypothécaire",
-                    "fairValue": "Calculateur de juste valeur"
+                    "fairValue": "Calculateur de juste valeur",
+                    "expectedMove": "Mouvement Attendu"
                 },
 
                 "loan": {
@@ -1171,6 +1258,48 @@ const I18n = (function() {
                             "bookMultiple": "Multiple de la valeur comptable:",
                             "average": "Valeur intrinsèque moyenne:",
                         }
+                    }
+                },
+                "expectedMove": {
+                    "heroHeader": "// MOUVEMENT ATTENDU · (CALL + PUT) × 0.85",
+                    "spot": { "upper": "↑ 1Σ HAUT", "spot": "SPOT", "lower": "↓ 1Σ BAS" },
+                    "chartTitle": "// DISTRIBUTION DE PROBABILITÉ",
+                    "labels": {
+                        "stockPrice": "Cours de l'action",
+                        "atmCall": "Call ATM",
+                        "atmPut": "Put ATM"
+                    },
+                    "results": {
+                        "straddle": "Straddle (Call + Put):",
+                        "expectedMove": "Mouvement Attendu:",
+                        "movePercent": "Mouvement % :",
+                        "upperBound": "Borne supérieure:",
+                        "lowerBound": "Borne inférieure:"
+                    },
+                    "formula": {
+                        "upper": "Haut",
+                        "lower": "Bas",
+                        "enterOptions": "Entrez le Call ATM et le Put ATM pour calculer le mouvement attendu.",
+                        "enterPrice": "Entrez le cours de l'action pour voir le % et les bornes de prix."
+                    },
+                    "sigma": {
+                        "level": "MOUVEMENT",
+                        "probability": "PROBABILITÉ",
+                        "upper": "HAUT",
+                        "lower": "BAS",
+                        "move": "± $",
+                        "movePct": "± %",
+                        "hint": "Entrez les trois valeurs pour voir le graphique de distribution de probabilité."
+                    },
+                    "ticker": {
+                        "label": "Symbole boursier",
+                        "placeholder": "ex. AAPL",
+                        "fetch": "Récupérer",
+                        "loading": "Récupération des données d'options\u2026",
+                        "expiry": "Expiration {expiry} \u00b7 Strike ATM ${strike}",
+                        "errorNotFound": "Symbole boursier introuvable",
+                        "errorNoOptions": "Aucune option disponible pour ce ticker",
+                        "expiryLabel": "Date d'expiration"
                     }
                 }
 
@@ -1431,7 +1560,8 @@ const I18n = (function() {
                     "investment": "Investmentrechner",
                     "cagr": "CAGR-Rechner",
                     "mortgage": "Hypothekenrechner",
-                    "fairValue": "Fair-Value-Rechner"
+                    "fairValue": "Fair-Value-Rechner",
+                    "expectedMove": "Erwartete Bewegung"
                 },
 
                 "loan": {
@@ -1547,6 +1677,48 @@ const I18n = (function() {
                             "bookMultiple": "Buchwert-Multiple:",
                             "average": "Durchschnittlicher innerer Wert:",
                         }
+                    }
+                },
+                "expectedMove": {
+                    "heroHeader": "// ERWARTETE BEWEGUNG · (CALL + PUT) × 0.85",
+                    "spot": { "upper": "↑ 1Σ OBEN", "spot": "SPOT", "lower": "↓ 1Σ UNTEN" },
+                    "chartTitle": "// WAHRSCHEINLICHKEITSVERTEILUNG",
+                    "labels": {
+                        "stockPrice": "Aktienkurs",
+                        "atmCall": "ATM Call",
+                        "atmPut": "ATM Put"
+                    },
+                    "results": {
+                        "straddle": "Straddle (Call + Put):",
+                        "expectedMove": "Erwartete Bewegung:",
+                        "movePercent": "Bewegung %:",
+                        "upperBound": "Obere Grenze:",
+                        "lowerBound": "Untere Grenze:"
+                    },
+                    "formula": {
+                        "upper": "Oben",
+                        "lower": "Unten",
+                        "enterOptions": "ATM Call und ATM Put eingeben, um die erwartete Bewegung zu berechnen.",
+                        "enterPrice": "Aktienkurs eingeben, um % und Kursgrenzen zu sehen."
+                    },
+                    "sigma": {
+                        "level": "BEWEGUNG",
+                        "probability": "WAHRSCHEINLICHKEIT",
+                        "upper": "OBEN",
+                        "lower": "UNTEN",
+                        "move": "± $",
+                        "movePct": "± %",
+                        "hint": "Alle drei Werte eingeben, um das Wahrscheinlichkeitsverteilungsdiagramm zu sehen."
+                    },
+                    "ticker": {
+                        "label": "Tickersymbol",
+                        "placeholder": "z.B. AAPL",
+                        "fetch": "Abrufen",
+                        "loading": "Optionsdaten werden abgerufen\u2026",
+                        "expiry": "Verfall {expiry} \u00b7 ATM-Strike ${strike}",
+                        "errorNotFound": "Tickersymbol nicht gefunden",
+                        "errorNoOptions": "Keine Optionen für diesen Ticker verfügbar",
+                        "expiryLabel": "Verfallsdatum"
                     }
                 }
 
@@ -1807,7 +1979,8 @@ const I18n = (function() {
                     "investment": "Calculadora de inversiones",
                     "cagr": "Calculadora CAGR",
                     "mortgage": "Calculadora hipotecaria",
-                    "fairValue": "Calculadora de valor razonable"
+                    "fairValue": "Calculadora de valor razonable",
+                    "expectedMove": "Movimiento Esperado"
                 },
 
                 "loan": {
@@ -1923,6 +2096,48 @@ const I18n = (function() {
                             "bookMultiple": "Múltiplo del valor en libros:",
                             "average": "Valor intrínseco promedio:",
                         }
+                    }
+                },
+                "expectedMove": {
+                    "heroHeader": "// MOVIMIENTO ESPERADO · (CALL + PUT) × 0.85",
+                    "spot": { "upper": "↑ 1Σ SUPERIOR", "spot": "SPOT", "lower": "↓ 1Σ INFERIOR" },
+                    "chartTitle": "// DISTRIBUCIÓN DE PROBABILIDAD",
+                    "labels": {
+                        "stockPrice": "Precio de la acción",
+                        "atmCall": "Call ATM",
+                        "atmPut": "Put ATM"
+                    },
+                    "results": {
+                        "straddle": "Straddle (Call + Put):",
+                        "expectedMove": "Movimiento Esperado:",
+                        "movePercent": "Movimiento %:",
+                        "upperBound": "Límite superior:",
+                        "lowerBound": "Límite inferior:"
+                    },
+                    "formula": {
+                        "upper": "Superior",
+                        "lower": "Inferior",
+                        "enterOptions": "Introduce el Call ATM y el Put ATM para calcular el movimiento esperado.",
+                        "enterPrice": "Introduce el precio de la acción para ver el % y los límites de precio."
+                    },
+                    "sigma": {
+                        "level": "MOVIMIENTO",
+                        "probability": "PROBABILIDAD",
+                        "upper": "SUPERIOR",
+                        "lower": "INFERIOR",
+                        "move": "± $",
+                        "movePct": "± %",
+                        "hint": "Introduce los tres valores para ver el gráfico de distribución de probabilidad."
+                    },
+                    "ticker": {
+                        "label": "Símbolo de cotización",
+                        "placeholder": "ej. AAPL",
+                        "fetch": "Obtener",
+                        "loading": "Obteniendo datos de opciones\u2026",
+                        "expiry": "Vencimiento {expiry} \u00b7 Strike ATM ${strike}",
+                        "errorNotFound": "Símbolo de cotización no encontrado",
+                        "errorNoOptions": "No hay opciones disponibles para este ticker",
+                        "expiryLabel": "Fecha de vencimiento"
                     }
                 }
 
@@ -2183,7 +2398,8 @@ const I18n = (function() {
                     "investment": "Calcolatore di investimento",
                     "cagr": "Calcolatore CAGR",
                     "mortgage": "Calcolatrice mutuo",
-                    "fairValue": "Calcolatore del valore equo"
+                    "fairValue": "Calcolatore del valore equo",
+                    "expectedMove": "Movimento Atteso"
                 },
 
                 "loan": {
@@ -2299,6 +2515,48 @@ const I18n = (function() {
                             "bookMultiple": "Multiplo del valore contabile:",
                             "average": "Valore intrinseco medio:",
                         }
+                    }
+                },
+                "expectedMove": {
+                    "heroHeader": "// MOVIMENTO ATTESO · (CALL + PUT) × 0.85",
+                    "spot": { "upper": "↑ 1Σ SUPERIORE", "spot": "SPOT", "lower": "↓ 1Σ INFERIORE" },
+                    "chartTitle": "// DISTRIBUZIONE DI PROBABILITÀ",
+                    "labels": {
+                        "stockPrice": "Prezzo dell'azione",
+                        "atmCall": "Call ATM",
+                        "atmPut": "Put ATM"
+                    },
+                    "results": {
+                        "straddle": "Straddle (Call + Put):",
+                        "expectedMove": "Movimento Atteso:",
+                        "movePercent": "Movimento %:",
+                        "upperBound": "Limite superiore:",
+                        "lowerBound": "Limite inferiore:"
+                    },
+                    "formula": {
+                        "upper": "Superiore",
+                        "lower": "Inferiore",
+                        "enterOptions": "Inserisci Call ATM e Put ATM per calcolare il movimento atteso.",
+                        "enterPrice": "Inserisci il prezzo dell'azione per vedere % e limiti di prezzo."
+                    },
+                    "sigma": {
+                        "level": "MOVIMENTO",
+                        "probability": "PROBABILITÀ",
+                        "upper": "SUPERIORE",
+                        "lower": "INFERIORE",
+                        "move": "± $",
+                        "movePct": "± %",
+                        "hint": "Inserisci tutti e tre i valori per vedere il grafico della distribuzione di probabilità."
+                    },
+                    "ticker": {
+                        "label": "Simbolo di quotazione",
+                        "placeholder": "es. AAPL",
+                        "fetch": "Recupera",
+                        "loading": "Recupero dati opzioni\u2026",
+                        "expiry": "Scadenza {expiry} \u00b7 Strike ATM ${strike}",
+                        "errorNotFound": "Simbolo di quotazione non trovato",
+                        "errorNoOptions": "Nessuna opzione disponibile per questo ticker",
+                        "expiryLabel": "Data di scadenza"
                     }
                 }
 
@@ -2565,7 +2823,8 @@ const I18n = (function() {
                     "investment": "Calculator de investiții",
                     "cagr": "Calculator CAGR",
                     "mortgage": "Calculator ipotecar",
-                    "fairValue": "Calculator de valoare justă"
+                    "fairValue": "Calculator de valoare justă",
+                    "expectedMove": "Mișcare Așteptată"
                 },
                 "loan": {
                     "labels": {
@@ -2680,6 +2939,48 @@ const I18n = (function() {
                             "bookMultiple": "Valoarea contabilă multiplă:",
                             "average": "Valoare intrinsecă medie:"
                         }
+                    }
+                },
+                "expectedMove": {
+                    "heroHeader": "// MIȘCARE AȘTEPTATĂ · (CALL + PUT) × 0.85",
+                    "spot": { "upper": "↑ 1Σ SUS", "spot": "SPOT", "lower": "↓ 1Σ JOS" },
+                    "chartTitle": "// DISTRIBUȚIE DE PROBABILITATE",
+                    "labels": {
+                        "stockPrice": "Prețul acțiunii",
+                        "atmCall": "Call ATM",
+                        "atmPut": "Put ATM"
+                    },
+                    "results": {
+                        "straddle": "Straddle (Call + Put):",
+                        "expectedMove": "Mișcare Așteptată:",
+                        "movePercent": "Mișcare %:",
+                        "upperBound": "Limita superioară:",
+                        "lowerBound": "Limita inferioară:"
+                    },
+                    "formula": {
+                        "upper": "Sus",
+                        "lower": "Jos",
+                        "enterOptions": "Introduceți Call ATM și Put ATM pentru a calcula mișcarea așteptată.",
+                        "enterPrice": "Introduceți prețul acțiunii pentru a vedea % și limitele de preț."
+                    },
+                    "sigma": {
+                        "level": "MIȘCARE",
+                        "probability": "PROBABILITATE",
+                        "upper": "SUS",
+                        "lower": "JOS",
+                        "move": "± $",
+                        "movePct": "± %",
+                        "hint": "Introduceți toate trei valorile pentru a vedea graficul distribuției de probabilitate."
+                    },
+                    "ticker": {
+                        "label": "Simbol bursier",
+                        "placeholder": "ex. AAPL",
+                        "fetch": "Obține",
+                        "loading": "Se obțin datele opțiunilor\u2026",
+                        "expiry": "Expirare {expiry} \u00b7 Strike ATM ${strike}",
+                        "errorNotFound": "Simbolul bursier nu a fost găsit",
+                        "errorNoOptions": "Nu există opțiuni disponibile pentru acest ticker",
+                        "expiryLabel": "Data de expirare"
                     }
                 }
             },
