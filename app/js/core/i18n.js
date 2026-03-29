@@ -413,6 +413,9 @@ const I18n = (function() {
                     }
                 },
                 "expectedMove": {
+                    "heroHeader": "// EXPECTED MOVE · (CALL + PUT) × 0.85",
+                    "spot": { "upper": "↑ 1Σ UPPER", "spot": "SPOT", "lower": "↓ 1Σ LOWER" },
+                    "chartTitle": "// PROBABILITY DISTRIBUTION",
                     "labels": {
                         "stockPrice": "Stock Price",
                         "atmCall": "ATM Call",
@@ -839,6 +842,9 @@ const I18n = (function() {
                     }
                 },
                 "expectedMove": {
+                    "heroHeader": "// LËVIZJA E PRITSHME · (THIRRJE + VËNIE) × 0.85",
+                    "spot": { "upper": "↑ 1Σ LART", "spot": "SPOT", "lower": "↓ 1Σ POSHTË" },
+                    "chartTitle": "// SHPËRNDARJA E PROBABILITETIT",
                     "labels": {
                         "stockPrice": "Çmimi i aksionit",
                         "atmCall": "Thirrje ATM",
@@ -1255,6 +1261,9 @@ const I18n = (function() {
                     }
                 },
                 "expectedMove": {
+                    "heroHeader": "// MOUVEMENT ATTENDU · (CALL + PUT) × 0.85",
+                    "spot": { "upper": "↑ 1Σ HAUT", "spot": "SPOT", "lower": "↓ 1Σ BAS" },
+                    "chartTitle": "// DISTRIBUTION DE PROBABILITÉ",
                     "labels": {
                         "stockPrice": "Cours de l'action",
                         "atmCall": "Call ATM",
@@ -1671,6 +1680,9 @@ const I18n = (function() {
                     }
                 },
                 "expectedMove": {
+                    "heroHeader": "// ERWARTETE BEWEGUNG · (CALL + PUT) × 0.85",
+                    "spot": { "upper": "↑ 1Σ OBEN", "spot": "SPOT", "lower": "↓ 1Σ UNTEN" },
+                    "chartTitle": "// WAHRSCHEINLICHKEITSVERTEILUNG",
                     "labels": {
                         "stockPrice": "Aktienkurs",
                         "atmCall": "ATM Call",
@@ -2087,6 +2099,9 @@ const I18n = (function() {
                     }
                 },
                 "expectedMove": {
+                    "heroHeader": "// MOVIMIENTO ESPERADO · (CALL + PUT) × 0.85",
+                    "spot": { "upper": "↑ 1Σ SUPERIOR", "spot": "SPOT", "lower": "↓ 1Σ INFERIOR" },
+                    "chartTitle": "// DISTRIBUCIÓN DE PROBABILIDAD",
                     "labels": {
                         "stockPrice": "Precio de la acción",
                         "atmCall": "Call ATM",
@@ -2503,6 +2518,9 @@ const I18n = (function() {
                     }
                 },
                 "expectedMove": {
+                    "heroHeader": "// MOVIMENTO ATTESO · (CALL + PUT) × 0.85",
+                    "spot": { "upper": "↑ 1Σ SUPERIORE", "spot": "SPOT", "lower": "↓ 1Σ INFERIORE" },
+                    "chartTitle": "// DISTRIBUZIONE DI PROBABILITÀ",
                     "labels": {
                         "stockPrice": "Prezzo dell'azione",
                         "atmCall": "Call ATM",
@@ -2924,6 +2942,9 @@ const I18n = (function() {
                     }
                 },
                 "expectedMove": {
+                    "heroHeader": "// MIȘCARE AȘTEPTATĂ · (CALL + PUT) × 0.85",
+                    "spot": { "upper": "↑ 1Σ SUS", "spot": "SPOT", "lower": "↓ 1Σ JOS" },
+                    "chartTitle": "// DISTRIBUȚIE DE PROBABILITATE",
                     "labels": {
                         "stockPrice": "Prețul acțiunii",
                         "atmCall": "Call ATM",
