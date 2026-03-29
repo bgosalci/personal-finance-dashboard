@@ -1717,8 +1717,14 @@ const Calculator = (function() {
             document.getElementById('em-expiry-row').style.display = '';
         }
 
+        // When deployed to GitHub Pages, point to the hosted API backend.
+        // Replace RENDER_PLACEHOLDER with your actual Render app name after deploying.
+        var API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+            ? ''
+            : 'https://RENDER_PLACEHOLDER.onrender.com';
+
         function apiGet(url) {
-            return fetch(url).then(function(r) {
+            return fetch(API_BASE + url).then(function(r) {
                 return r.text().then(function(text) {
                     try {
                         var data = JSON.parse(text);

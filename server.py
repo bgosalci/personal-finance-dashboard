@@ -1,10 +1,17 @@
 import os
 import yfinance as yf
-from flask import Flask, jsonify, request, send_from_directory
+from flask import Flask, jsonify, request, send_from_directory, make_response
 
 APP_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'app')
 
 app = Flask(__name__, static_folder=None)
+
+
+@app.after_request
+def add_cors_headers(response):
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Access-Control-Allow-Methods'] = 'GET, OPTIONS'
+    return response
 
 
 @app.route('/api/options')
@@ -79,4 +86,5 @@ def static_files(path):
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8000, debug=False)
+    port = int(os.environ.get('PORT', 8000))
+    app.run(host='0.0.0.0', port=port, debug=False)
