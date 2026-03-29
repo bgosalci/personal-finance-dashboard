@@ -63,6 +63,12 @@
             --em-panel-text-bright: rgba(255, 255, 255, 0.88);
             --em-panel-text-comment: rgba(255, 255, 255, 0.32);
             --em-accent-green: #00ff7f;
+            /* Bright variants for dark backgrounds */
+            --success-green: #00c97a;
+            --success-green-light: #00ff7f;
+            --danger-red: #f87171;
+            --danger-red-light: #fc8181;
+            --warning-orange-light: #fbbf24;
         }
 
         html {

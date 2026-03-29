@@ -13,6 +13,10 @@ _cache = {}
 _cache_lock = threading.Lock()
 CACHE_TTL = 300  # 5 minutes
 
+# In-flight sentinels: while a fetch is in progress for a key, other
+# threads wait on the Event rather than issuing a duplicate yfinance call.
+_in_flight = {}  # cache_key -> threading.Event
+
 
 def _fetch_options(symbol, requested_expiry):
     """Fetch options data from yfinance with up to 3 retries on rate-limit errors."""
@@ -82,13 +86,27 @@ def options():
     requested_expiry = request.args.get('expiry', '').strip()
     cache_key = (symbol, requested_expiry)
 
-    # Return cached result if still fresh
-    with _cache_lock:
-        if cache_key in _cache:
-            result, ts = _cache[cache_key]
-            if time.time() - ts < CACHE_TTL:
-                return jsonify(result)
+    while True:
+        with _cache_lock:
+            # Cache hit — serve immediately
+            if cache_key in _cache:
+                result, ts = _cache[cache_key]
+                if time.time() - ts < CACHE_TTL:
+                    return jsonify(result)
 
+            # Another thread is already fetching this key — wait for it
+            if cache_key in _in_flight:
+                event = _in_flight[cache_key]
+            else:
+                # We are the designated fetcher; register the sentinel
+                event = threading.Event()
+                _in_flight[cache_key] = event
+                break  # exit the loop and proceed to fetch
+
+        # Wait for the in-flight request to finish, then retry the cache
+        event.wait(timeout=30)
+
+    # Only one thread reaches here per cache_key at a time
     try:
         result = _fetch_options(symbol, requested_expiry)
         with _cache_lock:
@@ -102,6 +120,11 @@ def options():
         if 'rate' in msg.lower() or 'too many' in msg.lower() or '429' in msg:
             return jsonify({'error': 'Yahoo Finance rate limit reached — please wait a minute and try again'}), 429
         return jsonify({'error': msg}), 500
+    finally:
+        # Always clear the sentinel so waiting threads can retry the cache
+        with _cache_lock:
+            _in_flight.pop(cache_key, None)
+        event.set()
 
 
 # Static file routes — MUST be registered after all /api/* routes so they
