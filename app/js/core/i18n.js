@@ -160,6 +160,7 @@ const I18n = (function() {
                     "salary": "Salary Calculator",
                     "dividendCgt": "Dividend & CGT",
                     "expectedMove": "Expected Move",
+                    "cashSecuredPuts": "Cash-Secured Puts",
                     "fairValue": "Fair Value Calculator"
                 },
                 "loan": {
@@ -453,6 +454,33 @@ const I18n = (function() {
                         "errorNoOptions": "No options available for this ticker",
                         "expiryLabel": "Expiry Date"
                     }
+                },
+                "cashSecuredPuts": {
+                    "title": "Cash-Secured Puts Calculator",
+                    "description": "When you sell a cash-secured put, your broker reserves Strike × 100 per contract as collateral. Enter your buying power, how much of it you want to commit, and your target strike price to find out how many contracts you can sell and how much capital will be locked.",
+                    "labels": {
+                        "buyingPower": "Available Buying Power",
+                        "pct": "Buying Power to Use (%)",
+                        "strike": "Put Strike Price",
+                        "premium": "Put Premium per Share"
+                    },
+                    "hints": {
+                        "buyingPower": "Your total cash or margin shown as \"Buying Power\" in your broker account.",
+                        "pct": "Percentage to commit. Keeping below 100% leaves a buffer for other trades or margin calls.",
+                        "strike": "The strike you intend to sell. Each contract covers 100 shares, so capital locked = Strike × 100 per contract.",
+                        "premium": "The option price (bid) per share you receive when selling the put. Leave blank to see position sizing only."
+                    },
+                    "results": {
+                        "contracts": "Contracts to Sell",
+                        "capitalRequired": "Capital Required",
+                        "capitalRemaining": "Capital Remaining",
+                        "bpUsed": "Buying Power Used",
+                        "totalPremium": "Total Premium Collected",
+                        "breakeven": "Breakeven Price",
+                        "roc": "Return on Capital",
+                        "maxProfit": "Max Profit",
+                        "premiumPct": "Premium as % of Strike"
+                    }
                 }
             },
             "stockTracker": {
@@ -723,7 +751,8 @@ const I18n = (function() {
                     "cagr": "Kalkulator CAGR",
                     "mortgage": "Kalkulator hipotekor",
                     "fairValue": "Kalkulator i vlerës së drejtë",
-                    "expectedMove": "Lëvizja e Pritshme"
+                    "expectedMove": "Lëvizja e Pritshme",
+                    "cashSecuredPuts": "Put të Sigurta me Para"
                 },
 
                 "loan": {
@@ -881,6 +910,33 @@ const I18n = (function() {
                         "errorNotFound": "Simboli i aksionit nuk u gjet",
                         "errorNoOptions": "Nuk ka opsione të disponueshme për këtë aksion",
                         "expiryLabel": "Data e skadimit"
+                    }
+                },
+                "cashSecuredPuts": {
+                    "title": "Kalkulator i Put-eve të Sigurta me Para",
+                    "description": "Kur shisni një put të sigurtë me para, brokerja juaj rezervon Strike × 100 për kontratë si kolateral. Vendosni fuqinë tuaj blerëse, sa prej saj dëshironi të angazhoni dhe çmimin e synuar të goditjes për të zbuluar sa kontrata mund të shisni dhe sa kapital do të bllokohet.",
+                    "labels": {
+                        "buyingPower": "Fuqia Blerëse e Disponueshme",
+                        "pct": "Fuqia Blerëse për t'u Përdorur (%)",
+                        "strike": "Çmimi i Goditjes së Put-it",
+                        "premium": "Primi i Put-it për Aksion"
+                    },
+                    "hints": {
+                        "buyingPower": "Para totale ose margjina juaj e treguar si \"Fuqi Blerëse\" në llogarinë tuaj të brokerit.",
+                        "pct": "Përqindja për t'u angazhuar. Mbajtja nën 100% lë një tampon për tregtitë e tjera ose thirrjet e margjinës.",
+                        "strike": "Goditja që synoni të shisni. Çdo kontratë mbulon 100 aksione, pra kapitali i bllokuar = Strike × 100 për kontratë.",
+                        "premium": "Çmimi i opsionit (ofertë) për aksion që merrni kur shisni put-in. Lini bosh për të parë vetëm madhësinë e pozicionit."
+                    },
+                    "results": {
+                        "contracts": "Kontrata për të Shitur",
+                        "capitalRequired": "Kapitali i Nevojshëm",
+                        "capitalRemaining": "Kapitali i Mbetur",
+                        "bpUsed": "Fuqia Blerëse e Përdorur",
+                        "totalPremium": "Primi Total i Mbledhur",
+                        "breakeven": "Çmimi i Barazimit",
+                        "roc": "Kthimi mbi Kapitalin",
+                        "maxProfit": "Fitimi Maksimal",
+                        "premiumPct": "Primi si % e Goditjes"
                     }
                 }
 
@@ -1142,7 +1198,8 @@ const I18n = (function() {
                     "cagr": "Calculateur de TCAC",
                     "mortgage": "Calculateur hypothécaire",
                     "fairValue": "Calculateur de juste valeur",
-                    "expectedMove": "Mouvement Attendu"
+                    "expectedMove": "Mouvement Attendu",
+                    "cashSecuredPuts": "Puts Sécurisés en Espèces"
                 },
 
                 "loan": {
@@ -1300,6 +1357,33 @@ const I18n = (function() {
                         "errorNotFound": "Symbole boursier introuvable",
                         "errorNoOptions": "Aucune option disponible pour ce ticker",
                         "expiryLabel": "Date d'expiration"
+                    }
+                },
+                "cashSecuredPuts": {
+                    "title": "Calculateur de Puts Sécurisés en Espèces",
+                    "description": "Lorsque vous vendez un put sécurisé en espèces, votre courtier réserve Strike × 100 par contrat en garantie. Entrez votre pouvoir d'achat, la part que vous souhaitez engager et votre prix d'exercice cible pour découvrir combien de contrats vous pouvez vendre et combien de capital sera bloqué.",
+                    "labels": {
+                        "buyingPower": "Pouvoir d'Achat Disponible",
+                        "pct": "Pouvoir d'Achat à Utiliser (%)",
+                        "strike": "Prix d'Exercice du Put",
+                        "premium": "Prime du Put par Action"
+                    },
+                    "hints": {
+                        "buyingPower": "Vos liquidités totales ou marge affichées comme \"Pouvoir d'Achat\" dans votre compte courtier.",
+                        "pct": "Pourcentage à engager. Rester sous 100% laisse un tampon pour d'autres transactions ou appels de marge.",
+                        "strike": "L'exercice que vous souhaitez vendre. Chaque contrat couvre 100 actions, donc capital bloqué = Strike × 100 par contrat.",
+                        "premium": "Le prix de l'option (offre) par action que vous recevez lors de la vente du put. Laissez vide pour voir uniquement le dimensionnement de position."
+                    },
+                    "results": {
+                        "contracts": "Contrats à Vendre",
+                        "capitalRequired": "Capital Requis",
+                        "capitalRemaining": "Capital Restant",
+                        "bpUsed": "Pouvoir d'Achat Utilisé",
+                        "totalPremium": "Prime Totale Collectée",
+                        "breakeven": "Prix de Rentabilité",
+                        "roc": "Rendement sur Capital",
+                        "maxProfit": "Profit Maximum",
+                        "premiumPct": "Prime en % du Strike"
                     }
                 }
 
@@ -1561,7 +1645,8 @@ const I18n = (function() {
                     "cagr": "CAGR-Rechner",
                     "mortgage": "Hypothekenrechner",
                     "fairValue": "Fair-Value-Rechner",
-                    "expectedMove": "Erwartete Bewegung"
+                    "expectedMove": "Erwartete Bewegung",
+                    "cashSecuredPuts": "Bar-Gesicherte Puts"
                 },
 
                 "loan": {
@@ -1719,6 +1804,33 @@ const I18n = (function() {
                         "errorNotFound": "Tickersymbol nicht gefunden",
                         "errorNoOptions": "Keine Optionen für diesen Ticker verfügbar",
                         "expiryLabel": "Verfallsdatum"
+                    }
+                },
+                "cashSecuredPuts": {
+                    "title": "Bar-Gesicherte Puts Rechner",
+                    "description": "Wenn Sie einen bar-gesicherten Put verkaufen, reserviert Ihr Broker Strike × 100 pro Kontrakt als Sicherheit. Geben Sie Ihre Kaufkraft, den gewünschten Prozentsatz und Ihren Ziel-Strike-Preis ein, um herauszufinden, wie viele Kontrakte Sie verkaufen können und wie viel Kapital gebunden wird.",
+                    "labels": {
+                        "buyingPower": "Verfügbare Kaufkraft",
+                        "pct": "Zu Verwendende Kaufkraft (%)",
+                        "strike": "Put Strike-Preis",
+                        "premium": "Put-Prämie pro Aktie"
+                    },
+                    "hints": {
+                        "buyingPower": "Ihr gesamtes Bargeld oder Ihre Marge, die in Ihrem Brokerkonto als \"Kaufkraft\" angezeigt wird.",
+                        "pct": "Zu verwendender Prozentsatz. Unter 100% zu bleiben lässt einen Puffer für andere Trades oder Margin Calls.",
+                        "strike": "Der Strike, den Sie verkaufen möchten. Jeder Kontrakt deckt 100 Aktien ab, also gebundenes Kapital = Strike × 100 pro Kontrakt.",
+                        "premium": "Der Optionspreis (Geld) pro Aktie, den Sie beim Verkauf des Puts erhalten. Leer lassen, um nur die Positionsgröße zu sehen."
+                    },
+                    "results": {
+                        "contracts": "Zu Verkaufende Kontrakte",
+                        "capitalRequired": "Benötigtes Kapital",
+                        "capitalRemaining": "Verbleibendes Kapital",
+                        "bpUsed": "Verwendete Kaufkraft",
+                        "totalPremium": "Gesamte Gesammelte Prämie",
+                        "breakeven": "Gewinnschwellen-Preis",
+                        "roc": "Kapitalrendite",
+                        "maxProfit": "Maximaler Gewinn",
+                        "premiumPct": "Prämie als % des Strike"
                     }
                 }
 
@@ -1980,7 +2092,8 @@ const I18n = (function() {
                     "cagr": "Calculadora CAGR",
                     "mortgage": "Calculadora hipotecaria",
                     "fairValue": "Calculadora de valor razonable",
-                    "expectedMove": "Movimiento Esperado"
+                    "expectedMove": "Movimiento Esperado",
+                    "cashSecuredPuts": "Puts Garantizados en Efectivo"
                 },
 
                 "loan": {
@@ -2138,6 +2251,33 @@ const I18n = (function() {
                         "errorNotFound": "Símbolo de cotización no encontrado",
                         "errorNoOptions": "No hay opciones disponibles para este ticker",
                         "expiryLabel": "Fecha de vencimiento"
+                    }
+                },
+                "cashSecuredPuts": {
+                    "title": "Calculadora de Puts Garantizados en Efectivo",
+                    "description": "Cuando vende un put garantizado en efectivo, su corredor reserva Strike × 100 por contrato como garantía. Ingrese su poder adquisitivo, cuánto de él desea comprometer y su precio de ejercicio objetivo para descubrir cuántos contratos puede vender y cuánto capital quedará bloqueado.",
+                    "labels": {
+                        "buyingPower": "Poder Adquisitivo Disponible",
+                        "pct": "Poder Adquisitivo a Usar (%)",
+                        "strike": "Precio de Ejercicio del Put",
+                        "premium": "Prima del Put por Acción"
+                    },
+                    "hints": {
+                        "buyingPower": "Su efectivo total o margen mostrado como \"Poder Adquisitivo\" en su cuenta de corredor.",
+                        "pct": "Porcentaje a comprometer. Mantenerse por debajo del 100% deja un margen para otras operaciones o llamadas de margen.",
+                        "strike": "El ejercicio que pretende vender. Cada contrato cubre 100 acciones, por lo que el capital bloqueado = Strike × 100 por contrato.",
+                        "premium": "El precio de la opción (oferta) por acción que recibe al vender el put. Déjelo en blanco para ver solo el tamaño de la posición."
+                    },
+                    "results": {
+                        "contracts": "Contratos a Vender",
+                        "capitalRequired": "Capital Requerido",
+                        "capitalRemaining": "Capital Restante",
+                        "bpUsed": "Poder Adquisitivo Usado",
+                        "totalPremium": "Prima Total Cobrada",
+                        "breakeven": "Precio de Equilibrio",
+                        "roc": "Retorno sobre el Capital",
+                        "maxProfit": "Beneficio Máximo",
+                        "premiumPct": "Prima como % del Strike"
                     }
                 }
 
@@ -2399,7 +2539,8 @@ const I18n = (function() {
                     "cagr": "Calcolatore CAGR",
                     "mortgage": "Calcolatrice mutuo",
                     "fairValue": "Calcolatore del valore equo",
-                    "expectedMove": "Movimento Atteso"
+                    "expectedMove": "Movimento Atteso",
+                    "cashSecuredPuts": "Put Garantite in Contanti"
                 },
 
                 "loan": {
@@ -2557,6 +2698,33 @@ const I18n = (function() {
                         "errorNotFound": "Simbolo di quotazione non trovato",
                         "errorNoOptions": "Nessuna opzione disponibile per questo ticker",
                         "expiryLabel": "Data di scadenza"
+                    }
+                },
+                "cashSecuredPuts": {
+                    "title": "Calcolatore di Put Garantite in Contanti",
+                    "description": "Quando vendi una put garantita in contanti, il tuo broker riserva Strike × 100 per contratto come garanzia. Inserisci il tuo potere d'acquisto, quanta parte vuoi impegnare e il tuo prezzo strike target per scoprire quanti contratti puoi vendere e quanto capitale verrà bloccato.",
+                    "labels": {
+                        "buyingPower": "Potere d'Acquisto Disponibile",
+                        "pct": "Potere d'Acquisto da Utilizzare (%)",
+                        "strike": "Prezzo Strike della Put",
+                        "premium": "Premio della Put per Azione"
+                    },
+                    "hints": {
+                        "buyingPower": "Il tuo contante totale o margine mostrato come \"Potere d'Acquisto\" nel tuo conto broker.",
+                        "pct": "Percentuale da impegnare. Mantenersi sotto il 100% lascia un buffer per altri trade o chiamate a margine.",
+                        "strike": "Lo strike che intendi vendere. Ogni contratto copre 100 azioni, quindi capitale bloccato = Strike × 100 per contratto.",
+                        "premium": "Il prezzo dell'opzione (denaro) per azione che ricevi quando vendi la put. Lascia vuoto per vedere solo il dimensionamento della posizione."
+                    },
+                    "results": {
+                        "contracts": "Contratti da Vendere",
+                        "capitalRequired": "Capitale Richiesto",
+                        "capitalRemaining": "Capitale Rimanente",
+                        "bpUsed": "Potere d'Acquisto Utilizzato",
+                        "totalPremium": "Premio Totale Raccolto",
+                        "breakeven": "Prezzo di Pareggio",
+                        "roc": "Rendimento sul Capitale",
+                        "maxProfit": "Profitto Massimo",
+                        "premiumPct": "Premio come % dello Strike"
                     }
                 }
 
@@ -2824,7 +2992,8 @@ const I18n = (function() {
                     "cagr": "Calculator CAGR",
                     "mortgage": "Calculator ipotecar",
                     "fairValue": "Calculator de valoare justă",
-                    "expectedMove": "Mișcare Așteptată"
+                    "expectedMove": "Mișcare Așteptată",
+                    "cashSecuredPuts": "Put-uri Garantate cu Numerar"
                 },
                 "loan": {
                     "labels": {
@@ -2981,6 +3150,33 @@ const I18n = (function() {
                         "errorNotFound": "Simbolul bursier nu a fost găsit",
                         "errorNoOptions": "Nu există opțiuni disponibile pentru acest ticker",
                         "expiryLabel": "Data de expirare"
+                    }
+                },
+                "cashSecuredPuts": {
+                    "title": "Calculator de Put-uri Garantate cu Numerar",
+                    "description": "Când vindeți un put garantat cu numerar, brokerul dvs. rezervă Strike × 100 per contract drept garanție. Introduceți puterea dvs. de cumpărare, cât din aceasta doriți să angajați și prețul strike țintă pentru a descoperi câte contracte puteți vinde și cât capital va fi blocat.",
+                    "labels": {
+                        "buyingPower": "Putere de Cumpărare Disponibilă",
+                        "pct": "Putere de Cumpărare de Utilizat (%)",
+                        "strike": "Prețul Strike al Put-ului",
+                        "premium": "Prima Put-ului per Acțiune"
+                    },
+                    "hints": {
+                        "buyingPower": "Numerarul total sau marja dvs. afișată ca \"Putere de Cumpărare\" în contul de broker.",
+                        "pct": "Procentul de angajat. Menținerea sub 100% lasă un tampon pentru alte tranzacții sau apeluri în marjă.",
+                        "strike": "Strike-ul pe care intenționați să îl vindeți. Fiecare contract acoperă 100 acțiuni, deci capital blocat = Strike × 100 per contract.",
+                        "premium": "Prețul opțiunii (cerere) per acțiune pe care îl primiți când vindeți put-ul. Lăsați gol pentru a vedea doar dimensionarea poziției."
+                    },
+                    "results": {
+                        "contracts": "Contracte de Vândut",
+                        "capitalRequired": "Capital Necesar",
+                        "capitalRemaining": "Capital Rămas",
+                        "bpUsed": "Putere de Cumpărare Utilizată",
+                        "totalPremium": "Prima Totală Colectată",
+                        "breakeven": "Prețul de Echilibru",
+                        "roc": "Randament pe Capital",
+                        "maxProfit": "Profit Maxim",
+                        "premiumPct": "Prima ca % din Strike"
                     }
                 }
             },

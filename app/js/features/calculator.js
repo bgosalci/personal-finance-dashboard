@@ -1808,6 +1808,69 @@ const Calculator = (function() {
         return { init };
     })();
 
+    // Cash-Secured Puts Calculator
+    const CashSecuredPutsCalculator = (function() {
+        function calculate() {
+            const buyingPower = getNumberValue('csp-buying-power');
+            const pctToUse    = parseFloat(document.getElementById('csp-pct').value) || 0;
+            const strike      = getNumberValue('csp-strike');
+            const premium     = getNumberValue('csp-premium');
+
+            if (buyingPower <= 0 || pctToUse <= 0 || strike <= 0) {
+                document.getElementById('csp-results').style.display         = 'none';
+                document.getElementById('csp-premium-results').style.display = 'none';
+                return;
+            }
+
+            // Position sizing
+            const capitalToDeploy  = buyingPower * (pctToUse / 100);
+            const contracts        = Math.floor(capitalToDeploy / (strike * 100));
+            const capitalRequired  = contracts * strike * 100;
+            const capitalRemaining = buyingPower - capitalRequired;
+            const bpUsedPct        = (capitalRequired / buyingPower) * 100;
+
+            document.getElementById('csp-contracts').textContent   = contracts.toLocaleString();
+            document.getElementById('csp-capital-req').textContent = formatCurrency(capitalRequired);
+            document.getElementById('csp-capital-rem').textContent = formatCurrency(capitalRemaining);
+            document.getElementById('csp-bp-used').textContent     = formatPercentage(bpUsedPct);
+            document.getElementById('csp-results').style.display   = 'block';
+
+            // Premium metrics — only shown when premium is provided and contracts > 0
+            if (premium <= 0 || contracts <= 0) {
+                document.getElementById('csp-premium-results').style.display = 'none';
+                return;
+            }
+
+            const totalPremium = contracts * 100 * premium;
+            const breakeven    = strike - premium;
+            const roc          = (totalPremium / capitalRequired) * 100;
+            const maxProfit      = totalPremium;
+            const premiumPct     = (premium / strike) * 100;
+
+            document.getElementById('csp-total-premium').textContent = formatCurrency(totalPremium);
+            document.getElementById('csp-breakeven').textContent     = formatCurrency(breakeven);
+            document.getElementById('csp-roc').textContent           = formatPercentage(roc);
+            document.getElementById('csp-max-profit').textContent    = formatCurrency(maxProfit);
+            document.getElementById('csp-premium-pct').textContent   = formatPercentage(premiumPct);
+            document.getElementById('csp-premium-results').style.display = 'block';
+        }
+
+        function init() {
+            setupAmountInput('csp-buying-power');
+            setupAmountInput('csp-strike');
+            setupAmountInput('csp-premium');
+            ['csp-buying-power', 'csp-pct', 'csp-strike', 'csp-premium'].forEach(id => {
+                document.getElementById(id).addEventListener('input', calculate);
+            });
+        }
+
+        return { init };
+    })();
+
+    if (typeof window !== 'undefined') {
+        window.CashSecuredPutsCalculator = CashSecuredPutsCalculator;
+    }
+
     function init() {
         updateCurrencyDisplays();
         document.addEventListener('baseCurrencyChanged', updateCurrencyDisplays);
@@ -1828,6 +1891,7 @@ const Calculator = (function() {
         SalaryCalculator.init();
         DividendCgtCalculator.init();
         ExpectedMoveCalculator.init();
+        CashSecuredPutsCalculator.init();
     }
 
     return {
