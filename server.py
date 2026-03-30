@@ -62,6 +62,8 @@ def _fetch_options(symbol, requested_expiry):
                     return round((bid + ask) / 2, 2)
                 return round(float(row.get('lastPrice', 0) or 0), 2)
 
+            currency = (ticker.info or {}).get('currency', 'USD') or 'USD'
+
             return {
                 'price':       price,
                 'strike':      atm_strike,
@@ -69,6 +71,7 @@ def _fetch_options(symbol, requested_expiry):
                 'put':         mid(put_row),
                 'expiry':      expiry,
                 'expirations': expirations,
+                'currency':    currency,
             }
         except LookupError:
             raise

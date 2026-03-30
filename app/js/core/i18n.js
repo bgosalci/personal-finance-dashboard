@@ -453,6 +453,18 @@ const I18n = (function() {
                         "errorNotFound": "Ticker not found",
                         "errorNoOptions": "No options available for this ticker",
                         "expiryLabel": "Expiry Date"
+                    },
+                    "multiplier": {
+                        "label": "Multiplier",
+                        "adjusted": "Adjusted \u00d70.85",
+                        "raw": "Raw Straddle \u00d71.0",
+                        "infoToggle": "What does this mean?",
+                        "adjustedHeading": "\u00d70.85 \u2014 Industry-Standard Adjusted",
+                        "adjustedBody": "Strips the extrinsic/premium bias built into option prices. Most traders use this as a tighter, more calibrated 1\u03c3 estimate of the expected move.",
+                        "rawHeading": "\u00d71.0 \u2014 Raw Straddle Price",
+                        "rawBody": "Uses the full straddle price with no adjustment. Slightly wider than the adjusted figure; useful if you want a conservative or maximum-width move estimate.",
+                        "heroHeader085": "// EXPECTED MOVE \u00b7 (CALL + PUT) \u00d7 0.85",
+                        "heroHeader100": "// EXPECTED MOVE \u00b7 (CALL + PUT) \u00d7 1.00"
                     }
                 },
                 "cashSecuredPuts": {
@@ -910,6 +922,18 @@ const I18n = (function() {
                         "errorNotFound": "Simboli i aksionit nuk u gjet",
                         "errorNoOptions": "Nuk ka opsione të disponueshme për këtë aksion",
                         "expiryLabel": "Data e skadimit"
+                    },
+                    "multiplier": {
+                        "label": "Shumëzuesi",
+                        "adjusted": "I rregulluar \u00d70.85",
+                        "raw": "Straddle i papërpunuar \u00d71.0",
+                        "infoToggle": "Çfarë do të thotë kjo?",
+                        "adjustedHeading": "\u00d70.85 \u2014 I rregulluar sipas standardit",
+                        "adjustedBody": "Heq paragjykimin e vlerës jashtëzakonshme/primit të integruar në çmimet e opsioneve. Shumica e tregtarëve e përdorin këtë si një vlerësim 1\u03c3 më të saktë të lëvizjes së pritshme.",
+                        "rawHeading": "\u00d71.0 \u2014 Çmimi i Straddle-it të papërpunuar",
+                        "rawBody": "Përdor çmimin e plotë të straddle-it pa asnjë rregullim. Paksa më i gjerë se shifra e rregulluar; i dobishëm nëse dëshironi një vlerësim konservator të lëvizjes.",
+                        "heroHeader085": "// LËVIZJA E PRITSHME \u00b7 (THIRRJE + VËNIE) \u00d7 0.85",
+                        "heroHeader100": "// LËVIZJA E PRITSHME \u00b7 (THIRRJE + VËNIE) \u00d7 1.00"
                     }
                 },
                 "cashSecuredPuts": {
@@ -1357,6 +1381,18 @@ const I18n = (function() {
                         "errorNotFound": "Symbole boursier introuvable",
                         "errorNoOptions": "Aucune option disponible pour ce ticker",
                         "expiryLabel": "Date d'expiration"
+                    },
+                    "multiplier": {
+                        "label": "Multiplicateur",
+                        "adjusted": "Ajusté \u00d70.85",
+                        "raw": "Straddle brut \u00d71.0",
+                        "infoToggle": "Qu'est-ce que cela signifie ?",
+                        "adjustedHeading": "\u00d70.85 \u2014 Ajusté selon la norme du secteur",
+                        "adjustedBody": "Élimine le biais de valeur extrinsèque/prime intégré dans les prix des options. La plupart des traders utilisent ceci comme une estimation 1\u03c3 plus précise du mouvement attendu.",
+                        "rawHeading": "\u00d71.0 \u2014 Prix du Straddle brut",
+                        "rawBody": "Utilise le prix complet du straddle sans ajustement. Légèrement plus large que la valeur ajustée ; utile si vous souhaitez une estimation conservatrice du mouvement.",
+                        "heroHeader085": "// MOUVEMENT ATTENDU \u00b7 (CALL + PUT) \u00d7 0.85",
+                        "heroHeader100": "// MOUVEMENT ATTENDU \u00b7 (CALL + PUT) \u00d7 1.00"
                     }
                 },
                 "cashSecuredPuts": {
@@ -1804,6 +1840,18 @@ const I18n = (function() {
                         "errorNotFound": "Tickersymbol nicht gefunden",
                         "errorNoOptions": "Keine Optionen für diesen Ticker verfügbar",
                         "expiryLabel": "Verfallsdatum"
+                    },
+                    "multiplier": {
+                        "label": "Multiplikator",
+                        "adjusted": "Bereinigt \u00d70.85",
+                        "raw": "Roher Straddle \u00d71.0",
+                        "infoToggle": "Was bedeutet das?",
+                        "adjustedHeading": "\u00d70.85 \u2014 Branchenstandard bereinigt",
+                        "adjustedBody": "Entfernt die extrinsische/Prämienverzerrung, die in Optionspreisen eingebaut ist. Die meisten Trader verwenden dies als eine engere, besser kalibrierte 1\u03c3-Schätzung der erwarteten Bewegung.",
+                        "rawHeading": "\u00d71.0 \u2014 Roher Straddle-Preis",
+                        "rawBody": "Verwendet den vollen Straddle-Preis ohne Anpassung. Etwas breiter als der bereinigte Wert; nützlich, wenn Sie eine konservative Bewegungsschätzung wünschen.",
+                        "heroHeader085": "// ERWARTETE BEWEGUNG \u00b7 (CALL + PUT) \u00d7 0.85",
+                        "heroHeader100": "// ERWARTETE BEWEGUNG \u00b7 (CALL + PUT) \u00d7 1.00"
                     }
                 },
                 "cashSecuredPuts": {
@@ -2251,6 +2299,18 @@ const I18n = (function() {
                         "errorNotFound": "Símbolo de cotización no encontrado",
                         "errorNoOptions": "No hay opciones disponibles para este ticker",
                         "expiryLabel": "Fecha de vencimiento"
+                    },
+                    "multiplier": {
+                        "label": "Multiplicador",
+                        "adjusted": "Ajustado \u00d70.85",
+                        "raw": "Straddle bruto \u00d71.0",
+                        "infoToggle": "\u00bfQué significa esto?",
+                        "adjustedHeading": "\u00d70.85 \u2014 Ajustado según estándar del sector",
+                        "adjustedBody": "Elimina el sesgo extrínseco/prima incorporado en los precios de las opciones. La mayoría de los traders lo utilizan como una estimación 1\u03c3 más ajustada del movimiento esperado.",
+                        "rawHeading": "\u00d71.0 \u2014 Precio del Straddle bruto",
+                        "rawBody": "Usa el precio completo del straddle sin ajuste. Ligeramente más amplio que el valor ajustado; útil si desea una estimación conservadora del movimiento.",
+                        "heroHeader085": "// MOVIMIENTO ESPERADO \u00b7 (CALL + PUT) \u00d7 0.85",
+                        "heroHeader100": "// MOVIMIENTO ESPERADO \u00b7 (CALL + PUT) \u00d7 1.00"
                     }
                 },
                 "cashSecuredPuts": {
@@ -2698,6 +2758,18 @@ const I18n = (function() {
                         "errorNotFound": "Simbolo di quotazione non trovato",
                         "errorNoOptions": "Nessuna opzione disponibile per questo ticker",
                         "expiryLabel": "Data di scadenza"
+                    },
+                    "multiplier": {
+                        "label": "Moltiplicatore",
+                        "adjusted": "Rettificato \u00d70.85",
+                        "raw": "Straddle grezzo \u00d71.0",
+                        "infoToggle": "Cosa significa questo?",
+                        "adjustedHeading": "\u00d70.85 \u2014 Rettificato secondo lo standard del settore",
+                        "adjustedBody": "Elimina il bias estrinseco/premio incorporato nei prezzi delle opzioni. La maggior parte dei trader lo utilizza come stima 1\u03c3 più precisa del movimento atteso.",
+                        "rawHeading": "\u00d71.0 \u2014 Prezzo dello Straddle grezzo",
+                        "rawBody": "Usa il prezzo completo dello straddle senza rettifica. Leggermente più ampio del valore rettificato; utile se si desidera una stima conservativa del movimento.",
+                        "heroHeader085": "// MOVIMENTO ATTESO \u00b7 (CALL + PUT) \u00d7 0.85",
+                        "heroHeader100": "// MOVIMENTO ATTESO \u00b7 (CALL + PUT) \u00d7 1.00"
                     }
                 },
                 "cashSecuredPuts": {
@@ -3150,6 +3222,18 @@ const I18n = (function() {
                         "errorNotFound": "Simbolul bursier nu a fost găsit",
                         "errorNoOptions": "Nu există opțiuni disponibile pentru acest ticker",
                         "expiryLabel": "Data de expirare"
+                    },
+                    "multiplier": {
+                        "label": "Multiplicator",
+                        "adjusted": "Ajustat \u00d70.85",
+                        "raw": "Straddle brut \u00d71.0",
+                        "infoToggle": "Ce înseamnă asta?",
+                        "adjustedHeading": "\u00d70.85 \u2014 Ajustat conform standardului din industrie",
+                        "adjustedBody": "Elimină părtinirea valorii extrinseci/primei încorporată în prețurile opțiunilor. Majoritatea traderilor îl folosesc ca o estimare 1\u03c3 mai precisă a mișcării așteptate.",
+                        "rawHeading": "\u00d71.0 \u2014 Prețul Straddle-ului brut",
+                        "rawBody": "Folosește prețul complet al straddle-ului fără ajustare. Ușor mai larg decât valoarea ajustată; util dacă doriți o estimare conservatoare a mișcării.",
+                        "heroHeader085": "// MIȘCARE AȘTEPTATĂ \u00b7 (CALL + PUT) \u00d7 0.85",
+                        "heroHeader100": "// MIȘCARE AȘTEPTATĂ \u00b7 (CALL + PUT) \u00d7 1.00"
                     }
                 },
                 "cashSecuredPuts": {

@@ -900,6 +900,92 @@
         .em-f-amber   { color: var(--warning-orange-light); font-weight: 600; }
         .em-f-comment { color: var(--em-panel-text-comment); }
 
+        /* EM multiplier toggle row */
+        .em-multiplier-row {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem 1rem;
+            margin-bottom: 0.5rem;
+        }
+        .em-multiplier-label {
+            font-size: 0.8rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--em-panel-text-dim);
+            white-space: nowrap;
+        }
+        .em-multiplier-options {
+            display: flex;
+            gap: 0.4rem;
+            flex-wrap: wrap;
+        }
+        .em-multiplier-option {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.3rem 0.75rem;
+            border: 1px solid var(--em-panel-border);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            color: var(--em-panel-text-dim);
+            background: transparent;
+            transition: border-color 0.15s, color 0.15s, background 0.15s;
+            user-select: none;
+        }
+        .em-multiplier-option:has(input:checked) {
+            border-color: var(--em-accent-green);
+            color: var(--em-accent-green);
+            background: rgba(0, 200, 100, 0.07);
+        }
+        .em-multiplier-option input[type="radio"] {
+            accent-color: var(--em-accent-green);
+            width: 14px;
+            height: 14px;
+            flex-shrink: 0;
+        }
+        .em-info-toggle {
+            margin-left: auto;
+            background: none;
+            border: none;
+            padding: 0;
+            font-size: 0.78rem;
+            letter-spacing: 0.05em;
+            color: var(--primary-blue-light);
+            cursor: pointer;
+            text-decoration: underline dotted;
+            text-underline-offset: 2px;
+            white-space: nowrap;
+        }
+        .em-info-toggle:hover { color: var(--primary-blue); }
+        .em-info-panel {
+            display: none;
+            flex-direction: column;
+            gap: 0.6rem;
+            background: var(--em-panel-bg);
+            border: 1px solid var(--em-panel-border);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.5rem;
+            font-size: 0.82rem;
+            line-height: 1.55;
+        }
+        .em-info-panel.em-info-open { display: flex; }
+        .em-info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+        }
+        .em-info-heading {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--em-accent-green);
+            letter-spacing: 0.05em;
+        }
+        .em-info-body { color: var(--em-panel-text-dim); }
+
         .ticker-management {
             display: flex;
             gap: 1rem;

@@ -1411,6 +1411,17 @@ const Calculator = (function() {
 
     // Expected Move Calculator (ATM Straddle)
     const ExpectedMoveCalculator = (function() {
+        var emCurrency = 'USD';   // updated when a ticker is fetched
+
+        function formatEmCurrency(amount) {
+            return I18n.formatCurrency(amount, emCurrency);
+        }
+
+        function getMultiplier() {
+            var el = document.querySelector('input[name="em-multiplier"]:checked');
+            return el ? parseFloat(el.value) : 0.85;
+        }
+
         // Sigma band definitions — drawn back-to-front (δ3 first, δ1 on top)
         // δ1 stroke/fill resolved at draw time from CSS variable for theme support
         var BANDS_STATIC = [
@@ -1549,11 +1560,11 @@ const Calculator = (function() {
                 ctx.fillText(text, cx, labelY);
             }
 
-            drawXLabel(mu, formatCurrency(mu), textBright);
+            drawXLabel(mu, formatEmCurrency(mu), textBright);
             for (var i = 0; i < BANDS.length; i++) {
                 var band = BANDS[i];
-                drawXLabel(mu - band.n * sigma, formatCurrency(mu - band.n * sigma), band.stroke);
-                drawXLabel(mu + band.n * sigma, formatCurrency(mu + band.n * sigma), band.stroke);
+                drawXLabel(mu - band.n * sigma, formatEmCurrency(mu - band.n * sigma), band.stroke);
+                drawXLabel(mu + band.n * sigma, formatEmCurrency(mu + band.n * sigma), band.stroke);
             }
 
             // Legend (top-right): δ1, δ2, δ3
@@ -1589,9 +1600,9 @@ const Calculator = (function() {
                     'background:' + band.stroke + ';margin-right:6px;vertical-align:middle"></span>' +
                     '<strong style="color:' + band.stroke + '">\u03b4' + band.n + '</strong></td>' +
                     '<td style="color:var(--text-secondary)">' + band.prob + '</td>' +
-                    '<td class="em-col-upper">' + formatCurrency(upper) + '</td>' +
-                    '<td class="em-col-lower">' + formatCurrency(lower) + '</td>' +
-                    '<td class="em-col-delta">' + formatCurrency(delta) + '</td>' +
+                    '<td class="em-col-upper">' + formatEmCurrency(upper) + '</td>' +
+                    '<td class="em-col-lower">' + formatEmCurrency(lower) + '</td>' +
+                    '<td class="em-col-delta">' + formatEmCurrency(delta) + '</td>' +
                     '<td style="color:var(--text-secondary)">\u00b1\u00a0' + pct.toFixed(2) + '%</td>';
                 tbody.appendChild(tr);
             }
@@ -1607,47 +1618,48 @@ const Calculator = (function() {
         }
 
         // Render the coloured formula block using CSS-class spans (theme-aware)
-        function renderFormula(call, put, straddle, em, pct, price, upperLabel, lowerLabel) {
+        function renderFormula(call, put, straddle, em, pct, price, upperLabel, lowerLabel, multiplier) {
             var dim     = 'class="em-f-dim"';
             var white   = 'class="em-f-bright"';
             var green   = 'class="em-f-green"';
             var amber   = 'class="em-f-amber"';
             var comment = 'class="em-f-comment"';
+            var mStr    = '\u00d7 ' + multiplier.toFixed(2);
 
             var callLabel = I18n.t('calculators.expectedMove.labels.atmCall');
             var putLabel  = I18n.t('calculators.expectedMove.labels.atmPut');
 
             var lines = [
                 '<span ' + green + '>EM</span>'  +
-                    '<span ' + dim + '>  = (' + callLabel + ' + ' + putLabel + ') \u00d7 0.85</span>',
+                    '<span ' + dim + '>  = (' + callLabel + ' + ' + putLabel + ') ' + mStr + '</span>',
 
                 '<span ' + dim + '>    = (</span>' +
-                    '<span ' + white + '>' + formatCurrency(call) + '</span>' +
+                    '<span ' + white + '>' + formatEmCurrency(call) + '</span>' +
                     '<span ' + dim + '> + </span>' +
-                    '<span ' + white + '>' + formatCurrency(put) + '</span>' +
-                    '<span ' + dim + '>) \u00d7 0.85</span>',
+                    '<span ' + white + '>' + formatEmCurrency(put) + '</span>' +
+                    '<span ' + dim + '>) ' + mStr + '</span>',
 
                 '<span ' + dim + '>    = </span>' +
-                    '<span ' + white + '>' + formatCurrency(straddle) + '</span>' +
-                    '<span ' + dim + '> \u00d7 0.85</span>',
+                    '<span ' + white + '>' + formatEmCurrency(straddle) + '</span>' +
+                    '<span ' + dim + '> ' + mStr + '</span>',
             ];
 
             if (price > 0) {
                 lines.push(
                     '<span ' + dim + '>    = </span>' +
-                        '<span ' + green + '>' + formatCurrency(em) + '</span>' +
+                        '<span ' + green + '>' + formatEmCurrency(em) + '</span>' +
                         '<span ' + dim + '>  </span>' +
                         '<span ' + amber + '>\u00b1 ' + pct.toFixed(2) + '%</span>'
                 );
                 lines.push(
                     '<span ' + comment + '>// ' + upperLabel + ': ' +
-                        formatCurrency(price + em) + '&nbsp;&nbsp;&nbsp;' +
-                        lowerLabel + ': ' + formatCurrency(price - em) + '</span>'
+                        formatEmCurrency(price + em) + '&nbsp;&nbsp;&nbsp;' +
+                        lowerLabel + ': ' + formatEmCurrency(price - em) + '</span>'
                 );
             } else {
                 lines.push(
                     '<span ' + dim + '>    = </span>' +
-                        '<span ' + green + '>' + formatCurrency(em) + '</span>'
+                        '<span ' + green + '>' + formatEmCurrency(em) + '</span>'
                 );
                 lines.push(
                     '<span ' + comment + '>// ' +
@@ -1675,26 +1687,31 @@ const Calculator = (function() {
                 return;
             }
 
-            var em         = straddle * 0.85;
+            var multiplier = getMultiplier();
+            var em         = straddle * multiplier;
             var upperLabel = I18n.t('calculators.expectedMove.formula.upper');
             var lowerLabel = I18n.t('calculators.expectedMove.formula.lower');
 
             if (price > 0) {
                 var pct = (em / price) * 100;
                 // Hero card
-                document.getElementById('em-hero-value').textContent = formatCurrency(em);
+                var headerKey = multiplier === 1.0
+                    ? 'calculators.expectedMove.multiplier.heroHeader100'
+                    : 'calculators.expectedMove.multiplier.heroHeader085';
+                document.querySelector('.em-hero-header').textContent = I18n.t(headerKey);
+                document.getElementById('em-hero-value').textContent = formatEmCurrency(em);
                 document.getElementById('em-hero-pct').textContent   = '\u00b1 ' + pct.toFixed(2) + '%';
-                document.getElementById('em-upper').textContent      = formatCurrency(price + em);
-                document.getElementById('em-spot-price').textContent = formatCurrency(price);
-                document.getElementById('em-lower').textContent      = formatCurrency(price - em);
+                document.getElementById('em-upper').textContent      = formatEmCurrency(price + em);
+                document.getElementById('em-spot-price').textContent = formatEmCurrency(price);
+                document.getElementById('em-lower').textContent      = formatEmCurrency(price - em);
                 showHero(true);
-                renderFormula(call, put, straddle, em, pct, price, upperLabel, lowerLabel);
+                renderFormula(call, put, straddle, em, pct, price, upperLabel, lowerLabel, multiplier);
                 showChart(true);
                 drawChart(price, em);
                 buildTable(price, em);
             } else {
                 showHero(false);
-                renderFormula(call, put, straddle, em, 0, 0, upperLabel, lowerLabel);
+                renderFormula(call, put, straddle, em, 0, 0, upperLabel, lowerLabel, multiplier);
                 showChart(false);
             }
         }
@@ -1715,6 +1732,7 @@ const Calculator = (function() {
         }
 
         function applyFetchResult(res) {
+            emCurrency = res.currency || 'USD';
             document.getElementById('em-stock-price').value = res.price;
             document.getElementById('em-atm-call').value    = res.call;
             document.getElementById('em-atm-put').value     = res.put;
@@ -1799,10 +1817,21 @@ const Calculator = (function() {
                     var call  = getNumberValue('em-atm-call');
                     var put   = getNumberValue('em-atm-put');
                     if (price > 0 && call > 0 && put > 0) {
-                        drawChart(price, (call + put) * 0.85);
+                        drawChart(price, (call + put) * getMultiplier());
                     }
                 }).observe(document.getElementById('em-right'));
             }
+
+            document.querySelectorAll('input[name="em-multiplier"]').forEach(function(radio) {
+                radio.addEventListener('change', calculate);
+            });
+
+            document.getElementById('em-info-toggle').addEventListener('click', function() {
+                var panel  = document.getElementById('em-info-panel');
+                var isOpen = panel.classList.toggle('em-info-open');
+                this.setAttribute('aria-expanded', String(isOpen));
+                panel.setAttribute('aria-hidden',  String(!isOpen));
+            });
         }
 
         return { init };
