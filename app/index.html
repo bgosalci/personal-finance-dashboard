@@ -1164,6 +1164,32 @@
                                         <input type="text" id="em-atm-put" inputmode="decimal">
                                     </div>
                                 </div>
+                                <!-- Multiplier toggle -->
+                                <div class="em-multiplier-row">
+                                    <span class="em-multiplier-label" data-i18n="calculators.expectedMove.multiplier.label">Multiplier</span>
+                                    <div class="em-multiplier-options">
+                                        <label class="em-multiplier-option">
+                                            <input type="radio" name="em-multiplier" value="0.85">
+                                            <span data-i18n="calculators.expectedMove.multiplier.adjusted">Adjusted ×0.85</span>
+                                        </label>
+                                        <label class="em-multiplier-option">
+                                            <input type="radio" name="em-multiplier" value="1.0" checked>
+                                            <span data-i18n="calculators.expectedMove.multiplier.raw">Raw Straddle ×1.0</span>
+                                        </label>
+                                    </div>
+                                    <button type="button" class="em-info-toggle" id="em-info-toggle" aria-expanded="false" data-i18n="calculators.expectedMove.multiplier.infoToggle">What does this mean?</button>
+                                </div>
+                                <!-- Multiplier info panel (collapsible) -->
+                                <div class="em-info-panel" id="em-info-panel" aria-hidden="true">
+                                    <div class="em-info-item">
+                                        <span class="em-info-heading" data-i18n="calculators.expectedMove.multiplier.adjustedHeading">×0.85 — Industry-Standard Adjusted</span>
+                                        <span class="em-info-body" data-i18n="calculators.expectedMove.multiplier.adjustedBody">Strips the extrinsic/premium bias built into option prices. Most traders use this as a tighter, more calibrated 1σ estimate of the expected move.</span>
+                                    </div>
+                                    <div class="em-info-item">
+                                        <span class="em-info-heading" data-i18n="calculators.expectedMove.multiplier.rawHeading">×1.0 — Raw Straddle Price</span>
+                                        <span class="em-info-body" data-i18n="calculators.expectedMove.multiplier.rawBody">Uses the full straddle price with no adjustment. Slightly wider than the adjusted figure; useful if you want a conservative or maximum-width move estimate.</span>
+                                    </div>
+                                </div>
                                 <!-- Hero result card (hidden until call+put+price populated) -->
                                 <div id="em-hero" class="em-hero" style="display:none">
                                     <div class="em-hero-header" data-i18n="calculators.expectedMove.heroHeader">// EXPECTED MOVE · (CALL + PUT) × 0.85</div>
@@ -1236,7 +1262,7 @@
                             </div>
                             <div class="form-group">
                                 <label for="csp-pct" data-i18n="calculators.cashSecuredPuts.labels.pct">Buying Power to Use (%)</label>
-                                <input type="number" id="csp-pct" inputmode="decimal" min="1" max="100" placeholder="e.g. 80">
+                                <input type="number" id="csp-pct" inputmode="decimal" min="1" max="100" placeholder="e.g. 60">
                                 <span class="form-hint" data-i18n="calculators.cashSecuredPuts.hints.pct">Percentage to commit. Keeping below 100% leaves a buffer for other trades or margin calls.</span>
                             </div>
                             <div class="form-group">
