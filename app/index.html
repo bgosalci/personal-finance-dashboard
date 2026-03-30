@@ -503,6 +503,7 @@
                     <button class="sub-nav-tab" data-subtab="salary" data-i18n="calculators.tabs.salary">Salary Calculator</button>
                     <button class="sub-nav-tab" data-subtab="dividend-cgt" data-i18n="calculators.tabs.dividendCgt">Dividend &amp; CGT</button>
                     <button class="sub-nav-tab" data-subtab="expected-move" data-i18n="calculators.tabs.expectedMove">Expected Move</button>
+                    <button class="sub-nav-tab" data-subtab="cash-secured-puts" data-i18n="calculators.tabs.cashSecuredPuts">Cash-Secured Puts</button>
                 </div>
 
                 <!-- Loan Calculator Sub-Tab -->
@@ -1216,6 +1217,78 @@
                                 </div>
                                 <div id="em-chart-hint" class="em-chart-hint">
                                     <span data-i18n="calculators.expectedMove.sigma.hint">Enter all three values to see the probability distribution chart.</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cash-Secured Puts Calculator Sub-Tab -->
+                <div id="cash-secured-puts" class="sub-tab-content">
+                    <div class="calculator-section">
+                        <h3 class="calculator-title" data-i18n="calculators.cashSecuredPuts.title">Cash-Secured Puts Calculator</h3>
+                        <p class="form-hint" style="margin-bottom: 1.5rem;" data-i18n="calculators.cashSecuredPuts.description">When you sell a cash-secured put, your broker reserves Strike × 100 per contract as collateral. Enter your buying power, how much of it you want to commit, and your target strike price to find out how many contracts you can sell and how much capital will be locked.</p>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="csp-buying-power" data-i18n="calculators.cashSecuredPuts.labels.buyingPower">Available Buying Power</label>
+                                <input type="text" id="csp-buying-power" inputmode="decimal" placeholder="e.g. 50,000">
+                                <span class="form-hint" data-i18n="calculators.cashSecuredPuts.hints.buyingPower">Your total cash or margin shown as "Buying Power" in your broker account.</span>
+                            </div>
+                            <div class="form-group">
+                                <label for="csp-pct" data-i18n="calculators.cashSecuredPuts.labels.pct">Buying Power to Use (%)</label>
+                                <input type="number" id="csp-pct" inputmode="decimal" min="1" max="100" placeholder="e.g. 80">
+                                <span class="form-hint" data-i18n="calculators.cashSecuredPuts.hints.pct">Percentage to commit. Keeping below 100% leaves a buffer for other trades or margin calls.</span>
+                            </div>
+                            <div class="form-group">
+                                <label for="csp-strike" data-i18n="calculators.cashSecuredPuts.labels.strike">Put Strike Price</label>
+                                <input type="text" id="csp-strike" inputmode="decimal" placeholder="e.g. 45">
+                                <span class="form-hint" data-i18n="calculators.cashSecuredPuts.hints.strike">The strike you intend to sell. Each contract covers 100 shares, so capital locked = Strike × 100 per contract.</span>
+                            </div>
+                            <div class="form-group">
+                                <label for="csp-premium" data-i18n="calculators.cashSecuredPuts.labels.premium">Put Premium per Share</label>
+                                <input type="text" id="csp-premium" inputmode="decimal" placeholder="e.g. 1.50">
+                                <span class="form-hint" data-i18n="calculators.cashSecuredPuts.hints.premium">The option price (bid) per share you receive when selling the put. Leave blank to see position sizing only.</span>
+                            </div>
+                        </div>
+                        <div style="display:flex; gap:1.5rem; flex-wrap:wrap; margin-top:1.5rem;">
+                            <div id="csp-results" class="result-display" style="display:none; flex:1; min-width:220px;">
+                                <div class="result-item">
+                                    <span data-i18n="calculators.cashSecuredPuts.results.contracts">Contracts to Sell</span>
+                                    <span id="csp-contracts">—</span>
+                                </div>
+                                <div class="result-item">
+                                    <span data-i18n="calculators.cashSecuredPuts.results.capitalRequired">Capital Required</span>
+                                    <span id="csp-capital-req">—</span>
+                                </div>
+                                <div class="result-item">
+                                    <span data-i18n="calculators.cashSecuredPuts.results.capitalRemaining">Capital Remaining</span>
+                                    <span id="csp-capital-rem">—</span>
+                                </div>
+                                <div class="result-item">
+                                    <span data-i18n="calculators.cashSecuredPuts.results.bpUsed">Buying Power Used</span>
+                                    <span id="csp-bp-used">—</span>
+                                </div>
+                            </div>
+                            <div id="csp-premium-results" class="result-display" style="display:none; flex:1; min-width:220px;">
+                                <div class="result-item">
+                                    <span data-i18n="calculators.cashSecuredPuts.results.totalPremium">Total Premium Collected</span>
+                                    <span id="csp-total-premium">—</span>
+                                </div>
+                                <div class="result-item">
+                                    <span data-i18n="calculators.cashSecuredPuts.results.breakeven">Breakeven Price</span>
+                                    <span id="csp-breakeven">—</span>
+                                </div>
+                                <div class="result-item">
+                                    <span data-i18n="calculators.cashSecuredPuts.results.roc">Return on Capital</span>
+                                    <span id="csp-roc">—</span>
+                                </div>
+                                <div class="result-item">
+                                    <span data-i18n="calculators.cashSecuredPuts.results.maxProfit">Max Profit</span>
+                                    <span id="csp-max-profit">—</span>
+                                </div>
+                                <div class="result-item">
+                                    <span data-i18n="calculators.cashSecuredPuts.results.premiumPct">Premium as % of Strike</span>
+                                    <span id="csp-premium-pct">—</span>
                                 </div>
                             </div>
                         </div>
