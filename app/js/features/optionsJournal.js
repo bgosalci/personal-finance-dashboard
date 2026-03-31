@@ -149,7 +149,7 @@ const OptionsJournal = (function () {
 
         if (filtered.length === 0) {
             const row = document.createElement('tr');
-            row.innerHTML = `<td colspan="13" style="text-align:center; color:var(--text-secondary); padding:2rem;">No trades found. Click "Add Trade" to get started.</td>`;
+            row.innerHTML = `<td colspan="14" style="text-align:center; color:var(--text-secondary); padding:2rem;">No trades found. Click "Add Trade" to get started.</td>`;
             tbody.appendChild(row);
             return;
         }
@@ -181,6 +181,7 @@ const OptionsJournal = (function () {
                 <td>${escHtml(trade.strikes || '')}</td>
                 <td class="number-cell">$${trade.premium.toFixed(2)}</td>
                 <td class="number-cell">${trade.quantity}</td>
+                <td class="number-cell">$${(trade.premium * trade.quantity * 100).toFixed(2)}</td>
                 <td><span class="${dirClass}">${trade.direction}</span></td>
                 <td><span class="oj-status-badge ${statusClass}">${trade.status}</span></td>
                 <td>${formatDate(trade.dateClosed)}</td>
@@ -202,6 +203,12 @@ const OptionsJournal = (function () {
         document.getElementById('oj-total-trades').textContent = analytics.totalTrades;
         document.getElementById('oj-open-trades').textContent = analytics.openTrades;
         document.getElementById('oj-win-rate').textContent = analytics.winRate;
+        const winLossEl = document.getElementById('oj-win-loss-count');
+        if (winLossEl) {
+            winLossEl.textContent = (analytics.wins.length || analytics.losses.length)
+                ? `${analytics.wins.length}W / ${analytics.losses.length}L`
+                : '—';
+        }
 
         const totalPnlEl = document.getElementById('oj-total-pnl');
         totalPnlEl.textContent = '$' + analytics.totalPnl.toFixed(2);
@@ -323,7 +330,7 @@ const OptionsJournal = (function () {
     function renderAnalytics() {
         const analytics = computeAnalytics(trades);
         updateSummaryCards(analytics);
-        if (document.getElementById('options-journal').classList.contains('active')) {
+        if (document.getElementById('trades-journal').classList.contains('active')) {
             renderCharts(analytics);
         }
     }
