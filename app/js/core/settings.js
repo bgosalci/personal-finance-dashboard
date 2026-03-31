@@ -266,6 +266,18 @@ const Settings = (function() {
         const expStockBtn = document.getElementById('export-stock-btn');
         const impStockBtn = document.getElementById('import-stock-btn');
         const delStockBtn = document.getElementById('delete-stock-btn');
+        const expTradesBtn = document.getElementById('export-trades-btn');
+        const impTradesBtn = document.getElementById('import-trades-btn');
+        const delTradesBtn = document.getElementById('delete-trades-btn');
+        const expTradesModal = document.getElementById('export-trades-modal');
+        const expTradesFormat = document.getElementById('export-trades-format');
+        const expTradesCancel = document.getElementById('cancel-export-trades');
+        const expTradesDownload = document.getElementById('download-export-trades');
+        const impTradesModal = document.getElementById('import-trades-modal');
+        const impTradesForm = document.getElementById('import-trades-form');
+        const impTradesFormat = document.getElementById('import-trades-format');
+        const impTradesFile = document.getElementById('import-trades-file');
+        const impTradesCancel = document.getElementById('cancel-import-trades');
         const expStockModal = document.getElementById('export-stock-modal');
         const expStockFormat = document.getElementById('export-stock-format');
         const expStockCancel = document.getElementById('cancel-export-stock');
@@ -596,6 +608,47 @@ const Settings = (function() {
         if (importCancel) importCancel.addEventListener('click', closeImport);
         if (importForm) importForm.addEventListener('submit', handleImport);
         if (importModal) importModal.addEventListener('click', e => { if (e.target === importModal) closeImport(); });
+
+        function openTradesExport() { expTradesFormat.value = 'json'; expTradesModal.style.display = 'flex'; }
+        function closeTradesExport() { expTradesModal.style.display = 'none'; }
+        function downloadTradesExport() {
+            const fmt = expTradesFormat.value;
+            const data = OptionsJournal.exportData(fmt);
+            const blob = new Blob([data], { type: fmt === 'json' ? 'application/json' : 'text/csv' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'trades-journal.' + (fmt === 'json' ? 'json' : 'csv');
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(a.href);
+            closeTradesExport();
+        }
+        function openTradesImport() { impTradesFormat.value = 'json'; if (impTradesFile) impTradesFile.value = ''; impTradesModal.style.display = 'flex'; }
+        function closeTradesImport() { impTradesModal.style.display = 'none'; }
+        function handleTradesImport(e) {
+            e.preventDefault();
+            const file = impTradesFile.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function() { OptionsJournal.importData(reader.result, impTradesFormat.value); closeTradesImport(); };
+            reader.readAsText(file);
+        }
+
+        if (expTradesBtn) expTradesBtn.addEventListener('click', openTradesExport);
+        if (expTradesCancel) expTradesCancel.addEventListener('click', closeTradesExport);
+        if (expTradesDownload) expTradesDownload.addEventListener('click', downloadTradesExport);
+        if (expTradesModal) expTradesModal.addEventListener('click', e => { if (e.target === expTradesModal) closeTradesExport(); });
+        if (impTradesBtn) impTradesBtn.addEventListener('click', openTradesImport);
+        if (impTradesCancel) impTradesCancel.addEventListener('click', closeTradesImport);
+        if (impTradesForm) impTradesForm.addEventListener('submit', handleTradesImport);
+        if (impTradesModal) impTradesModal.addEventListener('click', e => { if (e.target === impTradesModal) closeTradesImport(); });
+        if (delTradesBtn) {
+            delTradesBtn.addEventListener('click', async () => {
+                const c = await DialogManager.confirm('Delete all trades journal data? This cannot be undone.', 'Delete');
+                if (c) OptionsJournal.deleteAllData();
+            });
+        }
 
         if (typeof ForexData !== 'undefined' && ForexData.getRates) {
             ForexData.getRates().then(populateOptions).catch(() => populateOptions());

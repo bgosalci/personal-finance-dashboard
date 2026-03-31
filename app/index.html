@@ -43,6 +43,7 @@
         <button class="nav-tab active" data-tab="portfolio" data-i18n="nav.portfolio">Portfolio</button>
         <button class="nav-tab" data-tab="watchlist" data-i18n="nav.watchlist">Watchlist</button>
         <button class="nav-tab" data-tab="pension" data-i18n="nav.pension">Pension</button>
+        <button class="nav-tab" data-tab="trades-journal">Trades Journal</button>
         <button class="nav-tab" data-tab="calculators" data-i18n="nav.calculators">Calculators</button>
         <button class="nav-tab" data-tab="stock-tracker" data-i18n="nav.stockTracker">Stock Performance Tracker</button>
         <button class="nav-tab" data-tab="settings" data-i18n="nav.settings">Settings</button>
@@ -488,6 +489,177 @@
                     </div>
                 </div>
 
+            </div>
+
+            <!-- Trades Journal Tab -->
+            <div id="trades-journal" class="tab-content">
+                <div class="section-header">
+                    <h2 class="section-title">Trades Journal</h2>
+                    <div class="action-buttons">
+                        <button class="btn btn-primary" id="oj-add-trade-btn">Add Trade</button>
+                        <select id="oj-filter-status">
+                            <option value="All">All Trades</option>
+                            <option value="Open">Open</option>
+                            <option value="Closed">Closed</option>
+                            <option value="Expired">Expired</option>
+                            <option value="Assigned">Assigned</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="table-container" id="oj-table-container">
+                    <table class="data-table" id="oj-table">
+                        <thead>
+                            <tr>
+                                <th data-sort="dateOpened" data-label="Date">Date ▼</th>
+                                <th data-sort="ticker" data-label="Ticker">Ticker</th>
+                                <th>Strategy</th>
+                                <th data-sort="expiry" data-label="Expiry">Expiry</th>
+                                <th>Strike(s)</th>
+                                <th>Premium</th>
+                                <th>Qty</th>
+                                <th>Dir</th>
+                                <th>Status</th>
+                                <th>Close Date</th>
+                                <th>P&amp;L</th>
+                                <th>Notes</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="oj-body"></tbody>
+                    </table>
+                </div>
+
+                <div id="oj-analytics">
+                    <div class="summary-cards" id="oj-summary-cards">
+                        <div class="summary-card">
+                            <h4>Total Trades</h4>
+                            <p id="oj-total-trades">0</p>
+                        </div>
+                        <div class="summary-card">
+                            <h4>Open Trades</h4>
+                            <p id="oj-open-trades">0</p>
+                        </div>
+                        <div class="summary-card">
+                            <h4>Win Rate</h4>
+                            <p id="oj-win-rate">N/A</p>
+                        </div>
+                        <div class="summary-card">
+                            <h4>Total P&amp;L</h4>
+                            <p id="oj-total-pnl">$0.00</p>
+                        </div>
+                        <div class="summary-card">
+                            <h4>Avg Win</h4>
+                            <p id="oj-avg-win">$0.00</p>
+                        </div>
+                        <div class="summary-card">
+                            <h4>Avg Loss</h4>
+                            <p id="oj-avg-loss">$0.00</p>
+                        </div>
+                    </div>
+                    <div class="charts-container">
+                        <div class="chart-box">
+                            <h4>Cumulative P&amp;L</h4>
+                            <canvas id="oj-chart-cumulative"></canvas>
+                        </div>
+                        <div class="chart-box">
+                            <h4>Win / Loss / Break-even</h4>
+                            <canvas id="oj-chart-winloss"></canvas>
+                        </div>
+                        <div class="chart-box">
+                            <h4>P&amp;L by Strategy</h4>
+                            <canvas id="oj-chart-strategy"></canvas>
+                        </div>
+                        <div class="chart-box">
+                            <h4>P&amp;L by Ticker</h4>
+                            <canvas id="oj-chart-ticker"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Add / Edit Trade Modal -->
+                <div id="oj-trade-modal" class="modal">
+                    <div class="modal-content">
+                        <span class="modal-close" id="oj-modal-close">&times;</span>
+                        <h3 id="oj-modal-title">Add Trade</h3>
+                        <form id="oj-trade-form">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label>Date Opened</label>
+                                    <input type="date" id="oj-date-opened" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Ticker</label>
+                                    <input type="text" id="oj-ticker" placeholder="e.g. AAPL" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Strategy</label>
+                                    <select id="oj-strategy">
+                                        <option>Long Call</option>
+                                        <option>Long Put</option>
+                                        <option>Covered Call</option>
+                                        <option>Cash-Secured Put</option>
+                                        <option>Bull Call Spread</option>
+                                        <option>Bear Put Spread</option>
+                                        <option>Iron Condor</option>
+                                        <option>Iron Butterfly</option>
+                                        <option>Straddle</option>
+                                        <option>Strangle</option>
+                                        <option>Other</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Expiration Date</label>
+                                    <input type="date" id="oj-expiry" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Strike(s)</label>
+                                    <input type="text" id="oj-strikes" placeholder="e.g. 150 or 150/155">
+                                </div>
+                                <div class="form-group">
+                                    <label>Premium (per contract $)</label>
+                                    <input type="text" id="oj-premium" inputmode="decimal" placeholder="0.00" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Quantity (contracts)</label>
+                                    <input type="number" id="oj-quantity" min="1" value="1" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Direction</label>
+                                    <select id="oj-direction">
+                                        <option value="Buy">Buy (Debit)</option>
+                                        <option value="Sell">Sell (Credit)</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Status</label>
+                                    <select id="oj-status">
+                                        <option value="Open">Open</option>
+                                        <option value="Closed">Closed</option>
+                                        <option value="Expired">Expired</option>
+                                        <option value="Assigned">Assigned</option>
+                                    </select>
+                                </div>
+                                <div class="form-group" id="oj-close-date-group" style="display:none;">
+                                    <label>Date Closed</label>
+                                    <input type="date" id="oj-date-closed">
+                                </div>
+                                <div class="form-group" id="oj-close-premium-group" style="display:none;">
+                                    <label>Close Premium (per contract $)</label>
+                                    <input type="text" id="oj-close-premium" inputmode="decimal" placeholder="0.00">
+                                </div>
+                                <div class="form-group" style="grid-column: 1 / -1;">
+                                    <label>Notes</label>
+                                    <textarea id="oj-notes" rows="2" style="width:100%; resize:vertical; padding:0.5rem; border:1px solid var(--border-color); border-radius:6px; background:var(--background-secondary); color:var(--text-primary); font-size:0.875rem;"></textarea>
+                                </div>
+                            </div>
+                            <div class="modal-actions">
+                                <button type="button" class="btn btn-secondary" id="oj-cancel-btn">Cancel</button>
+                                <button type="submit" class="btn btn-primary">Save</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
 
             <!-- Calculators Tab -->
@@ -1503,6 +1675,15 @@
                     </div>
                 </div>
 
+                <h3 class="section-subtitle">Trades Journal</h3>
+                <div class="form-group">
+                    <div class="button-row">
+                        <button type="button" class="btn btn-secondary" id="export-trades-btn">Export Trades Journal</button>
+                        <button type="button" class="btn btn-secondary" id="import-trades-btn">Import Trades Journal</button>
+                        <button type="button" class="btn btn-danger" id="delete-trades-btn">Delete Trades Journal</button>
+                    </div>
+                </div>
+
                 <h3 class="section-subtitle" data-i18n="settings.sectionTitles.about">About</h3>
                 <div class="form-group">
                     <label data-i18n="settings.versionLabel">Web App Version</label>
@@ -1722,6 +1903,48 @@
         </div>
     </div>
 
+    <!-- Export Trades Journal Modal -->
+    <div id="export-trades-modal" class="modal">
+        <div class="modal-content">
+            <h3>Export Trades Journal</h3>
+            <div class="form-group">
+                <label for="export-trades-format">Format</label>
+                <select id="export-trades-format">
+                    <option value="json">JSON</option>
+                    <option value="csv">CSV</option>
+                </select>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn btn-secondary" id="cancel-export-trades">Cancel</button>
+                <button type="button" class="btn btn-primary" id="download-export-trades">Export</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Import Trades Journal Modal -->
+    <div id="import-trades-modal" class="modal">
+        <div class="modal-content">
+            <h3>Import Trades Journal</h3>
+            <form id="import-trades-form">
+                <div class="form-group">
+                    <label for="import-trades-format">Format</label>
+                    <select id="import-trades-format">
+                        <option value="json">JSON</option>
+                        <option value="csv">CSV</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="import-trades-file">File</label>
+                    <input type="file" id="import-trades-file" accept=".json,.csv" required>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" id="cancel-import-trades">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Import</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Dialog Modal for alerts and prompts -->
     <div id="dialog-modal" class="modal">
         <div class="modal-content">
@@ -1776,6 +1999,7 @@
     <script src="js/data/priceStorage.js"></script>
     <script src="js/features/watchlistManager.js"></script>
     <script src="js/features/pensionManager.js"></script>
+    <script src="js/features/optionsJournal.js"></script>
     <script src="js/data/ukTaxYears.js"></script>
     <script src="js/features/calculator.js"></script>
     <script src="js/features/stockTracker.js"></script>
