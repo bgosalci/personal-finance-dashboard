@@ -148,3 +148,23 @@ test('CGT calculator matches GOV.UK example across bands', () => {
   const result = window.DividendCgtCalculator.calculateFromValues({ taxYear: '2025/26', taxableIncome: 20000, dividends: 0, dividendsExcluded: 0, gains: 52600, losses: 0, applyAea: true });
   expect(result.cgt.taxDue).toBeCloseTo(10842, 2);
 });
+
+test('2026/27 dividend calculator uses 8.75% basic rate', () => {
+  require('../app/js/features/calculator');
+  const DividendCgtCalculator = window.DividendCgtCalculator;
+  const exampleTaxableIncome = DividendCgtCalculator.computeTaxableIncomeFromGross(29570, DividendCgtCalculator.getTaxYearData('2026/27'));
+  const result = DividendCgtCalculator.calculateFromValues({ taxYear: '2026/27', taxableIncome: exampleTaxableIncome, dividends: 3000, dividendsExcluded: 0, gains: 0, losses: 0, applyAea: true });
+  expect(result.dividend.taxDue).toBeCloseTo(218.75, 2);
+});
+
+test('2026/27 CGT calculator within basic band', () => {
+  require('../app/js/features/calculator');
+  const result = window.DividendCgtCalculator.calculateFromValues({ taxYear: '2026/27', taxableIncome: 20000, dividends: 0, dividendsExcluded: 0, gains: 12600, losses: 0, applyAea: true });
+  expect(result.cgt.taxDue).toBeCloseTo(1728, 2);
+});
+
+test('2026/27 CGT calculator across bands', () => {
+  require('../app/js/features/calculator');
+  const result = window.DividendCgtCalculator.calculateFromValues({ taxYear: '2026/27', taxableIncome: 20000, dividends: 0, dividendsExcluded: 0, gains: 52600, losses: 0, applyAea: true });
+  expect(result.cgt.taxDue).toBeCloseTo(10842, 2);
+});

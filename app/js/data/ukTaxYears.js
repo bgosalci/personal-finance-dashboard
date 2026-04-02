@@ -25,8 +25,8 @@ const UKTaxYears = {
         higherRateThreshold: 125140,
         dividendAllowance: 500,
         dividendRates: {
-            basic: 0.1075,
-            higher: 0.3575,
+            basic: 0.0875,
+            higher: 0.3375,
             additional: 0.3935
         },
         cgtAnnualExempt: 3000,
