@@ -1632,6 +1632,27 @@
                     <p class="form-hint">Used for historical EOD stock price charts in the portfolio.</p>
                 </div>
 
+                <div class="form-group">
+                    <div class="button-row">
+                        <button type="button" class="btn btn-secondary" id="export-api-keys-btn">Export API Keys</button>
+                        <button type="button" class="btn btn-secondary" id="import-api-keys-btn">Import API Keys</button>
+                        <button type="button" class="btn btn-danger" id="delete-api-keys-btn">Clear API Keys</button>
+                    </div>
+                </div>
+
+                <h3 class="section-subtitle">All Data</h3>
+                <div class="form-group">
+                    <p class="form-hint">Export or import all modules at once as a single JSON backup file.</p>
+                    <div class="button-row">
+                        <button type="button" class="btn btn-secondary" id="export-all-btn">Export All Data</button>
+                        <button type="button" class="btn btn-secondary" id="import-all-btn">Import All Data</button>
+                    </div>
+                    <label style="margin-top:8px;">
+                        <input type="checkbox" id="export-all-include-keys" checked>
+                        <span>Include API keys in backup</span>
+                    </label>
+                </div>
+
                 <h3 class="section-subtitle" data-i18n="settings.sectionTitles.pension">Pension</h3>
                 <div class="form-group">
                     <div class="button-row">
@@ -1941,6 +1962,66 @@
                 </div>
                 <div class="modal-actions">
                     <button type="button" class="btn btn-secondary" id="cancel-import-trades">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Import</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Import All Data Modal -->
+    <div id="import-all-modal" class="modal">
+        <div class="modal-content">
+            <h3>Import All Data</h3>
+            <p class="form-hint">Select a JSON backup file created by "Export All Data". Each included module will have its existing data replaced.</p>
+            <form id="import-all-form">
+                <div class="form-group">
+                    <label for="import-all-file">Backup File (.json)</label>
+                    <input type="file" id="import-all-file" accept=".json" required>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" id="cancel-import-all">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Import &amp; Overwrite</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Export API Keys Modal -->
+    <div id="export-api-keys-modal" class="modal">
+        <div class="modal-content">
+            <h3>Export API Keys</h3>
+            <div class="form-group">
+                <label for="export-api-keys-format">Format</label>
+                <select id="export-api-keys-format">
+                    <option value="json">JSON</option>
+                    <option value="csv">CSV</option>
+                </select>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn btn-secondary" id="cancel-export-api-keys">Cancel</button>
+                <button type="button" class="btn btn-primary" id="download-export-api-keys">Export</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Import API Keys Modal -->
+    <div id="import-api-keys-modal" class="modal">
+        <div class="modal-content">
+            <h3>Import API Keys</h3>
+            <form id="import-api-keys-form">
+                <div class="form-group">
+                    <label for="import-api-keys-format">Format</label>
+                    <select id="import-api-keys-format">
+                        <option value="json">JSON</option>
+                        <option value="csv">CSV</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="import-api-keys-file">File</label>
+                    <input type="file" id="import-api-keys-file" accept=".json,.csv">
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" id="cancel-import-api-keys">Cancel</button>
                     <button type="submit" class="btn btn-primary">Import</button>
                 </div>
             </form>
