@@ -609,7 +609,12 @@ const Settings = (function() {
             };
             let data;
             if (fmt === 'csv') {
-                data = 'provider,key\n' + Object.entries(keys).map(([k, v]) => `${k},${v}`).join('\n');
+                function escCsv(v) {
+                    if (v === undefined || v === null) return '';
+                    const s = String(v).replace(/"/g, '""');
+                    return /[",\n]/.test(s) ? '"' + s + '"' : s;
+                }
+                data = 'provider,key\n' + Object.entries(keys).map(([k, v]) => `${k},${escCsv(v)}`).join('\n');
             } else {
                 data = JSON.stringify(keys, null, 2);
             }
