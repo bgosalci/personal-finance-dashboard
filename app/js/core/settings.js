@@ -287,6 +287,25 @@ const Settings = (function() {
         const impStockFormat = document.getElementById('import-stock-format');
         const impStockFile = document.getElementById('import-stock-file');
         const impStockCancel = document.getElementById('cancel-import-stock');
+        const expAllBtn     = document.getElementById('export-all-btn');
+        const impAllBtn     = document.getElementById('import-all-btn');
+        const impAllModal   = document.getElementById('import-all-modal');
+        const impAllForm    = document.getElementById('import-all-form');
+        const impAllFile    = document.getElementById('import-all-file');
+        const impAllCancel  = document.getElementById('cancel-import-all');
+        const expAllIncKeys = document.getElementById('export-all-include-keys');
+        const expApiKeysBtn = document.getElementById('export-api-keys-btn');
+        const impApiKeysBtn = document.getElementById('import-api-keys-btn');
+        const delApiKeysBtn = document.getElementById('delete-api-keys-btn');
+        const expApiKeysModal = document.getElementById('export-api-keys-modal');
+        const expApiKeysFormat = document.getElementById('export-api-keys-format');
+        const expApiKeysCancel = document.getElementById('cancel-export-api-keys');
+        const expApiKeysDownload = document.getElementById('download-export-api-keys');
+        const impApiKeysModal = document.getElementById('import-api-keys-modal');
+        const impApiKeysForm = document.getElementById('import-api-keys-form');
+        const impApiKeysFormat = document.getElementById('import-api-keys-format');
+        const impApiKeysFile = document.getElementById('import-api-keys-file');
+        const impApiKeysCancel = document.getElementById('cancel-import-api-keys');
 
         function openExport() {
             exportFormat.value = 'json';
@@ -523,6 +542,113 @@ const Settings = (function() {
         }
 
 
+        function downloadAllExport() {
+            const includeKeys = expAllIncKeys ? expAllIncKeys.checked : true;
+            const combined = { version: 1, exportedAt: new Date().toISOString() };
+            try { combined.portfolio    = JSON.parse(PortfolioManager.exportData('json')); }  catch(e) { combined.portfolio = []; }
+            try { combined.watchlist    = JSON.parse(WatchlistManager.exportData('json')); }  catch(e) { combined.watchlist = []; }
+            try { combined.stockTracker = JSON.parse(StockTracker.exportData('json')); }      catch(e) { combined.stockTracker = {}; }
+            try { combined.pension      = JSON.parse(PensionManager.exportData('json')); }    catch(e) { combined.pension = []; }
+            try { if (typeof SalaryCalculator !== 'undefined') combined.salary = JSON.parse(SalaryCalculator.exportData('json')); } catch(e) { combined.salary = []; }
+            try { combined.trades       = JSON.parse(OptionsJournal.exportData('json')); }    catch(e) { combined.trades = []; }
+            if (includeKeys) {
+                combined.apiKeys = {
+                    finnhub:      (typeof QuotesService !== 'undefined' ? QuotesService.getApiKey() : ''),
+                    polygon:      (typeof MarketStatus  !== 'undefined' ? MarketStatus.getApiKey()  : ''),
+                    exchangerate: (typeof ForexData     !== 'undefined' ? ForexData.getApiKey()     : ''),
+                    fmp:          (typeof FmpService    !== 'undefined' ? FmpService.getApiKey()    : '')
+                };
+            }
+            const blob = new Blob([JSON.stringify(combined, null, 2)], { type: 'application/json' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'finance-backup-' + new Date().toISOString().slice(0, 10) + '.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(a.href);
+        }
+
+        function openAllImport() { if (impAllFile) impAllFile.value = ''; impAllModal.style.display = 'flex'; }
+        function closeAllImport() { impAllModal.style.display = 'none'; }
+        function handleAllImport(e) {
+            e.preventDefault();
+            const file = impAllFile.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function() {
+                let combined;
+                try { combined = JSON.parse(reader.result); } catch(err) { return; }
+                if (combined.portfolio    !== undefined) PortfolioManager.importData(JSON.stringify(combined.portfolio), 'json');
+                if (combined.watchlist    !== undefined) WatchlistManager.importData(JSON.stringify(combined.watchlist), 'json');
+                if (combined.stockTracker !== undefined) StockTracker.importData(JSON.stringify(combined.stockTracker), 'json');
+                if (combined.pension      !== undefined) PensionManager.importData(JSON.stringify(combined.pension), 'json');
+                if (combined.salary       !== undefined && typeof SalaryCalculator !== 'undefined') SalaryCalculator.importData(JSON.stringify(combined.salary), 'json');
+                if (combined.trades       !== undefined) OptionsJournal.importData(JSON.stringify(combined.trades), 'json');
+                if (combined.apiKeys) {
+                    const k = combined.apiKeys;
+                    if (k.finnhub      !== undefined && typeof QuotesService !== 'undefined') { QuotesService.setApiKey(k.finnhub);      if (apiKeyInput)          apiKeyInput.value          = k.finnhub; }
+                    if (k.polygon      !== undefined && typeof MarketStatus  !== 'undefined') { MarketStatus.setApiKey(k.polygon);       if (polygonKeyInput)      polygonKeyInput.value      = k.polygon; }
+                    if (k.exchangerate !== undefined && typeof ForexData     !== 'undefined') { ForexData.setApiKey(k.exchangerate);     if (exchangerateKeyInput) exchangerateKeyInput.value = k.exchangerate; }
+                    if (k.fmp          !== undefined && typeof FmpService    !== 'undefined') { FmpService.setApiKey(k.fmp);             if (fmpKeyInput)          fmpKeyInput.value          = k.fmp; }
+                }
+                closeAllImport();
+            };
+            reader.readAsText(file);
+        }
+
+        function openApiKeysExport() { expApiKeysFormat.value = 'json'; expApiKeysModal.style.display = 'flex'; }
+        function closeApiKeysExport() { expApiKeysModal.style.display = 'none'; }
+        function downloadApiKeysExport() {
+            const fmt = expApiKeysFormat.value;
+            const keys = {
+                finnhub: (typeof QuotesService !== 'undefined' ? QuotesService.getApiKey() : ''),
+                polygon: (typeof MarketStatus !== 'undefined' ? MarketStatus.getApiKey() : ''),
+                exchangerate: (typeof ForexData !== 'undefined' ? ForexData.getApiKey() : ''),
+                fmp: (typeof FmpService !== 'undefined' ? FmpService.getApiKey() : '')
+            };
+            let data;
+            if (fmt === 'csv') {
+                data = 'provider,key\n' + Object.entries(keys).map(([k, v]) => `${k},${v}`).join('\n');
+            } else {
+                data = JSON.stringify(keys, null, 2);
+            }
+            const blob = new Blob([data], { type: fmt === 'json' ? 'application/json' : 'text/csv' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'api-keys.' + (fmt === 'json' ? 'json' : 'csv');
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(a.href);
+            closeApiKeysExport();
+        }
+        function openApiKeysImport() { impApiKeysFormat.value = 'json'; if (impApiKeysFile) impApiKeysFile.value = ''; impApiKeysModal.style.display = 'flex'; }
+        function closeApiKeysImport() { impApiKeysModal.style.display = 'none'; }
+        function handleApiKeysImport(e) {
+            e.preventDefault();
+            const file = impApiKeysFile.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function() {
+                let keys = {};
+                if (impApiKeysFormat.value === 'csv') {
+                    reader.result.split('\n').slice(1).forEach(line => {
+                        const idx = line.indexOf(',');
+                        if (idx > -1) keys[line.slice(0, idx).trim()] = line.slice(idx + 1).trim();
+                    });
+                } else {
+                    try { keys = JSON.parse(reader.result); } catch (err) { return; }
+                }
+                if (keys.finnhub !== undefined && typeof QuotesService !== 'undefined') { QuotesService.setApiKey(keys.finnhub); if (apiKeyInput) apiKeyInput.value = keys.finnhub; }
+                if (keys.polygon !== undefined && typeof MarketStatus !== 'undefined') { MarketStatus.setApiKey(keys.polygon); if (polygonKeyInput) polygonKeyInput.value = keys.polygon; }
+                if (keys.exchangerate !== undefined && typeof ForexData !== 'undefined') { ForexData.setApiKey(keys.exchangerate); if (exchangerateKeyInput) exchangerateKeyInput.value = keys.exchangerate; }
+                if (keys.fmp !== undefined && typeof FmpService !== 'undefined') { FmpService.setApiKey(keys.fmp); if (fmpKeyInput) fmpKeyInput.value = keys.fmp; }
+                closeApiKeysImport();
+            };
+            reader.readAsText(file);
+        }
+
         if (expPortfolioBtn) expPortfolioBtn.addEventListener('click', openPortfolioExport);
         if (expPortfolioCancel) expPortfolioCancel.addEventListener('click', closePortfolioExport);
         if (expPortfolioDownload) expPortfolioDownload.addEventListener('click', downloadPortfolioExport);
@@ -647,6 +773,31 @@ const Settings = (function() {
             delTradesBtn.addEventListener('click', async () => {
                 const c = await DialogManager.confirm('Delete all trades journal data? This cannot be undone.', 'Delete');
                 if (c) OptionsJournal.deleteAllData();
+            });
+        }
+
+        if (expAllBtn) expAllBtn.addEventListener('click', downloadAllExport);
+        if (impAllBtn) impAllBtn.addEventListener('click', openAllImport);
+        if (impAllCancel) impAllCancel.addEventListener('click', closeAllImport);
+        if (impAllForm) impAllForm.addEventListener('submit', handleAllImport);
+        if (impAllModal) impAllModal.addEventListener('click', e => { if (e.target === impAllModal) closeAllImport(); });
+
+        if (expApiKeysBtn) expApiKeysBtn.addEventListener('click', openApiKeysExport);
+        if (expApiKeysCancel) expApiKeysCancel.addEventListener('click', closeApiKeysExport);
+        if (expApiKeysDownload) expApiKeysDownload.addEventListener('click', downloadApiKeysExport);
+        if (expApiKeysModal) expApiKeysModal.addEventListener('click', e => { if (e.target === expApiKeysModal) closeApiKeysExport(); });
+        if (impApiKeysBtn) impApiKeysBtn.addEventListener('click', openApiKeysImport);
+        if (impApiKeysCancel) impApiKeysCancel.addEventListener('click', closeApiKeysImport);
+        if (impApiKeysForm) impApiKeysForm.addEventListener('submit', handleApiKeysImport);
+        if (impApiKeysModal) impApiKeysModal.addEventListener('click', e => { if (e.target === impApiKeysModal) closeApiKeysImport(); });
+        if (delApiKeysBtn) {
+            delApiKeysBtn.addEventListener('click', async () => {
+                const c = await DialogManager.confirm('Clear all API keys? This cannot be undone.', 'Delete');
+                if (!c) return;
+                if (typeof QuotesService !== 'undefined') { QuotesService.setApiKey(''); if (apiKeyInput) apiKeyInput.value = ''; }
+                if (typeof MarketStatus !== 'undefined') { MarketStatus.setApiKey(''); if (polygonKeyInput) polygonKeyInput.value = ''; }
+                if (typeof ForexData !== 'undefined') { ForexData.setApiKey(''); if (exchangerateKeyInput) exchangerateKeyInput.value = ''; }
+                if (typeof FmpService !== 'undefined') { FmpService.setApiKey(''); if (fmpKeyInput) fmpKeyInput.value = ''; }
             });
         }
 
