@@ -554,9 +554,9 @@ const Calculator = (function() {
 
         function calculateStudentLoan(income, plan) {
             const plans = {
-                plan1: { threshold: 22015, rate: 0.09 },
-                plan2: { threshold: 27295, rate: 0.09 },
-                plan4: { threshold: 27660, rate: 0.09 },
+                plan1: { threshold: 26065, rate: 0.09 },
+                plan2: { threshold: 29491, rate: 0.09 },
+                plan4: { threshold: 34068, rate: 0.09 },
                 plan5: { threshold: 25000, rate: 0.09 },
                 postgraduate: { threshold: 21000, rate: 0.06 }
             };
@@ -1265,7 +1265,7 @@ const Calculator = (function() {
 
         function loadState() {
             const fallback = {
-                taxYear: '2025/26',
+                taxYear: '2026/27',
                 taxableIncome: 0,
                 dividends: 0,
                 dividendsExcluded: 0,
@@ -1307,7 +1307,7 @@ const Calculator = (function() {
 
         function readState() {
             return {
-                taxYear: taxYearSelect ? taxYearSelect.value : '2025/26',
+                taxYear: taxYearSelect ? taxYearSelect.value : '2026/27',
                 taxableIncome: taxableIncomeInput ? parseAmount(taxableIncomeInput.value) : 0,
                 dividends: dividendsInput ? parseAmount(dividendsInput.value) : 0,
                 dividendsExcluded: dividendsExcludedInput ? parseAmount(dividendsExcludedInput.value) : 0,
