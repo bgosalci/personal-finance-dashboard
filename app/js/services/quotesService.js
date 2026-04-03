@@ -4,6 +4,15 @@ const QuotesService = (function() {
     const EXCEPTION_KEY = 'finnhub_exceptions';
     const CACHE_TTL_MS = 60 * 1000; // 1 minute
     const quoteCache = {};
+
+    // Tickers routed to the local yfinance backend instead of Finnhub.
+    // Keys are user-facing ticker symbols; values are the yfinance symbols to fetch with.
+    const YFINANCE_SYMBOL_MAP = {
+        'BITCOIN': 'BTC-USD',
+        'XAU':     'GC=F',
+        'VUSA.L':  'VUSA.L',
+        'XLKQ.L':  'XLKQ.L',
+    };
     const storage = StorageUtils.getStorage();
     function getToday() {
         return new Date().toISOString().split('T')[0];
@@ -41,6 +50,35 @@ const QuotesService = (function() {
 
 
 
+    async function fetchYFinanceQuote(ticker, ySymbol) {
+        const cached = quoteCache[ticker];
+        if (cached && (Date.now() - cached.time) < CACHE_TTL_MS) {
+            return { price: cached.price, raw: cached.raw, excluded: false };
+        }
+        if (isTickerExcluded(ticker)) {
+            return { price: null, raw: null, excluded: true };
+        }
+        try {
+            const res = await fetch('/api/price?tickers=' + encodeURIComponent(ySymbol));
+            if (!res.ok) {
+                if (res.status === 429 || res.status === 503) addTickerException(ticker);
+                return { price: null, raw: null, excluded: false };
+            }
+            const data = await res.json();
+            const quote = (data.prices || {})[ySymbol] ?? null;
+            const price = (quote !== null && typeof quote === 'object') ? quote.c ?? null : null;
+            if (price === null && data.errors && data.errors[ySymbol]) {
+                addTickerException(ticker);
+            }
+            if (price !== null) {
+                quoteCache[ticker] = { price, raw: quote, time: Date.now() };
+            }
+            return { price, raw: quote, excluded: false };
+        } catch {
+            return { price: null, raw: null, excluded: false };
+        }
+    }
+
     function getApiKey() {
         try { return storage.getItem(LS_KEY) || ''; } catch (e) { return ''; }
     }
@@ -53,9 +91,11 @@ const QuotesService = (function() {
         return res.json();
     }
     async function fetchQuote(ticker) {
-        const token = getApiKey();
         if (!ticker) throw new Error('Ticker required');
         const t = String(ticker).toUpperCase();
+        const ySymbol = YFINANCE_SYMBOL_MAP[t];
+        if (ySymbol) return fetchYFinanceQuote(t, ySymbol);
+        const token = getApiKey();
         const now = Date.now();
         const cached = quoteCache[t];
         if (cached && (now - cached.time) < CACHE_TTL_MS) {

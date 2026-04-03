@@ -130,6 +130,72 @@ def options():
         event.set()
 
 
+PRICE_CACHE_TTL = 60  # seconds — matches frontend update interval
+
+
+@app.route('/api/price')
+def price():
+    raw = request.args.get('tickers', '').strip()
+    if not raw:
+        return jsonify({'error': 'tickers parameter is required'}), 400
+
+    symbols = [s.strip() for s in raw.split(',') if s.strip()]
+    result = {}
+    errors = {}
+
+    def _r(v): return round(float(v), 4)
+
+    for symbol in symbols:
+        cache_key = ('price', symbol)
+
+        while True:
+            with _cache_lock:
+                if cache_key in _cache:
+                    val, ts = _cache[cache_key]
+                    if time.time() - ts < PRICE_CACHE_TTL:
+                        result[symbol] = val
+                        break
+                if cache_key in _in_flight:
+                    event = _in_flight[cache_key]
+                else:
+                    event = threading.Event()
+                    _in_flight[cache_key] = event
+                    break
+            event.wait(timeout=30)
+
+        if symbol in result:
+            continue
+
+        try:
+            ticker = yf.Ticker(symbol)
+            hist = ticker.history(period='5d')
+            if hist.empty:
+                errors[symbol] = 'No data'
+                continue
+            quote = {
+                'c':  _r(hist['Close'].iloc[-1]),
+                'h':  _r(hist['High'].iloc[-1]),
+                'l':  _r(hist['Low'].iloc[-1]),
+                'o':  _r(hist['Open'].iloc[-1]),
+                'pc': _r(hist['Close'].iloc[-2]) if len(hist) >= 2 else _r(hist['Close'].iloc[-1]),
+            }
+            try:
+                quote['currency'] = ticker.fast_info.currency or 'USD'
+            except Exception:
+                quote['currency'] = 'USD'
+            with _cache_lock:
+                _cache[cache_key] = (quote, time.time())
+            result[symbol] = quote
+        except Exception as e:
+            errors[symbol] = str(e)
+        finally:
+            with _cache_lock:
+                _in_flight.pop(cache_key, None)
+            event.set()
+
+    return jsonify({'prices': result, 'errors': errors})
+
+
 # Static file routes — MUST be registered after all /api/* routes so they
 # don't shadow API handlers added in future.
 @app.route('/')
