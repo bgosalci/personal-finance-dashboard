@@ -80,6 +80,55 @@ def _fetch_options(symbol, requested_expiry):
     raise last_err
 
 
+_quote_cache = {}
+_quote_cache_lock = threading.Lock()
+QUOTE_CACHE_TTL = 60  # 1 minute
+
+
+@app.route('/api/quote')
+def quote():
+    symbol = request.args.get('ticker', '').strip()
+    if not symbol:
+        return jsonify({'error': 'ticker parameter is required'}), 400
+
+    with _quote_cache_lock:
+        cached = _quote_cache.get(symbol)
+        if cached and time.time() - cached['ts'] < QUOTE_CACHE_TTL:
+            return jsonify(cached['data'])
+
+    try:
+        t = yf.Ticker(symbol)
+        hist = t.history(period='5d', interval='1d')
+        if hist.empty:
+            return jsonify({'error': 'No data found for ticker'}), 422
+
+        row = hist.iloc[-1]
+        try:
+            currency = t.fast_info.currency or ''
+        except Exception:
+            currency = ''
+        divisor = 100 if currency == 'GBp' else 1
+
+        c = round(float(row['Close']) / divisor, 4)
+        h = round(float(row['High']) / divisor, 4)
+        l = round(float(row['Low']) / divisor, 4)
+        o = round(float(row['Open']) / divisor, 4)
+        pc = round(float(hist.iloc[-2]['Close']) / divisor, 4) if len(hist) >= 2 else 0
+        d = round(c - pc, 4)
+        dp = round((d / pc) * 100, 4) if pc else 0
+
+        data = {
+            'c': c, 'h': h, 'l': l, 'o': o,
+            'pc': pc, 'd': d, 'dp': dp,
+            't': int(row.name.timestamp()),
+        }
+        with _quote_cache_lock:
+            _quote_cache[symbol] = {'data': data, 'ts': time.time()}
+        return jsonify(data)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
 @app.route('/api/options')
 def options():
     symbol = request.args.get('ticker', '').strip().upper()

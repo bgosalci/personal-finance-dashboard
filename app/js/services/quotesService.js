@@ -2,6 +2,8 @@ const QuotesService = (function() {
     const LS_KEY = 'pf_api_key_finnhub';
     const BASE_URL = 'https://finnhub.io/api/v1';
     const EXCEPTION_KEY = 'finnhub_exceptions';
+    const LOCAL_QUOTE_URL = '/api/quote';
+    const FMP_EXCEPTION_KEY = 'fmp_exceptions';
     const CACHE_TTL_MS = 60 * 1000; // 1 minute
     const quoteCache = {};
     const storage = StorageUtils.getStorage();
@@ -35,6 +37,55 @@ const QuotesService = (function() {
             saveExceptions(list);
         }
     }
+    function loadFmpExceptions() {
+        try {
+            const data = storage.getItem(FMP_EXCEPTION_KEY);
+            if (data) return JSON.parse(data);
+        } catch (e) {}
+        return { date: '', tickers: [] };
+    }
+    function saveFmpExceptions(obj) {
+        try { storage.setItem(FMP_EXCEPTION_KEY, JSON.stringify(obj)); } catch (e) {}
+    }
+    function isFmpExcluded(ticker) {
+        const list = loadFmpExceptions();
+        return list.date === getToday() && list.tickers.includes(String(ticker || '').toUpperCase());
+    }
+    function addFmpException(ticker) {
+        const today = getToday();
+        const list = loadFmpExceptions();
+        if (list.date !== today) {
+            list.date = today;
+            list.tickers = [];
+        }
+        const t = String(ticker || '').toUpperCase();
+        if (t && !list.tickers.includes(t)) {
+            list.tickers.push(t);
+            saveFmpExceptions(list);
+        }
+    }
+    async function fetchFmpQuote(ticker) {
+        const t = String(ticker).toUpperCase();
+        const now = Date.now();
+        if (isFmpExcluded(ticker)) {
+            return { price: null, raw: null };
+        }
+        const url = LOCAL_QUOTE_URL + '?ticker=' + encodeURIComponent(ticker);
+        try {
+            const res = await fetch(url);
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            const raw = await res.json();
+            if (!raw || typeof raw.c !== 'number' || raw.error) {
+                addFmpException(ticker);
+                return { price: null, raw: null };
+            }
+            quoteCache[t] = { price: raw.c, raw, time: now };
+            return { price: raw.c, raw };
+        } catch (err) {
+            addFmpException(ticker);
+            return { price: null, raw: null };
+        }
+    }
 
 
 
@@ -62,7 +113,7 @@ const QuotesService = (function() {
             return { price: cached.price, raw: cached.raw };
         }
         if (isTickerExcluded(ticker)) {
-            return { price: null, raw: null, excluded: true };
+            return fetchFmpQuote(ticker);
         }
         const url = BASE_URL + '/quote?symbol=' + encodeURIComponent(ticker) + (token ? '&token=' + encodeURIComponent(token) : '');
         try {
@@ -76,7 +127,11 @@ const QuotesService = (function() {
             if (price !== null) {
                 quoteCache[t] = { price, raw: data, time: now };
             }
-            return { price, raw: allZero ? null : data, allZero: !!allZero };
+            if (allZero) {
+                addTickerException(ticker);
+                return fetchFmpQuote(ticker);
+            }
+            return { price, raw: data };
         } catch (err) {
             const msg = String((err && err.message) || '');
             if (/\bHTTP (401|403|429)\b/.test(msg)) {
