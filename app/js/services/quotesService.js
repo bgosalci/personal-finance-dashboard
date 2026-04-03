@@ -51,12 +51,12 @@ const QuotesService = (function() {
 
 
     async function fetchYFinanceQuote(ticker, ySymbol) {
-        if (isTickerExcluded(ticker)) {
-            return { price: null, raw: null, excluded: true };
-        }
         const cached = quoteCache[ticker];
         if (cached && (Date.now() - cached.time) < CACHE_TTL_MS) {
             return { price: cached.price, raw: cached.raw, excluded: false };
+        }
+        if (isTickerExcluded(ticker)) {
+            return { price: null, raw: null, excluded: true };
         }
         try {
             const res = await fetch('/api/price?tickers=' + encodeURIComponent(ySymbol));
