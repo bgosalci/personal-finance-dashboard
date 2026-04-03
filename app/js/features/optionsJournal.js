@@ -202,13 +202,10 @@ const OptionsJournal = (function () {
     function updateSummaryCards(analytics) {
         document.getElementById('oj-total-trades').textContent = analytics.totalTrades;
         document.getElementById('oj-open-trades').textContent = analytics.openTrades;
-        document.getElementById('oj-win-rate').textContent = analytics.winRate;
-        const winLossEl = document.getElementById('oj-win-loss-count');
-        if (winLossEl) {
-            winLossEl.textContent = (analytics.wins.length || analytics.losses.length)
-                ? `${analytics.wins.length}W / ${analytics.losses.length}L`
-                : '—';
-        }
+        const winLossInline = (analytics.wins.length || analytics.losses.length)
+            ? ` (${analytics.wins.length}W / ${analytics.losses.length}L)`
+            : '';
+        document.getElementById('oj-win-rate').textContent = analytics.winRate + winLossInline;
 
         const totalPnlEl = document.getElementById('oj-total-pnl');
         totalPnlEl.textContent = '$' + analytics.totalPnl.toFixed(2);
