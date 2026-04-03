@@ -143,21 +143,35 @@ def price():
     result = {}
     errors = {}
 
+    def _r(v): return round(float(v), 4)
+
     for symbol in symbols:
         cache_key = ('price', symbol)
-        with _cache_lock:
-            if cache_key in _cache:
-                val, ts = _cache[cache_key]
-                if time.time() - ts < PRICE_CACHE_TTL:
-                    result[symbol] = val
-                    continue
+
+        while True:
+            with _cache_lock:
+                if cache_key in _cache:
+                    val, ts = _cache[cache_key]
+                    if time.time() - ts < PRICE_CACHE_TTL:
+                        result[symbol] = val
+                        break
+                if cache_key in _in_flight:
+                    event = _in_flight[cache_key]
+                else:
+                    event = threading.Event()
+                    _in_flight[cache_key] = event
+                    break
+            event.wait(timeout=30)
+
+        if symbol in result:
+            continue
+
         try:
             ticker = yf.Ticker(symbol)
             hist = ticker.history(period='5d')
             if hist.empty:
                 errors[symbol] = 'No data'
                 continue
-            def _r(v): return round(float(v), 4)
             quote = {
                 'c':  _r(hist['Close'].iloc[-1]),
                 'h':  _r(hist['High'].iloc[-1]),
@@ -174,6 +188,10 @@ def price():
             result[symbol] = quote
         except Exception as e:
             errors[symbol] = str(e)
+        finally:
+            with _cache_lock:
+                _in_flight.pop(cache_key, None)
+            event.set()
 
     return jsonify({'prices': result, 'errors': errors})
 

@@ -51,15 +51,25 @@ const QuotesService = (function() {
 
 
     async function fetchYFinanceQuote(ticker, ySymbol) {
+        if (isTickerExcluded(ticker)) {
+            return { price: null, raw: null, excluded: true };
+        }
         const cached = quoteCache[ticker];
         if (cached && (Date.now() - cached.time) < CACHE_TTL_MS) {
             return { price: cached.price, raw: cached.raw, excluded: false };
         }
         try {
             const res = await fetch('/api/price?tickers=' + encodeURIComponent(ySymbol));
+            if (!res.ok) {
+                if (res.status === 429 || res.status === 503) addTickerException(ticker);
+                return { price: null, raw: null, excluded: false };
+            }
             const data = await res.json();
             const quote = (data.prices || {})[ySymbol] ?? null;
             const price = (quote !== null && typeof quote === 'object') ? quote.c ?? null : null;
+            if (price === null && data.errors && data.errors[ySymbol]) {
+                addTickerException(ticker);
+            }
             if (price !== null) {
                 quoteCache[ticker] = { price, raw: quote, time: Date.now() };
             }
