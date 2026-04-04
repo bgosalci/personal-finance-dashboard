@@ -183,6 +183,11 @@ def price():
                 quote['currency'] = ticker.fast_info.currency or 'USD'
             except Exception:
                 quote['currency'] = 'USD'
+            if quote.get('currency') in ('GBp', 'GBX'):
+                for field in ('c', 'h', 'l', 'o', 'pc'):
+                    if field in quote:
+                        quote[field] = _r(quote[field] / 100)
+                quote['currency'] = 'GBP'
             with _cache_lock:
                 _cache[cache_key] = (quote, time.time())
             result[symbol] = quote
