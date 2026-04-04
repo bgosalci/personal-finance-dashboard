@@ -30,6 +30,22 @@ const Settings = (function() {
         storage.setItem(FONT_SCALE_KEY, String(v));
     }
 
+    const DOB_KEY = 'pf_dob';
+    const RETIREMENT_AGE_KEY = 'pf_retirement_age';
+
+    function loadDob() { return storage.getItem(DOB_KEY) || ''; }
+    function saveDob(value) { storage.setItem(DOB_KEY, value); }
+    function getDob() { return loadDob(); }
+    function setDob(value) { saveDob(value); }
+
+    function loadRetirementAge() {
+        const v = parseInt(storage.getItem(RETIREMENT_AGE_KEY), 10);
+        return isNaN(v) ? null : v;
+    }
+    function saveRetirementAge(v) { storage.setItem(RETIREMENT_AGE_KEY, String(v)); }
+    function getRetirementAge() { return loadRetirementAge(); }
+    function setRetirementAge(value) { saveRetirementAge(value); }
+
     function applyFontScale(scale) {
         document.documentElement.style.setProperty('--app-font-scale', scale);
         if (window.Chart && Chart.defaults) {
@@ -63,6 +79,21 @@ const Settings = (function() {
     }
 
     function init() {
+        const dobInput = document.getElementById('settings-dob');
+        if (dobInput) {
+            dobInput.value = loadDob();
+            dobInput.addEventListener('change', e => saveDob(e.target.value));
+        }
+        const retAgeInput = document.getElementById('settings-retirement-age');
+        if (retAgeInput) {
+            const age = loadRetirementAge();
+            retAgeInput.value = age !== null ? age : '';
+            retAgeInput.addEventListener('input', e => {
+                const parsed = parseInt(e.target.value, 10);
+                if (!isNaN(parsed) && parsed > 0) saveRetirementAge(parsed);
+            });
+        }
+
         const fontBtns = document.querySelectorAll('.font-scale-btn');
         const fontReset = document.getElementById('font-scale-reset');
         const storedScale = loadFontScale();
@@ -817,5 +848,5 @@ const Settings = (function() {
         }
     }
 
-    return { init, getBaseCurrency, setBaseCurrency };
+    return { init, getBaseCurrency, setBaseCurrency, getDob, setDob, getRetirementAge, setRetirementAge };
 })();
