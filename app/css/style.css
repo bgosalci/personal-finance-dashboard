@@ -893,6 +893,14 @@
         .em-col-upper { color: var(--success-green-light); }
         .em-col-lower { color: var(--danger-red-light); }
         .em-col-delta { color: var(--warning-orange-light); }
+        .em-spot-contract {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            opacity: 0.85;
+            min-height: 1em;
+        }
         .em-spot-label {
             font-family: 'Courier New', Courier, monospace;
             font-size: 0.75rem;
