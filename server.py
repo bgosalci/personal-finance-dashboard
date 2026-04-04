@@ -82,20 +82,35 @@ def _fetch_options(symbol, requested_expiry):
 
 _quote_cache = {}
 _quote_cache_lock = threading.Lock()
+_quote_in_flight = {}  # symbol -> threading.Event (same sentinel pattern as /api/options)
 QUOTE_CACHE_TTL = 60  # 1 minute
 
 
 @app.route('/api/quote')
 def quote():
-    symbol = request.args.get('ticker', '').strip()
+    # Issue #4 fix: normalise case so VUSA.L and vusa.l share the same cache slot
+    symbol = request.args.get('ticker', '').strip().upper()
     if not symbol:
         return jsonify({'error': 'ticker parameter is required'}), 400
 
-    with _quote_cache_lock:
-        cached = _quote_cache.get(symbol)
-        if cached and time.time() - cached['ts'] < QUOTE_CACHE_TTL:
-            return jsonify(cached['data'])
+    # Issue #2 fix: in-flight sentinel prevents duplicate concurrent yfinance calls
+    while True:
+        with _quote_cache_lock:
+            cached = _quote_cache.get(symbol)
+            if cached and time.time() - cached['ts'] < QUOTE_CACHE_TTL:
+                return jsonify(cached['data'])
 
+            # Another thread is already fetching — wait for it
+            if symbol in _quote_in_flight:
+                event = _quote_in_flight[symbol]
+            else:
+                event = threading.Event()
+                _quote_in_flight[symbol] = event
+                break  # we are the designated fetcher
+
+        event.wait(timeout=30)
+
+    # Only one thread reaches here per symbol at a time
     try:
         t = yf.Ticker(symbol)
         hist = t.history(period='5d', interval='1d')
@@ -103,10 +118,19 @@ def quote():
             return jsonify({'error': 'No data found for ticker'}), 422
 
         row = hist.iloc[-1]
+
+        # Issue #3 fix: fall back to reading currency from history metadata if
+        # fast_info raises, so GBp tickers are never silently mis-divided
+        currency = ''
         try:
             currency = t.fast_info.currency or ''
         except Exception:
-            currency = ''
+            pass
+        if not currency:
+            try:
+                currency = (t.info or {}).get('currency', '') or ''
+            except Exception:
+                pass
         divisor = 100 if currency == 'GBp' else 1
 
         c = round(float(row['Close']) / divisor, 4)
@@ -127,6 +151,10 @@ def quote():
         return jsonify(data)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+    finally:
+        with _quote_cache_lock:
+            _quote_in_flight.pop(symbol, None)
+        event.set()
 
 
 @app.route('/api/options')

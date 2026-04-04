@@ -129,7 +129,11 @@ const QuotesService = (function() {
             }
             if (allZero) {
                 addTickerException(ticker);
-                return fetchFmpQuote(ticker);
+                const fallback = await fetchFmpQuote(ticker);
+                // If FMP also has no data, preserve allZero:true so callers
+                // don't count this as an API key failure (market may be closed)
+                if (fallback.price !== null) return fallback;
+                return { price: null, raw: null, allZero: true };
             }
             return { price, raw: data };
         } catch (err) {
