@@ -895,7 +895,7 @@
         .em-col-delta { color: var(--warning-orange-light); }
         .em-spot-contract {
             font-family: 'Courier New', Courier, monospace;
-            font-size: 0.75rem;
+            font-size: 0.9rem;
             font-weight: 600;
             letter-spacing: 0.05em;
             opacity: 0.85;
