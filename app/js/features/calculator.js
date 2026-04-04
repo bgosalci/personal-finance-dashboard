@@ -78,7 +78,7 @@ const Calculator = (function() {
 
     // Sub-Tab Management
     function switchSubTab(subTabName) {
-        const subTabs = document.querySelectorAll('.sub-nav-tab');
+        const subTabs = document.querySelectorAll('.sub-nav-tab[data-subtab]');
         const subContents = document.querySelectorAll('.sub-tab-content');
 
         subTabs.forEach(tab => {
@@ -1905,7 +1905,7 @@ const Calculator = (function() {
         document.addEventListener('baseCurrencyChanged', updateCurrencyDisplays);
 
         // Initialize sub-tab navigation
-        const subTabs = document.querySelectorAll('.sub-nav-tab');
+        const subTabs = document.querySelectorAll('.sub-nav-tab[data-subtab]');
         subTabs.forEach(tab => {
             tab.addEventListener('click', () => {
                 switchSubTab(tab.dataset.subtab);
