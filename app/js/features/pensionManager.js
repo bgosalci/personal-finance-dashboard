@@ -503,15 +503,57 @@ const PensionManager = (function() {
         });
     }
 
+    function xirr(cashFlows, dates, guess = 0.1) {
+        const TOLERANCE = 1e-6;
+        const MAX_ITER = 100;
+        const days = dates.map(d => (new Date(d) - new Date(dates[0])) / (1000 * 60 * 60 * 24));
+        let rate = guess;
+        for (let i = 0; i < MAX_ITER; i++) {
+            let npv = 0;
+            let dnpv = 0;
+            for (let j = 0; j < cashFlows.length; j++) {
+                const t = days[j] / 365.25;
+                const factor = Math.pow(1 + rate, t);
+                npv += cashFlows[j] / factor;
+                dnpv -= t * cashFlows[j] / (factor * (1 + rate));
+            }
+            if (dnpv === 0) return null;
+            const newRate = rate - npv / dnpv;
+            if (Math.abs(newRate - rate) < TOLERANCE) return newRate;
+            rate = newRate;
+        }
+        return null;
+    }
+
     function computeAnalysis(stats) {
         if (!stats || stats.length === 0) return null;
         const current = summaryMode ? summaryInfo : pensions.find(p => p.id === currentPensionId);
         const startVal = parseFloat(current.start) || 0;
-        const startDate = new Date(stats[0].date);
-        const endDate = new Date(stats[stats.length - 1].date);
-        const years = (endDate - startDate) / (365.25 * 24 * 3600 * 1000);
         const endVal = stats[stats.length - 1].value;
-        const cagr = years > 0 && startVal > 0 ? (Math.pow(endVal / startVal, 1 / years) - 1) * 100 : 0;
+
+        const xirrFlows = [];
+        const xirrDates = [];
+        if (startVal > 0) {
+            xirrFlows.push(-startVal);
+            xirrDates.push(stats[0].date);
+        }
+        if (current.type === 'payments') {
+            entries.forEach(en => {
+                const pmt = parseFloat(en.payment) || 0;
+                if (pmt > 0) {
+                    xirrFlows.push(-pmt);
+                    xirrDates.push(en.date);
+                }
+            });
+        }
+        xirrFlows.push(endVal);
+        xirrDates.push(stats[stats.length - 1].date);
+
+        let cagr = null;
+        if (xirrFlows.length >= 2) {
+            const rate = xirr(xirrFlows, xirrDates);
+            if (rate !== null && isFinite(rate)) cagr = rate * 100;
+        }
 
         let bestMonth = stats[0];
         let worstMonth = stats[0];
@@ -577,7 +619,7 @@ const PensionManager = (function() {
             return;
         }
 
-        cagrEl.textContent = analysis.cagr ? analysis.cagr.toFixed(2) + '%' : '---';
+        cagrEl.textContent = analysis.cagr != null ? analysis.cagr.toFixed(2) + '%' : '---';
         bestMonthEl.textContent = analysis.bestMonth ? `${formatDisplayDate(analysis.bestMonth.date)} (${analysis.bestMonth.pct.toFixed(2)}%)` : '---';
         worstMonthEl.textContent = analysis.worstMonth ? `${formatDisplayDate(analysis.worstMonth.date)} (${analysis.worstMonth.pct.toFixed(2)}%)` : '---';
         bestYearEl.textContent = analysis.bestYear ? `${analysis.bestYear.year} (${analysis.bestYear.pct.toFixed(2)}%)` : '---';
