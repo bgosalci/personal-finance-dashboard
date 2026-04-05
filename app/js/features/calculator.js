@@ -1724,16 +1724,14 @@ const Calculator = (function() {
             }
         }
 
-        function setFetchStatus(state, a, b, c) {
+        function setFetchStatus(state, a, b) {
             var el = document.getElementById('em-fetch-status');
             if (state === 'loading') {
                 el.textContent = I18n.t('calculators.expectedMove.ticker.loading');
                 el.className = 'em-fetch-status em-fetch-loading';
             } else if (state === 'success') {
-                var text = I18n.t('calculators.expectedMove.ticker.expiry')
+                el.textContent = I18n.t('calculators.expectedMove.ticker.expiry')
                     .replace('{expiry}', a).replace('{strike}', b);
-                if (c) text += ' · ' + c;
-                el.textContent = text;
                 el.className = 'em-fetch-status em-fetch-success';
             } else {
                 el.textContent = a;
@@ -1755,8 +1753,9 @@ const Calculator = (function() {
             document.getElementById('em-stock-price').value = res.price;
             document.getElementById('em-atm-call').value    = res.call;
             document.getElementById('em-atm-put').value     = res.put;
-            setFetchStatus('success', res.expiry, res.strike,
-                emFetchedAt.toLocaleTimeString());
+            var fetchTimeEl = document.getElementById('em-fetch-time');
+            if (fetchTimeEl) fetchTimeEl.textContent = emFetchedAt.toLocaleDateString() + ' ' + emFetchedAt.toLocaleTimeString();
+            setFetchStatus('success', res.expiry, res.strike);
             calculate();
         }
 
@@ -1799,6 +1798,8 @@ const Calculator = (function() {
                 .catch(function(err) {
                     emChainData = [];
                     emFetchedAt = null;
+                    var fetchTimeEl = document.getElementById('em-fetch-time');
+                    if (fetchTimeEl) fetchTimeEl.textContent = '';
                     setFetchStatus('error', err.message);
                 });
         }
@@ -1815,6 +1816,8 @@ const Calculator = (function() {
                 .catch(function(err) {
                     emChainData = [];
                     emFetchedAt = null;
+                    var fetchTimeEl = document.getElementById('em-fetch-time');
+                    if (fetchTimeEl) fetchTimeEl.textContent = '';
                     setFetchStatus('error', err.message);
                 });
         }
