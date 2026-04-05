@@ -1413,6 +1413,7 @@ const Calculator = (function() {
     const ExpectedMoveCalculator = (function() {
         var emCurrency  = 'USD';   // updated when a ticker is fetched
         var emChainData = [];      // full options chain from last fetch
+        var emFetchedAt = null;    // timestamp of last successful fetch
 
         function formatEmCurrency(amount) {
             return I18n.formatCurrency(amount, emCurrency);
@@ -1708,9 +1709,9 @@ const Calculator = (function() {
                 var upperChain = findChainStrike(price + em);
                 var lowerChain = findChainStrike(price - em);
                 document.getElementById('em-upper-contract').textContent =
-                    (upperChain && upperChain.call != null) ? 'CALL ' + formatEmCurrency(upperChain.call) : '';
+                    (upperChain && upperChain.call != null) ? 'CALL ' + formatEmCurrency(upperChain.call) + ' @ ' + formatEmCurrency(upperChain.strike) : '';
                 document.getElementById('em-lower-contract').textContent =
-                    (lowerChain && lowerChain.put  != null) ? 'PUT '  + formatEmCurrency(lowerChain.put)  : '';
+                    (lowerChain && lowerChain.put  != null) ? 'PUT '  + formatEmCurrency(lowerChain.put)  + ' @ ' + formatEmCurrency(lowerChain.strike)  : '';
                 showHero(true);
                 renderFormula(call, put, straddle, em, pct, price, upperLabel, lowerLabel, multiplier);
                 showChart(true);
@@ -1723,14 +1724,16 @@ const Calculator = (function() {
             }
         }
 
-        function setFetchStatus(state, a, b) {
+        function setFetchStatus(state, a, b, c) {
             var el = document.getElementById('em-fetch-status');
             if (state === 'loading') {
                 el.textContent = I18n.t('calculators.expectedMove.ticker.loading');
                 el.className = 'em-fetch-status em-fetch-loading';
             } else if (state === 'success') {
-                el.textContent = I18n.t('calculators.expectedMove.ticker.expiry')
+                var text = I18n.t('calculators.expectedMove.ticker.expiry')
                     .replace('{expiry}', a).replace('{strike}', b);
+                if (c) text += ' · ' + c;
+                el.textContent = text;
                 el.className = 'em-fetch-status em-fetch-success';
             } else {
                 el.textContent = a;
@@ -1748,10 +1751,12 @@ const Calculator = (function() {
         function applyFetchResult(res) {
             emCurrency  = res.currency || 'USD';
             emChainData = res.chain || [];
+            emFetchedAt = new Date();
             document.getElementById('em-stock-price').value = res.price;
             document.getElementById('em-atm-call').value    = res.call;
             document.getElementById('em-atm-put').value     = res.put;
-            setFetchStatus('success', res.expiry, res.strike);
+            setFetchStatus('success', res.expiry, res.strike,
+                emFetchedAt.toLocaleTimeString());
             calculate();
         }
 
@@ -1793,6 +1798,7 @@ const Calculator = (function() {
                 })
                 .catch(function(err) {
                     emChainData = [];
+                    emFetchedAt = null;
                     setFetchStatus('error', err.message);
                 });
         }
@@ -1808,6 +1814,7 @@ const Calculator = (function() {
                 })
                 .catch(function(err) {
                     emChainData = [];
+                    emFetchedAt = null;
                     setFetchStatus('error', err.message);
                 });
         }
