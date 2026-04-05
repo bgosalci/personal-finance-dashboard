@@ -1411,7 +1411,9 @@ const Calculator = (function() {
 
     // Expected Move Calculator (ATM Straddle)
     const ExpectedMoveCalculator = (function() {
-        var emCurrency = 'USD';   // updated when a ticker is fetched
+        var emCurrency  = 'USD';   // updated when a ticker is fetched
+        var emChainData = [];      // full options chain from last fetch
+        var emFetchedAt = null;    // timestamp of last successful fetch
 
         function formatEmCurrency(amount) {
             return I18n.formatCurrency(amount, emCurrency);
@@ -1704,6 +1706,12 @@ const Calculator = (function() {
                 document.getElementById('em-upper').textContent      = formatEmCurrency(price + em);
                 document.getElementById('em-spot-price').textContent = formatEmCurrency(price);
                 document.getElementById('em-lower').textContent      = formatEmCurrency(price - em);
+                var upperChain = findChainStrike(price + em);
+                var lowerChain = findChainStrike(price - em);
+                document.getElementById('em-upper-contract').textContent =
+                    (upperChain && upperChain.call != null) ? 'CALL ' + formatEmCurrency(upperChain.call) + ' @ ' + formatEmCurrency(upperChain.strike) : '';
+                document.getElementById('em-lower-contract').textContent =
+                    (lowerChain && lowerChain.put  != null) ? 'PUT '  + formatEmCurrency(lowerChain.put)  + ' @ ' + formatEmCurrency(lowerChain.strike)  : '';
                 showHero(true);
                 renderFormula(call, put, straddle, em, pct, price, upperLabel, lowerLabel, multiplier);
                 showChart(true);
@@ -1731,11 +1739,22 @@ const Calculator = (function() {
             }
         }
 
+        function findChainStrike(targetPrice) {
+            if (!emChainData.length) return null;
+            return emChainData.reduce(function(best, row) {
+                return Math.abs(row.strike - targetPrice) < Math.abs(best.strike - targetPrice) ? row : best;
+            });
+        }
+
         function applyFetchResult(res) {
-            emCurrency = res.currency || 'USD';
+            emCurrency  = res.currency || 'USD';
+            emChainData = res.chain || [];
+            emFetchedAt = new Date();
             document.getElementById('em-stock-price').value = res.price;
             document.getElementById('em-atm-call').value    = res.call;
             document.getElementById('em-atm-put').value     = res.put;
+            var fetchTimeEl = document.getElementById('em-fetch-time');
+            if (fetchTimeEl) fetchTimeEl.textContent = emFetchedAt.toLocaleDateString() + ' ' + emFetchedAt.toLocaleTimeString();
             setFetchStatus('success', res.expiry, res.strike);
             calculate();
         }
@@ -1777,6 +1796,10 @@ const Calculator = (function() {
                     applyFetchResult(res.data);
                 })
                 .catch(function(err) {
+                    emChainData = [];
+                    emFetchedAt = null;
+                    var fetchTimeEl = document.getElementById('em-fetch-time');
+                    if (fetchTimeEl) fetchTimeEl.textContent = '';
                     setFetchStatus('error', err.message);
                 });
         }
@@ -1791,6 +1814,10 @@ const Calculator = (function() {
                     applyFetchResult(res.data);
                 })
                 .catch(function(err) {
+                    emChainData = [];
+                    emFetchedAt = null;
+                    var fetchTimeEl = document.getElementById('em-fetch-time');
+                    if (fetchTimeEl) fetchTimeEl.textContent = '';
                     setFetchStatus('error', err.message);
                 });
         }

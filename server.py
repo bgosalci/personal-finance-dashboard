@@ -64,6 +64,18 @@ def _fetch_options(symbol, requested_expiry):
 
             currency = (ticker.info or {}).get('currency', 'USD') or 'USD'
 
+            # Full chain: sorted list of {strike, call, put} for all strikes
+            all_strikes = sorted(set(calls['strike'].tolist()) | set(puts['strike'].tolist()))
+            chain_data = []
+            for s in all_strikes:
+                c_rows = calls[calls['strike'] == s]
+                p_rows = puts[puts['strike'] == s]
+                chain_data.append({
+                    'strike': float(s),
+                    'call':   mid(c_rows.iloc[0]) if not c_rows.empty else None,
+                    'put':    mid(p_rows.iloc[0]) if not p_rows.empty else None,
+                })
+
             return {
                 'price':       price,
                 'strike':      atm_strike,
@@ -72,6 +84,7 @@ def _fetch_options(symbol, requested_expiry):
                 'expiry':      expiry,
                 'expirations': expirations,
                 'currency':    currency,
+                'chain':       chain_data,
             }
         except LookupError:
             raise

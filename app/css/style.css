@@ -893,6 +893,21 @@
         .em-col-upper { color: var(--success-green-light); }
         .em-col-lower { color: var(--danger-red-light); }
         .em-col-delta { color: var(--warning-orange-light); }
+        .em-fetch-time {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.7rem;
+            color: var(--em-panel-text-dim);
+            letter-spacing: 0.05em;
+            min-height: 1em;
+        }
+        .em-spot-contract {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.9rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            opacity: 0.85;
+            min-height: 1em;
+        }
         .em-spot-label {
             font-family: 'Courier New', Courier, monospace;
             font-size: 0.75rem;
