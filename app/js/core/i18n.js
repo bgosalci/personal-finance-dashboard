@@ -417,6 +417,7 @@ const I18n = (function() {
                     "heroHeader": "// EXPECTED MOVE · (CALL + PUT) × 0.85",
                     "spot": { "upper": "↑ 1Σ UPPER", "spot": "SPOT", "lower": "↓ 1Σ LOWER" },
                     "chartTitle": "// PROBABILITY DISTRIBUTION",
+                    "cspAction": "Calculate Contracts to Sell →",
                     "labels": {
                         "stockPrice": "Stock Price",
                         "atmCall": "ATM Call",
@@ -473,12 +474,14 @@ const I18n = (function() {
                     "labels": {
                         "buyingPower": "Available Buying Power",
                         "pct": "Buying Power to Use (%)",
+                        "contracts": "Number of Contracts",
                         "strike": "Put Strike Price",
                         "premium": "Put Premium per Share"
                     },
                     "hints": {
                         "buyingPower": "Your total cash or margin shown as \"Buying Power\" in your broker account.",
                         "pct": "Percentage to commit. Keeping below 100% leaves a buffer for other trades or margin calls.",
+                        "contracts": "Auto-calculated. Override to model a specific number of contracts.",
                         "strike": "The strike you intend to sell. Each contract covers 100 shares, so capital locked = Strike × 100 per contract.",
                         "premium": "The option price (bid) per share you receive when selling the put. Leave blank to see position sizing only."
                     },
@@ -886,6 +889,7 @@ const I18n = (function() {
                     "heroHeader": "// LËVIZJA E PRITSHME · (THIRRJE + VËNIE) × 0.85",
                     "spot": { "upper": "↑ 1Σ LART", "spot": "SPOT", "lower": "↓ 1Σ POSHTË" },
                     "chartTitle": "// SHPËRNDARJA E PROBABILITETIT",
+                    "cspAction": "Calculate Contracts to Sell →",
                     "labels": {
                         "stockPrice": "Çmimi i aksionit",
                         "atmCall": "Thirrje ATM",
@@ -942,12 +946,14 @@ const I18n = (function() {
                     "labels": {
                         "buyingPower": "Fuqia Blerëse e Disponueshme",
                         "pct": "Fuqia Blerëse për t'u Përdorur (%)",
+                        "contracts": "Number of Contracts",
                         "strike": "Çmimi i Goditjes së Put-it",
                         "premium": "Primi i Put-it për Aksion"
                     },
                     "hints": {
                         "buyingPower": "Para totale ose margjina juaj e treguar si \"Fuqi Blerëse\" në llogarinë tuaj të brokerit.",
                         "pct": "Përqindja për t'u angazhuar. Mbajtja nën 100% lë një tampon për tregtitë e tjera ose thirrjet e margjinës.",
+                        "contracts": "Auto-calculated. Override to model a specific number of contracts.",
                         "strike": "Goditja që synoni të shisni. Çdo kontratë mbulon 100 aksione, pra kapitali i bllokuar = Strike × 100 për kontratë.",
                         "premium": "Çmimi i opsionit (ofertë) për aksion që merrni kur shisni put-in. Lini bosh për të parë vetëm madhësinë e pozicionit."
                     },
@@ -1345,6 +1351,7 @@ const I18n = (function() {
                     "heroHeader": "// MOUVEMENT ATTENDU · (CALL + PUT) × 0.85",
                     "spot": { "upper": "↑ 1Σ HAUT", "spot": "SPOT", "lower": "↓ 1Σ BAS" },
                     "chartTitle": "// DISTRIBUTION DE PROBABILITÉ",
+                    "cspAction": "Calculate Contracts to Sell →",
                     "labels": {
                         "stockPrice": "Cours de l'action",
                         "atmCall": "Call ATM",
@@ -1401,12 +1408,14 @@ const I18n = (function() {
                     "labels": {
                         "buyingPower": "Pouvoir d'Achat Disponible",
                         "pct": "Pouvoir d'Achat à Utiliser (%)",
+                        "contracts": "Number of Contracts",
                         "strike": "Prix d'Exercice du Put",
                         "premium": "Prime du Put par Action"
                     },
                     "hints": {
                         "buyingPower": "Vos liquidités totales ou marge affichées comme \"Pouvoir d'Achat\" dans votre compte courtier.",
                         "pct": "Pourcentage à engager. Rester sous 100% laisse un tampon pour d'autres transactions ou appels de marge.",
+                        "contracts": "Auto-calculated. Override to model a specific number of contracts.",
                         "strike": "L'exercice que vous souhaitez vendre. Chaque contrat couvre 100 actions, donc capital bloqué = Strike × 100 par contrat.",
                         "premium": "Le prix de l'option (offre) par action que vous recevez lors de la vente du put. Laissez vide pour voir uniquement le dimensionnement de position."
                     },
@@ -1804,6 +1813,7 @@ const I18n = (function() {
                     "heroHeader": "// ERWARTETE BEWEGUNG · (CALL + PUT) × 0.85",
                     "spot": { "upper": "↑ 1Σ OBEN", "spot": "SPOT", "lower": "↓ 1Σ UNTEN" },
                     "chartTitle": "// WAHRSCHEINLICHKEITSVERTEILUNG",
+                    "cspAction": "Calculate Contracts to Sell →",
                     "labels": {
                         "stockPrice": "Aktienkurs",
                         "atmCall": "ATM Call",
@@ -1860,12 +1870,14 @@ const I18n = (function() {
                     "labels": {
                         "buyingPower": "Verfügbare Kaufkraft",
                         "pct": "Zu Verwendende Kaufkraft (%)",
+                        "contracts": "Number of Contracts",
                         "strike": "Put Strike-Preis",
                         "premium": "Put-Prämie pro Aktie"
                     },
                     "hints": {
                         "buyingPower": "Ihr gesamtes Bargeld oder Ihre Marge, die in Ihrem Brokerkonto als \"Kaufkraft\" angezeigt wird.",
                         "pct": "Zu verwendender Prozentsatz. Unter 100% zu bleiben lässt einen Puffer für andere Trades oder Margin Calls.",
+                        "contracts": "Auto-calculated. Override to model a specific number of contracts.",
                         "strike": "Der Strike, den Sie verkaufen möchten. Jeder Kontrakt deckt 100 Aktien ab, also gebundenes Kapital = Strike × 100 pro Kontrakt.",
                         "premium": "Der Optionspreis (Geld) pro Aktie, den Sie beim Verkauf des Puts erhalten. Leer lassen, um nur die Positionsgröße zu sehen."
                     },
@@ -2263,6 +2275,7 @@ const I18n = (function() {
                     "heroHeader": "// MOVIMIENTO ESPERADO · (CALL + PUT) × 0.85",
                     "spot": { "upper": "↑ 1Σ SUPERIOR", "spot": "SPOT", "lower": "↓ 1Σ INFERIOR" },
                     "chartTitle": "// DISTRIBUCIÓN DE PROBABILIDAD",
+                    "cspAction": "Calculate Contracts to Sell →",
                     "labels": {
                         "stockPrice": "Precio de la acción",
                         "atmCall": "Call ATM",
@@ -2319,12 +2332,14 @@ const I18n = (function() {
                     "labels": {
                         "buyingPower": "Poder Adquisitivo Disponible",
                         "pct": "Poder Adquisitivo a Usar (%)",
+                        "contracts": "Number of Contracts",
                         "strike": "Precio de Ejercicio del Put",
                         "premium": "Prima del Put por Acción"
                     },
                     "hints": {
                         "buyingPower": "Su efectivo total o margen mostrado como \"Poder Adquisitivo\" en su cuenta de corredor.",
                         "pct": "Porcentaje a comprometer. Mantenerse por debajo del 100% deja un margen para otras operaciones o llamadas de margen.",
+                        "contracts": "Auto-calculated. Override to model a specific number of contracts.",
                         "strike": "El ejercicio que pretende vender. Cada contrato cubre 100 acciones, por lo que el capital bloqueado = Strike × 100 por contrato.",
                         "premium": "El precio de la opción (oferta) por acción que recibe al vender el put. Déjelo en blanco para ver solo el tamaño de la posición."
                     },
@@ -2722,6 +2737,7 @@ const I18n = (function() {
                     "heroHeader": "// MOVIMENTO ATTESO · (CALL + PUT) × 0.85",
                     "spot": { "upper": "↑ 1Σ SUPERIORE", "spot": "SPOT", "lower": "↓ 1Σ INFERIORE" },
                     "chartTitle": "// DISTRIBUZIONE DI PROBABILITÀ",
+                    "cspAction": "Calculate Contracts to Sell →",
                     "labels": {
                         "stockPrice": "Prezzo dell'azione",
                         "atmCall": "Call ATM",
@@ -2778,12 +2794,14 @@ const I18n = (function() {
                     "labels": {
                         "buyingPower": "Potere d'Acquisto Disponibile",
                         "pct": "Potere d'Acquisto da Utilizzare (%)",
+                        "contracts": "Number of Contracts",
                         "strike": "Prezzo Strike della Put",
                         "premium": "Premio della Put per Azione"
                     },
                     "hints": {
                         "buyingPower": "Il tuo contante totale o margine mostrato come \"Potere d'Acquisto\" nel tuo conto broker.",
                         "pct": "Percentuale da impegnare. Mantenersi sotto il 100% lascia un buffer per altri trade o chiamate a margine.",
+                        "contracts": "Auto-calculated. Override to model a specific number of contracts.",
                         "strike": "Lo strike che intendi vendere. Ogni contratto copre 100 azioni, quindi capitale bloccato = Strike × 100 per contratto.",
                         "premium": "Il prezzo dell'opzione (denaro) per azione che ricevi quando vendi la put. Lascia vuoto per vedere solo il dimensionamento della posizione."
                     },
@@ -3186,6 +3204,7 @@ const I18n = (function() {
                     "heroHeader": "// MIȘCARE AȘTEPTATĂ · (CALL + PUT) × 0.85",
                     "spot": { "upper": "↑ 1Σ SUS", "spot": "SPOT", "lower": "↓ 1Σ JOS" },
                     "chartTitle": "// DISTRIBUȚIE DE PROBABILITATE",
+                    "cspAction": "Calculate Contracts to Sell →",
                     "labels": {
                         "stockPrice": "Prețul acțiunii",
                         "atmCall": "Call ATM",
@@ -3242,12 +3261,14 @@ const I18n = (function() {
                     "labels": {
                         "buyingPower": "Putere de Cumpărare Disponibilă",
                         "pct": "Putere de Cumpărare de Utilizat (%)",
+                        "contracts": "Number of Contracts",
                         "strike": "Prețul Strike al Put-ului",
                         "premium": "Prima Put-ului per Acțiune"
                     },
                     "hints": {
                         "buyingPower": "Numerarul total sau marja dvs. afișată ca \"Putere de Cumpărare\" în contul de broker.",
                         "pct": "Procentul de angajat. Menținerea sub 100% lasă un tampon pentru alte tranzacții sau apeluri în marjă.",
+                        "contracts": "Auto-calculated. Override to model a specific number of contracts.",
                         "strike": "Strike-ul pe care intenționați să îl vindeți. Fiecare contract acoperă 100 acțiuni, deci capital blocat = Strike × 100 per contract.",
                         "premium": "Prețul opțiunii (cerere) per acțiune pe care îl primiți când vindeți put-ul. Lăsați gol pentru a vedea doar dimensionarea poziției."
                     },

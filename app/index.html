@@ -1409,6 +1409,11 @@
                                 </div>
                                 <!-- Coloured formula block -->
                                 <div id="em-formula" class="em-formula-block"></div>
+                                <!-- Action button: open CSP calculator pre-filled with lower strike + put price -->
+                                <div id="em-csp-action" style="display:none; margin-top:1rem;">
+                                    <button type="button" id="em-csp-btn" class="em-fetch-btn" style="width:100%;"
+                                            data-i18n="calculators.expectedMove.cspAction">Calculate Contracts to Sell &rarr;</button>
+                                </div>
                             </div>
                             <!-- Right: probability distribution chart -->
                             <div class="em-right" id="em-right">
@@ -1461,6 +1466,11 @@
                                 <label for="csp-pct" data-i18n="calculators.cashSecuredPuts.labels.pct">Buying Power to Use (%)</label>
                                 <input type="number" id="csp-pct" inputmode="decimal" min="1" max="100" placeholder="e.g. 60">
                                 <span class="form-hint" data-i18n="calculators.cashSecuredPuts.hints.pct">Percentage to commit. Keeping below 100% leaves a buffer for other trades or margin calls.</span>
+                            </div>
+                            <div class="form-group">
+                                <label for="csp-contracts-input" data-i18n="calculators.cashSecuredPuts.labels.contracts">Number of Contracts</label>
+                                <input type="number" id="csp-contracts-input" inputmode="numeric" min="1" placeholder="Auto">
+                                <span class="form-hint" data-i18n="calculators.cashSecuredPuts.hints.contracts">Auto-calculated. Override to model a specific number of contracts.</span>
                             </div>
                             <div class="form-group">
                                 <label for="csp-strike" data-i18n="calculators.cashSecuredPuts.labels.strike">Put Strike Price</label>

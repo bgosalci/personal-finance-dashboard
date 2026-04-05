@@ -1682,6 +1682,7 @@ const Calculator = (function() {
 
             if (!bothOptions) {
                 showHero(false);
+                showCspAction(false);
                 document.getElementById('em-formula').innerHTML =
                     '<span class="em-f-dim">' +
                     I18n.t('calculators.expectedMove.formula.enterOptions') + '</span>';
@@ -1713,15 +1714,22 @@ const Calculator = (function() {
                 document.getElementById('em-lower-contract').textContent =
                     (lowerChain && lowerChain.put  != null) ? 'PUT '  + formatEmCurrency(lowerChain.put)  + ' @ ' + formatEmCurrency(lowerChain.strike)  : '';
                 showHero(true);
+                showCspAction(emChainData.length > 0);
                 renderFormula(call, put, straddle, em, pct, price, upperLabel, lowerLabel, multiplier);
                 showChart(true);
                 drawChart(price, em);
                 buildTable(price, em);
             } else {
                 showHero(false);
+                showCspAction(false);
                 renderFormula(call, put, straddle, em, 0, 0, upperLabel, lowerLabel, multiplier);
                 showChart(false);
             }
+        }
+
+        function showCspAction(show) {
+            var el = document.getElementById('em-csp-action');
+            if (el) el.style.display = show ? '' : 'none';
         }
 
         function setFetchStatus(state, a, b) {
@@ -1859,6 +1867,17 @@ const Calculator = (function() {
                 this.setAttribute('aria-expanded', String(isOpen));
                 panel.setAttribute('aria-hidden',  String(!isOpen));
             });
+
+            document.getElementById('em-csp-btn').addEventListener('click', function() {
+                var price      = getNumberValue('em-stock-price');
+                var call       = getNumberValue('em-atm-call');
+                var put        = getNumberValue('em-atm-put');
+                var em         = (call + put) * getMultiplier();
+                var lowerEntry = findChainStrike(price - em);
+                if (!lowerEntry) return;
+                switchSubTab('cash-secured-puts');
+                CashSecuredPutsCalculator.prefill(lowerEntry.strike, lowerEntry.put);
+            });
         }
 
         return { init };
@@ -1866,11 +1885,14 @@ const Calculator = (function() {
 
     // Cash-Secured Puts Calculator
     const CashSecuredPutsCalculator = (function() {
+        let userSetContracts = false;
+
         function calculate() {
-            const buyingPower = getNumberValue('csp-buying-power');
-            const pctToUse    = parseFloat(document.getElementById('csp-pct').value) || 0;
-            const strike      = getNumberValue('csp-strike');
-            const premium     = getNumberValue('csp-premium');
+            const buyingPower    = getNumberValue('csp-buying-power');
+            const pctToUse       = parseFloat(document.getElementById('csp-pct').value) || 0;
+            const strike         = getNumberValue('csp-strike');
+            const premium        = getNumberValue('csp-premium');
+            const contractsInput = document.getElementById('csp-contracts-input');
 
             if (buyingPower <= 0 || pctToUse <= 0 || strike <= 0) {
                 document.getElementById('csp-results').style.display         = 'none';
@@ -1879,8 +1901,22 @@ const Calculator = (function() {
             }
 
             // Position sizing
-            const capitalToDeploy  = buyingPower * (pctToUse / 100);
-            const contracts        = Math.floor(capitalToDeploy / (strike * 100));
+            const capitalToDeploy = buyingPower * (pctToUse / 100);
+            const autoContracts   = Math.floor(capitalToDeploy / (strike * 100));
+
+            let contracts;
+            if (userSetContracts && contractsInput) {
+                contracts = parseInt(contractsInput.value) || 0;
+                if (contracts <= 0) {
+                    document.getElementById('csp-results').style.display         = 'none';
+                    document.getElementById('csp-premium-results').style.display = 'none';
+                    return;
+                }
+            } else {
+                contracts = autoContracts;
+                if (contractsInput) contractsInput.value = contracts > 0 ? contracts : '';
+            }
+
             const capitalRequired  = contracts * strike * 100;
             const capitalRemaining = buyingPower - capitalRequired;
             const bpUsedPct        = (capitalRequired / buyingPower) * 100;
@@ -1900,8 +1936,8 @@ const Calculator = (function() {
             const totalPremium = contracts * 100 * premium;
             const breakeven    = strike - premium;
             const roc          = (totalPremium / capitalRequired) * 100;
-            const maxProfit      = totalPremium;
-            const premiumPct     = (premium / strike) * 100;
+            const maxProfit    = totalPremium;
+            const premiumPct   = (premium / strike) * 100;
 
             document.getElementById('csp-total-premium').textContent = formatCurrency(totalPremium);
             document.getElementById('csp-breakeven').textContent     = formatCurrency(breakeven);
@@ -1911,16 +1947,33 @@ const Calculator = (function() {
             document.getElementById('csp-premium-results').style.display = 'block';
         }
 
+        function prefill(strike, premium) {
+            userSetContracts = false;
+            document.getElementById('csp-strike').value  = strike;
+            document.getElementById('csp-premium').value = premium;
+            document.getElementById('csp-strike').dispatchEvent(new Event('input'));
+        }
+
         function init() {
             setupAmountInput('csp-buying-power');
             setupAmountInput('csp-strike');
             setupAmountInput('csp-premium');
             ['csp-buying-power', 'csp-pct', 'csp-strike', 'csp-premium'].forEach(id => {
-                document.getElementById(id).addEventListener('input', calculate);
+                document.getElementById(id).addEventListener('input', () => {
+                    userSetContracts = false;
+                    calculate();
+                });
             });
+            const contractsInput = document.getElementById('csp-contracts-input');
+            if (contractsInput) {
+                contractsInput.addEventListener('input', () => {
+                    userSetContracts = true;
+                    calculate();
+                });
+            }
         }
 
-        return { init };
+        return { init, prefill };
     })();
 
     if (typeof window !== 'undefined') {
