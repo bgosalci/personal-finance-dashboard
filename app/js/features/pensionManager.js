@@ -604,9 +604,15 @@ const PensionManager = (function() {
         const latestVal = stats && stats.length ? stats[stats.length - 1].value : startVal;
         if (totalValueEl) totalValueEl.textContent = formatCurrency(latestVal, baseCurrency);
 
+        const hideProjection = () => {
+            const sc = document.getElementById('pension-projection-scenarios');
+            if (sc) sc.style.display = 'none';
+        };
+
         if (!stats || stats.length === 0) {
             cagrEl.textContent = bestMonthEl.textContent = worstMonthEl.textContent =
                 bestYearEl.textContent = worstYearEl.textContent = '---';
+            hideProjection();
             container.style.display = 'flex';
             return;
         }
@@ -615,6 +621,7 @@ const PensionManager = (function() {
         if (!analysis) {
             cagrEl.textContent = bestMonthEl.textContent = worstMonthEl.textContent =
                 bestYearEl.textContent = worstYearEl.textContent = '---';
+            hideProjection();
             container.style.display = 'flex';
             return;
         }
@@ -624,6 +631,52 @@ const PensionManager = (function() {
         worstMonthEl.textContent = analysis.worstMonth ? `${formatDisplayDate(analysis.worstMonth.date)} (${analysis.worstMonth.pct.toFixed(2)}%)` : '---';
         bestYearEl.textContent = analysis.bestYear ? `${analysis.bestYear.year} (${analysis.bestYear.pct.toFixed(2)}%)` : '---';
         worstYearEl.textContent = analysis.worstYear ? `${analysis.worstYear.year} (${analysis.worstYear.pct.toFixed(2)}%)` : '---';
+
+        const formulaEl = document.getElementById('pension-projection-formula');
+        const scenariosEl = document.getElementById('pension-projection-scenarios');
+        const lowRateEl = document.getElementById('pension-projection-low-rate');
+        const baseRateEl = document.getElementById('pension-projection-base-rate');
+        const highRateEl = document.getElementById('pension-projection-high-rate');
+        const lowEl = document.getElementById('pension-projected-low');
+        const baseEl = document.getElementById('pension-projected-base');
+        const highEl = document.getElementById('pension-projected-high');
+
+        const clearProjection = (msg) => {
+            if (formulaEl) formulaEl.textContent = msg || '';
+            if (scenariosEl) scenariosEl.style.display = 'none';
+        };
+
+        const dob = Settings.getDob ? Settings.getDob() : '';
+        const retAge = Settings.getRetirementAge ? Settings.getRetirementAge() : null;
+        const yearsLeft = getYearsToRetirement(dob, retAge);
+
+        if (yearsLeft === null || analysis.cagr === null) {
+            clearProjection(yearsLeft === null ? 'Set Date of Birth and Retirement Age in Settings to see projection.' : '');
+        } else if (yearsLeft <= 0) {
+            clearProjection('Retirement age reached');
+        } else {
+            const lastEntry = entries.length > 0 ? entries[entries.length - 1] : null;
+            const latestPayment = lastEntry ? (parseFloat(lastEntry.payment) || 0) : 0;
+            const baseCagr = analysis.cagr;
+            const conservativeCagr = Math.max(1, baseCagr - 5);
+            const optimisticCagr = baseCagr + 5;
+            const yrs = Math.round(yearsLeft * 10) / 10;
+
+            const lowVal = calculateRetirementProjection(latestVal, latestPayment, conservativeCagr, yearsLeft);
+            const baseVal = calculateRetirementProjection(latestVal, latestPayment, baseCagr, yearsLeft);
+            const highVal = calculateRetirementProjection(latestVal, latestPayment, optimisticCagr, yearsLeft);
+
+            if (formulaEl) {
+                formulaEl.textContent = `FV = PV\u00d7(1+r)\u207F + PMT\u00d7((1+r)\u207F\u22121)/r | Current: ${formatCurrency(latestVal, baseCurrency)}, Monthly: ${formatCurrency(latestPayment, baseCurrency)}, Years: ${yrs}`;
+            }
+            if (scenariosEl) scenariosEl.style.display = 'flex';
+            if (lowRateEl) lowRateEl.textContent = `${conservativeCagr.toFixed(1)}% p.a.`;
+            if (baseRateEl) baseRateEl.textContent = `${baseCagr.toFixed(1)}% p.a.`;
+            if (highRateEl) highRateEl.textContent = `${optimisticCagr.toFixed(1)}% p.a.`;
+            if (lowEl) lowEl.textContent = lowVal !== null ? formatCurrency(lowVal, baseCurrency) : '---';
+            if (baseEl) baseEl.textContent = baseVal !== null ? formatCurrency(baseVal, baseCurrency) : '---';
+            if (highEl) highEl.textContent = highVal !== null ? formatCurrency(highVal, baseCurrency) : '---';
+        }
 
         container.style.display = 'flex';
     }
@@ -903,5 +956,34 @@ const PensionManager = (function() {
         renderTable();
     }
 
-    return { init, exportData, importData, deleteAllData };
+    function calculateRetirementProjection(currentValue, monthlyContribution, annualGrowthRatePct, yearsToRetirement) {
+        if (
+            typeof currentValue !== 'number' || isNaN(currentValue) ||
+            typeof monthlyContribution !== 'number' || isNaN(monthlyContribution) ||
+            typeof annualGrowthRatePct !== 'number' || isNaN(annualGrowthRatePct) ||
+            typeof yearsToRetirement !== 'number' || isNaN(yearsToRetirement) ||
+            yearsToRetirement <= 0
+        ) return null;
+
+        const months = yearsToRetirement * 12;
+        const monthlyRate = Math.pow(1 + annualGrowthRatePct / 100, 1 / 12) - 1;
+        if (Math.abs(monthlyRate) < 1e-10) {
+            return currentValue + monthlyContribution * months;
+        }
+        const growthFactor = Math.pow(1 + monthlyRate, months);
+        return currentValue * growthFactor + monthlyContribution * ((growthFactor - 1) / monthlyRate);
+    }
+
+    function getYearsToRetirement(dob, retirementAge) {
+        if (!dob || retirementAge == null || isNaN(retirementAge)) return null;
+        const dobDate = new Date(dob);
+        if (isNaN(dobDate.getTime())) return null;
+        const retirementDate = new Date(dobDate);
+        retirementDate.setFullYear(dobDate.getFullYear() + retirementAge);
+        return (retirementDate - new Date()) / (1000 * 60 * 60 * 24 * 365.25);
+    }
+
+    return { init, exportData, importData, deleteAllData, calculateRetirementProjection, getYearsToRetirement };
 })();
+
+if (typeof module !== 'undefined') module.exports = PensionManager;

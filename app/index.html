@@ -384,6 +384,27 @@
                         <h4 data-i18n="pension.summaryCards.worstYear">Worst Year</h4>
                         <p id="pension-worst-year"></p>
                     </div>
+                    <div class="summary-card pension-projection-wide" id="pension-projection-card">
+                        <h4>Projected Pot at Retirement</h4>
+                        <p class="projection-formula" id="pension-projection-formula"></p>
+                        <div class="projection-scenarios" id="pension-projection-scenarios">
+                            <div class="projection-scenario scenario-conservative">
+                                <span class="scenario-label">Conservative</span>
+                                <span class="scenario-rate" id="pension-projection-low-rate"></span>
+                                <span class="scenario-value" id="pension-projected-low"></span>
+                            </div>
+                            <div class="projection-scenario scenario-base">
+                                <span class="scenario-label">Base</span>
+                                <span class="scenario-rate" id="pension-projection-base-rate"></span>
+                                <span class="scenario-value" id="pension-projected-base"></span>
+                            </div>
+                            <div class="projection-scenario scenario-optimistic">
+                                <span class="scenario-label">Optimistic</span>
+                                <span class="scenario-rate" id="pension-projection-high-rate"></span>
+                                <span class="scenario-value" id="pension-projected-high"></span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- New Pension Modal -->
@@ -1574,6 +1595,17 @@
                     <label for="base-currency-select" data-i18n="settings.baseCurrency">Base Currency</label>
                     <select id="base-currency-select"></select>
                     <p class="form-hint" data-i18n="settings.baseCurrencyHint">Exchange rates refresh once a day to keep totals accurate.</p>
+                </div>
+                <h3 class="section-subtitle">Personal Details</h3>
+                <div class="form-group">
+                    <label for="settings-dob">Date of Birth</label>
+                    <input type="date" id="settings-dob">
+                    <p class="form-hint">Used to calculate years until retirement for pension projection.</p>
+                </div>
+                <div class="form-group">
+                    <label for="settings-retirement-age">Target Retirement Age</label>
+                    <input type="number" id="settings-retirement-age" min="1" max="100" placeholder="e.g. 67">
+                    <p class="form-hint">The age at which you plan to retire.</p>
                 </div>
                 <h3 class="section-subtitle" data-i18n="settings.sectionTitles.display">Display</h3>
                 <div class="form-group">

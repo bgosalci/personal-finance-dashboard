@@ -628,6 +628,58 @@
             font-weight: 600;
         }
 
+        .summary-card.pension-projection-wide {
+            flex: 1 1 100%;
+        }
+
+        .projection-formula {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            font-weight: 400 !important;
+            margin-bottom: 0.75rem;
+            font-style: italic;
+        }
+
+        .projection-scenarios {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .projection-scenario {
+            flex: 1;
+            background: var(--background-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 0.6rem 0.8rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+        }
+
+        .scenario-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-secondary);
+        }
+
+        .projection-scenario.scenario-conservative .scenario-label { color: #ef4444; }
+        .projection-scenario.scenario-base .scenario-label { color: var(--primary-blue); }
+        .projection-scenario.scenario-optimistic .scenario-label { color: #22c55e; }
+
+        .scenario-rate {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            font-weight: 400;
+        }
+
+        .scenario-value {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
         .calculator-section {
             margin-bottom: 3rem;
             padding: 2rem;

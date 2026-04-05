@@ -270,8 +270,8 @@ test('pension summary tab updates translation on locale change', async () => {
   vm.runInContext(utlsCode, context);
   let penCode = fs.readFileSync(path.resolve(__dirname, '../app/js/features/pensionManager.js'), 'utf8');
   penCode = penCode.replace(
-    'return { init, exportData, importData, deleteAllData };',
-    'window.__renderTabs=renderTabs; return { init, exportData, importData, deleteAllData };'
+    'return { init, exportData, importData, deleteAllData, calculateRetirementProjection, getYearsToRetirement };',
+    'window.__renderTabs=renderTabs; return { init, exportData, importData, deleteAllData, calculateRetirementProjection, getYearsToRetirement };'
   );
   vm.runInContext(penCode, context);
   await vm.runInContext('I18n.setLocale("en")', context);
@@ -391,8 +391,8 @@ test('computeStats includes payments in total percent', () => {
   vm.runInContext(utlsCode, context);
   let pmCode = fs.readFileSync(path.resolve(__dirname, '../app/js/features/pensionManager.js'), 'utf8');
   pmCode = pmCode.replace(
-    'return { init, exportData, importData, deleteAllData };',
-    'window.__setData = (p, e, id) => { pensions = p; entries = e; currentPensionId = id; summaryMode = false; }; window.__computeStats = computeStats; return { init, exportData, importData, deleteAllData };'
+    'return { init, exportData, importData, deleteAllData, calculateRetirementProjection, getYearsToRetirement };',
+    'window.__setData = (p, e, id) => { pensions = p; entries = e; currentPensionId = id; summaryMode = false; }; window.__computeStats = computeStats; return { init, exportData, importData, deleteAllData, calculateRetirementProjection, getYearsToRetirement };'
   );
   vm.runInContext(pmCode, context);
   vm.runInContext('__setData(' +
@@ -413,8 +413,8 @@ test('computeStats returns cumulative payments', () => {
   vm.runInContext(utlsCode, context);
   let pmCode = fs.readFileSync(path.resolve(__dirname, '../app/js/features/pensionManager.js'), 'utf8');
   pmCode = pmCode.replace(
-    'return { init, exportData, importData, deleteAllData };',
-    'window.__setData = (p, e, id) => { pensions = p; entries = e; currentPensionId = id; summaryMode = false; }; window.__computeStats = computeStats; return { init, exportData, importData, deleteAllData };'
+    'return { init, exportData, importData, deleteAllData, calculateRetirementProjection, getYearsToRetirement };',
+    'window.__setData = (p, e, id) => { pensions = p; entries = e; currentPensionId = id; summaryMode = false; }; window.__computeStats = computeStats; return { init, exportData, importData, deleteAllData, calculateRetirementProjection, getYearsToRetirement };'
   );
   vm.runInContext(pmCode, context);
   vm.runInContext('__setData(' +
@@ -448,8 +448,8 @@ test('initial tabs highlight only selected portfolio and pension', () => {
 
   let penCode = fs.readFileSync(path.resolve(__dirname, '../app/js/features/pensionManager.js'), 'utf8');
   penCode = penCode.replace(
-    'return { init, exportData, importData, deleteAllData };',
-    'window.__setPensions=(p,id,s)=>{ pensions=p; currentPensionId=id; summaryMode=s; }; window.__renderPensionTabs=renderTabs; return { init, exportData, importData, deleteAllData };'
+    'return { init, exportData, importData, deleteAllData, calculateRetirementProjection, getYearsToRetirement };',
+    'window.__setPensions=(p,id,s)=>{ pensions=p; currentPensionId=id; summaryMode=s; }; window.__renderPensionTabs=renderTabs; return { init, exportData, importData, deleteAllData, calculateRetirementProjection, getYearsToRetirement };'
   );
   vm.runInContext(penCode, context);
 
@@ -486,8 +486,8 @@ test('selecting portfolio summary does not change active pension tab', () => {
 
   let penCode = fs.readFileSync(path.resolve(__dirname, '../app/js/features/pensionManager.js'), 'utf8');
   penCode = penCode.replace(
-    'return { init, exportData, importData, deleteAllData };',
-    'window.__setPensions=(p,id,s)=>{ pensions=p; currentPensionId=id; summaryMode=s; }; window.__renderPensionTabs=renderTabs; return { init, exportData, importData, deleteAllData };'
+    'return { init, exportData, importData, deleteAllData, calculateRetirementProjection, getYearsToRetirement };',
+    'window.__setPensions=(p,id,s)=>{ pensions=p; currentPensionId=id; summaryMode=s; }; window.__renderPensionTabs=renderTabs; return { init, exportData, importData, deleteAllData, calculateRetirementProjection, getYearsToRetirement };'
   );
   vm.runInContext(penCode, context);
 
