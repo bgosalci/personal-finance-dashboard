@@ -582,6 +582,7 @@ const Settings = (function() {
             try { combined.pension      = JSON.parse(PensionManager.exportData('json')); }    catch(e) { combined.pension = []; }
             try { if (typeof SalaryCalculator !== 'undefined') combined.salary = JSON.parse(SalaryCalculator.exportData('json')); } catch(e) { combined.salary = []; }
             try { combined.trades       = JSON.parse(OptionsJournal.exportData('json')); }    catch(e) { combined.trades = []; }
+            combined.personalDetails = { dob: loadDob(), retirementAge: loadRetirementAge() };
             if (includeKeys) {
                 combined.apiKeys = {
                     finnhub:      (typeof QuotesService !== 'undefined' ? QuotesService.getApiKey() : ''),
@@ -616,6 +617,11 @@ const Settings = (function() {
                 if (combined.pension      !== undefined) PensionManager.importData(JSON.stringify(combined.pension), 'json');
                 if (combined.salary       !== undefined && typeof SalaryCalculator !== 'undefined') SalaryCalculator.importData(JSON.stringify(combined.salary), 'json');
                 if (combined.trades       !== undefined) OptionsJournal.importData(JSON.stringify(combined.trades), 'json');
+                if (combined.personalDetails !== undefined) {
+                    const pd = combined.personalDetails;
+                    if (pd.dob           !== undefined) { saveDob(pd.dob);                          if (dobInput)    dobInput.value    = pd.dob; }
+                    if (pd.retirementAge !== undefined && pd.retirementAge !== null) { saveRetirementAge(pd.retirementAge); if (retAgeInput) retAgeInput.value = pd.retirementAge; }
+                }
                 if (combined.apiKeys) {
                     const k = combined.apiKeys;
                     if (k.finnhub      !== undefined && typeof QuotesService !== 'undefined') { QuotesService.setApiKey(k.finnhub);      if (apiKeyInput)          apiKeyInput.value          = k.finnhub; }
