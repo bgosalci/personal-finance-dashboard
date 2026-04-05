@@ -1921,6 +1921,13 @@ const Calculator = (function() {
             const capitalRemaining = buyingPower - capitalRequired;
             const bpUsedPct        = (capitalRequired / buyingPower) * 100;
 
+            // When the user has overridden the contracts count, reflect the actual
+            // buying-power percentage being committed back into the pct input so it
+            // stays consistent (set value only — no event fired to avoid re-triggering)
+            if (userSetContracts) {
+                document.getElementById('csp-pct').value = parseFloat(bpUsedPct.toFixed(2));
+            }
+
             document.getElementById('csp-contracts').textContent   = contracts.toLocaleString();
             document.getElementById('csp-capital-req').textContent = formatCurrency(capitalRequired);
             document.getElementById('csp-capital-rem').textContent = formatCurrency(capitalRemaining);
