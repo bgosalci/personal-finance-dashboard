@@ -680,12 +680,25 @@
             color: var(--text-primary);
         }
 
+        .scenario-header {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .custom-rate-controls {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
         .custom-rate-input-row {
             display: flex;
             align-items: center;
             gap: 0.75rem;
-            margin-bottom: 0.75rem;
-            flex-wrap: wrap;
+            flex: 0 0 auto;
+            white-space: nowrap;
         }
 
         .custom-rate-input-row label {
