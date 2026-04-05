@@ -1807,6 +1807,7 @@ const Calculator = (function() {
                     applyFetchResult(res.data);
                 })
                 .catch(function(err) {
+                    emChainData = [];
                     setFetchStatus('error', err.message);
                 });
         }
