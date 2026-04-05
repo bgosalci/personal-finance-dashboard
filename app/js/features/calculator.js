@@ -1886,6 +1886,7 @@ const Calculator = (function() {
     // Cash-Secured Puts Calculator
     const CashSecuredPutsCalculator = (function() {
         let userSetContracts = false;
+        let userPct          = 0;  // tracks the pct value the user manually typed
 
         function calculate() {
             const buyingPower    = getNumberValue('csp-buying-power');
@@ -1958,15 +1959,29 @@ const Calculator = (function() {
             userSetContracts = false;
             document.getElementById('csp-strike').value  = strike;
             document.getElementById('csp-premium').value = premium;
+            // Dispatch input on both fields so formatters run and listeners fire correctly
             document.getElementById('csp-strike').dispatchEvent(new Event('input'));
+            document.getElementById('csp-premium').dispatchEvent(new Event('input'));
         }
 
         function init() {
             setupAmountInput('csp-buying-power');
             setupAmountInput('csp-strike');
             setupAmountInput('csp-premium');
-            ['csp-buying-power', 'csp-pct', 'csp-strike', 'csp-premium'].forEach(id => {
+            // The pct input saves the user's value so it can be restored if a
+            // contracts override later syncs the field with a computed percentage
+            document.getElementById('csp-pct').addEventListener('input', () => {
+                userPct = parseFloat(document.getElementById('csp-pct').value) || 0;
+                userSetContracts = false;
+                calculate();
+            });
+            // All other main inputs: cancel any active contracts override and
+            // restore the user's original pct before recalculating
+            ['csp-buying-power', 'csp-strike', 'csp-premium'].forEach(id => {
                 document.getElementById(id).addEventListener('input', () => {
+                    if (userSetContracts && userPct > 0) {
+                        document.getElementById('csp-pct').value = userPct;
+                    }
                     userSetContracts = false;
                     calculate();
                 });
@@ -1978,6 +1993,15 @@ const Calculator = (function() {
                     calculate();
                 });
             }
+            // Reset override state when navigating away from the CSP tab so that
+            // returning to it always starts with auto-calculated contracts
+            document.querySelectorAll('.sub-nav-tab[data-subtab]').forEach(tab => {
+                if (tab.dataset.subtab !== 'cash-secured-puts') {
+                    tab.addEventListener('click', () => {
+                        userSetContracts = false;
+                    });
+                }
+            });
         }
 
         return { init, prefill };

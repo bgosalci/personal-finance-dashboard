@@ -273,4 +273,15 @@ describe('contracts override', () => {
     expect(document.getElementById('csp-contracts').textContent).toBe('8');
     expect(document.getElementById('csp-contracts-input').value).toBe('8');
   });
+
+  test('clears contracts input and shows zero when auto-calculate resolves to zero', () => {
+    setupBase();
+    // auto = 8 initially
+    expect(document.getElementById('csp-contracts-input').value).toBe('8');
+    // Change strike so capital (40000) / (strike × 100) < 1 → floor = 0
+    setInput('csp-strike', '600');
+    // 40000 / 60000 = 0.666… → floor = 0
+    expect(document.getElementById('csp-contracts-input').value).toBe('');
+    expect(document.getElementById('csp-contracts').textContent).toBe('0');
+  });
 });
