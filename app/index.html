@@ -405,6 +405,45 @@
                             </div>
                         </div>
                     </div>
+                    <div class="summary-card pension-projection-wide" id="pension-market-avg-card">
+                        <h4>Market Average Projection (S&amp;P 500)</h4>
+                        <p class="projection-formula" id="pension-market-avg-formula"></p>
+                        <div class="projection-scenarios" id="pension-market-avg-scenarios">
+                            <div class="projection-scenario scenario-conservative">
+                                <span class="scenario-label">Real Return</span>
+                                <span class="scenario-rate" id="pension-market-avg-low-rate">7.0% p.a.</span>
+                                <span class="scenario-value" id="pension-market-avg-low"></span>
+                            </div>
+                            <div class="projection-scenario scenario-base">
+                                <span class="scenario-label">Nominal Avg</span>
+                                <span class="scenario-rate" id="pension-market-avg-base-rate">10.0% p.a.</span>
+                                <span class="scenario-value" id="pension-market-avg-base"></span>
+                            </div>
+                            <div class="projection-scenario scenario-optimistic">
+                                <span class="scenario-label">Strong Period</span>
+                                <span class="scenario-rate" id="pension-market-avg-high-rate">12.0% p.a.</span>
+                                <span class="scenario-value" id="pension-market-avg-high"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="summary-card pension-projection-wide" id="pension-custom-rate-card">
+                        <h4>Custom Rate Projection</h4>
+                        <p class="projection-formula" id="pension-custom-rate-formula"></p>
+                        <div class="custom-rate-input-row">
+                            <label for="pension-custom-rate-input">Annual Growth Rate</label>
+                            <div class="custom-rate-input-group">
+                                <input type="number" id="pension-custom-rate-input" min="0" max="100" step="0.1" placeholder="e.g. 8.0">
+                                <span class="custom-rate-unit">% p.a.</span>
+                            </div>
+                        </div>
+                        <div class="projection-scenarios" id="pension-custom-rate-scenarios" style="display:none">
+                            <div class="projection-scenario scenario-base">
+                                <span class="scenario-label">Projected Value</span>
+                                <span class="scenario-rate" id="pension-custom-rate-display"></span>
+                                <span class="scenario-value" id="pension-custom-projected"></span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- New Pension Modal -->
