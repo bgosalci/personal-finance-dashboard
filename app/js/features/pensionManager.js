@@ -650,13 +650,14 @@ const PensionManager = (function() {
         const retAge = Settings.getRetirementAge ? Settings.getRetirementAge() : null;
         const yearsLeft = getYearsToRetirement(dob, retAge);
 
+        const lastEntry = entries.length > 0 ? entries[entries.length - 1] : null;
+        const latestPayment = lastEntry ? (parseFloat(lastEntry.payment) || 0) : 0;
+
         if (yearsLeft === null || analysis.cagr === null) {
             clearProjection(yearsLeft === null ? 'Set Date of Birth and Retirement Age in Settings to see projection.' : '');
         } else if (yearsLeft <= 0) {
             clearProjection('Retirement age reached');
         } else {
-            const lastEntry = entries.length > 0 ? entries[entries.length - 1] : null;
-            const latestPayment = lastEntry ? (parseFloat(lastEntry.payment) || 0) : 0;
             const baseCagr = analysis.cagr;
             const conservativeCagr = Math.max(1, baseCagr - 5);
             const optimisticCagr = baseCagr + 5;
@@ -678,7 +679,67 @@ const PensionManager = (function() {
             if (highEl) highEl.textContent = highVal !== null ? formatCurrency(highVal, baseCurrency) : '---';
         }
 
+        renderMarketAvgProjection(latestVal, latestPayment, yearsLeft, baseCurrency);
+        renderCustomRateProjection(latestVal, latestPayment, yearsLeft, baseCurrency);
+
         container.style.display = 'flex';
+    }
+
+    function renderMarketAvgProjection(latestVal, latestPayment, yearsLeft, baseCurrency) {
+        const scenariosEl = document.getElementById('pension-market-avg-scenarios');
+        const formulaEl = document.getElementById('pension-market-avg-formula');
+        const lowEl = document.getElementById('pension-market-avg-low');
+        const baseEl = document.getElementById('pension-market-avg-base');
+        const highEl = document.getElementById('pension-market-avg-high');
+
+        if (!scenariosEl) return;
+
+        if (!yearsLeft || yearsLeft <= 0) {
+            scenariosEl.style.display = 'none';
+            if (formulaEl) formulaEl.textContent = '';
+            return;
+        }
+
+        const yrs = Math.round(yearsLeft * 10) / 10;
+        const lowVal = calculateRetirementProjection(latestVal, latestPayment, 7, yearsLeft);
+        const baseVal = calculateRetirementProjection(latestVal, latestPayment, 10, yearsLeft);
+        const highVal = calculateRetirementProjection(latestVal, latestPayment, 12, yearsLeft);
+
+        if (formulaEl) {
+            formulaEl.textContent = `S\u0026P 500 historical averages | Current: ${formatCurrency(latestVal, baseCurrency)}, Monthly: ${formatCurrency(latestPayment, baseCurrency)}, Years: ${yrs}`;
+        }
+        scenariosEl.style.display = 'flex';
+        if (lowEl) lowEl.textContent = lowVal !== null ? formatCurrency(lowVal, baseCurrency) : '---';
+        if (baseEl) baseEl.textContent = baseVal !== null ? formatCurrency(baseVal, baseCurrency) : '---';
+        if (highEl) highEl.textContent = highVal !== null ? formatCurrency(highVal, baseCurrency) : '---';
+    }
+
+    function renderCustomRateProjection(latestVal, latestPayment, yearsLeft, baseCurrency) {
+        const scenariosEl = document.getElementById('pension-custom-rate-scenarios');
+        const formulaEl = document.getElementById('pension-custom-rate-formula');
+        const rateDisplay = document.getElementById('pension-custom-rate-display');
+        const projectedEl = document.getElementById('pension-custom-projected');
+
+        if (!scenariosEl) return;
+
+        const savedRate = localStorage.getItem('pensionCustomRate');
+        const rate = savedRate !== null ? parseFloat(savedRate) : NaN;
+
+        if (!yearsLeft || yearsLeft <= 0 || isNaN(rate)) {
+            scenariosEl.style.display = 'none';
+            if (formulaEl) formulaEl.textContent = yearsLeft && yearsLeft > 0 ? 'Enter a growth rate above to see your projection.' : '';
+            return;
+        }
+
+        const yrs = Math.round(yearsLeft * 10) / 10;
+        const projVal = calculateRetirementProjection(latestVal, latestPayment, rate, yearsLeft);
+
+        if (formulaEl) {
+            formulaEl.textContent = `Current: ${formatCurrency(latestVal, baseCurrency)}, Monthly: ${formatCurrency(latestPayment, baseCurrency)}, Years: ${yrs}`;
+        }
+        scenariosEl.style.display = 'flex';
+        if (rateDisplay) rateDisplay.textContent = `${rate.toFixed(1)}% p.a.`;
+        if (projectedEl) projectedEl.textContent = projVal !== null ? formatCurrency(projVal, baseCurrency) : '---';
     }
 
     function showChart() {
@@ -864,6 +925,33 @@ const PensionManager = (function() {
 
         newPensionModal.addEventListener('click', e => { if (e.target === newPensionModal) closeNewPensionModal(); });
         entryModal.addEventListener('click', e => { if (e.target === entryModal) closeEntryModal(); });
+
+        const customRateInput = document.getElementById('pension-custom-rate-input');
+        if (customRateInput) {
+            const saved = localStorage.getItem('pensionCustomRate');
+            if (saved !== null) customRateInput.value = saved;
+            customRateInput.addEventListener('input', () => {
+                const val = customRateInput.value.trim();
+                if (val === '' || isNaN(parseFloat(val))) {
+                    localStorage.removeItem('pensionCustomRate');
+                } else {
+                    localStorage.setItem('pensionCustomRate', parseFloat(val));
+                }
+                const stats = computeStats();
+                const analysis = computeAnalysis(stats);
+                if (!stats || !analysis) return;
+                const baseCurrency = Settings.getBaseCurrency ? Settings.getBaseCurrency() : 'USD';
+                const current = summaryMode ? summaryInfo : pensions.find(p => p.id === currentPensionId);
+                const startVal = current ? parseFloat(current.start) || 0 : 0;
+                const latestVal = stats.length ? stats[stats.length - 1].value : startVal;
+                const lastEntry = entries.length > 0 ? entries[entries.length - 1] : null;
+                const latestPayment = lastEntry ? (parseFloat(lastEntry.payment) || 0) : 0;
+                const dob = Settings.getDob ? Settings.getDob() : '';
+                const retAge = Settings.getRetirementAge ? Settings.getRetirementAge() : null;
+                const yearsLeft = getYearsToRetirement(dob, retAge);
+                renderCustomRateProjection(latestVal, latestPayment, yearsLeft, baseCurrency);
+            });
+        }
 
         if (summaryToggle) {
             summaryToggle.addEventListener('change', () => {
