@@ -2,6 +2,7 @@ function buildCSPDom() {
   return `
     <input id="csp-buying-power" type="text" />
     <input id="csp-pct" type="number" />
+    <input id="csp-contracts-input" type="number" />
     <input id="csp-strike" type="text" />
     <input id="csp-premium" type="text" />
     <div id="csp-results" style="display:none"></div>
@@ -230,5 +231,57 @@ describe('premium metrics', () => {
     setInput('csp-buying-power', '100000');
     const second = document.getElementById('csp-total-premium').textContent;
     expect(first).not.toBe(second);
+  });
+});
+
+// ─── Contracts Override ───────────────────────────────────────────────────────
+
+describe('contracts override', () => {
+  function setupBase() {
+    loadCSP();
+    setInput('csp-buying-power', '50000');
+    setInput('csp-pct', '80');
+    setInput('csp-strike', '45');
+  }
+
+  test('auto-populates contracts input after main inputs filled', () => {
+    setupBase();
+    // 50000 × 80% = 40000 / 4500 = floor(8)
+    expect(document.getElementById('csp-contracts-input').value).toBe('8');
+  });
+
+  test('uses overridden contract count when contracts input is changed', () => {
+    setupBase();
+    setInput('csp-contracts-input', '12');
+    expect(document.getElementById('csp-contracts').textContent).toBe('12');
+  });
+
+  test('recalculates capital required when contracts are overridden', () => {
+    setupBase();
+    setInput('csp-contracts-input', '12');
+    // 12 × 45 × 100 = 54000
+    expect(document.getElementById('csp-capital-req').textContent).toContain('54,000');
+  });
+
+  test('resets to auto-calculate when a main input changes after override', () => {
+    setupBase();
+    setInput('csp-contracts-input', '12');
+    expect(document.getElementById('csp-contracts').textContent).toBe('12');
+    // Changing buying power resets to auto
+    setInput('csp-buying-power', '50000');
+    // Auto result is still 8 (same inputs)
+    expect(document.getElementById('csp-contracts').textContent).toBe('8');
+    expect(document.getElementById('csp-contracts-input').value).toBe('8');
+  });
+
+  test('clears contracts input and shows zero when auto-calculate resolves to zero', () => {
+    setupBase();
+    // auto = 8 initially
+    expect(document.getElementById('csp-contracts-input').value).toBe('8');
+    // Change strike so capital (40000) / (strike × 100) < 1 → floor = 0
+    setInput('csp-strike', '600');
+    // 40000 / 60000 = 0.666… → floor = 0
+    expect(document.getElementById('csp-contracts-input').value).toBe('');
+    expect(document.getElementById('csp-contracts').textContent).toBe('0');
   });
 });

@@ -84,7 +84,7 @@ const QuotesService = (function() {
             const res = await fetch(url);
             if (!res.ok) throw new Error('HTTP ' + res.status);
             const raw = await res.json();
-            if (!raw || typeof raw.c !== 'number' || raw.error) {
+            if (!raw || typeof raw.c !== 'number' || raw.c === 0 || raw.error) {
                 addFmpException(ticker);
                 return { price: null, raw: null };
             }
