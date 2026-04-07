@@ -429,6 +429,7 @@
                     <div class="summary-card pension-projection-wide" id="pension-custom-rate-card">
                         <h4>Custom Rate Projection</h4>
                         <p class="projection-formula" id="pension-custom-rate-formula"></p>
+                        <div class="custom-rate-controls">
                         <div class="custom-rate-input-row">
                             <label for="pension-custom-rate-input">Annual Growth Rate</label>
                             <div class="custom-rate-input-group">
@@ -438,10 +439,13 @@
                         </div>
                         <div class="projection-scenarios" id="pension-custom-rate-scenarios" style="display:none">
                             <div class="projection-scenario scenario-base">
-                                <span class="scenario-label">Projected Value</span>
-                                <span class="scenario-rate" id="pension-custom-rate-display"></span>
+                                <div class="scenario-header">
+                                    <span class="scenario-label">Projected Value</span>
+                                    <span class="scenario-rate" id="pension-custom-rate-display"></span>
+                                </div>
                                 <span class="scenario-value" id="pension-custom-projected"></span>
                             </div>
+                        </div>
                         </div>
                     </div>
                 </div>
