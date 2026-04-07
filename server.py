@@ -278,6 +278,9 @@ def price():
                     if field in quote:
                         quote[field] = _r(quote[field] / 100)
                 quote['currency'] = 'GBP'
+            d = _r(quote['c'] - quote['pc'])
+            quote['d']  = d
+            quote['dp'] = _r((d / quote['pc']) * 100) if quote['pc'] else 0.0
             with _cache_lock:
                 _cache[cache_key] = (quote, time.time())
             result[symbol] = quote
