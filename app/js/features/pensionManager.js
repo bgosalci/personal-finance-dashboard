@@ -650,8 +650,11 @@ const PensionManager = (function() {
         const retAge = Settings.getRetirementAge ? Settings.getRetirementAge() : null;
         const yearsLeft = getYearsToRetirement(dob, retAge);
 
-        const lastEntry = entries.length > 0 ? entries[entries.length - 1] : null;
-        const latestPayment = lastEntry ? (parseFloat(lastEntry.payment) || 0) : 0;
+        let latestPayment = 0;
+        if (current?.type === 'payments') {
+            const lastPaidEntry = entries.slice().reverse().find(en => parseFloat(en.payment) > 0);
+            latestPayment = lastPaidEntry ? parseFloat(lastPaidEntry.payment) : 0;
+        }
 
         if (yearsLeft === null || analysis.cagr === null) {
             clearProjection(yearsLeft === null ? 'Set Date of Birth and Retirement Age in Settings to see projection.' : '');
@@ -944,8 +947,11 @@ const PensionManager = (function() {
                 const current = summaryMode ? summaryInfo : pensions.find(p => p.id === currentPensionId);
                 const startVal = current ? parseFloat(current.start) || 0 : 0;
                 const latestVal = stats.length ? stats[stats.length - 1].value : startVal;
-                const lastEntry = entries.length > 0 ? entries[entries.length - 1] : null;
-                const latestPayment = lastEntry ? (parseFloat(lastEntry.payment) || 0) : 0;
+                let latestPayment = 0;
+                if (current?.type === 'payments') {
+                    const lastPaidEntry = entries.slice().reverse().find(en => parseFloat(en.payment) > 0);
+                    latestPayment = lastPaidEntry ? parseFloat(lastPaidEntry.payment) : 0;
+                }
                 const dob = Settings.getDob ? Settings.getDob() : '';
                 const retAge = Settings.getRetirementAge ? Settings.getRetirementAge() : null;
                 const yearsLeft = getYearsToRetirement(dob, retAge);
