@@ -4,6 +4,7 @@ const QuotesService = (function() {
     const EXCEPTION_KEY = 'finnhub_exceptions';
     const LOCAL_QUOTE_URL = '/api/quote';
     const FMP_EXCEPTION_KEY = 'fmp_exceptions';
+    const YFINANCE_EXCEPTION_KEY = 'yfinance_exceptions';
     const CACHE_TTL_MS = 60 * 1000; // 1 minute
     const quoteCache = {};
 
@@ -12,7 +13,9 @@ const QuotesService = (function() {
     const YFINANCE_SYMBOL_MAP = {
         'BITCOIN': 'BTC-USD',
         'XAU':     'GC=F',
+        'VUSA':    'VUSA.L',
         'VUSA.L':  'VUSA.L',
+        'XLKQ':    'XLKQ.L',
         'XLKQ.L':  'XLKQ.L',
     };
     const storage = StorageUtils.getStorage();
@@ -44,6 +47,33 @@ const QuotesService = (function() {
         if (t && !list.tickers.includes(t)) {
             list.tickers.push(t);
             saveExceptions(list);
+        }
+    }
+    function loadYFinanceExceptions() {
+        try {
+            const data = storage.getItem(YFINANCE_EXCEPTION_KEY);
+            if (data) return JSON.parse(data);
+        } catch (e) {}
+        return { date: '', tickers: [] };
+    }
+    function saveYFinanceExceptions(obj) {
+        try { storage.setItem(YFINANCE_EXCEPTION_KEY, JSON.stringify(obj)); } catch (e) {}
+    }
+    function isYFinanceExcluded(ticker) {
+        const list = loadYFinanceExceptions();
+        return list.date === getToday() && list.tickers.includes(String(ticker || '').toUpperCase());
+    }
+    function addYFinanceException(ticker) {
+        const today = getToday();
+        const list = loadYFinanceExceptions();
+        if (list.date !== today) {
+            list.date = today;
+            list.tickers = [];
+        }
+        const t = String(ticker || '').toUpperCase();
+        if (t && !list.tickers.includes(t)) {
+            list.tickers.push(t);
+            saveYFinanceExceptions(list);
         }
     }
     function loadFmpExceptions() {
@@ -106,27 +136,34 @@ const QuotesService = (function() {
         if (cached && (Date.now() - cached.time) < CACHE_TTL_MS) {
             return { price: cached.price, raw: cached.raw, excluded: false };
         }
-        if (isTickerExcluded(ticker)) {
-            return { price: null, raw: null, excluded: true };
+        if (isYFinanceExcluded(ticker)) {
+            // yfinance circuit-broken for today — try FMP as a fallback before giving up
+            const fallback = await fetchFmpQuote(ticker);
+            if (fallback.price !== null) return { price: fallback.price, raw: fallback.raw, excluded: false };
+            return { price: null, raw: null, allZero: true };
         }
         try {
             const res = await fetch('/api/price?tickers=' + encodeURIComponent(ySymbol));
             if (!res.ok) {
-                if (res.status === 429 || res.status === 503) addTickerException(ticker);
-                return { price: null, raw: null, excluded: false };
+                if (res.status === 429 || res.status === 503) addYFinanceException(ticker);
+                // Not an API-key failure — treat like a closed-market response so callers don't toast
+                return { price: null, raw: null, allZero: true };
             }
             const data = await res.json();
             const quote = (data.prices || {})[ySymbol] ?? null;
             const price = (quote !== null && typeof quote === 'object') ? quote.c ?? null : null;
             if (price === null && data.errors && data.errors[ySymbol]) {
-                addTickerException(ticker);
+                addYFinanceException(ticker);
             }
             if (price !== null) {
                 quoteCache[ticker] = { price, raw: quote, time: Date.now() };
+                return { price, raw: quote, excluded: false };
             }
-            return { price, raw: quote, excluded: false };
+            // Null price with no explicit error — market likely closed, suppress toast
+            return { price: null, raw: null, allZero: true };
         } catch {
-            return { price: null, raw: null, excluded: false };
+            // Network/parse error — suppress toast, let the circuit-breaker handle retries
+            return { price: null, raw: null, allZero: true };
         }
     }
 

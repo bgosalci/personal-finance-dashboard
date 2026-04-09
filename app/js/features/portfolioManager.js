@@ -1413,5 +1413,17 @@ const PortfolioManager = (function() {
         renderTable();
     }
 
-    return { init, fetchQuote, fetchLastPrices, exportData, importData, deleteAllData, updatePortfolioPrices };
+    function getAllTickers() {
+        const tickers = new Set();
+        portfolios.forEach(p => {
+            try {
+                const d = localStorage.getItem(getStorageKey(p.id));
+                const items = d ? JSON.parse(d) : [];
+                items.forEach(inv => { if (inv.ticker) tickers.add(inv.ticker); });
+            } catch (e) {}
+        });
+        return Array.from(tickers);
+    }
+
+    return { init, fetchQuote, fetchLastPrices, getAllTickers, exportData, importData, deleteAllData, updatePortfolioPrices };
 })();
