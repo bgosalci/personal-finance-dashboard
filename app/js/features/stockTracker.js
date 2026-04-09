@@ -86,16 +86,73 @@ const StockTracker = (function() {
     function updateTickerTags() {
         const container = document.getElementById('ticker-tags');
         container.innerHTML = '';
-        
+
         stockData.tickers.forEach(ticker => {
             const tag = document.createElement('div');
             tag.className = 'ticker-tag';
-            tag.innerHTML = `
-                ${ticker}
-                <button class="remove-btn" onclick="FinancialDashboard.removeTicker('${ticker}')">×</button>
-            `;
+
+            const label = document.createElement('span');
+            label.className = 'ticker-label';
+            label.textContent = ticker;
+            label.title = I18n.t('stockTracker.actions.clickToRename') || 'Click to rename';
+            label.addEventListener('click', () => startTickerRename(tag, label, ticker));
+
+            const removeBtn = document.createElement('button');
+            removeBtn.className = 'remove-btn';
+            removeBtn.textContent = '×';
+            removeBtn.addEventListener('click', () => FinancialDashboard.removeTicker(ticker));
+
+            tag.appendChild(label);
+            tag.appendChild(removeBtn);
             container.appendChild(tag);
         });
+    }
+
+    function startTickerRename(tag, label, oldTicker) {
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'ticker-rename-input';
+        input.value = oldTicker;
+
+        tag.replaceChild(input, label);
+        input.focus();
+        input.select();
+
+        let committed = false;
+        function commit() {
+            if (committed) return;
+            committed = true;
+            const newTicker = input.value.trim().toUpperCase();
+            if (newTicker && newTicker !== oldTicker) {
+                renameTicker(oldTicker, newTicker);
+            } else {
+                updateTickerTags();
+            }
+        }
+
+        input.addEventListener('keydown', e => {
+            if (e.key === 'Enter') { e.preventDefault(); commit(); }
+            if (e.key === 'Escape') { committed = true; updateTickerTags(); }
+        });
+        input.addEventListener('blur', commit);
+    }
+
+    function renameTicker(oldTicker, newTicker) {
+        const index = stockData.tickers.indexOf(oldTicker);
+        if (index === -1) return;
+        if (stockData.tickers.includes(newTicker)) {
+            if (typeof Utils !== 'undefined') Utils.showToast(
+                (I18n.t('stockTracker.errors.tickerExists') || 'Ticker already exists'), 'warning'
+            );
+            updateTickerTags();
+            return;
+        }
+        stockData.tickers[index] = newTicker;
+        stockData.prices[newTicker] = stockData.prices[oldTicker] || {};
+        delete stockData.prices[oldTicker];
+        saveData();
+        updateTickerTags();
+        if (stockData.tickers.length > 0) generatePerformanceTable();
     }
 
     function updateGenerateButton() {
@@ -116,6 +173,12 @@ const StockTracker = (function() {
             inp.style.display = editMode ? 'block' : 'none';
         });
 
+        // Live-price spans (current year only) — visible in view mode, hidden in edit mode
+        const liveSpans = document.querySelectorAll('#performance-table .live-price');
+        liveSpans.forEach(span => {
+            span.style.display = editMode ? 'none' : 'block';
+        });
+
         updateGenerateButton();
     }
 
@@ -134,9 +197,13 @@ const StockTracker = (function() {
             return QuotesService.fetchQuote(ticker)
                 .then(({ price, excluded, allZero }) => {
                     if (typeof price === 'number' && price > 0) {
+                        if (!stockData.prices[ticker]) stockData.prices[ticker] = {};
                         stockData.prices[ticker][currentYear] = price;
+                        if (typeof PriceStorage !== 'undefined') PriceStorage.save(ticker, price);
                         const input = document.querySelector(`#table-body input.price-input[data-ticker="${ticker}"][data-year="${currentYear}"]`);
                         if (input) input.value = price;
+                        const liveSpan = document.querySelector(`#table-body .live-price[data-ticker="${ticker}"]`);
+                        if (liveSpan) liveSpan.textContent = Number(price).toLocaleString(undefined, { maximumFractionDigits: 2 });
                         updateGrowthCalculations(ticker);
                     } else if (!excluded && !allZero) {
                         failCount++;
@@ -203,7 +270,17 @@ const StockTracker = (function() {
                 });
                 
                 cell.appendChild(priceInput);
-                
+
+                // Current year: plain-text price display (no steppers, visible in view mode)
+                if (year === currentYear) {
+                    const liveSpan = document.createElement('span');
+                    liveSpan.className = 'live-price';
+                    liveSpan.dataset.ticker = ticker;
+                    const stored = stockData.prices[ticker] && stockData.prices[ticker][year];
+                    liveSpan.textContent = stored ? Number(stored).toLocaleString(undefined, { maximumFractionDigits: 2 }) : '—';
+                    cell.appendChild(liveSpan);
+                }
+
                 // Add growth display
                 if (yearIndex > 0) {
                     const growthDiv = document.createElement('div');
@@ -248,7 +325,7 @@ const StockTracker = (function() {
             const chartCell = document.createElement('td');
             const chartBtn = document.createElement('button');
             chartBtn.className = 'chart-btn';
-            chartBtn.innerHTML = '<ion-icon name="stats-chart"></ion-icon>';
+            chartBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="12" height="12" fill="currentColor" aria-hidden="true"><rect x="32" y="320" width="80" height="160" rx="8"/><rect x="160" y="192" width="80" height="288" rx="8"/><rect x="288" y="96" width="80" height="384" rx="8"/><rect x="416" y="32" width="80" height="448" rx="8"/></svg>';
             chartBtn.addEventListener('click', () => showChart(ticker));
             chartCell.appendChild(chartBtn);
             chartRow.appendChild(chartCell);
@@ -592,6 +669,8 @@ const StockTracker = (function() {
                 saveData();
                 const input = document.querySelector(`#table-body input.price-input[data-ticker="${ticker}"][data-year="${year}"]`);
                 if (input) input.value = price;
+                const liveSpan = document.querySelector(`#table-body .live-price[data-ticker="${ticker}"]`);
+                if (liveSpan) liveSpan.textContent = Number(price).toLocaleString(undefined, { maximumFractionDigits: 2 });
                 updateGrowthCalculations(ticker);
                 updateSummaryCards();
             });

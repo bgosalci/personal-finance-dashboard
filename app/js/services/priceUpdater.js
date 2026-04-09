@@ -1,16 +1,20 @@
 const PriceUpdater = (function() {
     let timer = null;
 
+    function fetchAll() {
+        PortfolioManager.fetchLastPrices();
+        WatchlistManager.fetchLastPrices();
+        StockTracker.fetchLatestPrices();
+    }
+
     function checkAndUpdate() {
         if (MarketStatus.isMarketOpen && MarketStatus.isMarketOpen()) {
-            PortfolioManager.fetchLastPrices();
-            WatchlistManager.fetchLastPrices();
-            StockTracker.fetchLatestPrices();
+            fetchAll();
         }
     }
 
     function start() {
-        checkAndUpdate();
+        fetchAll(); // always fetch on page load regardless of market status
         timer = setInterval(checkAndUpdate, 60000); // every minute
     }
 

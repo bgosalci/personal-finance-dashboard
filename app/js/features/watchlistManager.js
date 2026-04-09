@@ -459,7 +459,9 @@ const WatchlistManager = (function() {
         connectWebSocket();
     }
 
-    return { init, fetchLastPrices, exportData, importData, deleteAllData };
+    function getTickers() { return watchlist.map(i => i.ticker); }
+
+    return { init, fetchLastPrices, getTickers, exportData, importData, deleteAllData };
 })();
 
 if (typeof module !== 'undefined') module.exports = WatchlistManager;
