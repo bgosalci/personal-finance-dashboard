@@ -137,13 +137,17 @@ const QuotesService = (function() {
             return { price: cached.price, raw: cached.raw, excluded: false };
         }
         if (isYFinanceExcluded(ticker)) {
-            return { price: null, raw: null, excluded: true };
+            // yfinance circuit-broken for today — try FMP as a fallback before giving up
+            const fallback = await fetchFmpQuote(ticker);
+            if (fallback.price !== null) return { price: fallback.price, raw: fallback.raw, excluded: false };
+            return { price: null, raw: null, allZero: true };
         }
         try {
             const res = await fetch('/api/price?tickers=' + encodeURIComponent(ySymbol));
             if (!res.ok) {
                 if (res.status === 429 || res.status === 503) addYFinanceException(ticker);
-                return { price: null, raw: null, excluded: false };
+                // Not an API-key failure — treat like a closed-market response so callers don't toast
+                return { price: null, raw: null, allZero: true };
             }
             const data = await res.json();
             const quote = (data.prices || {})[ySymbol] ?? null;
@@ -153,10 +157,13 @@ const QuotesService = (function() {
             }
             if (price !== null) {
                 quoteCache[ticker] = { price, raw: quote, time: Date.now() };
+                return { price, raw: quote, excluded: false };
             }
-            return { price, raw: quote, excluded: false };
+            // Null price with no explicit error — market likely closed, suppress toast
+            return { price: null, raw: null, allZero: true };
         } catch {
-            return { price: null, raw: null, excluded: false };
+            // Network/parse error — suppress toast, let the circuit-breaker handle retries
+            return { price: null, raw: null, allZero: true };
         }
     }
 
