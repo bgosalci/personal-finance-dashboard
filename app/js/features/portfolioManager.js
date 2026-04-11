@@ -1000,8 +1000,30 @@ const PortfolioManager = (function() {
             const xAxis = chart.scales.x;
             const yAxis = chart.scales.y;
             if (x < xAxis.left || x > xAxis.right || y < yAxis.top || y > yAxis.bottom) return;
-            ctx.save();
+
             const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+            const labels = chart.data.labels || [];
+            const rawPrices = chart._rawPrices || [];
+            const currency = chart._currency || 'USD';
+            const numLabels = labels.length;
+
+            const nearestIdx = numLabels
+                ? Math.min(Math.max(Math.round(xAxis.getValueForPixel(x)), 0), numLabels - 1)
+                : -1;
+            const dateText = nearestIdx >= 0 ? (labels[nearestIdx] || '') : '';
+            const priceVal = nearestIdx >= 0 ? rawPrices[nearestIdx] : null;
+            const priceText = priceVal != null
+                ? priceVal.toLocaleString('en-US', { style: 'currency', currency, minimumFractionDigits: 2, maximumFractionDigits: 2 })
+                : '';
+
+            const pillBg = 'rgba(50, 50, 50, 0.85)';
+            const textColor = '#ffffff';
+            const padX = 10, padY = 5, radius = 4;
+
+            // Single save/restore block — avoids restoring a Chart.js clip mid-draw
+            ctx.save();
+
+            // Crosshair lines
             ctx.strokeStyle = isDark ? 'rgba(200, 200, 200, 0.5)' : 'rgba(80, 80, 80, 0.6)';
             ctx.lineWidth = 1;
             ctx.setLineDash([4, 4]);
@@ -1013,6 +1035,54 @@ const PortfolioManager = (function() {
             ctx.moveTo(xAxis.left, y);
             ctx.lineTo(xAxis.right, y);
             ctx.stroke();
+
+            // Reset to solid for pill labels
+            ctx.setLineDash([]);
+            ctx.font = 'bold 11px sans-serif';
+            ctx.textBaseline = 'middle';
+
+            // Remove any active clip so labels can draw over axis areas
+            ctx.restore();
+            ctx.save();
+
+            // X-axis date label — just above the axis line, inside the chart area
+            if (dateText) {
+                const tw = ctx.measureText(dateText).width;
+                const bw = tw + padX * 2;
+                const bh = 11 + padY * 2;
+                let bx = x - bw / 2;
+                const by = yAxis.bottom - bh - 4;
+                bx = Math.min(Math.max(bx, xAxis.left), xAxis.right - bw);
+                ctx.beginPath();
+                ctx.roundRect(bx, by, bw, bh, radius);
+                ctx.fillStyle = pillBg;
+                ctx.fill();
+                ctx.fillStyle = textColor;
+                ctx.font = 'bold 11px sans-serif';
+                ctx.textBaseline = 'middle';
+                ctx.textAlign = 'center';
+                ctx.fillText(dateText, bx + bw / 2, by + bh / 2);
+            }
+
+            // Y-axis price label — anchored to the left edge of the plot area
+            if (priceText) {
+                const tw = ctx.measureText(priceText).width;
+                const bw = tw + padX * 2;
+                const bh = 11 + padY * 2;
+                const bx = xAxis.left + 4;
+                let by = y - bh / 2;
+                by = Math.min(Math.max(by, yAxis.top), yAxis.bottom - bh);
+                ctx.beginPath();
+                ctx.roundRect(bx, by, bw, bh, radius);
+                ctx.fillStyle = pillBg;
+                ctx.fill();
+                ctx.fillStyle = textColor;
+                ctx.font = 'bold 11px sans-serif';
+                ctx.textBaseline = 'middle';
+                ctx.textAlign = 'center';
+                ctx.fillText(priceText, bx + bw / 2, by + bh / 2);
+            }
+
             ctx.restore();
         }
     };
@@ -1100,6 +1170,7 @@ const PortfolioManager = (function() {
         const sorted = [...data].sort((a, b) => a.date < b.date ? -1 : 1);
         const labels = sorted.map(d => d.date);
         const values = sorted.map(d => d.close * quantity);
+        const prices = sorted.map(d => d.close);
         const color = tickerColors[ticker] || '#14b8a6';
 
         if (stockChart) stockChart.destroy();
@@ -1137,6 +1208,8 @@ const PortfolioManager = (function() {
             plugins: [stockSelectionLinesPlugin, stockCrosshairPlugin]
         });
 
+        stockChart._rawPrices = prices;
+        stockChart._currency = currency;
         title.textContent = `${ticker} — Historical Value`;
 
         canvas.addEventListener('mousemove', (e) => {
