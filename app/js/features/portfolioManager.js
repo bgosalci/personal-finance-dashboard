@@ -1045,6 +1045,28 @@ const PortfolioManager = (function() {
             ctx.restore();
             ctx.save();
 
+            // Set font before any measureText calls so widths are accurate
+            ctx.font = 'bold 11px sans-serif';
+            ctx.textBaseline = 'middle';
+
+            // Safari <15.4 fallback for roundRect
+            const drawRoundRect = (cx, bx, by, bw, bh, r) => {
+                if (typeof cx.roundRect === 'function') {
+                    cx.roundRect(bx, by, bw, bh, r);
+                } else {
+                    cx.moveTo(bx + r, by);
+                    cx.lineTo(bx + bw - r, by);
+                    cx.arcTo(bx + bw, by, bx + bw, by + r, r);
+                    cx.lineTo(bx + bw, by + bh - r);
+                    cx.arcTo(bx + bw, by + bh, bx + bw - r, by + bh, r);
+                    cx.lineTo(bx + r, by + bh);
+                    cx.arcTo(bx, by + bh, bx, by + bh - r, r);
+                    cx.lineTo(bx, by + r);
+                    cx.arcTo(bx, by, bx + r, by, r);
+                    cx.closePath();
+                }
+            };
+
             // X-axis date label — just above the axis line, inside the chart area
             if (dateText) {
                 const tw = ctx.measureText(dateText).width;
@@ -1054,12 +1076,10 @@ const PortfolioManager = (function() {
                 const by = yAxis.bottom - bh - 4;
                 bx = Math.min(Math.max(bx, xAxis.left), xAxis.right - bw);
                 ctx.beginPath();
-                ctx.roundRect(bx, by, bw, bh, radius);
+                drawRoundRect(ctx, bx, by, bw, bh, radius);
                 ctx.fillStyle = pillBg;
                 ctx.fill();
                 ctx.fillStyle = textColor;
-                ctx.font = 'bold 11px sans-serif';
-                ctx.textBaseline = 'middle';
                 ctx.textAlign = 'center';
                 ctx.fillText(dateText, bx + bw / 2, by + bh / 2);
             }
@@ -1073,12 +1093,10 @@ const PortfolioManager = (function() {
                 let by = y - bh / 2;
                 by = Math.min(Math.max(by, yAxis.top), yAxis.bottom - bh);
                 ctx.beginPath();
-                ctx.roundRect(bx, by, bw, bh, radius);
+                drawRoundRect(ctx, bx, by, bw, bh, radius);
                 ctx.fillStyle = pillBg;
                 ctx.fill();
                 ctx.fillStyle = textColor;
-                ctx.font = 'bold 11px sans-serif';
-                ctx.textBaseline = 'middle';
                 ctx.textAlign = 'center';
                 ctx.fillText(priceText, bx + bw / 2, by + bh / 2);
             }
