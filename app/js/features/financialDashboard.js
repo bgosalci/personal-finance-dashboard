@@ -9,7 +9,7 @@ const FinancialDashboard = (function() {
         PensionManager.init();
         Calculator.init();
         StockTracker.init();
-        StockFinance.init();
+        TrendScanner.init();
     }
 
     function removeTicker(ticker) {

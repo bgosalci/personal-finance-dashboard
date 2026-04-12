@@ -3,10 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://unpkg.com; style-src 'self' 'unsafe-inline'; connect-src 'self' https://api.polygon.io https://v6.exchangerate-api.com https://finnhub.io wss://ws.finnhub.io https://financialmodelingprep.com; img-src 'self' data: blob:; font-src 'self' https://unpkg.com; worker-src blob:;">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; connect-src 'self' https://api.polygon.io https://v6.exchangerate-api.com https://finnhub.io wss://ws.finnhub.io https://financialmodelingprep.com; img-src 'self' data: blob:; font-src 'self' https://unpkg.com https://fonts.gstatic.com; worker-src blob:;">
     <title>Financial Dashboard</title>
     <link rel="icon" type="image/png" href="favicon.png">
     <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
     <script src="js/chart.umd.js"></script>
     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
@@ -17,23 +20,25 @@
             <img src="gosalci_logo.png" alt="GoSalci Logo" class="header-logo">
             <div class="header-text">
                 <h1 data-i18n="header.title">Financial Dashboard</h1>
-                <p data-i18n="header.tagline">Personal Investment Tracking & Financial Planning Tool</p>
-            </div>
-            <div class="market-status">
-                <div class="status-row">
-                    <span data-i18n="market.pre">Pre Market</span>
-                    <span id="early-led" class="led-light led-red"></span>
-                    <span id="early-session" class="market-session"></span>
-                </div>
-                <div class="status-row">
-                    <span data-i18n="market.status">Market Status</span>
-                    <span id="market-led" class="led-light led-red"></span>
-                    <span id="market-session" class="market-session"></span>
-                </div>
-                <div class="status-row">
-                    <span data-i18n="market.after">After Market</span>
-                    <span id="after-led" class="led-light led-red"></span>
-                    <span id="after-session" class="market-session"></span>
+                <div class="header-subtitle-row">
+                    <p data-i18n="header.tagline">Personal Investment Tracking &amp; Financial Planning Tool</p>
+                    <div class="market-status">
+                        <div class="status-row">
+                            <span id="early-led" class="led-light led-red"></span>
+                            <span data-i18n="market.pre">Pre Market</span>
+                            <span id="early-session" class="market-session"></span>
+                        </div>
+                        <div class="status-row">
+                            <span id="market-led" class="led-light led-red"></span>
+                            <span data-i18n="market.status">Market Status</span>
+                            <span id="market-session" class="market-session"></span>
+                        </div>
+                        <div class="status-row">
+                            <span id="after-led" class="led-light led-red"></span>
+                            <span data-i18n="market.after">After Market</span>
+                            <span id="after-session" class="market-session"></span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -42,6 +47,7 @@
     <nav class="nav-tabs">
         <button class="nav-tab active" data-tab="portfolio" data-i18n="nav.portfolio">Portfolio</button>
         <button class="nav-tab" data-tab="watchlist" data-i18n="nav.watchlist">Watchlist</button>
+        <button class="nav-tab" data-tab="trend-scanner">Trend Scanner</button>
         <button class="nav-tab" data-tab="pension" data-i18n="nav.pension">Pension</button>
         <button class="nav-tab" data-tab="trades-journal">Trades Journal</button>
         <button class="nav-tab" data-tab="calculators" data-i18n="nav.calculators">Calculators</button>
@@ -1639,6 +1645,9 @@
                 </div>
             </div>
             
+            <!-- Trend Scanner Tab -->
+            <div id="trend-scanner" class="tab-content trend-scanner-tab"></div>
+
             <!-- Settings Tab -->
             <div id="settings" class="tab-content">
                 <div class="section-header">
@@ -2173,6 +2182,7 @@
     <script src="js/data/ukTaxYears.js"></script>
     <script src="js/features/calculator.js"></script>
     <script src="js/features/stockTracker.js"></script>
+    <script src="js/features/trendScanner.js"></script>
     <script src="js/core/appVersion.js"></script>
     <script src="js/core/settings.js"></script>
     <script src="js/features/financialDashboard.js"></script>
