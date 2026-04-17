@@ -56,6 +56,7 @@ const TrendScanner = (function () {
   let dragMode = '', dragStartX = 0, dragStartY = 0, dragStartVE = 0;
   let dragDivIdx = -1, dragDivRatios = [], dragDivTotalPx = 0;
   let dpr = 1, resizeTimer;
+  let liveCandle = null, livePriceHandler = null;
 
   const CPAD = 24;
   const PAD  = { L: 74, R: 18, T: 4, B: 4 };
@@ -151,8 +152,20 @@ const TrendScanner = (function () {
     });
     return Object.values(m).sort((a, b) => a.date < b.date ? -1 : 1);
   }
+  function getBaseData() {
+    if (!liveCandle) return rawData;
+    const result = rawData.slice();
+    const lastDate = result.length ? result[result.length - 1].date : '';
+    if (liveCandle.date > lastDate) {
+      result.push(liveCandle);
+    } else if (liveCandle.date === lastDate) {
+      result[result.length - 1] = { ...result[result.length - 1], ...liveCandle };
+    }
+    return result;
+  }
   function buildDisplayData() {
-    dispData = candleMode === 'W' ? aggregateWeekly(rawData) : candleMode === 'M' ? aggregateMonthly(rawData) : rawData.slice();
+    const base = getBaseData();
+    dispData = candleMode === 'W' ? aggregateWeekly(base) : candleMode === 'M' ? aggregateMonthly(base) : base.slice();
   }
 
   /* ── Indicators ──────────────────────────────────────────────────── */
@@ -858,8 +871,49 @@ const TrendScanner = (function () {
     hovered.style.color = sig ? (sig.type === 'entry' ? 'var(--ts-entry)' : 'var(--ts-exit)') : 'var(--ts-bright)';
   }
 
+  /* ── Live price updates ──────────────────────────────────────────── */
+  function detachLiveUpdates() {
+    if (livePriceHandler) { PriceStorage.offChange(livePriceHandler); livePriceHandler = null; }
+    liveCandle = null;
+  }
+  function attachLiveUpdates(ticker) {
+    detachLiveUpdates();
+    livePriceHandler = (t) => { if (t === ticker) applyLiveCandle(ticker); };
+    PriceStorage.onChange(livePriceHandler);
+  }
+  async function applyLiveCandle(ticker) {
+    try {
+      const result = await QuotesService.fetchQuote(ticker);
+      if (!result || !result.raw || typeof result.raw.c !== 'number') return;
+      const raw = result.raw;
+      const today = new Date().toISOString().slice(0, 10);
+      liveCandle = {
+        date:   today,
+        open:   typeof raw.o === 'number' ? raw.o : raw.c,
+        high:   typeof raw.h === 'number' ? raw.h : raw.c,
+        low:    typeof raw.l === 'number' ? raw.l : raw.c,
+        close:  raw.c,
+        volume: typeof raw.v === 'number' ? raw.v : 0,
+      };
+      const prevClose = rawData.length ? rawData[rawData.length - 1].close : (typeof raw.pc === 'number' ? raw.pc : raw.c);
+      const chg = raw.c - prevClose, chgP = prevClose ? chg / prevClose * 100 : 0;
+      const priceEl = el('price-val');
+      if (priceEl) priceEl.textContent = '$' + raw.c.toFixed(2);
+      const chgEl = el('price-chg');
+      if (chgEl) {
+        chgEl.textContent = `${chg >= 0 ? '+' : ''}${chg.toFixed(2)} (${chgP.toFixed(2)}%)`;
+        chgEl.style.color = chg >= 0 ? C.bull : C.bear;
+      }
+      const wasAtEnd = viewEnd >= dispData.length;
+      buildDisplayData(); recalcIndicators();
+      if (wasAtEnd) viewEnd = dispData.length;
+      if (isTabActive()) drawChart();
+    } catch (e) { /* ignore */ }
+  }
+
   /* ── Load ticker ─────────────────────────────────────────────────── */
   async function loadTicker() {
+    detachLiveUpdates();
     if (!el('ticker-input')) return;
     const ticker = el('ticker-input').value.trim().toUpperCase(); if (!ticker) return;
     const apiKey = FmpService.getApiKey();
@@ -901,6 +955,7 @@ const TrendScanner = (function () {
       const srMaj = srLevels.filter(l => l.major).length, srMin = srLevels.filter(l => !l.major).length;
       statusMsg.textContent = `${ticker} \xb7 ${rawData.length} bars \xb7 ${dSigs.filter(Boolean).length} signals \xb7 ${srMaj} major S/R \xb7 ${srMin} minor S/R`;
       buildPanelControls(); updateLegendMas(); saveSettings(); resizeCanvas(drawChart);
+      attachLiveUpdates(ticker); applyLiveCandle(ticker);
     } catch (err) {
       statusMsg.textContent = '\u26a0 ' + err.message;
       emptyState.style.display = 'flex';
